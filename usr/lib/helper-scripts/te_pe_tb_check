@@ -229,7 +229,6 @@ run_anondate_set() {
    echo "Running anondate-set..."
    ## This has a sudoers exception.
    anondate-set
-   exit 2
 }
 
 te_pe_tb_check() {
@@ -256,6 +255,9 @@ te_pe_tb_check() {
    if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
       run_anondate_set
    fi
+
+   ## Clock OK but not fully bootstrapped yet. Wait.
+   exit 2
 }
 
 te_pe_tb_check "$@"

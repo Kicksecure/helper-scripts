@@ -3,7 +3,14 @@
 ## Copyright (C) 2014 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
-set -e
+exit_handler() {
+   echo "$0: INFO: Exiting with exit code $exit_code."
+   exit "$exit_code"
+}
+
+exit_code=1
+
+trap exit_handler EXIT
 
 if [ "$(whoami)" = "sdwdate" ]; then
    true
@@ -19,9 +26,9 @@ time_result="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
 
 if [ ! "$anondate_get_exit_code" = "0" ]; then
    echo "$0: INFO: Setting time using anondate either not possible or not required."
-   exit 1
+   exit_code=2
+else
+   echo "$0: INFO: Running: 'date --utc --set "$time_result"'"
+   date --utc --set "$time_result"
+   exit_code="$?"
 fi
-
-echo "$0: INFO: Running: 'date --utc --set "$time_result"'"
-date --utc --set "$time_result"
-echo "$0: INFO: Exiting."
