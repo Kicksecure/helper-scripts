@@ -51,9 +51,6 @@ timesanitycheck_static() {
    else
       echo "Static Time Sanity Check: $time_sanity_check_msg_static"
       timesanitycheck_static_timestamp_based_failed="true"
-      if [ "$VM" = "Gateway" ]; then
-         exit 1
-      fi
    fi
 }
 
