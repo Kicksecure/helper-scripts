@@ -91,7 +91,7 @@ fi
 
 ## TODO: Tor cert valid after must be after Tor consensus middle range to avoid using stale Tor consensus
 
-## Needs acccess to TOR_DIR /var/lib/tor.
+## Needs access to TOR_DIR /var/lib/tor.
 # if anondate --has-consensus ; then
 # echo "$0: INFO: has Tor consensus, ok." >&2
 
