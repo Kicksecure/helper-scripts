@@ -4,6 +4,7 @@
 ## Copyright (C) 2014 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+set -e
 set -o pipefail
 
 variables() {
@@ -154,8 +155,10 @@ parse_cmd_options() {
 }
 
 root_check() {
-   if [ "$(id -u)" != "0" ]; then
-      echo "$0: ERROR: Must run as root."
+   if [ "$(whoami)" = "sdwdate" ]; then
+      true
+   elif [ "$(id -u)" != "0" ]; then
+      echo "$0: ERROR: Must run as root." >&2
       exit 112
    fi
 }

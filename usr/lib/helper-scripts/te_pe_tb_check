@@ -5,8 +5,8 @@
 
 ## Exit codes of this script get interpreted by sdwdate.
 ## exit 0
-## exit 1: wait, retry and warning icon
-## exit 2: wait, retry and error icon
+## exit 1: wait, retry and error icon
+## exit 2: wait, retry and busy icon
 
 set -o pipefail
 set -e errtrace
@@ -219,7 +219,7 @@ exit_success_if_tor_circuit_already_established() {
 }
 
 run_anondate_set() {
-   echo "Running anondate-set..." >&2
+   echo "$0: Running anondate-set..." >&2
    ## This has a sudoers exception.
    anondate-set
    exit 2

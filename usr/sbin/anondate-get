@@ -42,6 +42,8 @@
 # exit_code: 3
 # ----------
 
+#set -x
+
 if [ "$(whoami)" = "sdwdate" ]; then
    true
 elif [ "$(id -u)" != "0" ]; then
