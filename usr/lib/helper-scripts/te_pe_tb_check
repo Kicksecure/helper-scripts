@@ -144,7 +144,7 @@ tor_bootstrap_check() {
          echo "<b>Tor is not yet fully bootstrapped.</b> $tor_bootstrap_percent % done.\
    <br>Tor reports: $tor_bootstrap_status"
       fi
-      exit "2"
+      exit 2
    fi
 }
 
@@ -208,7 +208,7 @@ tor_consensus_time_sanity_check() {
    ## may be empty.
    #if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
    #   if [ "$VM" = "Gateway" ]; then
-   #      exit "1"
+   #      exit 1
    #   fi
    #fi
 }
@@ -216,12 +216,12 @@ tor_consensus_time_sanity_check() {
 tor_circuit_established_check() {
    if [ "$tor_circuit_established" = "1" ]; then
       echo "<p>Tor fully bootstrapped.</p>"
-      exit "0"
+      exit 0
    fi
 
    echo "Tor Bootstrap Result: \
    <b>ERROR tor_circuit_established is neither 0 nor 1. tor_circuit_established: $tor_circuit_established</b><br> Please report this bug!" >&2
-   exit "0"
+   exit 0
 }
 
 te_pe_tb_check() {
