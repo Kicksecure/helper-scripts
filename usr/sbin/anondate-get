@@ -142,6 +142,7 @@ else
       fi
       echo "$time_result"
       exit_code=2
+      exit 2
    else
       echo "$0: WARNING: Could not find out Tor certificate life date." >&2
    fi
