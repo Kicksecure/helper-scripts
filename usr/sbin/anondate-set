@@ -57,6 +57,7 @@ elif [ "$anondate_get_exit_code" = "2" ]; then
       echo "$0: INFO: Done, created status file '$anondate_tor_certificate_lifetime_set_file'."
       ## If clock was too fast, restart of Tor is required.
       echo "$0: INFO: Tor restart using 'systemctl restart tor@default'..."
+      ## TODO: vs sdwdate systemd hardening
       systemctl --no-pager restart tor@default
       echo "$0: INFO: Tor restart done."
       exit_code=2
