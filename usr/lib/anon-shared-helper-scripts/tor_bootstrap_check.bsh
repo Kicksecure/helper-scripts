@@ -1,0 +1,73 @@
+#!/bin/bash
+
+## This file is part of Whonix.
+## Copyright (C) 2012 - 2014 Patrick Schleizer <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+check_tor_bootstrap_helper() {
+   trap "error_handler" ERR
+
+   if [ "$VERIFY_TEMPDIR" = "" ]; then
+      VERIFY_TEMPDIR="$(mktemp --directory)"
+   fi
+
+   ## {{ variables
+
+   local kill_after="5s"
+   local timeout_after="10s"
+   check_bootstrap_script="/usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.py"
+
+   ## }}
+
+   ## {{ Sometimes it does not work on the first run. Small hack.
+
+   local bootstrap_file="$VERIFY_TEMPDIR/tor_bootstrap_temp"
+   rm --force "$bootstrap_file"
+   local temp_exit_code
+   temp_exit_code="0"
+   timeout --kill-after="$kill_after" "$timeout_after" "$check_bootstrap_script" 2>&1 >"$bootstrap_file" &
+   lastpid="$!"
+   wait "$lastpid" || { temp_exit_code="$?" ; true; }
+
+   if [ -f "$bootstrap_file" ]; then
+      local temp_status
+      temp_status="$(cat "$bootstrap_file")"
+      if [ "$temp_status" = "" ]; then
+         temp_status="ERROR: Variable temp_status is empty. Please report this Whonix bug!"
+      fi
+   else
+      temp_status="ERROR: File "$bootstrap_file" does not exist. Please report this Whonix bug!"
+   fi
+
+   ## }}
+
+   ## {{ actual check
+
+   if [ "$TOR_BOOTSTRAP_TIME_START" = "" ]; then
+      TOR_BOOTSTRAP_TIME_START="$(date +%s)"
+   fi
+   TOR_BOOTSTRAP_TIME_NOW="$(date +%s)"
+   TOR_BOOTSTRAP_TIME_PASSED="$(( $TOR_BOOTSTRAP_TIME_NOW - $TOR_BOOTSTRAP_TIME_START ))"
+
+   local bootstrap_file="$VERIFY_TEMPDIR/tor_bootstrap_file"
+   rm --force "$bootstrap_file"
+   tor_bootstrap_percent="0"
+   timeout --kill-after="$kill_after" "$timeout_after" "$check_bootstrap_script" 2>&1 >"$bootstrap_file" &
+   lastpid="$!"
+   wait "$lastpid" || { tor_bootstrap_percent="$?" ; true; }
+
+   if [ -f "$bootstrap_file" ]; then
+      tor_bootstrap_status="$(cat "$bootstrap_file")"
+      if [ "$tor_bootstrap_status" = "" ]; then
+         tor_bootstrap_status="Variable tor_bootstrap_status is empty."
+      fi
+   else
+      tor_bootstrap_status="ERROR: File $bootstrap_file does not exist. Please report this Whonix bug!"
+   fi
+
+   ## }}
+
+   ## `timeout` returns:
+   ## - 124 if sigterm was sufficient
+   ## - 137 if needed to use kill.
+}

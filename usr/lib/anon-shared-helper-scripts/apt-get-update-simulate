@@ -1,0 +1,31 @@
+#!/bin/bash
+
+## This file is part of Whonix.
+## Copyright (C) 2012 - 2014 Patrick Schleizer <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+## Required to run apt-get dist-upgrade --simulate as user (non-root).
+## Required for whonixcheck function check_operating_system.
+## Exception to run /usr/bin/apt-get-update as user
+## is defined in /etc/sudoers.d/.
+
+sigterm_trap() {
+   if [ "$lastpid" = "" ]; then
+      exit 0
+   fi
+   ps -p "$lastpid"
+   if [ ! "$?" = "0" ]; then
+      ## Already terminated.
+      exit 0
+   fi
+   kill -sigterm "$lastpid"
+   exit "$?"
+}
+
+trap "sigterm_trap" SIGTERM
+
+apt-get dist-upgrade --simulate &
+lastpid="$!"
+wait "$lastpid"
+
+exit "$?"

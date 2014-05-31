@@ -1,0 +1,143 @@
+#!/bin/bash
+
+## This file is part of Whonix.
+## Copyright (C) 2012 - 2014 Patrick Schleizer <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+#set -x
+set -o pipefail
+
+SCRIPTNAME="$(basename $0)"
+IDENTIFIER="timesync"
+
+source /usr/lib/anon-shared-helper-scripts/tor_enabled_check
+source /usr/lib/anon-shared-helper-scripts/pkg_manager_running_check
+source /usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.bsh
+
+error_handler() {
+   local exit_code="$?"
+   local MSG="\
+BASH_COMMAND: $BASH_COMMAND
+exit_code: $exit_code
+"
+   ## TODO: log.
+}
+
+te_pe_tb_check() {
+   trap "error_handler" ERR
+
+   if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
+      VM="Gateway"
+   elif [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
+      VM="Workstation"
+   else
+      VM="Could not determine if this is gateway or workstation. Please report this bug."
+   fi
+
+   ## Debugging.
+   true "$FUNCNAME: CURL: $CURL"
+   true "$FUNCNAME: LD_PRELOAD: $LD_PRELOAD"
+
+   ## Sets: TOR_ENABLED
+   check_tor_enabled_do
+
+   if [ "$TOR_ENABLED" = "1" ]; then
+      ## Ok.
+      true
+   else
+      if [ -d /usr/share/whonix ]; then
+         echo "Tor is disabled. Please enable Tor using whonixsetup. \
+Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Terminal: sudo whonixsetup"
+      else
+         echo "Tor is disabled. Please enable Tor in /etc/tor/torrc."
+      fi
+
+      ## Exit 2, so sdwdate will wait until this has been fixed.
+      exit "2"
+   fi
+
+   true "$FUNCNAME: CURL: $CURL"
+
+   ## sets: check_apt_get_exit_code
+   ## sets: package_manager_waiting_msg
+   check_package_manager_running_helper ## 19_2_1_check_package_manager_running
+   if [ "$check_apt_get_exit_code" = "0" ]; then
+      true "Package manager not busy, ok."
+   else
+      local MSG="$package_manager_waiting_msg"
+
+      ## Echo message, so sdwdate can integrate it into its log.
+      echo "$MSG"
+
+      ## Exit 2, so sdwdate will wait until this has been fixed.
+      exit "2"
+   fi
+
+   ## sets: check_bootstrap_script
+   ## sets: lastpid
+   ## sets: TOR_BOOTSTRAP_TIME_START
+   ## sets: TOR_BOOTSTRAP_TIME_NOW
+   ## sets: TOR_BOOTSTRAP_TIME_PASSED
+   ## sets: tor_bootstrap_percent
+   ## sets: tor_bootstrap_status
+   check_tor_bootstrap_helper ## 19_2_check_tor_bootstrap
+
+   ## $tor_bootstrap_percent:
+   ## `timeout` returns:
+   ## - 124 if sigterm was sufficient
+   ## - 137 if needed to use kill.
+
+   if [ "$tor_bootstrap_percent" = "254" ]; then
+      local MSG="Tor Bootstrap Result: \
+ERROR ($tor_bootstrap_percent). Please report this bug!"
+   elif [ "$tor_bootstrap_percent" = "255" ]; then
+      if [ "$VM" = "Gateway" ]; then
+         local MSG="Tor Bootstrap Result: \
+Tor's Control Port could not be reached. \
+Please report this bug!"
+      elif [ "$VM" = "Workstation" ]; then
+         if [ -d /usr/share/whonix ]; then
+            local MSG="Tor Bootstrap Result: \
+Tor's Control Port could not be reached. \
+Did you start Gateway beforehand? \
+Please run whonixcheck on Gateway."
+         else
+            local MSG="Tor Bootstrap Result: \
+Tor's Control Port could not be reached. \
+Did you start Gateway beforehand?"
+         fi
+      else
+         if [ -d /usr/share/whonix ]; then
+            local MSG="Tor Bootstrap Result: \
+Tor's Control Port could not be reached. \
+Did you start Gateway beforehand? \
+Please run whonixcheck on Gateway.
+$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
+         else
+            local MSG="Tor Bootstrap Result: \
+Tor's Control Port could not be reached. \
+Did you start Gateway beforehand?
+$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
+         fi
+      fi
+   elif [ "$tor_bootstrap_percent" = "100" ]; then
+      ## Only when manually testing this script using bash -x.
+      local MSG="Tor fully bootstrapped."
+   else
+      local MSG="Tor is not yet fully bootstrapped. $tor_bootstrap_percent % done. Tor reports: $tor_bootstrap_status"
+   fi
+
+   if [ "$tor_bootstrap_percent" = "100" ]; then
+      ## Ok.
+      ## Exit 0, so sdwdate will continue.
+      exit "0"
+   else
+      ## Echo message, so sdwdate can integrate it into its log.
+      echo "$MSG"
+
+      ## Exit 2, so sdwdate will wait until this has been fixed.
+      exit "2"
+   fi
+}
+
+te_pe_tb_check ${1+"$@"}
