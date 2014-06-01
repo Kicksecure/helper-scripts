@@ -17,7 +17,7 @@ p=int(sys.argv[2])
 try:
   with Controller.from_port(address = a, port = p) as controller:
 
-    if os.path.exists("/usr/share/anon-gw-base-files/gateway"):
+    if str(sys.argv[3]) == "1":
       controller.authenticate()
 
     bootstrap_status = controller.get_info("status/bootstrap-phase")
