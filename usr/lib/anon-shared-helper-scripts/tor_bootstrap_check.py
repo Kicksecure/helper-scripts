@@ -11,15 +11,8 @@ import stem
 
 from stem.control import Controller
 
-if os.path.exists("/usr/share/anon-ws-base-files/workstation"):
-  a='192.168.0.10'
-  p=9052
-elif os.path.exists("/usr/share/anon-gw-base-files/gateway"):
-  a='127.0.0.1'
-  p=9051
-else:
-  exit_code=254
-  sys.exit(exit_code)
+a=str(sys.argv[1])
+p=int(sys.argv[2])
 
 try:
   with Controller.from_port(address = a, port = p) as controller:
