@@ -12,15 +12,17 @@ import stem
 from stem.control import Controller
 
 if os.path.exists("/usr/share/anon-ws-base-files/workstation"):
-  p=9151
+  a='192.168.0.10'
+  p=9052
 elif os.path.exists("/usr/share/anon-gw-base-files/gateway"):
+  a='127.0.0.1'
   p=9051
 else:
   exit_code=254
   sys.exit(exit_code)
 
 try:
-  with Controller.from_port(port = p) as controller:
+  with Controller.from_port(address = a, port = p) as controller:
 
     if os.path.exists("/usr/share/anon-gw-base-files/gateway"):
       controller.authenticate()
