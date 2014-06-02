@@ -13,6 +13,46 @@ check_tor_bootstrap_helper() {
 
    ## {{ variables
 
+   if [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
+      if [ -d "/usr/share/whonix" ]; then
+         if [ "$TOR_CONTROL_HOST" = "" ]; then
+            TOR_CONTROL_HOST="192.168.0.10"
+         fi
+         if [ "$TOR_CONTROL_PORT" = "" ]; then
+            TOR_CONTROL_PORT="9052"
+         fi
+         if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
+            TOR_CONTROL_AUTHENTICATE="0"
+         fi
+      else
+         if [ "$TOR_CONTROL_HOST" = "" ]; then
+            TOR_CONTROL_HOST="192.168.0.10"
+         fi
+         if [ "$TOR_CONTROL_PORT" = "" ]; then
+            TOR_CONTROL_PORT="9052"
+         fi
+         if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
+            TOR_CONTROL_AUTHENTICATE="0"
+         fi
+      fi
+   fi
+
+   if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
+      if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
+         TOR_CONTROL_AUTHENTICATE="1"
+      fi
+   fi
+
+   if [ "$TOR_CONTROL_HOST" = "" ]; then
+      TOR_CONTROL_HOST="127.0.0.1"
+   fi
+   if [ "$TOR_CONTROL_PORT" = "" ]; then
+      TOR_CONTROL_PORT="9051"
+   fi
+   if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
+      TOR_CONTROL_AUTHENTICATE="0"
+   fi
+
    local kill_after="5s"
    local timeout_after="10s"
    check_bootstrap_script="/usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.py"
@@ -25,7 +65,11 @@ check_tor_bootstrap_helper() {
    rm --force "$bootstrap_file"
    local temp_exit_code
    temp_exit_code="0"
-   timeout --kill-after="$kill_after" "$timeout_after" "$check_bootstrap_script" 2>&1 >"$bootstrap_file" &
+   timeout \
+      --kill-after="$kill_after" \
+      "$timeout_after" \
+      "$check_bootstrap_script" "$TOR_CONTROL_HOST" "$TOR_CONTROL_PORT" "$TOR_CONTROL_AUTHENTICATE" \
+      2>&1 > "$bootstrap_file" &
    lastpid="$!"
    wait "$lastpid" || { temp_exit_code="$?" ; true; }
 
@@ -52,7 +96,11 @@ check_tor_bootstrap_helper() {
    local bootstrap_file="$VERIFY_TEMPDIR/tor_bootstrap_file"
    rm --force "$bootstrap_file"
    tor_bootstrap_percent="0"
-   timeout --kill-after="$kill_after" "$timeout_after" "$check_bootstrap_script" 2>&1 >"$bootstrap_file" &
+   timeout \
+      --kill-after="$kill_after" \
+      "$timeout_after" \
+      "$check_bootstrap_script" "$TOR_CONTROL_HOST" "$TOR_CONTROL_PORT" "$TOR_CONTROL_AUTHENTICATE" \
+      2>&1 > "$bootstrap_file" &
    lastpid="$!"
    wait "$lastpid" || { tor_bootstrap_percent="$?" ; true; }
 
