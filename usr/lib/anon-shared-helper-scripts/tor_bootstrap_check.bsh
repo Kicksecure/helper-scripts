@@ -113,9 +113,17 @@ check_tor_bootstrap_helper() {
       tor_bootstrap_status="ERROR: File $bootstrap_file does not exist. Please report this Whonix bug!"
    fi
 
-   ## }}
-
    ## `timeout` returns:
    ## - 124 if sigterm was sufficient
    ## - 137 if needed to use kill.
+
+   if [ "$tor_bootstrap_percent" = "124" ]; then
+      tor_bootstrap_timeout_type="sigterm"
+   elif [ "$tor_bootstrap_percent" = "137" ]; then
+      tor_bootstrap_timeout_type="sigkill"
+   else
+      tor_bootstrap_timeout_type="none"
+   fi
+
+   ## }}
 }
