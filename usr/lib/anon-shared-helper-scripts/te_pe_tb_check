@@ -60,18 +60,18 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
 
    ## sets: check_apt_get_exit_code
    ## sets: package_manager_waiting_msg
-   check_package_manager_running_helper ## 19_2_1_check_package_manager_running
-   if [ "$check_apt_get_exit_code" = "0" ]; then
-      true "Package manager not busy, ok."
-   else
-      local MSG="$package_manager_waiting_msg"
+   #check_package_manager_running_helper ## 19_2_1_check_package_manager_running
+   #if [ "$check_apt_get_exit_code" = "0" ]; then
+      #true "Package manager not busy, ok."
+   #else
+      #local MSG="$package_manager_waiting_msg"
 
       ## Echo message, so sdwdate can integrate it into its log.
-      echo "$MSG"
+      #echo "$MSG"
 
       ## Exit 2, so sdwdate will wait until this has been fixed.
-      exit "2"
-   fi
+      #exit "2"
+   #fi
 
    ## sets: check_bootstrap_script
    ## sets: lastpid
