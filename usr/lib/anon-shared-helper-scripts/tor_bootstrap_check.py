@@ -9,12 +9,14 @@ import os.path
 import re
 import stem
 
+from stem import connection
+
 from stem.control import Controller
 
-a=str(sys.argv[1])
-p=int(sys.argv[2])
-
 try:
+  a=str(sys.argv[1])
+  p=int(sys.argv[2])
+
   with Controller.from_port(address = a, port = p) as controller:
 
     if str(sys.argv[3]) == "1":
@@ -39,7 +41,14 @@ try:
 
     exit_code = int(progress_percent.group(1))
 
-except:
+except ValueError as e:
+  print e
+  exit_code=255
+except connection.AuthenticationFailure as e:
+  print 'Unable to authenticate: %s' % e
+  exit_code=255
+except stem.SocketError as e:
+  print 'Socket error: %s' % e
   exit_code=255
 
 sys.exit(exit_code)
