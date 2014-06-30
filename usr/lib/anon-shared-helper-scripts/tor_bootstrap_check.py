@@ -19,7 +19,7 @@ try:
 
   a=str(sys.argv[1])
   p=int(sys.argv[2])
-  
+
   with Controller.from_port(address = a, port = p) as controller:
 
     if str(sys.argv[3]) == "1":
