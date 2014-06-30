@@ -15,6 +15,7 @@ from stem.control import Controller
 
 try:
   if len(sys.argv) < 4:
+      print 'Syntax error. %s' % sys.argv
       sys.exit(255)
 
   a=str(sys.argv[1])
