@@ -14,9 +14,12 @@ from stem import connection
 from stem.control import Controller
 
 try:
+  if len(sys.argv) < 4:
+      sys.exit(255)
+
   a=str(sys.argv[1])
   p=int(sys.argv[2])
-
+  
   with Controller.from_port(address = a, port = p) as controller:
 
     if str(sys.argv[3]) == "1":
