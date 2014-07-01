@@ -22,7 +22,7 @@ check_tor_enabled_do() {
    local line
 
    ## Parse /etc/tor/torrc.
-   while read line; do
+   while read -r line; do
       if [ "$line" = "DisableNetwork 0" ]; then
          TOR_ENABLED="1"
          return 0
@@ -31,7 +31,7 @@ check_tor_enabled_do() {
    unset line
 
    ## Parse /usr/share/tor/tor-service-defaults-torrc.
-   while read line; do
+   while read -r line; do
       if [ "$line" = "DisableNetwork 0" ]; then
          TOR_ENABLED="1"
          return 0
