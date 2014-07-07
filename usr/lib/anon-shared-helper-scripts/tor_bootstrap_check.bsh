@@ -4,14 +4,8 @@
 ## Copyright (C) 2012 - 2014 Patrick Schleizer <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
-check_tor_bootstrap_helper() {
+check_tor_bootstrap_helper_variables() {
    trap "error_handler" ERR
-
-   if [ "$VERIFY_TEMPDIR" = "" ]; then
-      VERIFY_TEMPDIR="$(mktemp --directory)"
-   fi
-
-   ## {{ variables
 
    if [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
       if [ -d "/usr/share/whonix" ]; then
@@ -52,40 +46,10 @@ check_tor_bootstrap_helper() {
    if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
       TOR_CONTROL_AUTHENTICATE="0"
    fi
+}
 
-   local kill_after="5s"
-   local timeout_after="10s"
-   check_bootstrap_script="/usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.py"
-
-   ## }}
-
-   ## {{ Sometimes it does not work on the first run. Small hack.
-
-   local bootstrap_file="$VERIFY_TEMPDIR/tor_bootstrap_temp"
-   rm --force "$bootstrap_file"
-   local temp_exit_code
-   temp_exit_code="0"
-   timeout \
-      --kill-after="$kill_after" \
-      "$timeout_after" \
-      "$check_bootstrap_script" "$TOR_CONTROL_HOST" "$TOR_CONTROL_PORT" "$TOR_CONTROL_AUTHENTICATE" \
-      2>&1 > "$bootstrap_file" &
-   lastpid="$!"
-   wait "$lastpid" || { temp_exit_code="$?" ; true; }
-
-   if [ -f "$bootstrap_file" ]; then
-      local temp_status
-      temp_status="$(cat "$bootstrap_file")"
-      if [ "$temp_status" = "" ]; then
-         temp_status="ERROR: Variable temp_status is empty. Please report this Whonix bug!"
-      fi
-   else
-      temp_status="ERROR: File "$bootstrap_file" does not exist. Please report this Whonix bug!"
-   fi
-
-   ## }}
-
-   ## {{ actual check
+check_tor_bootstrap_helper_run_helper_script() {
+   trap "error_handler" ERR
 
    if [ "$TOR_BOOTSTRAP_TIME_START" = "" ]; then
       TOR_BOOTSTRAP_TIME_START="$(date +%s)"
@@ -93,36 +57,77 @@ check_tor_bootstrap_helper() {
    TOR_BOOTSTRAP_TIME_NOW="$(date +%s)"
    TOR_BOOTSTRAP_TIME_PASSED="$(( $TOR_BOOTSTRAP_TIME_NOW - $TOR_BOOTSTRAP_TIME_START ))"
 
-   local bootstrap_file="$VERIFY_TEMPDIR/tor_bootstrap_file"
-   rm --force "$bootstrap_file"
-   tor_bootstrap_percent="0"
+   rm --force "$check_bootstrap_helper_bootstrap_file"
+   check_bootstrap_helper_script_exit_code="0"
    timeout \
-      --kill-after="$kill_after" \
-      "$timeout_after" \
-      "$check_bootstrap_script" "$TOR_CONTROL_HOST" "$TOR_CONTROL_PORT" "$TOR_CONTROL_AUTHENTICATE" \
-      2>&1 > "$bootstrap_file" &
+      --kill-after="$check_tor_bootstrap_helper_kill_after" \
+      "$check_tor_bootstrap_helper_timeout_after" \
+      "$check_bootstrap_helper_script" "$TOR_CONTROL_HOST" "$TOR_CONTROL_PORT" "$TOR_CONTROL_AUTHENTICATE" \
+      2>&1 > "$check_bootstrap_helper_bootstrap_file" &
    lastpid="$!"
-   wait "$lastpid" || { tor_bootstrap_percent="$?" ; true; }
+   wait "$lastpid" || { check_bootstrap_helper_script_exit_code="$?" ; true; }
 
-   if [ -f "$bootstrap_file" ]; then
-      tor_bootstrap_status="$(cat "$bootstrap_file")"
-      if [ "$tor_bootstrap_status" = "" ]; then
-         tor_bootstrap_status="Variable tor_bootstrap_status is empty."
+   if [ -f "$check_bootstrap_helper_bootstrap_file" ]; then
+      check_bootstrap_helper_script_output="$(cat "$check_bootstrap_helper_bootstrap_file")"
+      if [ "$check_bootstrap_helper_script_output" = "" ]; then
+         check_bootstrap_helper_script_output="Variable check_bootstrap_helper_script_output is empty."
       fi
    else
-      tor_bootstrap_status="ERROR: File $bootstrap_file does not exist. Please report this Whonix bug!"
+      check_bootstrap_helper_script_output="ERROR: File $check_bootstrap_helper_bootstrap_file does not exist. Please report this Whonix bug!"
+   fi
+}
+
+check_tor_bootstrap_helper() {
+   trap "error_handler" ERR
+
+   if [ "$VERIFY_TEMPDIR" = "" ]; then
+      VERIFY_TEMPDIR="$(mktemp --directory)"
    fi
 
+   check_tor_bootstrap_helper_variables
+
+   check_tor_bootstrap_helper_kill_after="5s"
+   check_tor_bootstrap_helper_timeout_after="10s"
+   check_bootstrap_helper_bootstrap_file="$VERIFY_TEMPDIR/tor_check_bootstrap_helper_bootstrap_file"
+
+   ## {{ bootstrap status
+
+   check_bootstrap_helper_script="/usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.py"
+
+   ## Sometimes it does not work on the first run. Small hack.
+   ## sets: check_bootstrap_helper_script_exit_code
+   ## sets: check_bootstrap_helper_script_output
+   check_tor_bootstrap_helper_run_helper_script
+   check_tor_bootstrap_helper_run_helper_script
+
+   tor_bootstrap_percent="$check_bootstrap_helper_script_exit_code"
+   tor_bootstrap_status="$check_bootstrap_helper_script_output"
    ## `timeout` returns:
    ## - 124 if sigterm was sufficient
    ## - 137 if needed to use kill.
-
-   if [ "$tor_bootstrap_percent" = "124" ]; then
+   if [ "$check_bootstrap_helper_script_exit_code" = "124" ]; then
       tor_bootstrap_timeout_type="sigterm"
-   elif [ "$tor_bootstrap_percent" = "137" ]; then
+   elif [ "$check_bootstrap_helper_script_exit_code" = "137" ]; then
       tor_bootstrap_timeout_type="sigkill"
    else
       tor_bootstrap_timeout_type="none"
+   fi
+
+   ## }}
+
+   ## {{ circuit established
+
+   check_bootstrap_helper_script="/usr/lib/anon-shared-helper-scripts/tor_circuit_established_check.py"
+   check_tor_bootstrap_helper_run_helper_script
+
+   tor_circuit_established_check_exit_code="$check_bootstrap_helper_script_exit_code"
+
+   if [ "$check_bootstrap_helper_script_exit_code" = "0" ]; then
+      tor_circuit_established="$check_bootstrap_helper_script_output"
+      tor_circuit_established_word="established"
+   else
+      tor_circuit_established="0"
+      tor_circuit_established_word="not established"
    fi
 
    ## }}
