@@ -124,7 +124,11 @@ check_tor_bootstrap_helper() {
 
    if [ "$check_bootstrap_helper_script_exit_code" = "0" ]; then
       tor_circuit_established="$check_bootstrap_helper_script_output"
-      tor_circuit_established_word="established"
+      if [ "$tor_circuit_established" = "1" ]; then
+         tor_circuit_established_word="established"
+      else
+         tor_circuit_established_word="not established"
+      fi
    else
       tor_circuit_established="0"
       tor_circuit_established_word="not established"
