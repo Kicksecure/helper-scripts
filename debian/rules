@@ -8,8 +8,3 @@
 
 %:
 	dh $@
-
-clean:
-	make clean
-
-.PHONY: clean build
