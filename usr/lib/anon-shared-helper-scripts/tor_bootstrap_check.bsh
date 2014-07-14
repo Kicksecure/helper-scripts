@@ -63,7 +63,9 @@ check_tor_bootstrap_helper_run_helper_script() {
       --kill-after="$check_tor_bootstrap_helper_kill_after" \
       "$check_tor_bootstrap_helper_timeout_after" \
       "$check_bootstrap_helper_script" "$TOR_CONTROL_HOST" "$TOR_CONTROL_PORT" "$TOR_CONTROL_AUTHENTICATE" \
-      2>&1 > "$check_bootstrap_helper_bootstrap_file" &
+      > "$check_bootstrap_helper_bootstrap_file" \
+      2>&1 \
+      &
    lastpid="$!"
    wait "$lastpid" || { check_bootstrap_helper_script_exit_code="$?" ; true; }
 
