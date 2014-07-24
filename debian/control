@@ -14,6 +14,7 @@ Standards-Version: 3.9.4
 
 Package: anon-shared-helper-scripts
 Architecture: all
-Depends: sudo, python, python-support (>= 0.90), python-stem, ${misc:Depends}
+Depends: sudo, python, python-support (>= 0.90), python-stem, inotify-tools,
+ ${misc:Depends}
 Description: Helper scripts useful for Anonymizing Linux Distributions
  Library used by other anonymity related packages.
