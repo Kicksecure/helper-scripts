@@ -19,4 +19,4 @@ Depends: sudo, python, python-support (>= 0.90), python-stem, inotify-tools,
 Description: Helper scripts useful for Anonymizing Linux Distributions
  Library that can be used by other (anonymity related) packages that want to
  programmatically get information about states of Tor. Common code, that is
- often required. Includes bash and python helper scripts.
+ often required. Includes bash and Python helper scripts.
