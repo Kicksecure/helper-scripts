@@ -1,6 +1,8 @@
 # Helper scripts useful for Anonymizing Linux Distributions #
 
-Library used by other anonymity related packages.
+Library that can be used by other (anonymity related) packages that want to
+programmatically get information about states of Tor. Common code, that is
+often required. Includes bash and Python helper scripts.
 
 (This package description has been [automatically](https://github.com/Whonix/whonix-developer-meta-files/blob/master/debug-steps/packaging-helper-script) extracted and mirrored from `debian/control`.)
 
