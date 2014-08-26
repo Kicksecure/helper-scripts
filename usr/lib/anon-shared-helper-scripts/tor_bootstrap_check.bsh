@@ -82,15 +82,15 @@ check_tor_bootstrap_helper_run_helper_script() {
 check_tor_bootstrap_helper() {
    trap "error_handler" ERR
 
-   if [ "$VERIFY_TEMPDIR" = "" ]; then
-      VERIFY_TEMPDIR="$(mktemp --directory)"
+   if [ "$TEMP_DIR" = "" ]; then
+      error "Variable TEMP_DIR is empty."
    fi
 
    check_tor_bootstrap_helper_variables
 
    check_tor_bootstrap_helper_kill_after="5s"
    check_tor_bootstrap_helper_timeout_after="10s"
-   check_bootstrap_helper_bootstrap_file="$VERIFY_TEMPDIR/tor_check_bootstrap_helper_bootstrap_file"
+   check_bootstrap_helper_bootstrap_file="$TEMP_DIR/tor_check_bootstrap_helper_bootstrap_file"
 
    ## {{ bootstrap status
 
