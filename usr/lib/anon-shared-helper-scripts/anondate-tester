@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -x
+
+anondate --has-consensus ${1+"$@"}
+true "exit code: $?"
+true
+
+anondate --current-time-in-valid-range ${1+"$@"}
+true "exit code: $?"
+true
+
+anondate --show-valid-after ${1+"$@"}
+true "exit code: $?"
+true
+
+anondate --show-valid-until ${1+"$@"}
+true "exit code: $?"
+true
+
+anondate --show-middle-range ${1+"$@"}
+true "exit code: $?"
+true
+
+anondate --tor-cert-lifetime-invalid ${1+"$@"}
+true "exit code: $?"
+true
+
+anondate --tor-cert-valid-after ${1+"$@"}
+true "exit code: $?"
+true
+
+true "END"
