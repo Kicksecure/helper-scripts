@@ -4,267 +4,235 @@
 ## Copyright (C) 2014 Patrick Schleizer <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
-# Rationale: Tor needs a somewhat accurate clock to work.
-# If the clock is wrong enough to prevent it from opening circuits,
-# we set the time to the middle of the valid time interval found
-# in the Tor consensus, and we restart it.
-# In any case, we use HTP to ask more accurate time information to
-# a few authenticated HTTPS servers.
-
-. /usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.bsh
-check_tor_bootstrap_helper_variables
-
-[ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
-[ -n "$TOR_LOG" ] || TOR_LOG="/var/run/tor/log"
-[ -n "$TOR_DIR" ] || TOR_DIR="/var/lib/tor"
-[ -n "$TOR_DESCRIPTORS" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
-[ -n "$NEW_TOR_DESCRIPTORS" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"
-[ -n "$TOR_CONSENSUS" ] || TOR_CONSENSUS="${TOR_DIR}/cached-microdesc-consensus"
-[ -n "$TOR_UNVERIFIED_CONSENSUS" ] || TOR_UNVERIFIED_CONSENSUS="${TOR_DIR}/unverified-microdesc-consensus"
-[ -n "$TOR_UNVERIFIED_CONSENSUS_HARDLINK" ] || TOR_UNVERIFIED_CONSENSUS_HARDLINK="${TOR_UNVERIFIED_CONSENSUS}.bak"
-[ -n "$INOTIFY_TIMEOUT" ] || INOTIFY_TIMEOUT="60"
-[ -n "$DATE_RE" ] || DATE_RE='[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]'
-
-tor_control_send() {
-	[ -n "$COOKIE" ] || COOKIE="/var/run/tor/control.authcookie"
-	[ -n "$HEXCOOKIE" ] || HEXCOOKIE="$(xxd -c 32 -g 0 "$COOKIE" | cut -d' ' -f2)"
-	/bin/echo -ne "AUTHENTICATE ${HEXCOOKIE}\r\n${1}\r\nQUIT\r\n" | \
-	    nc 127.0.0.1 "$TOR_CONTROL_PORT" | tr -d "\r"
+variables() {
+   [ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
+   [ -n "$TOR_LOG" ] || TOR_LOG="/var/run/tor/log"
+   [ -n "$TOR_DIR" ] || TOR_DIR="/var/lib/tor"
+   [ -n "$TOR_DESCRIPTORS" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
+   [ -n "$NEW_TOR_DESCRIPTORS" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"
+   [ -n "$TOR_CONSENSUS" ] || TOR_CONSENSUS="${TOR_DIR}/cached-microdesc-consensus"
+   [ -n "$TOR_UNVERIFIED_CONSENSUS" ] || TOR_UNVERIFIED_CONSENSUS="${TOR_DIR}/unverified-microdesc-consensus"
+   [ -n "$DATE_RE" ] || DATE_RE='[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]'
 }
 
-# This function may be dangerous to use. See "Potential Tor bug" below.
-# Only handles GETINFO keys with single-line answers
-tor_control_getinfo() {
-	tor_control_send "GETINFO ${1}" | \
-	    sed -n "s|^250-${1}=\(.*\)$|\1|p"
+parse_cmd_options() {
+   ## Thanks to:
+   ## http://mywiki.wooledge.org/BashFAQ/035
+
+   while :
+   do
+       case $1 in
+           --verbose)
+               echo "$SCRIPTNAME verbose output..."
+               echo "Script running as $(whoami)"
+               set -x
+               true "$0: ${1+"$@"}"
+               shift
+               ;;
+           --has-consensus)
+               has_consensus_="true"
+               shift
+               ;;
+           --current-time-in-valid-range)
+               current_time_in_valid_range_="true"
+               shift
+               ;;
+           --show-valid-after)
+               show_valid_after_="true"
+               shift
+               ;;
+           --show-valid-until)
+               show_valid_until_="true"
+               shift
+               ;;
+           --show-middle-range)
+               show_middle_range_="true"
+               shift
+               ;;
+           --tor-cert-lifetime-invalid)
+               tor_cert_lifetime_invalid_="true"
+               shift
+               ;;
+           --tor-cert-valid-after)
+               tor_cert_valid_after_="true"
+               shift
+               ;;
+           --verified-only)
+              verified_only_="true"
+              shift
+              ;;
+           --prefer-verified)
+              prefer_verified_="true"
+              shift
+              ;;
+           --unverified-only)
+              unverified_only_="true"
+              shift
+              ;;
+           --)
+               shift
+               break
+               ;;
+           -*)
+               echo "$SCRIPTNAME unknown option: $1" >&2
+               exit 111
+               ;;
+           *)
+               break
+               ;;
+       esac
+   done
+
+   ## If there are input files (for example) that follow the options, they
+   ## will remain in the "$@" positional parameters.
+
+   if [ "$verified_only_" = "true" ]; then
+      consensus="$TOR_CONSENSUS"
+   elif [ "$prefer_verified_" = "true" ]; then
+      if [ -e "${TOR_CONSENSUS}" ]; then
+         consensus="$TOR_CONSENSUS"
+      else
+         consensus="$TOR_UNVERIFIED_CONSENSUS"
+      fi
+   elif [ "$unverified_only_" = "true" ]; then
+      consensus="$TOR_UNVERIFIED_CONSENSUS"
+   else
+      consensus="$TOR_CONSENSUS"
+   fi
+
+   if [ "$has_consensus_" = "true" ]; then
+      has_consensus
+      exit "$?"
+   fi
+   if [ "$current_time_in_valid_range_" = "true" ]; then
+      current_time_is_in_valid_range
+      exit "$?"
+   fi
+   if [ "$show_valid_after_" = "true" ]; then
+      show-valid-after
+      exit "$?"
+   fi
+   if [ "$show_valid_until_" = "true" ]; then
+      show-valid-until
+      exit "$?"
+   fi
+   if [ "$show_middle_range_" = "true" ]; then
+      show-middle-range
+      exit "$?"
+   fi
+   if [ "$tor_cert_lifetime_invalid_" = "true" ]; then
+      tor_cert_lifetime_invalid
+      exit "$?"
+   fi
+   if [ "$tor_cert_valid_after_" = "true" ]; then
+      tor_cert_valid_after
+      exit "$?"
+   fi
 }
 
-tor_control_getconf() {
-	tor_control_send "GETCONF ${1}" | \
-            sed -n "s|^250 ${1}=\(.*\)$|\1|p"
-}
-
-tor_control_setconf() {
-	tor_control_send "SETCONF ${1}" >/dev/null
-}
-
-tor_bootstrap_progress() {
-	grep -o "\[notice\] Bootstrapped [[:digit:]]\+%:" ${TOR_LOG} | \
-	    tail -n1 | sed "s|\[notice\] Bootstrapped \([[:digit:]]\+\)%:|\1|"
-}
-
-# Potential Tor bug: it seems like using this version makes Tor get
-# stuck at "Bootstrapped 5%" quite often. Is Tor sensitive to opening
-# control ports and/or issuing "getinfo status/bootstrap-phase" during
-# early bootstrap? Because of this we fallback to greping the log.
-#tor_bootstrap_progress() {
-#	tor_control_getinfo status/bootstrap-phase | \
-#	    sed 's/^.* BOOTSTRAP PROGRESS=\([[:digit:]]\+\) .*$/\1/'
-#}
-
-tor_is_working() {
-	#[ -e $TOR_DESCRIPTORS ] || [ -e $NEW_TOR_DESCRIPTORS ]
-
-	/usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.py "$TOR_CONTROL_HOST" "$TOR_CONTROL_PORT" "$TOR_CONTROL_AUTHENTICATE"
-	if [ "$?" = "100" ]; then
-	   return 0
-	else
-	   return 1
-	fi
-}
-
-tor_append_to_torrc () {
-	echo "${@}" >> "${TOR_RC}"
-}
-
-# Set a (possibly existing) option $1 to $2 in torrc. Shouldn't be
-# used for options that can be set multiple times (e.g. the listener
-# options). Does not support configuration entries split into multiple
-# lines (with the backslash character).
-tor_set_in_torrc () {
-	sed -i "/^${1}\s/d" "${TOR_RC}"
-	tor_append_to_torrc "${1} ${2}"
-}
-
-log() {
-	logger -t time "$@"
+root_check() {
+   if [ "$(id -u)" != "0" ]; then
+      echo "ERROR: Must run as root."
+      exit 112
+   fi
 }
 
 has_consensus() {
-	local files="${TOR_CONSENSUS} ${TOR_UNVERIFIED_CONSENSUS}"
-
-	if [ $# -ge 1 ]; then
-		files="$@"
-	fi
-	grep -qs "^valid-until ${DATE_RE}"'$' ${files}
+   if [ -r "$consensus" ]; then
+      exit 1
+   fi
+   local grep_exit_code="0"
+   grep -qs "^valid-until ${DATE_RE}"'$' $consensus || { grep_exit_code="$?" ; true; };
+   if [ "$grep_exit_code" = "0" ]; then
+      return 0
+   else
+      return 1
+   fi
 }
 
-has_only_unverified_consensus() {
-	[ ! -e "${TOR_CONSENSUS}" ] && has_consensus "${TOR_UNVERIFIED_CONSENSUS}"
+show-valid-after() {
+   vstart="$(sed -n "/^valid-after \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
+   if [ "$show_valid_after_" = "true" ]; then
+      echo "$vstart"
+   fi
 }
 
-wait_for_tor_consensus_helper() {
-	local tries="0"
-	while ! has_consensus && [ "$tries" -lt "5" ]; do
-		inotifywait -q -t 30 -e close_write -e moved_to ${TOR_DIR} || log "timeout"
-		tries="$(( tries + 1 ))"
-	done
-
-	# return some kind of success measurement
-	has_consensus
+show-valid-until() {
+   vend="$(sed -n "/^valid-until \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
+   if [ "$show_valid_until_" = "true" ]; then
+      echo "$vend"
+   fi
 }
 
-wait_for_tor_consensus() {
-	log "Waiting for a Tor consensus file to contain a valid time interval"
-	if ! has_consensus && ! wait_for_tor_consensus_helper; then
-		log "Unsuccessfully waited for Tor consensus, restarting Tor and retrying."
-		service tor restart
-	fi
-	if ! has_consensus && ! wait_for_tor_consensus_helper; then
-		log "Unsuccessfully retried waiting for Tor consensus, aborting."
-	fi
-	if has_consensus; then
-		log "A Tor consensus file now contains a valid time interval."
-	else
-		log "Waited for too long, let's stop waiting for Tor consensus."
-		## TODO: output
-		## "Synchronizing the system's clock" "Could not fetch Tor consensus."
-		return 2
-	fi
+show-middle-range() {
+   show-valid-after
+   show-valid-until
+   vmid="$(date -ud "${vstart} -0130" +'%F %T')" || exit 1
+   if [ "$show_middle_range_" = "true" ]; then
+      echo "$vmid"
+   fi
 }
 
-wait_for_working_tor() {
-	log "Waiting for Tor to be working (i.e. cached descriptors exist)..."
-	while ! tor_is_working; do
-		inotifywait -q -t "${INOTIFY_TIMEOUT}" -e close_write -e moved_to "${TOR_DIR}" || log "timeout"
-	done
-	log "Tor is now working."
-}
+current_time_is_in_valid_range() {
+   show-middle-range
 
-date_points_are_sane() {
-	local vstart="$1"
-	local vend="$2"
+   ## {{ Sanity Test
+   ## Debugging.
+   #vend="2099-09-03 09:41:29"
+   vendchk="$(date -ud "${vstart} -0300" +'%F %T')"
+   if [ ! "${vend}" = "${vendchk}" ]; then
+      echo "ERROR: Unexpected valid-until: [${vend}] is not [${vstart} + 3h]"
+      exit 1
+   fi
+   ## }} Sanity Test
 
-	vendchk="$(date -ud "${vstart} -0300" +'%F %T')"
-	[ "${vend}" = "${vendchk}" ]
-}
+   curdate="$(date -u +'%F %T')"
+   ## Debugging.
+   #curdate="2099-09-03 09:41:29"
 
-time_is_in_valid_tor_range() {
-	local curdate="$1"
-	local vstart="$2"
-
-	vendcons="$(date -ud "${vstart} -0230" +'%F %T')"
-	order="${vstart}
+   vendcons="$(date -ud "${vstart} -0230" +'%F %T')"
+   order="${vstart}
 ${curdate}
 ${vendcons}"
-	ordersrt="$(echo "${order}" | sort)"
+   ordersrt="$(echo "${order}" | sort)"
 
-	[ "${order}" = "${ordersrt}" ]
-}
-
-maybe_set_time_from_tor_consensus() {
-	local consensus="${TOR_CONSENSUS}"
-
-	if has_only_unverified_consensus \
-	   && ln -f "${TOR_UNVERIFIED_CONSENSUS}" "${TOR_UNVERIFIED_CONSENSUS_HARDLINK}"; then
-		consensus="${TOR_UNVERIFIED_CONSENSUS_HARDLINK}"
-		log "We do not have a Tor verified consensus, let's use the unverified one."
-	fi
-
-	log "Waiting for the chosen Tor consensus file to contain a valid time interval..."
-	while ! has_consensus "${consensus}"; do
-		inotifywait -q -t "${INOTIFY_TIMEOUT}" -e close_write -e moved_to "${TOR_DIR}" || log "timeout"
-	done
-	log "The chosen Tor consensus now contains a valid time interval, let's use it."
-
-
-	# Get various date points in Tor's format, and do some sanity checks
-	vstart="$(sed -n "/^valid-after \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})"
-	vend="$(sed -n "/^valid-until \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})"
-	vmid="$(date -ud "${vstart} -0130" +'%F %T')"
-	log "Tor: valid-after=${vstart} | valid-until=${vend}"
-
-	if ! date_points_are_sane "${vstart}" "${vend}"; then
-		log "Unexpected valid-until: [${vend}] is not [${vstart} + 3h]"
-		return
-	fi
-
-	curdate="$(date -u +'%F %T')"
-	log "Current time is ${curdate}"
-
-	if time_is_in_valid_tor_range "${curdate}" "${vstart}"; then
-		log "Current time is in valid Tor range"
-		return
-	fi
-
-	log "Current time is not in valid Tor range, setting to middle of this range: [${vmid}]"
-	date -us "${vmid}" 1>/dev/null
-
-	# Tor is unreliable with picking a circuit after time change
-	service tor restart
-}
-
-tor_cert_valid_after() {
-	# Only print the last = freshest match
-	sed -n 's/^.*certificate lifetime runs from \(.*\) through.*$/\1/p' \
-	    "${TOR_LOG}" | tail -n 1
+   if [ "${order}" = "${ordersrt}" ]; then
+      exit 0
+   else
+      exit 1
+   fi
 }
 
 tor_cert_lifetime_invalid() {
-	# To be sure that we only grep relevant information, we
-	# should delete the log when Tor is started, which we do
-	# in 10-tor.sh.
-	# The log severity will be "warn" if bootstrapping with
-	# authorities and "info" with bridges.
-	grep -q "\[\(warn\|info\)\] Certificate \(not yet valid\|already expired\)\." \
-	    "${TOR_LOG}"
+   ## TODO:
+   ## To be sure that we only grep relevant information, we
+   ## should delete the log when Tor is started, which we do
+   ## TODO:
+   ## in 10-tor.sh.
+
+   ## Example Tor log:
+   ## Sep 03 10:32:59.000 [warn] Certificate already expired. Either their clock is set wrong, or your clock is wrong.
+   ## Sep 03 10:32:59.000 [warn] (certificate lifetime runs from Aug 16 00:00:00 2014 GMT through Jul 29 23:59:59 2015 GMT. Your time is Sep 03 10:32:59 2015 UTC.)
+
+   ## The log severity will be "warn" if bootstrapping with
+   ## authorities and "info" with bridges.
+   grep "\[\(warn\|info\)\] Certificate \(not yet valid\|already expired\)\." "${TOR_LOG}" | tail -n 1
+   if [ "$?" = "0" ]; then
+      return 0
+   else
+      return 1
+   fi
 }
 
-# This check is blocking until Tor reaches either of two states:
-# 1. Tor completes a handshake with an authority (or bridge).
-# 2. Tor fails the handshake with all authorities (or bridges).
-# Since 2 essentially is the negation of 1, one of them will happen,
-# so it won't block forever. Hence we shouldn't need a timeout.
-is_clock_way_off() {
-	log "Checking if system clock is way off"
-	until [ "$(tor_bootstrap_progress)" -gt 10 ]; do
-		if tor_cert_lifetime_invalid; then
-			return 0
-		fi
-		sleep 1 &
-		wait "$!"
-	done
-	return 1
+tor_cert_valid_after() {
+   ## Only print the last = freshest match
+   sed -n 's/^.*certificate lifetime runs from \(.*\) through.*$/\1/p' "${TOR_LOG}" | tail -n 1
+
+   ## Example output:
+   ## Jun 16 00:00:00 2014 GMT
+   ## sudo: timestamp too far in the future: Jun 16 00:00:00 2014 GMT
 }
 
-wait_for_tor_network_enable() {
-	# When the network is obstacled (e.g. we need a bridge) we wait until
-	# Tor Launcher has unset DisableNetwork, since Tor's bootstrapping
-	# won't start until then.
-	if [ "$(tails_netconf)" = "obstacle" ]; then
-		until [ "$(tor_control_getconf DisableNetwork)" = 0 ]; do
-			sleep 1 &
-			wait "$!"
-		done
-	fi
-}
-
-maybe_restart_tor_and_maybe_set_time_from_tor_consensus() {
-	# Delegate time setting to other daemons if Tor connections work
-	if tor_is_working; then
-		log "Tor has already opened a circuit"
-	else
-		# Since Tor 0.2.3.x Tor doesn't download a consensus for
-		# clocks that are more than 30 days in the past or 2 days in
-		# the future.  For such clock skews we set the time to the
-		# authority's cert's valid-after date.
-		if is_clock_way_off; then
-			log "The clock is so badly off that Tor cannot download a consensus. \
-Setting system time to the authority's cert's valid-after date and trying to fetch a consensus again..."
-			date --set="$(tor_cert_valid_after)" > /dev/null
-			service tor reload
-		fi
-		wait_for_tor_consensus
-		maybe_set_time_from_tor_consensus
-	fi
-}
+root_check
+variables
+parse_cmd_options ${1+"$@"}
