@@ -48,11 +48,20 @@ try:
 except ValueError as e:
   print e
   exit_code=255
+except NameError as e:
+  print 'Name error: %s' % e
+  exit_code=255
 except connection.AuthenticationFailure as e:
   print 'Unable to authenticate: %s' % e
   exit_code=255
 except stem.SocketError as e:
   print 'Socket error: %s' % e
+  exit_code=255
+except stem.ProtocolError as e:
+  print 'Protocol error: %s' % e
+  exit_code=255
+except stem.InvalidArguments as e:
+  print 'Invalid Arguments: %s' % e
   exit_code=255
 
 sys.exit(exit_code)
