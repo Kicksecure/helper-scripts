@@ -67,7 +67,7 @@ check_tor_bootstrap_helper_run_helper_script() {
       2>&1 \
       &
    lastpid="$!"
-   wait "$lastpid" || { check_bootstrap_helper_script_exit_code="$?" ; true; }
+   wait "$lastpid" || { check_bootstrap_helper_script_exit_code="$?" ; true; };
 
    if [ -f "$check_bootstrap_helper_bootstrap_file" ]; then
       check_bootstrap_helper_script_output="$(cat "$check_bootstrap_helper_bootstrap_file")"
