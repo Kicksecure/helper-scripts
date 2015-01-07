@@ -6,7 +6,7 @@ Source: anon-shared-helper-scripts
 Section: misc
 Priority: optional
 Maintainer: Patrick Schleizer <adrelanos@riseup.net>
-Build-Depends: debhelper (>= 8), faketime
+Build-Depends: debhelper (>= 9), faketime
 Homepage: https://github.com/Whonix/anon-shared-helper-scripts
 Vcs-Browser: https://github.com/Whonix/anon-shared-helper-scripts
 Vcs-Git: https://github.com/Whonix/anon-shared-helper-scripts.git
