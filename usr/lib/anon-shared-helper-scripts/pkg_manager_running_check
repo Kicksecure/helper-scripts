@@ -17,9 +17,26 @@ check_package_manager_running_helper() {
    unset apt_get_update_pid
 
    if [ ! "$check_apt_get_exit_code" = "0" ]; then
-      package_manager_waiting_msg="A package manager is currently running.
-(\"apt-get dist-upgrade --simulate\" exit code: $check_apt_get_exit_code)
-Waiting for it to finish..."
+      ## package_manager_waiting_msg used by cli-only applications.
+      package_manager_waiting_msg="A package manager (such as apt-get) is currently running. Waiting for it to finish...
+
+If you are not aware of any package mangers running, exit now, find out if there are any issues with dpkg or apt-get. Run in the terminal for example:
+sudo dpkg --audit
+sudo dpkg --configure -a
+sudo apt-get dist-upgrade
+
+Technical Info:
+\"apt-get dist-upgrade --simulate\" exit code: $check_apt_get_exit_code"
+      ## package_manager_waiting_msg_x used applications using msgcollector.
+      package_manager_waiting_msg_x="<p>A package manager (such as <code>apt-get</code>) is currently running. Waiting for it to finish...
+<br></br>
+If you are not aware of any package mangers running, exit now, find out if there are any issues with <code>dpkg</code> or <code>apt-get</code>. Run in the terminal for example:
+<code>sudo dpkg --audit</code>
+<code>sudo dpkg --configure -a</code>
+<code>sudo apt-get dist-upgrade</code>
+<br></br>
+Technical Info:
+\"<code>apt-get dist-upgrade --simulate</code>\" exit code: <code>$check_apt_get_exit_code</code></p>"
    else
       package_manager_waiting_msg="No package manger currently running. \
 You should not see this message. Please report this bug!"
