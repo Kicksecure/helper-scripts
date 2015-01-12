@@ -1,8 +1,6 @@
 #!/bin/bash
 
 check_package_manager_running_helper() {
-   trap "error_handler" ERR
-
    if [ -f "/var/run/package_manager_lock" ]; then
       check_apt_get_exit_code="/var/run/package_manager_lock exists."
       package_manager_waiting_msg="Lock file \

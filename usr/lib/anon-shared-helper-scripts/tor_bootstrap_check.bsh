@@ -5,8 +5,6 @@
 ## See the file COPYING for copying conditions.
 
 check_tor_bootstrap_helper_variables() {
-   trap "error_handler" ERR
-
    if [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
       if [ -d "/usr/share/whonix" ]; then
          if [ "$TOR_CONTROL_HOST" = "" ]; then
@@ -49,8 +47,6 @@ check_tor_bootstrap_helper_variables() {
 }
 
 check_tor_bootstrap_helper_run_helper_script() {
-   trap "error_handler" ERR
-
    if [ "$TOR_BOOTSTRAP_TIME_START" = "" ]; then
       TOR_BOOTSTRAP_TIME_START="$(date +%s)"
    fi
@@ -80,8 +76,6 @@ check_tor_bootstrap_helper_run_helper_script() {
 }
 
 check_tor_bootstrap_helper() {
-   trap "error_handler" ERR
-
    if [ "$TEMP_DIR" = "" ]; then
       error "Variable TEMP_DIR is empty."
    fi

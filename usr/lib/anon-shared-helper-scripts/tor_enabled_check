@@ -5,8 +5,6 @@
 ## See the file COPYING for copying conditions.
 
 check_tor_enabled_do() {
-   trap "error_handler" ERR
-
    ## Skip this test, if not running on Whonix-Gateway.
    if [ ! -e "/usr/share/anon-gw-base-files/gateway" ]; then
       TOR_ENABLED="1"

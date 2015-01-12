@@ -6,13 +6,10 @@
 
 #set -x
 set -o pipefail
+set -e errtrace
 
 SCRIPTNAME="$(basename "$BASH_SOURCE")"
 IDENTIFIER="timesync"
-
-source /usr/lib/anon-shared-helper-scripts/tor_enabled_check
-source /usr/lib/anon-shared-helper-scripts/pkg_manager_running_check
-source /usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.bsh
 
 error_handler() {
    local exit_code="$?"
@@ -23,9 +20,13 @@ exit_code: $exit_code
    ## TODO: log.
 }
 
-te_pe_tb_check() {
-   trap "error_handler" ERR
+trap "error_handler" ERR
 
+source /usr/lib/anon-shared-helper-scripts/tor_enabled_check
+source /usr/lib/anon-shared-helper-scripts/pkg_manager_running_check
+source /usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.bsh
+
+te_pe_tb_check() {
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
       VM="Gateway"
    elif [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
