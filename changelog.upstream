@@ -1,0 +1,373 @@
+commit 9e7c25745fb03bc3639bb88b3280e4a3bed4b872
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Feb 4 00:40:27 2015 +0000
+
+    updated makefile generic to version 1.3
+
+commit cb6d83e1c5eb64712fc17106634fd7c8195c7c9c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Feb 3 23:58:33 2015 +0000
+
+    Added creation of upstream changelog to debian/rules
+
+commit b2270a2e9c8ad17673398ae9801312b865937718
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 15 04:16:59 2015 +0000
+
+    removed unnecessary dependency inotify-tools
+
+commit f617d8f8ed3bffb095d81c239acac22aed152576
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 12 22:18:59 2015 +0000
+
+    refactoring, use errtrace and therefore fewer trap ERR's required - https://phabricator.whonix.org/T48
+
+commit 2f990c32a17982c657f1582aaeba2cd8979e9c4b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 10 13:21:14 2015 +0000
+
+    output
+
+commit b67882103972f19bb8466e79e84432757e0f3e7a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 7 19:33:30 2015 +0000
+
+    bumped compat from 8 to 9
+
+commit c58534c856a2b6bbf5f301fb9723194f183bad1d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 5 19:01:07 2014 +0000
+
+    updated generic makefile
+
+commit b4154010d6cdf2fba2867fc2e20463017534456a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Oct 28 22:35:14 2014 +0000
+
+    makefile: refactoring, avoid using IFS
+
+commit ec6e790b3c9ac91feb0e51ab2a9c782f02533372
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Oct 25 01:58:49 2014 +0000
+
+    makefile:
+    - make debdist; make undebdist
+    - cleanup
+    - refactoring
+
+commit 7b67faef6d189ea1d017ad075bfbbecef9921305
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Oct 23 22:43:00 2014 +0000
+
+    makefile:
+    - new target "make undist", which deletes the upstream tarball
+    - $DISTDIR variable for make (un)dist, which defaults to ".." and can be used to create upstream tarballs in arbitrary locations
+    - refactoring, all function names and global variables now start with "make_" to make the script `source`ing friendly
+    - made `source`able
+
+commit 5064f52f6b624c04a9f638f430a9437e37ee1736
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Oct 20 00:27:48 2014 +0000
+
+    fix
+
+commit 8fd9d20f1e0978049526d348a04b0895e91ef63b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Oct 13 12:36:49 2014 +0000
+
+    readme
+
+commit 54b301673f6aea839b3f0f06c7aeac89d6ed49e6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Sep 28 20:05:01 2014 +0000
+
+    Fixed execution of /etc/cron.weeky/tor as per https://www.whonix.org/forum/index.php/topic,584.0.html, thanks to ir1s (https://www.whonix.org/forum/index.php?action=profile;u=335) for the bug report!
+
+commit dea35c304584ff6de4a1099960b30d783034d255
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Sep 27 18:06:51 2014 +0000
+
+    /usr/lib/anon-shared-helper-scripts/tor_signal_newnym.py use same error handling as /usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.py
+
+commit 2c413d1e30c1ec740f085ae3f5a11c9c88704155
+Merge: 4e96919 268fa66
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Sep 27 18:04:39 2014 +0000
+
+    Merge remote-tracking branch 'troubadoour/master'
+
+commit 4e96919e0bfb1f4db5830cbe055cfffd63a935e1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Sep 27 10:13:39 2014 +0000
+
+    bumped version number
+
+commit 5570ed375e4048a3500fe2e15b42924077561742
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Sep 27 10:13:14 2014 +0000
+
+    added /usr/lib/anon-shared-helper-scripts/tor_signal_newnym.py
+
+commit 268fa666cabc16aefb9025420f52224f0e031d0d
+Author: troubadoour <trobador@riseup.net>
+Date:   Tue Sep 23 20:26:46 2014 +0000
+
+    new exceptions handling
+
+commit d61f0c7f7a5abe2932b40abfc529c85f08c0db57
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Sep 18 16:07:12 2014 +0000
+
+    bumped version number
+
+commit dd5de5fcd62dd1e53a70fc43f0aab4ae49b59f72
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Sep 18 16:06:52 2014 +0000
+
+    work on anondate
+
+commit f0f2614a91166eb37cdf3ef128c0e99e299018e4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 26 15:57:57 2014 +0000
+
+    refactoring
+
+commit 930431a83d079f128029327f89d9c03e8afbb0ad
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 19 18:52:32 2014 +0000
+
+    makefile: added new feature "make deb-chl-bumpup" - Bump upstream version number in debian/changelog.
+
+commit 3c56405de7a1ca11c7b5102145c18d4d39d90dfd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 17 20:54:21 2014 +0000
+
+    Updated debian/changelog.
+
+commit 3941551d1896e6414d66dd058644cc6ac0b96c22
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 17 20:47:24 2014 +0000
+
+    Fixed changelog date.
+
+commit 86b51a6b2521e3b6438bdec0595b22c339177b9d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 17 18:03:22 2014 +0000
+
+    bump version number
+
+commit 78bc8135fbf58a79161c8121e581916cf80a6f5c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 14 13:35:12 2014 +0000
+
+    Implemented make deb-icup: Combination of make deb-pkg, make deb-pkg-install and make deb-pkg-cleanup.
+
+commit 9bfaa769be234502c9bcf1ff1ad27dae9044c689
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jul 28 23:25:40 2014 +0000
+
+    readme
+
+commit 60c948a09bb2b7403d0893f5478bd7ecf3da79f7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jul 27 12:42:24 2014 +0000
+
+    packaging
+
+commit 231581b052e5ab98aaa1b65d5bf1acf9318f4bd7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jul 27 04:01:08 2014 +0000
+
+    packaging
+
+commit 5f133e10cc3c4b5f51ecec0c7dde8dfa28404f6f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 26 15:26:33 2014 +0000
+
+    packaging
+
+commit b37d7e1162d734511f54b35b8868cf16795e95de
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 26 15:16:00 2014 +0000
+
+    packaging: removed build dependency on git, since the .git folder won't be included in the upstream tarball.
+
+commit 5015caaf094964b4ef1dd17231462e719d5ba9c3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 26 14:06:42 2014 +0000
+
+    fix lintian warning
+
+commit edfcc3dfaae13466cea51beb1423cdc3028458c8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 26 14:06:10 2014 +0000
+
+    fix lintian warning
+
+commit 5200af02927b4f4b43f15e9e97545aab545bf362
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jul 24 15:21:25 2014 +0000
+
+    imported tordate from tails as usr/lib/anon-shared-helper-scripts/anondate
+
+commit 952e3d734defa7cb19304edfd9321deb833ef9f9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jul 14 01:35:23 2014 +0000
+
+    fix
+
+commit 9abb5eb6036a90e79b09295111c1752684dac5f9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 12 17:10:58 2014 +0000
+
+    packaging
+
+commit 06b933b221ed1bf46e144c6c7f6abdc95db8fc7c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 12 15:34:13 2014 +0000
+
+    packaging
+
+commit ca209084538b47a5e1ea7d22ea2ee0b22d56cf67
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jul 8 14:18:07 2014 +0000
+
+    fix
+
+commit 8666a3e7bcd19d22c522fa8936f08fdc51c45c33
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jul 7 14:32:06 2014 +0000
+
+    check Tor circuit established; refactoring
+
+commit 3793c349244097fe0f788cb256b1524ccdd67ebf
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jul 6 13:30:49 2014 +0000
+
+    quotes
+
+commit e27c6d08e93eaa14258c1c674fa0a1d422cf8279
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jul 6 13:22:38 2014 +0000
+
+    use $BASH_SOURCE instead of $0
+
+commit 2750f0773a164632df3d92bde9ad5c783ccf35bb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 5 08:09:41 2014 +0000
+
+    Bumped debian revision number to avoid lintian warning "new-package-should-close-itp-bug" so we can use lintian --fail-on-warnings as sanity test.
+
+commit da0cab4c6835e423cddde06bdaec4022639b5ebb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jul 1 16:50:52 2014 +0000
+
+    fix
+
+commit 3539550621d35146636194fa1f01e7f08b82c089
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 30 10:33:21 2014 +0000
+
+    echo output if syntax error
+
+commit 82aea66f9e677d59402c85a672edf3b165c63b0e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 30 10:31:14 2014 +0000
+
+    removed leading spaces
+
+commit 4fd6590c6fba9f8b6d22be40fc995ca774b698fb
+Author: troubadoour <trobador@riseup.net>
+Date:   Mon Jun 30 09:16:08 2014 +0000
+
+    tor_bootstrap_check.py: exit code 255 if invalid number of arguments
+
+commit a3c93052320fdb91765889e289c74040d51fbafb
+Author: troubadoour <trobador@riseup.net>
+Date:   Sun Jun 29 21:45:46 2014 +0000
+
+    tor_bootstrap_check.py exceptions catching
+
+commit 0c407726f8adf336ae4e323cdc80f940cb6d18ba
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jun 27 19:04:21 2014 +0000
+
+    usr/lib/anon-shared-helper-scripts/te_pe_tb_check: deactivated check_package_manager_running_helper, causes problems with whonix-initializer since it locks dpkg
+
+commit 1ef556de803667e652c26c4da91adb9984d2fbed
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jun 24 15:45:09 2014 +0000
+
+    added debian epoch; added dotglob
+
+commit 6db20f5433918081548b78e9d18883a8d4276155
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 11 23:37:02 2014 +0000
+
+    packaging
+
+commit 452e05d7d90f493d6562f96a07ea9ca95f171ed2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 11 15:21:20 2014 +0000
+
+    .
+
+commit 2d903a90768daad6bc1e8ccdb576f9a9b50dc127
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jun 10 14:12:43 2014 +0000
+
+    update IP as per https://www.whonix.org/forum/index.php/topic,107.0.html
+
+commit c8790a9abe8d11615df9803d176cf8bfae3fdb95
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jun 3 18:27:22 2014 +0000
+
+    readme
+
+commit 6c3f34e7b800909af800a978b9aa9f418242538b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 2 14:34:32 2014 +0000
+
+    packaging; let tor_bootstrap_check.bsh set tor_bootstrap_timeout_type
+
+commit e24eb2cde91cc9a23db686597d995adf3aba368e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 2 11:05:41 2014 +0000
+
+    fixed #1
+
+commit d54c19151af0944ed3f5f63d408891ba9972106a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 1 23:36:30 2014 +0000
+
+    work on #1
+
+commit 9bc033c0113022f0d66fc4c990b98f472d37996a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 1 23:27:45 2014 +0000
+
+    work on #1
+
+commit c8ff325def9751f9d3da4e7d1fc03580fe476cdb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 1 23:19:27 2014 +0000
+
+    work on #1
+
+commit 8948090e1fcea2bb66b315fc8653b2e312057f88
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 1 15:38:28 2014 +0000
+
+    readme
+
+commit c01366eb2bdc10f57a68c5f1c6f5fa6dac56b3e0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 1 12:24:10 2014 +0000
+
+    packaging
+
+commit effc55c0065601cb7a2aa0113a808ee2319d15d7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat May 31 14:00:48 2014 +0000
+
+    initial import from https://github.com/Whonix/Whonix
