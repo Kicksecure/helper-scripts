@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 9), faketime, genmkfile
 Homepage: https://github.com/Whonix/anon-shared-helper-scripts
 Vcs-Browser: https://github.com/Whonix/anon-shared-helper-scripts
 Vcs-Git: https://github.com/Whonix/anon-shared-helper-scripts.git
-Standards-Version: 3.9.4
+Standards-Version: 3.9.6
 
 Package: anon-shared-helper-scripts
 Architecture: all
