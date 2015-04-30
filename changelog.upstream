@@ -1,3 +1,33 @@
+commit 2724a081af69cf5393c5f1d02b1c40345c9aa7e1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 28 16:25:16 2015 +0000
+
+    replaced dependency 'python-support (>= 0.90)' with dh-python to fix lintian warning
+
+commit 62c2f0252393c561cf3e0fe7356b10e2276ee238
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 28 13:43:03 2015 +0000
+
+    added debian/source/lintian-overrides with debian-watch-may-check-gpg-signature to fix lintian warning - https://phabricator.whonix.org/T277
+
+commit 7c1b19b41e16af26cb1f632192d484003775dfdc
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Apr 27 14:03:55 2015 +0000
+
+    lintian warning copyright fix
+
+commit 69f46139ad18f860381f7d854c46e79e38d20c1d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Apr 26 23:15:49 2015 +0000
+
+    packaging, bumped Standards-Version from 3.9.4 to 3.9.6 for jessie support
+
+commit 9d382765c738fe2eb20431050c44236ed5e08d32
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 17:41:16 2015 +0000
+
+    bumped changelog version
+
 commit 793790397f3d11a7b95bf9533d92cb17eb4652a9
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Apr 2 18:41:00 2015 +0000
