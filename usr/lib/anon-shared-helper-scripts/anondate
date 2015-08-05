@@ -4,6 +4,8 @@
 ## Copyright (C) 2014 Patrick Schleizer <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+set -o pipefail
+
 variables() {
    [ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
    [ -n "$TOR_LOG" ] || TOR_LOG="/var/run/tor/log"
