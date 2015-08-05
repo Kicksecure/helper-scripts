@@ -128,6 +128,9 @@ parse_cmd_options() {
       tor_cert_valid_after
       exit "$?"
    fi
+
+   echo "No option chosen." 2>&1
+   exit 1
 }
 
 root_check() {
