@@ -143,11 +143,11 @@ root_check() {
 }
 
 has_consensus() {
-   if [ -r "$consensus" ]; then
-      exit 1
+   if [ ! -r "$consensus" ]; then
+      exit 4
    fi
    local grep_exit_code="0"
-   grep -qs "^valid-until ${DATE_RE}"'$' $consensus || { grep_exit_code="$?" ; true; };
+   grep -qs "^valid-until ${DATE_RE}"'$' "$consensus" || { grep_exit_code="$?" ; true; };
    if [ "$grep_exit_code" = "0" ]; then
       return 0
    else
@@ -209,6 +209,10 @@ ${vendcons}"
 }
 
 tor_cert_lifetime_invalid() {
+   if [ ! -r "$TOR_LOG" ]; then
+      exit 3
+   fi
+
    ## TODO:
    ## To be sure that we only grep relevant information, we
    ## should delete the log when Tor is started, which we do
@@ -230,6 +234,10 @@ tor_cert_lifetime_invalid() {
 }
 
 tor_cert_valid_after() {
+   if [ ! -r "$TOR_LOG" ]; then
+      exit 3
+   fi
+
    ## Only print the last = freshest match
    sed -n 's/^.*certificate lifetime runs from \(.*\) through.*$/\1/p' "${TOR_LOG}" | tail -n 1
 

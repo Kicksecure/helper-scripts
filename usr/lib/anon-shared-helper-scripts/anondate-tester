@@ -1,33 +1,22 @@
 #!/bin/bash
 
-set -x
+export TOR_LOG="/var/log/tor/log"
 
-anondate --has-consensus ${1+"$@"}
-true "exit code: $?"
-true
+cmd_item_list=(
+"--has-consensus"
+"--current-time-in-valid-range"
+"--show-valid-after"
+"--show-valid-until"
+"--show-middle-range"
+"--tor-cert-lifetime-invalid"
+"--tor-cert-valid-after"
+)
 
-anondate --current-time-in-valid-range ${1+"$@"}
-true "exit code: $?"
-true
-
-anondate --show-valid-after ${1+"$@"}
-true "exit code: $?"
-true
-
-anondate --show-valid-until ${1+"$@"}
-true "exit code: $?"
-true
-
-anondate --show-middle-range ${1+"$@"}
-true "exit code: $?"
-true
-
-anondate --tor-cert-lifetime-invalid ${1+"$@"}
-true "exit code: $?"
-true
-
-anondate --tor-cert-valid-after ${1+"$@"}
-true "exit code: $?"
-true
-
-true "END"
+for cmd_item in ${cmd_item_list[@]} ; do
+   echo "cmd_item: /usr/lib/anon-shared-helper-scripts/anondate $cmd_item ${1+"$@"}"
+   output="$(/usr/lib/anon-shared-helper-scripts/anondate $cmd_item ${1+"$@"})"
+   exit_code="$?"
+   echo "output: $output"
+   echo "exit_code: $exit_code"
+   echo "----------"
+done
