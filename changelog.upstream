@@ -1,3 +1,33 @@
+commit a9f4d52bc1d6328723bbaa50646a0ae9da17a2eb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 21 15:57:22 2015 +0000
+
+    fix
+
+commit 55229d4211dedb9992b6c056b2cbb5666712d118
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 16 01:04:57 2015 +0000
+
+    work on anondate
+
+commit dca443b0cd5a9ee968dcf50905270a5f71e7b939
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 6 00:31:53 2015 +0200
+
+    added 'set -o pipefail' so --tor-cert-lifetime-invalid and --tor-cert-valid-after would exit non-zero in case Tor's log does not exist
+
+commit 3e63e0992c12b152558ee9e836dbf185e44eac1f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 5 17:53:51 2015 +0200
+
+    anondate: exit 1 when no command line parameters are given
+
+commit a8dd7e3d6af95b964c8937ecd0a11e50fd045117
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 3 14:59:14 2015 +0000
+
+    bumped changelog version
+
 commit 898aeb9f7763aa056026a7f40249f8bb379ba615
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Apr 30 17:55:54 2015 +0000
