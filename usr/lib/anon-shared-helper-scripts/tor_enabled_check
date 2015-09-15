@@ -11,6 +11,16 @@ check_tor_enabled_do() {
       return 0
    fi
 
+   ## Skip this test, if running in Qubes TemplateVM.
+   if command -v qubesdb-read >/dev/null 2>&1 ; then
+      local qubes_vm_type
+      qubes_vm_type="$(qubesdb-read /qubes-vm-type)" || true
+      if [ "$qubes_vm_type" = "TemplateVM" ]; then
+         TOR_ENABLED="1"
+         return 0
+      fi
+   fi
+
    if [ ! -e "/etc/tor/torrc" ]; then
       error "check_tor_enabled: file /etc/tor/torrc does not exist."
       TOR_ENABLED="0"
