@@ -9,39 +9,27 @@ check_tor_bootstrap_helper_variables() {
       if command -v qubesdb-read >/dev/null 2>&1 ; then
          local qubes_vm_type
          qubes_vm_type="$(qubesdb-read /qubes-vm-type)" || true
-         if [ "$qubes_vm_type" = "TemplateVM" ]; then
+         if [ "$qubes_vm_type" = "TemplateVM" ] || [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
             TOR_CONTROL_HOST="$(qubesdb-read /qubes-gateway)"
-         fi
-         if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
-            TOR_CONTROL_AUTHENTICATE="0"
-         fi
-         if [ "$TOR_CONTROL_PORT" = "" ]; then
-            TOR_CONTROL_PORT="9052"
+            if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
+               TOR_CONTROL_AUTHENTICATE="0"
+            fi
+            if [ "$TOR_CONTROL_PORT" = "" ]; then
+               TOR_CONTROL_PORT="9052"
+            fi
          fi
       fi
    fi
 
    if [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
-      if [ -d "/usr/share/whonix" ]; then
-         if [ "$TOR_CONTROL_HOST" = "" ]; then
-            TOR_CONTROL_HOST="10.152.152.10"
-         fi
-         if [ "$TOR_CONTROL_PORT" = "" ]; then
-            TOR_CONTROL_PORT="9052"
-         fi
-         if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
-            TOR_CONTROL_AUTHENTICATE="0"
-         fi
-      else
-         if [ "$TOR_CONTROL_HOST" = "" ]; then
-            TOR_CONTROL_HOST="10.152.152.10"
-         fi
-         if [ "$TOR_CONTROL_PORT" = "" ]; then
-            TOR_CONTROL_PORT="9052"
-         fi
-         if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
-            TOR_CONTROL_AUTHENTICATE="0"
-         fi
+      if [ "$TOR_CONTROL_HOST" = "" ]; then
+         TOR_CONTROL_HOST="10.152.152.10"
+      fi
+      if [ "$TOR_CONTROL_PORT" = "" ]; then
+         TOR_CONTROL_PORT="9052"
+      fi
+      if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
+         TOR_CONTROL_AUTHENTICATE="0"
       fi
    fi
 
