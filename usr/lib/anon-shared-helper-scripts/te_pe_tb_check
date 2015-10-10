@@ -90,35 +90,35 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
 
    if [ "$tor_bootstrap_percent" = "254" ]; then
       local MSG="Tor Bootstrap Result: \
-ERROR ($tor_bootstrap_percent). Please report this bug!"
+<b>ERROR ($tor_bootstrap_percent).</b><br> Please report this bug!"
    elif [ "$tor_bootstrap_percent" = "255" ]; then
       if [ "$VM" = "Gateway" ]; then
          local MSG="Tor Bootstrap Result: \
-Tor's Control Port could not be reached. \
+<b>Tor's Control Port could not be reached.</b><br> \
 Please report this bug!"
       elif [ "$VM" = "Workstation" ]; then
          if [ -d /usr/share/whonix ]; then
             local MSG="Tor Bootstrap Result: \
-Tor's Control Port could not be reached. \
-Did you start Gateway beforehand? \
-Please run whonixcheck on Gateway."
+<b>Tor's Control Port could not be reached.</b><br> \
+<br>Did you start Gateway beforehand? \
+<br>Please run whonixcheck on Gateway."
          else
             local MSG="Tor Bootstrap Result: \
-Tor's Control Port could not be reached. \
-Did you start Gateway beforehand?"
+<b>Tor's Control Port could not be reached.</b><br> \
+<br>Did you start Gateway beforehand?"
          fi
       else
          if [ -d /usr/share/whonix ]; then
             local MSG="Tor Bootstrap Result: \
-Tor's Control Port could not be reached. \
-Did you start Gateway beforehand? \
-Please run whonixcheck on Gateway.
-$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
+<b>Tor's Control Port could not be reached.</b><br> \
+<br>Did you start Gateway beforehand? \
+<br>Please run whonixcheck on Gateway.
+<br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
          else
             local MSG="Tor Bootstrap Result: \
-Tor's Control Port could not be reached. \
-Did you start Gateway beforehand?
-$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
+<b>Tor's Control Port could not be reached.</b><br> \
+<br>Did you start Gateway beforehand?
+<br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
          fi
       fi
    elif [ "$tor_bootstrap_percent" = "100" ]; then
