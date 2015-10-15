@@ -89,33 +89,33 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
    ## - 137 if needed to use kill.
 
    if [ "$tor_bootstrap_percent" = "254" ]; then
-      local MSG="Prerequisite check:<br>Tor Bootstrap Result: \
+      local MSG="Tor Bootstrap Result: \
 <b>ERROR ($tor_bootstrap_percent).</b><br> Please report this bug!"
    elif [ "$tor_bootstrap_percent" = "255" ]; then
       if [ "$VM" = "Gateway" ]; then
-         local MSG="Prerequisite check:<br>Tor Bootstrap Result: \
+         local MSG="Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 Please report this bug!"
       elif [ "$VM" = "Workstation" ]; then
          if [ -d /usr/share/whonix ]; then
-            local MSG="Prerequisite check:<br>Tor Bootstrap Result: \
+            local MSG="Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand? \
 <br>Please run whonixcheck on Gateway."
          else
-            local MSG="Prerequisite check:<br>Tor Bootstrap Result: \
+            local MSG="Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand?"
          fi
       else
          if [ -d /usr/share/whonix ]; then
-            local MSG="Prerequisite check:<br>Tor Bootstrap Result: \
+            local MSG="Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand? \
 <br>Please run whonixcheck on Gateway.
 <br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
          else
-            local MSG="Prerequisite check:<br>Tor Bootstrap Result: \
+            local MSG="Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand?
 <br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
@@ -125,7 +125,7 @@ Please report this bug!"
       ## Only when manually testing this script using bash -x.
       local MSG="Tor fully bootstrapped."
    else
-      local MSG="Prerequisite check:<br>Tor is not yet fully bootstrapped. $tor_bootstrap_percent % done. Tor reports: $tor_bootstrap_status"
+      local MSG="Tor is not yet fully bootstrapped. $tor_bootstrap_percent % done. Tor reports: $tor_bootstrap_status"
    fi
 
    if [ "$tor_bootstrap_percent" = "100" ]; then
