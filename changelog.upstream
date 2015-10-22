@@ -1,3 +1,59 @@
+commit 9a540ddde2c6ac808a3f885ef42b4587505d9a9b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Oct 17 17:20:59 2015 +0000
+
+    fix, set TOR_CONTROL_HOST="127.0.0.1" if Qubes NetVM is set to 'none'
+
+commit 9fc5f7ce16c0f497fc7e7da787f4a391d499604e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Oct 17 17:15:46 2015 +0000
+
+    comment
+
+commit deaf05221fbb203c70f4c7663a89d11caa3a7301
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Oct 17 14:12:43 2015 +0000
+
+    added usr/lib/anon-shared-helper-scripts/settings_echo script
+
+commit 18807e4395642515a35a5393cd4d2d3d3cdfee2a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Oct 8 00:26:23 2015 +0000
+
+    usr/lib/anon-shared-helper-scripts/te_pe_tb_check: not only check if Tor bootstrap reached 100%, but also if a Tor circuit has actually been established
+
+commit 08c000077948404ae2b3cc9528fe00a2f05d8b7c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Sep 16 12:24:02 2015 +0000
+
+    usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.bsh: native Qubes support
+
+commit 01c4d9b92f728241ed12fcfef93690c7aa807ae2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Sep 15 22:30:51 2015 +0000
+
+    added support for Qubes-Whonix-Gateway TemplateVM
+
+commit 3b46ef425ea63b9812a3bb3c2d2cb8cd15f35d94
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Aug 29 18:00:40 2015 +0000
+
+    read -r
+
+commit 5312244dea32a48838f735771b75a1bd0d14fa56
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Aug 29 17:50:44 2015 +0000
+
+    Fixed Tor enabled detection code in case newline at the end of /etc/tor/torrc is missing.
+    Thanks for hectar for reporting this bug.
+    Thanks to Jonathan Leffler for his answer on http://stackoverflow.com/a/12916758/2605155.
+
+commit 3b91372e79ba704737b81405d5c405771e00c061
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 25 14:07:44 2015 +0000
+
+    bumped changelog version
+
 commit 67584c8395cb9e3c9b8dc0d398185ba72342bb96
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Aug 24 17:47:13 2015 +0000
