@@ -47,7 +47,7 @@ te_pe_tb_check() {
       true
    else
       if [ -d /usr/share/whonix ]; then
-         echo "Tor is disabled. Please enable Tor using whonixsetup. \
+         echo "<b>Tor is disabled.</b> Please enable Tor using whonixsetup.<br> \
 Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Terminal: sudo whonixsetup"
       else
          echo "Tor is disabled. Please enable Tor in /etc/tor/torrc."
@@ -125,7 +125,7 @@ Please report this bug!"
       ## Only when manually testing this script using bash -x.
       local MSG="Tor fully bootstrapped."
    else
-      local MSG="Tor is not yet fully bootstrapped. $tor_bootstrap_percent % done. Tor reports: $tor_bootstrap_status"
+      local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_bootstrap_percent % done.<br>Tor reports: $tor_bootstrap_status"
    fi
 
    if [ "$tor_bootstrap_percent" = "100" ]; then
