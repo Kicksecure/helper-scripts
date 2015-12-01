@@ -12,6 +12,7 @@ source /usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.bsh
 check_tor_bootstrap_helper_variables
 
 echo "\
+GATEWAY_IP=\"$TOR_CONTROL_HOST\"
 TOR_CONTROL_HOST=\"$TOR_CONTROL_HOST\"
 TOR_CONTROL_AUTHENTICATE=\"$TOR_CONTROL_AUTHENTICATE\"
 TOR_CONTROL_PORT=\"$TOR_CONTROL_PORT\""
