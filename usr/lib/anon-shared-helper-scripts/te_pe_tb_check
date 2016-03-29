@@ -46,7 +46,7 @@ te_pe_tb_check() {
       ## Ok.
       true
    else
-      if [ -d /usr/share/whonix ]; then
+      if [ -f /usr/share/whonix/marker ]; then
          echo "<b>Tor is disabled.</b> Please enable Tor using whonixsetup.<br> \
 Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Terminal: sudo whonixsetup"
       else
@@ -97,7 +97,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
 <b>Tor's Control Port could not be reached.</b><br> \
 Please report this bug!"
       elif [ "$VM" = "Workstation" ]; then
-         if [ -d /usr/share/whonix ]; then
+         if [ -f /usr/share/whonix/marker ]; then
             local MSG="Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand? \
@@ -108,7 +108,7 @@ Please report this bug!"
 <br>Did you start Gateway beforehand?"
          fi
       else
-         if [ -d /usr/share/whonix ]; then
+         if [ -f /usr/share/whonix/marker ]; then
             local MSG="Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand? \
