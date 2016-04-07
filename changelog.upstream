@@ -1,3 +1,53 @@
+commit 084215f21b7e666462c85fbcaf09ec044b21d278
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Mar 29 22:51:18 2016 +0000
+
+    use more appropriate marker file /usr/share/whonix/marker
+
+commit d6022d40f99d260a9dc935b6b66d70b3164f1744
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 11 01:38:50 2015 +0000
+
+    fix
+
+commit 5ea968ad328e22ddcb5970481d10802228dbfc43
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 1 21:23:47 2015 +0000
+
+    introduced GATEWAY_IP in settings_echo
+
+commit ac7aad66fd95e9927855cf1eab9adc1e37af9153
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 1 21:17:41 2015 +0000
+
+    unset variable TOR_CONTROL_HOST_ERROR on successful re-run
+
+commit 6c091de9b7bf2fd43584df0b3674cc3edbadf94b
+Merge: d7041b4 646f4c3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Nov 20 17:25:15 2015 +0000
+
+    Merge remote-tracking branch 'troubadoour/master'
+
+commit 646f4c3b80712cecbf2fc1fa7399620131286b95
+Author: troubadoour <trobador@riseup.net>
+Date:   Sat Oct 24 16:10:46 2015 +0000
+
+    HTML
+
+commit d7041b4aa1ffe19f13dc70e06c0da29024aad82b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Oct 22 23:12:32 2015 +0000
+
+    bumped changelog version
+
+commit f6527fd48aef4afb2b111b2f6e3752ad8825767b
+Merge: a589af6 9a540dd
+Author: troubadoour <trobador@riseup.net>
+Date:   Sat Oct 17 18:39:32 2015 +0000
+
+    Merge remote-tracking branch 'origin/master'
+
 commit 9a540ddde2c6ac808a3f885ef42b4587505d9a9b
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Oct 17 17:20:59 2015 +0000
@@ -15,6 +65,24 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Oct 17 14:12:43 2015 +0000
 
     added usr/lib/anon-shared-helper-scripts/settings_echo script
+
+commit a589af6cb6671333ccbb8ce8fe8586381c511976
+Author: troubadoour <trobador@riseup.net>
+Date:   Thu Oct 15 20:30:03 2015 +0000
+
+    remove "Prerequisite check" header in messages
+
+commit 9428ed0a3ec436d4dd49c7728d9b246d2f48e589
+Author: troubadoour <trobador@riseup.net>
+Date:   Wed Oct 14 19:01:45 2015 +0000
+
+    messages begin with "Prerequisite check:>
+
+commit c17e562353bd9a60ba6186fc937771891a857ad0
+Author: troubadoour <trobador@riseup.net>
+Date:   Sat Oct 10 21:03:47 2015 +0000
+
+    te_pe_tb_check: HTML in messages
 
 commit 18807e4395642515a35a5393cd4d2d3d3cdfee2a
 Author: Patrick Schleizer <adrelanos@riseup.net>
