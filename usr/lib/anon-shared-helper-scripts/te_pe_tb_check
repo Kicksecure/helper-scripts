@@ -8,9 +8,6 @@
 set -o pipefail
 set -e errtrace
 
-SCRIPTNAME="$(basename "$BASH_SOURCE")"
-IDENTIFIER="timesync"
-
 error_handler() {
    local exit_code="$?"
    local MSG="\
