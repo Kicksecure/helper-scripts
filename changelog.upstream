@@ -1,3 +1,15 @@
+commit b8da9d261763cf94e82430a48526d761b76f5313
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Apr 20 04:25:24 2016 +0000
+
+    cleanup, variables SCRIPTNAME and identifier IDENTIFIER not required, removed
+
+commit c4cb3d784e91fb25ac8dae2c063b24879b3f437e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 7 22:54:28 2016 +0000
+
+    bumped changelog version
+
 commit 084215f21b7e666462c85fbcaf09ec044b21d278
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Mar 29 22:51:18 2016 +0000
