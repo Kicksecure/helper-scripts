@@ -58,7 +58,7 @@ check_tor_bootstrap_helper_variables() {
 
    if [ "$GATEWAY_IP" = "" ]; then
       ## For now, it is always equal.
-      GATEWAY_IP="$TOR_CONTROL_HOST_TEMP"
+      GATEWAY_IP="$TOR_CONTROL_HOST"
    fi
 }
 
