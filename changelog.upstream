@@ -1,3 +1,22 @@
+commit e9d39508851abed71934d1ede14883da54e10bbe
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu May 12 17:04:07 2016 +0200
+
+    fixed gateway ip/port detection
+    
+    no longer setting variable TOR_CONTROL_HOST to avoid conflicting with the
+    variable used by Tor Browser - use GATEWAY_IP instead
+    
+    renamed variables to avoid conflicts:
+    - TOR_CONTROL_AUTHENTICATE -> gateway_control_authenticate
+    - TOR_CONTROL_PORT -> gateway_control_port
+
+commit 4199688fc54bd983b6dcb6045175045fd293c587
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed May 4 22:03:23 2016 +0000
+
+    bumped changelog version
+
 commit 0a056fe13548f504fddcd6657e973b963ec4b042
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon May 2 22:59:35 2016 +0200
