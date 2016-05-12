@@ -10,55 +10,49 @@ check_tor_bootstrap_helper_variables() {
       qubes_vm_type="$(qubesdb-read /qubes-vm-type)" || true
       if [ "$qubes_vm_type" = "TemplateVM" ] || [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
          ## 'qubesdb-read /qubes-gateway' could fail if NetVM is set to 'none'.
-         TOR_CONTROL_HOST_ERROR=""
-         qubesdb_read_qubes_gateway_result="$(qubesdb-read /qubes-gateway 2>/dev/null)" || { TOR_CONTROL_HOST_ERROR="qubesdb_read_failed" ; qubesdb_read_qubes_gateway_result="127.0.0.1" ; };
          if [ "$GATEWAY_IP" = "" ]; then
-            ## For now, it is always equal.
+            gateway_ip_error=""
+            qubesdb_read_qubes_gateway_result="$(qubesdb-read /qubes-gateway 2>/dev/null)" || { gateway_ip_error="qubesdb_read_failed" ; qubesdb_read_qubes_gateway_result="127.0.0.1" ; };
             GATEWAY_IP="$qubesdb_read_qubes_gateway_result"
          fi
-         if [ "$TOR_CONTROL_HOST" = "" ]; then
-            TOR_CONTROL_HOST="$qubesdb_read_qubes_gateway_result"
+         if [ "$gateway_control_authenticate" = "" ]; then
+            gateway_control_authenticate="0"
          fi
-         if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
-            TOR_CONTROL_AUTHENTICATE="0"
-         fi
-         if [ "$TOR_CONTROL_PORT" = "" ]; then
-            TOR_CONTROL_PORT="9052"
+         if [ "$gateway_control_port" = "" ]; then
+            gateway_control_port="9052"
          fi
       fi
    fi
 
    if [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
-      if [ "$TOR_CONTROL_HOST" = "" ]; then
-         TOR_CONTROL_HOST="10.152.152.10"
+      if [ "$GATEWAY_IP" = "" ]; then
+         GATEWAY_IP="10.152.152.10"
       fi
-      if [ "$TOR_CONTROL_PORT" = "" ]; then
-         TOR_CONTROL_PORT="9052"
+      if [ "$gateway_control_port" = "" ]; then
+         gateway_control_port="9052"
       fi
-      if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
-         TOR_CONTROL_AUTHENTICATE="0"
+      if [ "$gateway_control_authenticate" = "" ]; then
+         gateway_control_authenticate="0"
       fi
    fi
 
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-      if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
-         TOR_CONTROL_AUTHENTICATE="1"
+      if [ "$GATEWAY_IP" = "" ]; then
+         GATEWAY_IP="127.0.0.1"
+      fi
+      if [ "$gateway_control_authenticate" = "" ]; then
+         gateway_control_authenticate="1"
       fi
    fi
 
-   if [ "$TOR_CONTROL_HOST" = "" ]; then
-      TOR_CONTROL_HOST="127.0.0.1"
+   if [ "$gateway_control_port" = "" ]; then
+      gateway_control_port="9051"
    fi
-   if [ "$TOR_CONTROL_PORT" = "" ]; then
-      TOR_CONTROL_PORT="9051"
+   if [ "$gateway_control_authenticate" = "" ]; then
+      gateway_control_authenticate="0"
    fi
-   if [ "$TOR_CONTROL_AUTHENTICATE" = "" ]; then
-      TOR_CONTROL_AUTHENTICATE="0"
-   fi
-
    if [ "$GATEWAY_IP" = "" ]; then
-      ## For now, it is always equal.
-      GATEWAY_IP="$TOR_CONTROL_HOST"
+      GATEWAY_IP="127.0.0.1"
    fi
 }
 
@@ -74,7 +68,7 @@ check_tor_bootstrap_helper_run_helper_script() {
    timeout \
       --kill-after="$check_tor_bootstrap_helper_kill_after" \
       "$check_tor_bootstrap_helper_timeout_after" \
-      "$check_bootstrap_helper_script" "$TOR_CONTROL_HOST" "$TOR_CONTROL_PORT" "$TOR_CONTROL_AUTHENTICATE" \
+      "$check_bootstrap_helper_script" "$GATEWAY_IP" "$gateway_control_port" "$gateway_control_authenticate" \
       > "$check_bootstrap_helper_bootstrap_file" \
       2>&1 \
       &

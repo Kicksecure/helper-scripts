@@ -13,6 +13,5 @@ check_tor_bootstrap_helper_variables
 
 echo "\
 GATEWAY_IP=\"$GATEWAY_IP\"
-TOR_CONTROL_HOST=\"$TOR_CONTROL_HOST\"
-TOR_CONTROL_AUTHENTICATE=\"$TOR_CONTROL_AUTHENTICATE\"
-TOR_CONTROL_PORT=\"$TOR_CONTROL_PORT\""
+gateway_control_authenticate=\"$gateway_control_authenticate\"
+gateway_control_port=\"$gateway_control_port\""
