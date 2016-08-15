@@ -71,6 +71,14 @@ parse_cmd_options() {
               unverified_only_="true"
               shift
               ;;
+           --user-permission)
+              user_permission_="true"
+              shift
+              ;;
+           --group-permission)
+              group_permission_="true"
+              shift
+              ;;
            --)
                shift
                break
@@ -128,6 +136,14 @@ parse_cmd_options() {
    fi
    if [ "$tor_cert_valid_after_" = "true" ]; then
       tor_cert_valid_after
+      exit "$?"
+   fi
+   if [ "$user_permission_" = "true" ]; then
+      user_permission
+      exit "$?"
+   fi
+   if [ "$group_permission_" = "true" ]; then
+      group_permission
       exit "$?"
    fi
 
@@ -244,6 +260,14 @@ tor_cert_valid_after() {
    ## Example output:
    ## Jun 16 00:00:00 2014 GMT
    ## sudo: timestamp too far in the future: Jun 16 00:00:00 2014 GMT
+}
+
+user_permission() {
+   stat -c "%U" "$consensus"
+}
+
+group_permission() {
+   stat -c "%G" "$consensus"
 }
 
 root_check
