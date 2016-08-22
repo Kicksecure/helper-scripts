@@ -57,6 +57,16 @@ check_tor_bootstrap_helper_variables() {
 }
 
 check_tor_bootstrap_helper_run_helper_script() {
+   if [ "$TEMP_DIR" = "" ]; then
+      error "Variable TEMP_DIR is empty."
+   fi
+
+   check_tor_bootstrap_helper_variables
+
+   check_tor_bootstrap_helper_kill_after="5s"
+   check_tor_bootstrap_helper_timeout_after="10s"
+   check_bootstrap_helper_bootstrap_file="$TEMP_DIR/tor_check_bootstrap_helper_bootstrap_file"
+
    if [ "$TOR_BOOTSTRAP_TIME_START" = "" ]; then
       TOR_BOOTSTRAP_TIME_START="$(date +%s)"
    fi
@@ -86,18 +96,11 @@ check_tor_bootstrap_helper_run_helper_script() {
 }
 
 check_tor_bootstrap_helper() {
-   if [ "$TEMP_DIR" = "" ]; then
-      error "Variable TEMP_DIR is empty."
-   fi
+   check_tor_bootstrap_status
+   check_tor_circuit_established
+}
 
-   check_tor_bootstrap_helper_variables
-
-   check_tor_bootstrap_helper_kill_after="5s"
-   check_tor_bootstrap_helper_timeout_after="10s"
-   check_bootstrap_helper_bootstrap_file="$TEMP_DIR/tor_check_bootstrap_helper_bootstrap_file"
-
-   ## {{ bootstrap status
-
+check_tor_bootstrap_status() {
    check_bootstrap_helper_script="/usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.py"
 
    ## sets: check_bootstrap_helper_script_exit_code
@@ -106,6 +109,7 @@ check_tor_bootstrap_helper() {
 
    tor_bootstrap_percent="$check_bootstrap_helper_script_exit_code"
    tor_bootstrap_status="$check_bootstrap_helper_script_output"
+
    ## `timeout` returns:
    ## - 124 if sigterm was sufficient
    ## - 137 if needed to use kill.
@@ -116,12 +120,13 @@ check_tor_bootstrap_helper() {
    else
       tor_bootstrap_timeout_type="none"
    fi
+}
 
-   ## }}
-
-   ## {{ circuit established
-
+check_tor_circuit_established() {
    check_bootstrap_helper_script="/usr/lib/anon-shared-helper-scripts/tor_circuit_established_check.py"
+
+   ## sets: check_bootstrap_helper_script_exit_code
+   ## sets: check_bootstrap_helper_script_output
    check_tor_bootstrap_helper_run_helper_script
 
    tor_circuit_established_check_exit_code="$check_bootstrap_helper_script_exit_code"
@@ -137,6 +142,4 @@ check_tor_bootstrap_helper() {
       tor_circuit_established="0"
       tor_circuit_established_word="not established"
    fi
-
-   ## }}
 }
