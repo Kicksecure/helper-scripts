@@ -100,10 +100,8 @@ check_tor_bootstrap_helper() {
 
    check_bootstrap_helper_script="/usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.py"
 
-   ## Sometimes it does not work on the first run. Small hack.
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
-   #check_tor_bootstrap_helper_run_helper_script
    check_tor_bootstrap_helper_run_helper_script
 
    tor_bootstrap_percent="$check_bootstrap_helper_script_exit_code"
