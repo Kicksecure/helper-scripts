@@ -125,18 +125,16 @@ Please report this bug!"
    elif [ "$tor_circuit_established" = "1" ]; then
       ## Only when manually testing this script using bash -x.
       local MSG="Tor fully bootstrapped."
+
+      ## Exit 0, so sdwdate will continue.
+      exit "0"
    else
       if [ "$VM" = "Gateway" ]; then
          local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.<br>Tor reports: $tor_bootstrap_status"
       else
          local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.<br>"
       fi
-   fi
 
-   if [ "$tor_circuit_established" = "1" ]; then
-      ## Exit 0, so sdwdate will continue.
-      exit "0"
-   else
       ## Echo message, so sdwdate can integrate it into its log.
       echo "$MSG"
 
