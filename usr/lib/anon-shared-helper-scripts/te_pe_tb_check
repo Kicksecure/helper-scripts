@@ -122,14 +122,14 @@ Please report this bug!"
 <br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
          fi
       fi
-   elif [ "$tor_circuit_established_check_exit_code" = "100" ]; then
+   elif [ "$tor_circuit_established" = "1" ]; then
       ## Only when manually testing this script using bash -x.
       local MSG="Tor fully bootstrapped."
    else
       local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.<br>Tor reports: $tor_bootstrap_status"
    fi
 
-   if [ "$tor_circuit_established_check_exit_code" = "100" ]; then
+   if [ "$tor_circuit_established" = "1" ]; then
       true "Ok."
    else
       ## Echo message, so sdwdate can integrate it into its log.
