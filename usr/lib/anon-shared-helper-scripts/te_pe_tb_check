@@ -126,7 +126,11 @@ Please report this bug!"
       ## Only when manually testing this script using bash -x.
       local MSG="Tor fully bootstrapped."
    else
-      local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.<br>Tor reports: $tor_bootstrap_status"
+      if [ "$VM" = "Gateway" ]; then
+         local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.<br>Tor reports: $tor_bootstrap_status"
+      else
+         local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.<br>"
+      fi
    fi
 
    if [ "$tor_circuit_established" = "1" ]; then
