@@ -134,18 +134,6 @@ Please report this bug!"
    fi
 
    if [ "$tor_circuit_established" = "1" ]; then
-      true "Ok."
-   else
-      ## Echo message, so sdwdate can integrate it into its log.
-      echo "$MSG"
-
-      ## Exit 2, so sdwdate will wait until this has been fixed.
-      exit "2"
-   fi
-
-   local MSG="Tor circuit $tor_circuit_established_word. $tor_circuit_established_check_exit_code % done. Tor reports: $tor_bootstrap_status"
-
-   if [ "$tor_circuit_established" = "1" ]; then
       ## Exit 0, so sdwdate will continue.
       exit "0"
    else
