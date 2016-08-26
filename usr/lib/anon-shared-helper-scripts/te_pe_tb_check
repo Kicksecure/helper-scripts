@@ -130,9 +130,10 @@ Please report this bug!"
       exit "0"
    else
       if [ "$VM" = "Gateway" ]; then
-         local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.<br>Tor reports: $tor_bootstrap_status"
+         local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.\
+<br>Tor reports: $tor_bootstrap_status"
       else
-         local MSG="<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.<br>"
+         local MSG="<b>Tor is not yet fully bootstrapped.</b> Tor circuit: $tor_circuit_established_word."
       fi
 
       ## Echo message, so sdwdate can integrate it into its log.
