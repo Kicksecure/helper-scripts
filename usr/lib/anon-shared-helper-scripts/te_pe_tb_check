@@ -58,7 +58,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
 
    ## sets: check_apt_get_exit_code
    ## sets: package_manager_waiting_msg
-   #check_package_manager_running_helper ## 19_2_1_check_package_manager_running
+   #check_package_manager_running_helper ## pkg_manager_running_check
    #if [ "$check_apt_get_exit_code" = "0" ]; then
       #true "Package manager not busy, ok."
    #else
@@ -78,7 +78,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
    ## sets: TOR_BOOTSTRAP_TIME_PASSED
    ## sets: tor_bootstrap_percent
    ## sets: tor_bootstrap_status
-   check_tor_bootstrap_helper ## 19_2_check_tor_bootstrap
+   check_tor_bootstrap_helper ## tor_bootstrap_check.bsh
 
    ## $tor_bootstrap_percent:
    ## `timeout` returns:
