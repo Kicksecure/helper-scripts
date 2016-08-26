@@ -71,7 +71,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
       #exit "2"
    #fi
 
-   ## sets: check_bootstrap_script
+   ## sets: check_bootstrap_helper_script
    ## sets: lastpid
    ## sets: TOR_BOOTSTRAP_TIME_START
    ## sets: TOR_BOOTSTRAP_TIME_NOW
