@@ -85,7 +85,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
    ## - 124 if sigterm was sufficient
    ## - 137 if needed to use kill.
 
-   if [ -e /usr/share/anon-gw-base-files/gateway ]; then
+   if [ "$VM" = "Gateway" ]; then
       check_tor_bootstrap_status
    fi
 
