@@ -9,7 +9,7 @@ check_package_manager_running_helper() {
    fi
 
    check_apt_get_exit_code="0"
-   sudo "/usr/lib/anon-shared-helper-scripts/apt-get-update-simulate" >/dev/null 2>&1 &
+   sudo --non-interactive  "/usr/lib/anon-shared-helper-scripts/apt-get-update-simulate" >/dev/null 2>&1 &
    apt_get_update_pid="$!"
    wait "$apt_get_update_pid" || { check_apt_get_exit_code="$?" ; true; };
    unset apt_get_update_pid

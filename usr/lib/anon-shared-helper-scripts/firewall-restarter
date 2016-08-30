@@ -16,8 +16,8 @@ chown --recursive sdwdate:sdwdate /var/run/sdwdate
 inotifywait --quiet --recursive --monitor --event create --format "%w%f" "/var/run/sdwdate/" | while read file_name
 do
     if [ "$file_name" = "/var/run/sdwdate/first_success" ]; then
-      if sudo service whonix-firewall status ; then
-         sudo service whonix-firewall restart || true
+      if sudo --non-interactive service whonix-firewall status ; then
+         sudo --non-interactive service whonix-firewall restart || true
       fi
     fi
 done
