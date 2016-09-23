@@ -22,9 +22,7 @@ try:
   p=int(sys.argv[2])
 
   with Controller.from_port(address = a, port = p) as controller:
-
-    if str(sys.argv[3]) == "1":
-      controller.authenticate()
+    controller.authenticate()
 
     bootstrap_status = controller.get_info("status/bootstrap-phase")
 

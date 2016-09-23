@@ -19,9 +19,7 @@ try:
   p=int(sys.argv[2])
 
   with Controller.from_port(address = a, port = p) as controller:
-
-    if str(sys.argv[3]) == "1":
-      controller.authenticate()
+    controller.authenticate()
 
     circuit_established = controller.get_info("status/circuit-established")
 
