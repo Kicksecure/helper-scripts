@@ -16,7 +16,7 @@ check_tor_bootstrap_helper_variables() {
             GATEWAY_IP="$qubesdb_read_qubes_gateway_result"
          fi
          if [ "$gateway_control_port" = "" ]; then
-            gateway_control_port="9052"
+            gateway_control_port="9051"
          fi
       fi
    fi
@@ -26,7 +26,7 @@ check_tor_bootstrap_helper_variables() {
          GATEWAY_IP="10.152.152.10"
       fi
       if [ "$gateway_control_port" = "" ]; then
-         gateway_control_port="9052"
+         gateway_control_port="9051"
       fi
    fi
 
