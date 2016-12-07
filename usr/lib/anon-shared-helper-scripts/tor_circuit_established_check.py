@@ -11,7 +11,7 @@ from stem import connection
 from stem.control import Controller
 
 try:
-  if len(sys.argv) < 4:
+  if len(sys.argv) < 2:
       print 'Syntax error. %s' % sys.argv
       sys.exit(255)
 
