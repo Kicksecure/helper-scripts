@@ -75,6 +75,10 @@ on_failure() {
 }
 
 if command -v "qubesdb-read" >/dev/null 2>&1 ; then
+   if [ -e /var/run/qubes/this-is-templatevm ]; then
+      exit 0
+   fi
+
    qubes_vm_type="$(qubesdb-read /qubes-vm-type)"
 
    if [ "$qubes_vm_type" = "TemplateVM" ]; then
