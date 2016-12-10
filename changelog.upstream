@@ -1,3 +1,180 @@
+commit 271a57cfb0c21dd3a9f2abe6cf9ce6701ebba23a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Dec 7 23:23:29 2016 +0000
+
+    first check if /var/run/qubes/this-is-templatevm exists before trying qubesdb
+
+commit 82412a5834982d41998dd9c3e44d2bdd8a7e3818
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Dec 7 20:31:22 2016 +0000
+
+    code simplification
+    
+    remove gateway_control_authenticate from settings_echo
+    
+    https://phabricator.whonix.org/T573
+
+commit 0d71516e033eda1208ac40780eed4145b7543b14
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Dec 7 20:22:38 2016 +0000
+
+    code simplification
+    
+    due to improved control filter proxy we can now simplify and always authenticate
+    
+    https://phabricator.whonix.org/T573
+
+commit 1cb1d33a758798eda6e39686c4ca9802fd665242
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Dec 7 20:19:26 2016 +0000
+
+    gateway_control_port="9051"
+    
+    https://phabricator.whonix.org/T573
+
+commit b83b16e214be5ae170affac5a4b393486c700e02
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Nov 21 17:39:08 2016 +0000
+
+    readme
+
+commit 56bbd01a72836bcca68cb132eed378d7e9c2df0b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Sep 23 03:56:02 2016 +0000
+
+    cleanup
+    
+    no longer required to differentiate vs authenticate / not authenticate
+
+commit c03caf6115549bdf2e24b71c934940bc1785ca21
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Sep 23 03:53:51 2016 +0000
+
+    always authenticate to Tor controller (due to cpfpy updates)
+
+commit ca54476897013efb4f8bc7631a5296572a3d8e22
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Sep 21 15:59:38 2016 +0200
+
+    fix, make tor_signal_newnym.py executable
+
+commit 1fa1cc9a17c1ecfa3503cf050321da29a490b838
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 30 21:19:47 2016 +0000
+
+    firewall-restarter: removed sudo
+    
+    not required since it runs as root
+
+commit 8a117273850006d10e1dce1c24a31d2bb0f273d2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 30 21:11:44 2016 +0000
+
+    sudo --non-interactive
+    
+    https://phabricator.whonix.org/T549
+
+commit b87c0d11516d787d2ed20419edba1b9825d5bf0f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 21:56:31 2016 +0200
+
+    output
+
+commit 62b28118c3752f591f111fa13a032452c57a0e7c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 21:53:44 2016 +0200
+
+    code simplification
+
+commit ca47fb0e87649046ab0c9b4b6ddb036232d8a468
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 21:52:18 2016 +0200
+
+    cleanup
+
+commit 3d718be298d40c77afa5e4165893b77f06e5e78f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 21:51:23 2016 +0200
+
+    output
+
+commit 8601b8b12b6b80945d58b67499659073529090af
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 21:49:14 2016 +0200
+
+    fix
+
+commit 821e139168c239eed49c7a412f2866ba9e36062e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 21:47:56 2016 +0200
+
+    minor
+
+commit 3c25f470640e0fd34b588524abdd85dabb2f8b16
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 21:44:38 2016 +0200
+
+    port te_pe_tb_check to check_tor_circuit_established / check_tor_bootstrap_status
+
+commit 6617b102185a9fbb53c55b52e2ecfd01c2987e9a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 21:40:29 2016 +0200
+
+    comment
+
+commit 413a9c3c38a24d223ddbcf1ab1fa2d0f6c8d2e19
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 21:39:07 2016 +0200
+
+    comments
+
+commit afcbd79848378891f32c4ed263ca753894f104b0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 25 00:58:19 2016 +0000
+
+    minor
+
+commit 1306c8c1adab5035b6d35b3976f387679b49b9e2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 24 20:32:08 2016 +0000
+
+    added firewall restarter
+    
+    that restarts whonix-firewall when /var/run/sdwdate/first_success status file
+    was created
+    
+    https://phabricator.whonix.org/T533
+
+commit f600e8485de1862053fe4bb25f2fe79be0e4870f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Aug 22 22:20:55 2016 +0000
+
+    refactoring
+
+commit 65705dabe8915782c6b0b235f40fd66bef55ecf2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Aug 22 21:51:13 2016 +0000
+
+    comment
+
+commit aeb62661756cbdafe2ab4217c7f972ad370e3b25
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Aug 15 23:32:59 2016 +0000
+
+    anondate: add --user-permission / --group-permission to output permission Tor consensus
+
+commit fcf98a95b9e610d98835f6383a01fd5c9b347ee4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 16:15:09 2016 +0200
+
+    import enable-firewall script from qubes-whonix package to make it more generic
+
+commit ae5fbcb6174ab0ee2cb51663234260ca97dfcb33
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu May 12 15:26:03 2016 +0000
+
+    bumped changelog version
+
 commit e9d39508851abed71934d1ede14883da54e10bbe
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu May 12 17:04:07 2016 +0200
