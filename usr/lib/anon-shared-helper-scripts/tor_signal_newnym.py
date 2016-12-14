@@ -5,43 +5,17 @@
 ## See the file COPYING for copying conditions.
 
 import sys
-import stem
-
-from stem import Signal
+from stem.connection import connect
 from stem.control import Controller
+from stem import Signal
 
-try:
-  if len(sys.argv) < 2:
-      print 'Syntax error. %s' % sys.argv
-      sys.exit(255)
+controller = connect()
 
-  a=str(sys.argv[1])
-  p=int(sys.argv[2])
+if not controller:
+    sys.exit(255)
 
-  with Controller.from_port(address = a, port = p) as controller:
-    controller.authenticate()
+controller.signal(Signal.NEWNYM)
 
-    controller.signal(Signal.NEWNYM)
+controller.close()
 
-    exit_code = 0
-
-except ValueError as e:
-  print e
-  exit_code=255
-except NameError as e:
-  print 'Name error: %s' % e
-  exit_code=255
-except connection.AuthenticationFailure as e:
-  print 'Unable to authenticate: %s' % e
-  exit_code=255
-except stem.SocketError as e:
-  print 'Socket error: %s' % e
-  exit_code=255
-except stem.ProtocolError as e:
-  print 'Protocol error: %s' % e
-  exit_code=255
-except stem.InvalidArguments as e:
-  print 'Invalid Arguments: %s' % e
-  exit_code=255
-
-sys.exit(exit_code)
+sys.exit(0)

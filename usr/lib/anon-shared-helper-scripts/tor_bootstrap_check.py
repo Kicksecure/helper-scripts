@@ -5,61 +5,34 @@
 ## See the file COPYING for copying conditions.
 
 import sys
-import os.path
+from stem.connection import connect
 import re
-import stem
 
-from stem import connection
+controller = connect()
 
-from stem.control import Controller
+if not controller:
+    sys.exit(255)
 
-try:
-  if len(sys.argv) < 2:
-      print 'Syntax error. %s' % sys.argv
-      sys.exit(255)
+bootstrap_status = controller.get_info("status/bootstrap-phase")
 
-  a=str(sys.argv[1])
-  p=int(sys.argv[2])
+## Possible answer, if network cable has been removed:
+## 250-status/bootstrap-phase=WARN BOOTSTRAP PROGRESS=80 TAG=conn_or SUMMARY="Connecting to the Tor network" WARNING="No route to host" REASON=NOROUTE COUNT=26 RECOMMENDATION=warn
 
-  with Controller.from_port(address = a, port = p) as controller:
-    controller.authenticate()
+## Possible answer:
+## 250-status/bootstrap-phase=NOTICE BOOTSTRAP PROGRESS=85 TAG=handshake_or SUMMARY="Finishing handshake with first hop"
 
-    bootstrap_status = controller.get_info("status/bootstrap-phase")
+## Possible answer, when done:
+## 250-status/bootstrap-phase=NOTICE BOOTSTRAP PROGRESS=100 TAG=done SUMMARY="Done"
 
-    ## Possible answer, if network cable has been removed:
-    ## 250-status/bootstrap-phase=WARN BOOTSTRAP PROGRESS=80 TAG=conn_or SUMMARY="Connecting to the Tor network" WARNING="No route to host" REASON=NOROUTE COUNT=26 RECOMMENDATION=warn
+## TODO: parse the messages above.
+## 0
 
-    ## Possible answer:
-    ## 250-status/bootstrap-phase=NOTICE BOOTSTRAP PROGRESS=85 TAG=handshake_or SUMMARY="Finishing handshake with first hop"
+print "%s" % (bootstrap_status)
 
-    ## Possible answer, when done:
-    ## 250-status/bootstrap-phase=NOTICE BOOTSTRAP PROGRESS=100 TAG=done SUMMARY="Done"
+progress_percent = re.match('.* PROGRESS=([0-9]+).*', bootstrap_status)
 
-    ## TODO: parse the messages above.
+exit_code = int(progress_percent.group(1))
 
-    print "%s" % (bootstrap_status)
-
-    progress_percent = re.match('.* PROGRESS=([0-9]+).*', bootstrap_status)
-
-    exit_code = int(progress_percent.group(1))
-
-except ValueError as e:
-  print e
-  exit_code=255
-except NameError as e:
-  print 'Name error: %s' % e
-  exit_code=255
-except connection.AuthenticationFailure as e:
-  print 'Unable to authenticate: %s' % e
-  exit_code=255
-except stem.SocketError as e:
-  print 'Socket error: %s' % e
-  exit_code=255
-except stem.ProtocolError as e:
-  print 'Protocol error: %s' % e
-  exit_code=255
-except stem.InvalidArguments as e:
-  print 'Invalid Arguments: %s' % e
-  exit_code=255
+controller.close()
 
 sys.exit(exit_code)
