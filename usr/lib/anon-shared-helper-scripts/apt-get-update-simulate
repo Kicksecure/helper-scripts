@@ -24,7 +24,14 @@ sigterm_trap() {
 
 trap "sigterm_trap" SIGTERM
 
-apt-get dist-upgrade --simulate &
+timeout_after="10"
+kill_after="5"
+
+timeout \
+   --kill-after="$kill_after" \
+   "$timeout_after" \
+   apt-get dist-upgrade --simulate &
+
 lastpid="$!"
 wait "$lastpid"
 
