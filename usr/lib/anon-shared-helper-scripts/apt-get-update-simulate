@@ -13,7 +13,7 @@ sigterm_trap() {
    if [ "$lastpid" = "" ]; then
       exit 0
    fi
-   ps -p "$lastpid"
+   ps -p "$lastpid" >/dev/null 2>&1
    if [ ! "$?" = "0" ]; then
       ## Already terminated.
       exit 0
