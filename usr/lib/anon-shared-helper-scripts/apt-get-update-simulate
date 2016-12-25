@@ -22,7 +22,7 @@ sigterm_trap() {
    exit "$?"
 }
 
-trap "sigterm_trap" SIGTERM
+trap "sigterm_trap" SIGTERM SIGINT
 
 timeout_after="10"
 kill_after="5"
