@@ -1,3 +1,27 @@
+commit e228076fded2de1e6e32c4830f9fc84f6384e210
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 25 02:32:42 2016 +0000
+
+    apt-get-update-simulate: hide 'ps' output
+
+commit b8d951a1787a19163116261a12190243257800de
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 25 02:31:39 2016 +0000
+
+    apt-get-update-simulate: implement SIGINT trap
+
+commit 3a7f1ba590c17254c434cede0ed25ebc174c6064
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 25 02:16:10 2016 +0100
+
+    apt-get-update-simulate: prevent hanging due to timeout
+
+commit e69767e62ea4745f513b7a511da60f022c0a30c7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 16 16:19:01 2016 +0000
+
+    bumped changelog version
+
 commit c097035631217617636f130bdfb90a12c774e8ce
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 14 20:22:30 2016 +0000
