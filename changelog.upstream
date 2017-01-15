@@ -1,3 +1,31 @@
+commit 1117fbabe06214b76d2b7ab1a8c6d6ba5ee8fa73
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 15 08:40:14 2017 +0100
+
+    fix lintian warning
+
+commit d9b329e8c2e91b3f783c3c1cb16dace899664b2b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 15 08:35:26 2017 +0100
+
+    packaging, bumped Standards-Version from 3.9.6 to 3.9.8 for jessie support
+
+commit 639eba52bb17b53a715c8d07c9c1086701bbbdc8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 15 08:29:33 2017 +0100
+
+    add lintian override
+    
+    anon-shared-helper-scripts source: dep5-copyright-license-name-not-unique
+    
+    https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=779676
+
+commit 8dfb15922daa9d037b675e8031d8851fdc5925c7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 12 02:49:11 2017 +0000
+
+    bumped changelog version
+
 commit e228076fded2de1e6e32c4830f9fc84f6384e210
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Dec 25 02:32:42 2016 +0000
