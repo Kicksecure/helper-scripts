@@ -1,0 +1,9 @@
+#!/bin/bash
+
+## This file is part of Whonix.
+## Copyright (C) 2017 - 2017 Patrick Schleizer <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+set -e
+
+/usr/lib/anon-shared-helper-scripts/settings_echo > /var/run/anon-shared-helper-scripts/settings_environment_file
