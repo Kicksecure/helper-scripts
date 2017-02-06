@@ -1,3 +1,30 @@
+commit 0cc94d7b0548a7dc9b92ba64522b494dce06283e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Feb 6 02:00:42 2017 +0000
+
+    te_pe_tb_check: fix output
+    
+    Not being able to connect to Tor's ControlPort does not mean there is an issue,
+    could just be that Tor has not been started yet.
+
+commit 0823c7d41ad23335e8d1a9536f79bff6a8038648
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Feb 6 01:54:54 2017 +0000
+
+    te_pe_tb_check: fix, proper output and exit code in error cases
+
+commit d3130988d52be8a1b3c5fa900c65c7b39e5cef3c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Feb 5 21:40:49 2017 +0000
+
+    add tool to create environment settings file containing GATEWAY_IP
+
+commit b1f1c1ef0ae2d7e9e89179c9e34a690de992591c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 15 15:21:16 2017 +0000
+
+    bumped changelog version
+
 commit 1117fbabe06214b76d2b7ab1a8c6d6ba5ee8fa73
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jan 15 08:40:14 2017 +0100
