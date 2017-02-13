@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3 -u
 
 ## This file is part of Whonix.
 ## Copyright (C) 2012 - 2014 Patrick Schleizer <adrelanos@riseup.net>
@@ -27,7 +27,7 @@ bootstrap_status = controller.get_info("status/bootstrap-phase")
 ## TODO: parse the messages above.
 ## 0
 
-print "%s" % (bootstrap_status)
+print(format(bootstrap_status))
 
 progress_percent = re.match('.* PROGRESS=([0-9]+).*', bootstrap_status)
 

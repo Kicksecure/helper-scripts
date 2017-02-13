@@ -6,7 +6,7 @@ Source: anon-shared-helper-scripts
 Section: misc
 Priority: optional
 Maintainer: Patrick Schleizer <adrelanos@riseup.net>
-Build-Depends: debhelper (>= 9), genmkfile
+Build-Depends: debhelper (>= 9), genmkfile, dh-python
 Homepage: https://github.com/Whonix/anon-shared-helper-scripts
 Vcs-Browser: https://github.com/Whonix/anon-shared-helper-scripts
 Vcs-Git: https://github.com/Whonix/anon-shared-helper-scripts.git
@@ -14,8 +14,7 @@ Standards-Version: 3.9.8
 
 Package: anon-shared-helper-scripts
 Architecture: all
-Depends: sudo, python, dh-python, python-stem,
- ${misc:Depends}
+Depends: sudo, python3, python3-stem, ${misc:Depends}
 Description: Helper scripts useful for Anonymizing Linux Distributions
  Library that can be used by other (anonymity related) packages that want to
  programmatically get information about states of Tor. Common code, that is

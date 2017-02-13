@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3 -u
 
 ## This file is part of Whonix.
 ## Copyright (C) 2012 - 2014 Patrick Schleizer <adrelanos@riseup.net>
@@ -20,7 +20,7 @@ circuit_established = controller.get_info("status/circuit-established")
 ## Possible answer, if not established:
 ## 0
 
-print "%s" % (circuit_established)
+print(format(circuit_established))
 
 controller.close()
 
