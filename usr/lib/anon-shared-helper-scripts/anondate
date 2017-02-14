@@ -28,7 +28,7 @@ parse_cmd_options() {
                echo "$SCRIPTNAME verbose output..."
                echo "Script running as $(whoami)"
                set -x
-               true "$0: "$@""
+               true "$0: $@"
                shift
                ;;
            --has-consensus)
