@@ -55,12 +55,6 @@ check_tor_bootstrap_helper_run_helper_script() {
    check_tor_bootstrap_helper_timeout_after="10s"
    check_bootstrap_helper_bootstrap_file="$TEMP_DIR/tor_check_bootstrap_helper_bootstrap_file"
 
-   if [ "$TOR_BOOTSTRAP_TIME_START" = "" ]; then
-      TOR_BOOTSTRAP_TIME_START="$(date +%s)"
-   fi
-   TOR_BOOTSTRAP_TIME_NOW="$(date +%s)"
-   TOR_BOOTSTRAP_TIME_PASSED="$(( $TOR_BOOTSTRAP_TIME_NOW - $TOR_BOOTSTRAP_TIME_START ))"
-
    rm --force "$check_bootstrap_helper_bootstrap_file"
    check_bootstrap_helper_script_exit_code="0"
    timeout \
