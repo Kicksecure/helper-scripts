@@ -54,8 +54,6 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
       exit "2"
    fi
 
-   true "$FUNCNAME: CURL: $CURL"
-
    ## sets: check_apt_get_exit_code
    ## sets: package_manager_waiting_msg
    #check_package_manager_running_helper ## pkg_manager_running_check
