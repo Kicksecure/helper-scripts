@@ -155,4 +155,4 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
    fi
 }
 
-te_pe_tb_check ${1+"$@"}
+te_pe_tb_check "$@"
