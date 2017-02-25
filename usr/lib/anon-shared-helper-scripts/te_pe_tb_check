@@ -47,7 +47,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
          echo "Tor is disabled. Please enable Tor in /etc/tor/torrc."
       fi
 
-      exit "2"
+      exit 1
    fi
 
    ## sets: check_apt_get_exit_code
@@ -58,7 +58,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
    #else
       #echo "$package_manager_waiting_msg"
 
-      #exit "2"
+      #exit 2
    #fi
 
    ## sets: check_bootstrap_helper_script
@@ -75,7 +75,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
       if [ "$tor_circuit_established_check_exit_code" = "$invalid_exit_code" ]; then
          echo "Tor Bootstrap Result: \
    <b>ERROR ($tor_circuit_established_check_exit_code).</b><br> Please report this bug!"
-         exit "2"
+         exit 1
       fi
    done
 
@@ -109,7 +109,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
          fi
       fi
 
-      exit "2"
+      exit 1
    fi
 
    if [ "$VM" = "Gateway" ]; then
@@ -128,24 +128,36 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
 
    current_unixtime="$(date +"%s")"
 
+   ## "The clock is slower than the build timestamp."
+   ## "The clock is faster than the expiration timestamp"
+
+   clock_causes="\
+<br><br>Possible causes:<br>
+- The host clock is wrong -> shut down the VM, fix the clock in the host and restart the VM.<br>
+- The VM clock is wrong -> manually fix the clock. Restart Tor if necessary. Then restart sdwdate.<br>
+- A host clock attack succeeded.<br>
+- A hardware issue (for example bios clock issues).<br>"
+
    if [ "$tor_consensus_valid_after_exit_code" = "0" ] && [ "$tor_consensus_valid_until_exit_code" = "0" ]; then
+      clock_tor_consensus_check_result="ok"
       if [ "$current_unixtime" -ge "$tor_consensus_valid_after_unixtime" ]; then
          true
       else
          clock_tor_consensus_check_result="slow"
-         clock_tor_consensus_check_msg="Clock is slow. Clock is slower than consensus/valid-after $tor_consensus_valid_after_output."
+         clock_tor_consensus_check_msg="The clock is slow. Clock is slower than consensus/valid-after $tor_consensus_valid_after_output. $clock_causes"
       fi
       if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
-         clock_tor_consensus_check_result="Clock is fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output."
+         clock_tor_consensus_check_result="fast"
+         clock_tor_consensus_check_msg="The clock is fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. $clock_causes"
       else
          true
       fi
    else
       clock_tor_consensus_check_result="error"
-      clock_tor_consensus_check_msg"Consensus time sanity check failed."
+      clock_tor_consensus_check_msg="Consensus time sanity check failed. $clock_causes"
    fi
 
-   if [ "$clock_tor_consensus_check_result" = "" ]; then
+   if [ "$clock_tor_consensus_check_result" = "ok" ]; then
       clock_tor_consensus_check_result="ok"
       clock_tor_consensus_check_msg="Clock within consensus parameters consensus/valid-after $tor_consensus_valid_after_output and consensus/valid-until $tor_consensus_valid_until_output."
    fi
@@ -154,7 +166,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
 
    ## TODO: maybe only useful on the gateway
    if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
-      exit "2"
+      exit "1"
    fi
 
    if [ "$tor_circuit_established" = "1" ]; then
