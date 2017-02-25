@@ -60,7 +60,7 @@ check_tor_bootstrap_helper_run_helper_script() {
    timeout \
       --kill-after="$check_tor_bootstrap_helper_kill_after" \
       "$check_tor_bootstrap_helper_timeout_after" \
-      "$check_bootstrap_helper_script" \
+      $check_bootstrap_helper_script \
       > "$check_bootstrap_helper_bootstrap_file" \
       2>&1 \
       &
@@ -124,4 +124,28 @@ check_tor_circuit_established() {
       tor_circuit_established="0"
       tor_circuit_established_word="not established"
    fi
+}
+
+tor_consensus_valid-after() {
+   check_bootstrap_helper_script="/usr/lib/anon-shared-helper-scripts/tor_consensus_valid-after.py"
+
+   ## sets: check_bootstrap_helper_script_exit_code
+   ## sets: check_bootstrap_helper_script_output
+   check_tor_bootstrap_helper_run_helper_script
+
+   tor_consensus_valid_after_exit_code="$check_bootstrap_helper_script_exit_code"
+   tor_consensus_valid_after_output="$check_bootstrap_helper_script_output"
+   tor_consensus_valid_after_unixtime="$(date --date="$tor_consensus_valid_after_output" +"%s")" || true
+}
+
+tor_consensus_valid-until() {
+   check_bootstrap_helper_script="/usr/lib/anon-shared-helper-scripts/tor_consensus_valid-until.py"
+
+   ## sets: check_bootstrap_helper_script_exit_code
+   ## sets: check_bootstrap_helper_script_output
+   check_tor_bootstrap_helper_run_helper_script
+
+   tor_consensus_valid_until_exit_code="$check_bootstrap_helper_script_exit_code"
+   tor_consensus_valid_until_output="$check_bootstrap_helper_script_output"
+   tor_consensus_valid_until_unixtime="$(date --date="$tor_consensus_valid_until_output" +"%s")" || true
 }
