@@ -146,6 +146,9 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
       check_tor_bootstrap_status
    fi
 
+   ## If the static timestamp based time sanity check failed, there is no
+   ## need to run the Tor consensus based time sanity check. Avoiding
+   ## duplicate output.
    if [ ! "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
       ## sets: tor_consensus_valid_after_exit_code
       ## sets: tor_consensus_valid_after_output
