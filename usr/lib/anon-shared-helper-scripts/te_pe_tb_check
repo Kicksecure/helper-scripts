@@ -52,7 +52,7 @@ te_pe_tb_check() {
       source /usr/share/timesanitycheck/shared
       time_sanity_check
       if [ "$time_sanity_check_exit_code" = "0" ]; then
-         true "$time_sanity_check_msg_static"
+         echo "$time_sanity_check_msg_static" >&2
       else
          echo "$time_sanity_check_msg_static
 $clock_causes"
@@ -181,7 +181,11 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
       clock_tor_consensus_check_msg="Clock within consensus parameters consensus/valid-after $tor_consensus_valid_after_output and consensus/valid-until $tor_consensus_valid_until_output."
    fi
 
-   echo "$clock_tor_consensus_check_msg"
+   if [ "$clock_tor_consensus_check_result" = "ok" ]; then
+      echo "$clock_tor_consensus_check_msg" >&2
+   else
+      echo "$clock_tor_consensus_check_msg"
+   fi
 
    if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
       if [ "$VM" = "Gateway" ]; then
