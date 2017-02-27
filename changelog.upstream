@@ -1,3 +1,88 @@
+commit 95d037ba04f457a6340fccfa36539af02609cad7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Feb 25 04:15:08 2017 +0000
+
+    comment
+
+commit f9cfae314d65c6547d7b2a9081d98e32fa170a7e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Feb 25 04:14:00 2017 +0000
+
+    output
+
+commit c4d71d4edb58c824594fa6125820833149f6d7c4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Feb 25 01:08:46 2017 +0000
+
+    output
+
+commit 2764020237eb0462b73ef9902f35818d03078676
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Feb 25 03:31:34 2017 +0000
+
+    add build timestamp and expiration date based time sanity check
+    
+    https://phabricator.whonix.org/T151
+
+commit 20277497bd84c7fb0dd553f89e45e1761dc1e959
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Feb 25 01:42:30 2017 +0000
+
+    fix, refactoring
+
+commit 9369d1ad46cc26e86f33764d9b0cc051ad3fe11c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Feb 25 00:48:36 2017 +0000
+
+    implement Tor consensus check in te_pe_tb_check for sdwdate
+    
+    https://phabricator.whonix.org/T56
+
+commit 2195ddf28b27a40ba9e4621a86cbea3cc5537cc2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Feb 24 22:50:14 2017 +0000
+
+    cleanup
+
+commit a9946d78946f97c0e9ee4744be8c45e42ebc6259
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Feb 24 22:49:25 2017 +0000
+
+    "$@"
+
+commit d15e1ad01e3aa493c5bad4dd001edbdcb7f11459
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Feb 24 22:46:51 2017 +0000
+
+    add tor_consensus_valid-after.py / tor_consensus_valid-until.py
+
+commit b9307bf3028910a41b546394bfaa3711145a5809
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Feb 23 01:42:57 2017 +0000
+
+    remove
+    - TOR_BOOTSTRAP_TIME_START
+    - TOR_BOOTSTRAP_TIME_NOW
+    - TOR_BOOTSTRAP_TIME_PASSED
+    
+    since these can be confused by sdwdate clock jumps
+    
+    and no longer required by whonixcheck or otherwise
+
+commit c54299c34de69a33a88e389440e23db3f4964021
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Feb 21 22:17:33 2017 +0000
+
+    use systemctl --no-pager to prevent blocking due to systemctl interactivity
+    
+    https://phabricator.whonix.org/T637
+
+commit e73c4de65062cd31bb409ecf907e5e99ba2da1b0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Feb 17 13:44:54 2017 +0000
+
+    bumped changelog version
+
 commit 222f6e4e773fdb29c5207872ba324ee4e717fcf1
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Feb 14 17:39:59 2017 +0000
