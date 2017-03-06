@@ -205,7 +205,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
    fi
 
    if [ "$VM" = "Gateway" ]; then
-      echo "<b>Tor is not yet fully bootstrapped.</b> $tor_circuit_established_check_exit_code % done.\
+      echo "<b>Tor is not yet fully bootstrapped.</b> $tor_bootstrap_percent % done.\
 <br>Tor reports: $tor_bootstrap_status"
    else
       echo "<b>Tor is not yet fully bootstrapped.</b> Tor circuit: $tor_circuit_established_word."
