@@ -135,7 +135,9 @@ tor_consensus_valid-after() {
 
    tor_consensus_valid_after_exit_code="$check_bootstrap_helper_script_exit_code"
    tor_consensus_valid_after_output="$check_bootstrap_helper_script_output"
-   tor_consensus_valid_after_unixtime="$(date --date="$tor_consensus_valid_after_output" +"%s")" || true
+   if [ "$check_bootstrap_helper_script_exit_code" = "0" ]; then
+      tor_consensus_valid_after_unixtime="$(date --date="$tor_consensus_valid_after_output" +"%s")" || true
+   fi
 }
 
 tor_consensus_valid-until() {
@@ -147,5 +149,7 @@ tor_consensus_valid-until() {
 
    tor_consensus_valid_until_exit_code="$check_bootstrap_helper_script_exit_code"
    tor_consensus_valid_until_output="$check_bootstrap_helper_script_output"
-   tor_consensus_valid_until_unixtime="$(date --date="$tor_consensus_valid_until_output" +"%s")" || true
+   if [ "$check_bootstrap_helper_script_exit_code" = "0" ]; then
+      tor_consensus_valid_until_unixtime="$(date --date="$tor_consensus_valid_until_output" +"%s")" || true
+   fi
 }
