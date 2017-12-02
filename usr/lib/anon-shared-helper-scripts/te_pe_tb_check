@@ -190,9 +190,9 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
       fi
 
       if [ "$clock_tor_consensus_check_result" = "ok" ]; then
-         echo "$clock_tor_consensus_check_msg" >&2
+         echo "<p>$clock_tor_consensus_check_msg</p>" >&2
       else
-         echo "$clock_tor_consensus_check_msg"
+         echo "<p>$clock_tor_consensus_check_msg</p>"
       fi
 
       ## TODO
@@ -208,7 +208,7 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
    fi
 
    if [ "$tor_circuit_established" = "1" ]; then
-      echo "Tor fully bootstrapped."
+      echo "<p>Tor fully bootstrapped.</p>"
       exit "0"
    fi
 
