@@ -176,6 +176,9 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
          else
             true
          fi
+      elif [ "$tor_consensus_valid_after_exit_code" = "277" ] && [ "$tor_consensus_valid_until_exit_code" = "277" ]; then
+         clock_tor_consensus_check_result="noneyet"
+         clock_tor_consensus_check_msg="Might not have downloaded a Tor consensus yet."
       else
          clock_tor_consensus_check_result="error"
          clock_tor_consensus_check_msg="Consensus time sanity check failed. $clock_causes"
@@ -192,11 +195,16 @@ Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Te
          echo "$clock_tor_consensus_check_msg"
       fi
 
-      if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
-         if [ "$VM" = "Gateway" ]; then
-            exit "1"
-         fi
-      fi
+      ## TODO
+      ## Would have to parse tor_bootstrap_status.
+      ## In case Tor cannot fetch Tor consensus $tor_consensus_valid_after_exit_code /
+      ## $tor_consensus_valid_until_exit_code may be zero but $tor_consensus_valid_until_output
+      ## may be empty.
+      #if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
+      #   if [ "$VM" = "Gateway" ]; then
+      #      exit "1"
+      #   fi
+      #fi
    fi
 
    if [ "$tor_circuit_established" = "1" ]; then
