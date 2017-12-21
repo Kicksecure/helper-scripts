@@ -1,3 +1,15 @@
+commit 4f864812f721fbb5199ab97e7ed22a0758553561
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 20:08:46 2017 +0000
+
+    move usr/lib/anon-shared-helper-scripts/firewall-restarter to whonix-firewall
+
+commit 3f5c79523dc35738ab8d7b69c6934af33ca541d0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:49:07 2017 +0000
+
+    bumped changelog version
+
 commit a52407425e7b518fd43ce7db32cd850640c89e2e
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 18:43:22 2017 +0000
