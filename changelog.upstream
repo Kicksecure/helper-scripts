@@ -1,3 +1,15 @@
+commit 87541b89bf9a9a62407ea85ee880ccae0d931324
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 22 00:49:24 2017 +0000
+
+    remove enable-firewall script (merged into whonix-firewall)
+
+commit 382ddff74e4da860d3fb1da28d80cc7e5022e162
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 20:09:06 2017 +0000
+
+    bumped changelog version
+
 commit 4f864812f721fbb5199ab97e7ed22a0758553561
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 20:08:46 2017 +0000
