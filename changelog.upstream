@@ -1,3 +1,15 @@
+commit f41d5eaea7eaf55ed35e338d3d9d0cdb222bfb0e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jan 12 18:32:36 2018 +0000
+
+    tor_enabled_check: add support for torrc.d
+
+commit ebd5243a0160b6821e3f85dde16ce270da7b149e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 22 00:50:16 2017 +0000
+
+    bumped changelog version
+
 commit 87541b89bf9a9a62407ea85ee880ccae0d931324
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Dec 22 00:49:24 2017 +0000

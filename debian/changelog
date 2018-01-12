@@ -1,3 +1,9 @@
+anon-shared-helper-scripts (3:3.6-1) unstable; urgency=medium
+
+  * New upstream version (local package).
+
+ -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 12 Jan 2018 20:08:43 +0000
+
 anon-shared-helper-scripts (3:3.5-1) unstable; urgency=medium
 
   * New upstream version (local package).
