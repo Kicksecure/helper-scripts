@@ -43,7 +43,7 @@ check_tor_enabled_do() {
       file_name_list+=" "
    done
 
-   for i in /usr/local/etc/torrc.d* ; do
+   for i in /usr/local/etc/torrc.d/* ; do
       file_name_list+="$i"
       file_name_list+=" "
    done
