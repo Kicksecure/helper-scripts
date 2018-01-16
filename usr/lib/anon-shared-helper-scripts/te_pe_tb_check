@@ -74,7 +74,7 @@ $clock_causes"
          echo "<b>Tor is disabled.</b> Please enable Tor using whonixsetup.<br> \
 Start Menu -> Applications -> System -> whonixsetup - Connection Wizard or in Terminal: sudo whonixsetup"
       else
-         echo "Tor is disabled. Please enable Tor in /etc/tor/torrc."
+         echo "Tor is disabled. Please enable Tor in the Tor config."
       fi
 
       exit 1
