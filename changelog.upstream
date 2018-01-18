@@ -1,3 +1,21 @@
+commit 88b7a201a4dcbcfe62e151ffe81b9a188758dee3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 16 22:12:42 2018 +0100
+
+    /usr/local/etc/torrc.d/
+
+commit 711cea4e7f8ca5c53360464e374a263d416d2990
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 15 20:12:20 2018 +0100
+
+    fix
+
+commit 12baa1de5ab27b1343d3d549b33e5ed09fb40976
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jan 12 20:08:43 2018 +0000
+
+    bumped changelog version
+
 commit f41d5eaea7eaf55ed35e338d3d9d0cdb222bfb0e
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jan 12 18:32:36 2018 +0000
