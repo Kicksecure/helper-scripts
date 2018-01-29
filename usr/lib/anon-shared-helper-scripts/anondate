@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Copyright (C) Amnesia <amnesia at boum dot org>
-## Copyright (C) 2014 - 2018 Patrick Schleizer <adrelanos@riseup.net>
+## Copyright (C) 2014 - 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
 set -o pipefail
