@@ -48,7 +48,7 @@ check_tor_enabled_do() {
    done
 
    for file_name in $file_name_list ; do
-      echo "file_name: '$file_name'"
+      true "file_name: '$file_name'"
       while read -r line || [ -n "$line" ]; do
          if [ "$line" = "DisableNetwork 0" ]; then
             TOR_ENABLED="1"
