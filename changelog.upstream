@@ -1,3 +1,15 @@
+commit e01b9996bc866448e43db8701482192e7651b679
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Feb 3 16:18:39 2018 +0000
+
+    disable debugging
+
+commit fabb2347186479b6bff4cf05f5d5ba761d492696
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Feb 1 14:48:09 2018 +0000
+
+    bumped changelog version
+
 commit f36151c946e6fe652cc1d1d0f28456ff4b9fc1f6
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Jan 29 15:50:11 2018 +0000
