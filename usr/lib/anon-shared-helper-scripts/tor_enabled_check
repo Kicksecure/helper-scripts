@@ -32,20 +32,37 @@ check_tor_enabled_do() {
       file_name_list+="/usr/share/tor/tor-service-defaults-torrc"
       file_name_list+=" "
    fi
+
    if [ -f /etc/tor/torrc ]; then
       file_name_list+="/etc/tor/torrc"
       file_name_list+=" "
    fi
 
-   for i in /etc/torrc.d/* ; do
-      file_name_list+="$i"
+   if [ -f /etc/torrc.d/95_whonix.conf ]; then
+      file_name_list+="/etc/torrc.d/95_whonix.conf"
       file_name_list+=" "
-   done
+   fi
 
-   for i in /usr/local/etc/torrc.d/* ; do
-      file_name_list+="$i"
+   if [ -f /usr/local/etc/torrc.d/40_anon_connection_wizard.conf ]; then
+      file_name_list+="/usr/local/etc/torrc.d/40_anon_connection_wizard.conf"
       file_name_list+=" "
-   done
+   fi
+
+   if [ -f /usr/local/etc/torrc.d/50_user.conf ]; then
+      file_name_list+="/usr/local/etc/torrc.d/50_user.conf"
+      file_name_list+=" "
+   fi
+
+   # Comment the code block out because Whonix 14 does not really support %include directory
+   # for i in /etc/torrc.d/* ; do
+   #    file_name_list+="$i"
+   #    file_name_list+=" "
+   # done
+
+   # for i in /usr/local/etc/torrc.d/* ; do
+   #    file_name_list+="$i"
+   #    file_name_list+=" "
+   # done
 
    for file_name in $file_name_list ; do
       true "file_name: '$file_name'"
