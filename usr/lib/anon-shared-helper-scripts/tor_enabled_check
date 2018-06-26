@@ -25,7 +25,6 @@ check_tor_enabled_do() {
 
    shopt -s globstar
    shopt -s nullglob
-   shopt -s nocasematch
 
    ## many function calls in this script are provided by torrc-parser
    source /usr/lib/anon-gw-anonymizer-config/torrc-parser
