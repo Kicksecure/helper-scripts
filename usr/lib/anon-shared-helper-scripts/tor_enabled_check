@@ -34,6 +34,8 @@ check_tor_enabled_do() {
    get_tor_start_command
 
    ## extract default_torrc file and -f torrc file
+   ## sets: $default_torrc
+   ## sets: $f_torrc
    extra_specified_torrc
 
    ## call parser() to parse torrc files, arguments order matters
