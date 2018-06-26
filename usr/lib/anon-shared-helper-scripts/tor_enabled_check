@@ -23,57 +23,24 @@ check_tor_enabled_do() {
       fi
    fi
 
-   local line file_name file_name_list i
-
    shopt -s globstar
    shopt -s nullglob
+   shopt -s nocasematch
 
-   if [ -f /usr/share/tor/tor-service-defaults-torrc ]; then
-      file_name_list+="/usr/share/tor/tor-service-defaults-torrc"
-      file_name_list+=" "
-   fi
+   ## many function calls in this script are provided by torrc-parser
+   source /usr/lib/anon-gw-anonymizer-config/torrc-parser
 
-   if [ -f /etc/tor/torrc ]; then
-      file_name_list+="/etc/tor/torrc"
-      file_name_list+=" "
-   fi
+   ## $tor_start_command is set by this call
+   get_tor_start_command
 
-   if [ -f /etc/torrc.d/95_whonix.conf ]; then
-      file_name_list+="/etc/torrc.d/95_whonix.conf"
-      file_name_list+=" "
-   fi
+   ## extract default_torrc file and -f torrc file
+   extra_specified_torrc
 
-   if [ -f /usr/local/etc/torrc.d/40_anon_connection_wizard.conf ]; then
-      file_name_list+="/usr/local/etc/torrc.d/40_anon_connection_wizard.conf"
-      file_name_list+=" "
-   fi
+   ## call parser() to parse torrc files, arguments order matters
+   ## $torrc_all_in_one is set by the call
+   parser "$default_torrc" "$f_torrc"
 
-   if [ -f /usr/local/etc/torrc.d/50_user.conf ]; then
-      file_name_list+="/usr/local/etc/torrc.d/50_user.conf"
-      file_name_list+=" "
-   fi
-
-   # Comment the code block out because Whonix 14 does not really support %include directory
-   # for i in /etc/torrc.d/* ; do
-   #    file_name_list+="$i"
-   #    file_name_list+=" "
-   # done
-
-   # for i in /usr/local/etc/torrc.d/* ; do
-   #    file_name_list+="$i"
-   #    file_name_list+=" "
-   # done
-
-   for file_name in $file_name_list ; do
-      true "file_name: '$file_name'"
-      while read -r line || [ -n "$line" ]; do
-         if [ "$line" = "DisableNetwork 0" ]; then
-            TOR_ENABLED="1"
-         fi
-         if [ "$line" = "DisableNetwork 1" ]; then
-            TOR_ENABLED="0"
-         fi
-      done < "$file_name"
-      unset line
-   done
+   ## The $TOR_ENABLED used by whonixcheck is set by this function call
+   ## this call is also provided by torrc-parser
+   value_of_disable_network
 }
