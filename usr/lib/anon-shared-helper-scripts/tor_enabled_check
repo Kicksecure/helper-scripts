@@ -27,9 +27,12 @@ check_tor_enabled_do() {
    shopt -s nullglob
 
    ## many function calls in this script are provided by torrc-parser
+   ## provides: get_tor_start_command
+   ## provides: and extra_specified_torrc
+   ## provides: value_of_disable_network
    source /usr/lib/anon-gw-anonymizer-config/torrc-parser
 
-   ## $tor_start_command is set by this call
+   ## sets: $tor_start_command
    get_tor_start_command
 
    ## extract default_torrc file and -f torrc file
@@ -41,7 +44,7 @@ check_tor_enabled_do() {
    ## $torrc_all_in_one is set by the call
    parser "$default_torrc" "$f_torrc"
 
-   ## The $TOR_ENABLED used by whonixcheck is set by this function call
-   ## this call is also provided by torrc-parser
+   ## The $TOR_ENABLED is used by whonixcheck
+   ## sets: $TOR_ENABLED
    value_of_disable_network
 }
