@@ -1,0 +1,115 @@
+#!/bin/bash
+
+## Copyright (C) 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## Copyright (C) 2018 Iry Koon <iry@riseup.net>
+## See the file COPYING for copying conditions.
+
+#set -ex
+
+torrc_all_in_one=
+
+declare -a torrc_files
+
+## get_tor_start_command() will set the $tor_start_command to the command
+## used in Whonix to start Tor. If it did not successfully extract the
+## command, it will exit with exit code 1.  If Whonix get rid of
+## systemd for Tor control in the future, we simply change the content
+## in the tor_start_command
+function get_tor_start_command() {
+    ## Tor use systemd to start
+    tor_start_command=$(grep -i "ExecStart=" /lib/systemd/system/tor@default.service | sed s/ExecStart=//g)
+
+    if [ -z "$tor_start_command" ]; then
+        echo "[error] Failed to extra commands used to start Tor." >&2
+        return 1
+    fi
+
+    ## Tor is run as root, we need to simulate this, too.
+    tor_start_command="sudo $tor_start_command"
+}
+
+## extra_specified_torrc will extract torrc files specified in
+## $tor_start_command. Specifically, it will set "$default_torrc" and
+## "$f_torrc"
+function extra_specified_torrc() {
+    ## extract default_torrc file and -f torrc file
+    if [[ "$tor_start_command" =~ (--defaults-torrc )([^ ]*) ]]; then
+	default_torrc="${BASH_REMATCH[2]}"
+    fi
+
+    if [[ "$tor_start_command" =~ (-f )([^ ]*) ]]; then
+	f_torrc="${BASH_REMATCH[2]}"
+    fi
+}
+
+## one common call to parser is:
+## parser "$default_torrc" "$f_torrc"
+
+## parser() will write the parsing result to the variable
+## $torrc_all_in_one
+function parser() {
+    for abs_path in "$@"; do
+	local abs="$abs_path"
+        torrc_all_in_one+="===> Parsing $abs_path"$'\n'
+	if [[ -f  "$abs_path" ]]; then
+	    torrc_files+=("$abs_path")
+	    local file_content
+            file_content="$(cat "$abs")"
+	    IFS=$'\n'
+            # only show comments in torrc files when $VERY_VERBOSE is "1"
+	    for line in $file_content; do
+                if [[ "$line" =~ ^[[:space:]]*# && "$VERY_VERBOSE" != "1" ]]; then
+                    continue
+                else
+                    torrc_all_in_one+="$line"$'\n'
+                fi
+
+		if [[ "$line" =~ ^[[:space:]]*%include ]]; then
+                    parser "$(echo "$line" | awk '{print $2;}')"
+		fi
+	    done
+	elif [[ -d "$abs_path" ]]; then
+		 parser "$(find "$abs_path" -mindepth 1 | sort -g)"
+        fi
+        torrc_all_in_one+="===> Done parsing $abs"$'\n'
+    done
+}
+
+function parsing_order_verbose(){
+    echo "The Tor configuration files are parsed in such order: "
+    echo -n "$torrc_all_in_one"
+}
+
+function used_torrc_files(){
+    echo "${#torrc_files[@]} files are used as Tor configuration files: "
+    echo "${torrc_files[@]}"
+}
+
+function unknown_option_specifier(){
+    for unknown_option in "$@"; do
+	echo "The following files contain unkown option '$unknown_option': "
+	grep -iHnE --color "^([[:space:]])*$unknown_option" "${torrc_files[@]}"
+	echo "Please modify these files to fix the problem."
+    done
+}
+
+## this call shows the final value of DisableNetwork adopted by Tor.
+## $TOR_ENABLED is also used as part of the tor_enabled_check in the
+## whonixcheck
+
+## Note that it doesn't mean it is the value Tor is using because we
+## can always change the value via Tor controll port.
+function value_of_disable_network(){
+    shopt -s nocasematch
+    last_disablenetwork_line=$(grep -i "DisableNetwork" <<< "$torrc_all_in_one" | tail -n 1)
+    if [[ "$last_disablenetwork_line" =~ ^[[:space:]]*DisableNetwork[[:space:]]+0 ]]; then
+        TOR_ENABLED="1"
+    elif [[ "$last_disablenetwork_line" =~ ^[[:space:]]*DisableNetwork[[:space:]]+1 ]]; then
+        TOR_ENABLED="0"
+    fi
+}
+
+#parser $@
+#parsing_order_verbose
+#used_torrc_files
+#unknown_option_specifier "bridge" "control"

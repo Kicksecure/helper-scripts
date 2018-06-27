@@ -30,7 +30,7 @@ check_tor_enabled_do() {
    ## provides: get_tor_start_command
    ## provides: and extra_specified_torrc
    ## provides: value_of_disable_network
-   source /usr/lib/anon-gw-anonymizer-config/torrc-parser
+   source /usr/lib/anon-shared-helper-scripts/torrc-parser
 
    ## sets: $tor_start_command
    get_tor_start_command
