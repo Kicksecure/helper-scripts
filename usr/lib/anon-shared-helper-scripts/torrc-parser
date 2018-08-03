@@ -93,12 +93,10 @@ function unknown_option_specifier(){
     done
 }
 
-## this call shows the final value of DisableNetwork adopted by Tor.
-## $TOR_ENABLED is also used as part of the tor_enabled_check in the
-## whonixcheck
-
-## Note that it doesn't mean it is the value Tor is using because we
-## can always change the value via Tor controll port.
+## this call sets the final value of DisableNetwork to $TOR_ENABLED
+## $TOR_ENABLED is used by tor_enabled_check in the whonixcheck
+## Note that it doesn't mean it is the value Tor is using because the
+## value can always be changed via Tor controll port.
 function value_of_disable_network(){
     TOR_ENABLED=$(awk 'BEGIN{IGNORECASE = 1}{if ($1 == "DisableNetwork") value=$2}END{print value}')  <<< echo "$torrc_all_in_one" | sed 's/#.*//g'
 }
