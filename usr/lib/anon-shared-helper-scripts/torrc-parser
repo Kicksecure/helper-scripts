@@ -100,13 +100,7 @@ function unknown_option_specifier(){
 ## Note that it doesn't mean it is the value Tor is using because we
 ## can always change the value via Tor controll port.
 function value_of_disable_network(){
-    shopt -s nocasematch
-    last_disablenetwork_line=$(grep -i "DisableNetwork" <<< "$torrc_all_in_one" | tail -n 1)
-    if [[ "$last_disablenetwork_line" =~ ^[[:space:]]*DisableNetwork[[:space:]]+0 ]]; then
-        TOR_ENABLED="1"
-    elif [[ "$last_disablenetwork_line" =~ ^[[:space:]]*DisableNetwork[[:space:]]+1 ]]; then
-        TOR_ENABLED="0"
-    fi
+    TOR_ENABLED=$(awk 'BEGIN{IGNORECASE = 1}{if ($1 == "DisableNetwork") value=$2}END{print value}')  <<< echo "$torrc_all_in_one" | sed 's/#.*//g'
 }
 
 #parser $@
