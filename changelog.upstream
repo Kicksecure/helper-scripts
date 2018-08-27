@@ -1,3 +1,41 @@
+commit 5b6ac2bb4f54f0e0ef38d8f1e911feeab3f661ee
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 21 05:17:52 2018 +0800
+
+    readme
+
+commit bac42f2146cc51354aa79fff9601ded88b210f7d
+Merge: 8a8f0ce bef5b7f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Aug 18 15:58:21 2018 +0000
+
+    Merge remote-tracking branch 'troubadoour/master'
+
+commit bef5b7f72ef150ee80eb72a8e481d776bf260ffa
+Author: troubadoour <trobador@riseup.net>
+Date:   Sat Aug 18 14:54:18 2018 +0000
+
+    bug fix
+
+commit ff2995626eb0a7a03eb8e6670aaa8cefb6fecb46
+Author: troubadoour <trobador@riseup.net>
+Date:   Fri Aug 17 20:43:33 2018 +0000
+
+    dependency issue
+    remove "import from tor-control-panel"
+
+commit f86fd80545c379866f693405dc83a46048b51dcb
+Author: troubadoour <trobador@riseup.net>
+Date:   Thu Aug 16 18:26:19 2018 +0000
+
+    move repair_torrc in anon-shared-helper-scripts
+
+commit 8a8f0ce9b7584d57c1e94e76d39430af47a72d29
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Feb 5 14:17:07 2018 +0000
+
+    bumped changelog version
+
 commit e01b9996bc866448e43db8701482192e7651b679
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Feb 3 16:18:39 2018 +0000
