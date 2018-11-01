@@ -25,12 +25,12 @@ fi
 if command -v qubesdb-read >/dev/null 2>&1; then
    ## Qubes.
    if [ "$terminal_emulator_app" = "konsole" ]; then
-      terminal_emulator_extra_args="--hold -e"
+      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e"
    fi
 else
    ## Non-Qubes.
    if [ "$terminal_emulator_app" = "konsole" ]; then
-      terminal_emulator_extra_args="--hold -e --fullscreen"
+      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e --fullscreen"
    fi
 fi
 
