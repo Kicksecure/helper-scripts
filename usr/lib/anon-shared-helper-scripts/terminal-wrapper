@@ -6,10 +6,12 @@
 set -x
 set -e
 
-if command -v konsole_ >/dev/null 2>&1; then
+if command -v konsole >/dev/null 2>&1; then
    terminal_emulator_app="konsole"
-elif command -v xterm_ >/dev/null 2>&1; then
+elif command -v xterm >/dev/null 2>&1; then
    terminal_emulator_app="xterm -e"
+elif command -v xfce4-terminal >/dev/null 2>&1; then
+   terminal_emulator_app="xfce4-terminal"
 else
    error_message="$0: No supported terminal_emulator_app installed! Please install either konsole or xterm. parent:
 
@@ -25,11 +27,7 @@ if command -v qubesdb-read >/dev/null 2>&1; then
    if [ "$terminal_emulator_app" = "konsole" ]; then
       terminal_emulator_extra_args="--hold -e"
    fi
-else
-   ## Non-Qubes.
-   if [ "$terminal_emulator_app" = "konsole" ]; then
-      terminal_emulator_extra_args="--hold -e --fullscreen"
-   fi
 fi
 
-$terminal_emulator_app $terminal_emulator_extra_args "$@ ; bash"
+
+$terminal_emulator_app $terminal_emulator_extra_args "bash"
