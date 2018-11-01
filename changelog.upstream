@@ -1,3 +1,75 @@
+commit 81213f2211180feb7b9e9d5e0793648e812768e3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Nov 1 03:11:05 2018 -0400
+
+    output
+
+commit ec474173d205d694f7427bbb9d599e398d3fba56
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Nov 1 03:09:37 2018 -0400
+
+    prefer xfce4-terminal over xterm
+
+commit f8a9b6d6887a03cfa51b60d2c6d2721babae12bd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Nov 1 03:08:53 2018 -0400
+
+    fixes
+
+commit ac07ce4070f855f1bae93eee74279185c28ff0e8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Nov 1 02:56:48 2018 -0400
+
+    allow overwriting terminal_emulator_extra_args
+
+commit 4f4c1f6fe33ba9d0e0fdd29a3aa9ca8fd484fdee
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Nov 1 02:56:01 2018 -0400
+
+    allow overwriting terminal_emulator_app
+
+commit b4b950dc58180c53317ce0534a087a80f01a152e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Nov 1 02:54:29 2018 -0400
+
+    fix
+    
+    https://github.com/Whonix/anon-shared-helper-scripts/pull/4
+
+commit c98487511c030213a9df60833c3e7177b4c711c4
+Merge: bb3fab3 d602304
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Nov 1 02:53:34 2018 -0400
+
+    Merge remote-tracking branch 'origin/master'
+
+commit d6023046ce086656b9f69176049c69341260782f
+Merge: bb3fab3 9c08b61
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Nov 1 02:51:56 2018 -0400
+
+    Merge pull request #4 from Algernon-01/master
+    
+    Fixes for Xfce.
+
+commit 9c08b61f08dcb9c6501d5da44e438c036823faec
+Author: Algernon-01 <33966997+Algernon-01@users.noreply.github.com>
+Date:   Wed Oct 31 17:53:43 2018 +0000
+
+    Fixes for Xfce.
+
+commit bb3fab3b3de448ede51417f2b2b2e4760d9a467b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Oct 26 10:25:41 2018 +0000
+
+    support konsole and xterm in terminal-wrapper
+
+commit 85c9c7c82ebf0b18c1ebca002270379da834333a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Aug 27 15:51:28 2018 +0000
+
+    bumped changelog version
+
 commit 5b6ac2bb4f54f0e0ef38d8f1e911feeab3f661ee
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Aug 21 05:17:52 2018 +0800
