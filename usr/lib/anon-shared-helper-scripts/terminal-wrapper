@@ -13,7 +13,7 @@ elif command -v xfce4-terminal >/dev/null 2>&1; then
 elif command -v xterm >/dev/null 2>&1; then
    [ -n "$terminal_emulator_app" ] || terminal_emulator_app="xterm"
 else
-   error_message="$0: No supported terminal_emulator_app installed! Please install either konsole or xterm. parent:
+   error_message="$0: No supported terminal_emulator_app installed! Please install either konsole, xfce4-terminal or xterm. parent:
 
 PPID: $PPID
 $0 was called by: $(ps --no-headers -o command $PPID)" || true
