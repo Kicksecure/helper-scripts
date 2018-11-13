@@ -1,3 +1,15 @@
+commit 1aa97a5a7cb2260fac6e97303a3813c16807af77
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Nov 13 03:57:03 2018 -0500
+
+    fix Whonix KDE sdwdate-gui left click open log
+
+commit 686ebbfe79d024af5dc131a7dd32a76fb9d72809
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Nov 8 06:19:27 2018 +0000
+
+    bumped changelog version
+
 commit 5574fa40d892e4b76ea78db79313c9b84a89c8bc
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Nov 2 06:24:35 2018 -0400
