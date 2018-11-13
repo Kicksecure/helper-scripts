@@ -63,7 +63,10 @@ if command -v qubesdb-read >/dev/null 2>&1; then
 else
    ## Non-Qubes.
    if [ "$terminal_emulator_app" = "konsole" ]; then
-      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e --fullscreen"
+      ## Do not use '--fullscreen' since this starts the window without window
+      ## controls (no window close button) which is confusing.
+      ## '-e' needs to be the last paramater.
+      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e"
    fi
 fi
 
