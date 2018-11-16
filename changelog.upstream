@@ -1,3 +1,21 @@
+commit 5c28fc404c6826ce6b8e092fb6a3ca59563b2474
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Nov 16 09:09:11 2018 +0000
+
+    fix
+
+commit d0e26e6b0f8238996a61f94ab33f535d7272e013
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Nov 16 09:07:16 2018 +0000
+
+    fix pkg_manager_running_check
+
+commit 7c62845aedc219090a05155259c6b2b871ff75f4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Nov 13 12:29:48 2018 +0000
+
+    bumped changelog version
+
 commit 1aa97a5a7cb2260fac6e97303a3813c16807af77
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Nov 13 03:57:03 2018 -0500
