@@ -5,6 +5,7 @@ check_package_manager_running_helper() {
       check_apt_get_exit_code="/var/run/package_manager_lock exists."
       package_manager_waiting_msg="Lock file \
 /var/run/package_manager_lock exists. Waiting for it to be removed..."
+      package_manager_waiting_msg_x="$package_manager_waiting_msg"
       return 0
    fi
 
