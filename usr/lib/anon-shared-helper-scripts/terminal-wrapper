@@ -16,9 +16,9 @@ if [ -e "/etc/alternatives/x-terminal-emulator" ]; then
 fi
 
 supported_terminal_emulator_apps="
-   konsole
    xfce4-terminal
    xterm
+   konsole
 "
 
 for terminal_emulator_app_supported in $supported_terminal_emulator_apps ; do
@@ -27,12 +27,12 @@ for terminal_emulator_app_supported in $supported_terminal_emulator_apps ; do
    fi
 done
 
-if command -v konsole >/dev/null 2>&1; then
-   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="konsole"
-elif command -v xfce4-terminal >/dev/null 2>&1; then
+if command -v xfce4-terminal >/dev/null 2>&1; then
    [ -n "$terminal_emulator_app" ] || terminal_emulator_app="xfce4-terminal"
 elif command -v xterm >/dev/null 2>&1; then
    [ -n "$terminal_emulator_app" ] || terminal_emulator_app="xterm"
+elif command -v konsole >/dev/null 2>&1; then
+   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="konsole"
 elif [ ! "$etc_alternatives_x_terminal_emulator_base_name" = "" ]; then
    [ -n "$terminal_emulator_app" ] || terminal_emulator_app="$etc_alternatives_x_terminal_emulator_base_name"
    [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="-e"
