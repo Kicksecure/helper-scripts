@@ -1,3 +1,41 @@
+commit 1c34594d82ace59f6cfa6992b95a3552c86bf90f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Apr 6 10:19:36 2019 +0000
+
+    increase priority of xfce4-terminal
+    
+    https://forums.whonix.org/t/replacing-kdesudo-with-gksudo/6315/7
+
+commit 3cd9e0501f79b9f889e7753baeae833b88a6f91c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Apr 5 14:05:13 2019 -0400
+
+    port to debian buster
+
+commit 979e2fd161db7dc951ff923621ef752f3fb083f8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 4 09:32:46 2019 -0400
+
+    fix lintian warning
+
+commit 71d0b6b7a36c4e7a2e7bee6f5fabae6dde9ee072
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 4 05:50:33 2019 -0400
+
+    port to debian buster
+
+commit 2ce910b7e9461020831691365f8283efd0de2f74
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Apr 3 18:04:47 2019 -0400
+
+    readme
+
+commit 4fcf6004080a7ae3838753a2753935f59fe3da2b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 29 09:44:14 2019 +0000
+
+    bumped changelog version
+
 commit 8598859ba26ae64206deab17069221c7a58b2e2e
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Mar 29 09:02:44 2019 +0000
