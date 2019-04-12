@@ -167,11 +167,11 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
             true
          else
             clock_tor_consensus_check_result="slow"
-            clock_tor_consensus_check_msg="The clock is slow. Clock is slower than consensus/valid-after $tor_consensus_valid_after_output. $clock_causes"
+            clock_tor_consensus_check_msg="The clock might be too slow. Clock is slower than consensus/valid-after $tor_consensus_valid_after_output. $clock_causes"
          fi
          if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
             clock_tor_consensus_check_result="fast"
-            clock_tor_consensus_check_msg="The clock is fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. $clock_causes"
+            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. $clock_causes"
          else
             true
          fi
