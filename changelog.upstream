@@ -1,3 +1,45 @@
+commit cd5e35a8bada1690246fa40b6d835da3f941f660
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun May 12 05:41:32 2019 -0400
+
+    finish migration of package name
+
+commit dcbf03b224e03ac2b32ad6b229eb4c7cc84d624f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun May 12 02:58:44 2019 -0400
+
+    update path to pre.bsh
+
+commit 935acb4b7c25510c6aacd55a391fbb7312288f77
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun May 12 02:55:48 2019 -0400
+
+    Replaces: anon-shared-helper-scripts
+
+commit 243b3af34c6854bb5c5d76f219ae83ec6a2fdea4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun May 12 02:50:14 2019 -0400
+
+    anon-shared-helper-scripts -> helper-scripts
+
+commit dba496ffd3db9fa5f9a23f01ac48d7f5039b8763
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun May 12 02:42:03 2019 -0400
+
+    usr/lib/anon-shared-helper-scripts -> usr/lib/helper-scripts
+
+commit 980675e53c0f2be4674ba734e6d0a35b98fcc632
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun May 12 02:41:01 2019 -0400
+
+    import pre.bsh from anon-base-files
+
+commit c1c0aee4dd04f1381d611eaa41e7b02c1d802bd1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri May 3 11:15:03 2019 +0000
+
+    bumped changelog version
+
 commit a2886d8f50cbc5a54f57c372a76d34e6a743049f
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri May 3 10:56:51 2019 +0000
@@ -194,7 +236,7 @@ Date:   Thu Nov 1 02:54:29 2018 -0400
 
     fix
     
-    https://github.com/Whonix/helper-scripts/pull/4
+    https://github.com/Whonix/anon-shared-helper-scripts/pull/4
 
 commit c98487511c030213a9df60833c3e7177b4c711c4
 Merge: bb3fab3 d602304
@@ -260,7 +302,7 @@ commit f86fd80545c379866f693405dc83a46048b51dcb
 Author: troubadoour <trobador@riseup.net>
 Date:   Thu Aug 16 18:26:19 2018 +0000
 
-    move repair_torrc in helper-scripts
+    move repair_torrc in anon-shared-helper-scripts
 
 commit 8a8f0ce9b7584d57c1e94e76d39430af47a72d29
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -362,7 +404,7 @@ commit 4f864812f721fbb5199ab97e7ed22a0758553561
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 20:08:46 2017 +0000
 
-    move usr/lib/helper-scripts/firewall-restarter to whonix-firewall
+    move usr/lib/anon-shared-helper-scripts/firewall-restarter to whonix-firewall
 
 commit 3f5c79523dc35738ab8d7b69c6934af33ca541d0
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -374,7 +416,7 @@ commit a52407425e7b518fd43ce7db32cd850640c89e2e
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 18:43:22 2017 +0000
 
-    import usr/lib/helper-scripts/terminal-wrapper from anon-gw-anonymizer-config
+    import usr/lib/anon-shared-helper-scripts/terminal-wrapper from anon-gw-anonymizer-config
 
 commit 3ed56babfea1c9feba5361489dc7d4e34340910b
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -594,7 +636,7 @@ Date:   Sun Jan 15 08:29:33 2017 +0100
 
     add lintian override
     
-    helper-scripts source: dep5-copyright-license-name-not-unique
+    anon-shared-helper-scripts source: dep5-copyright-license-name-not-unique
     
     https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=779676
 
@@ -632,7 +674,7 @@ commit c097035631217617636f130bdfb90a12c774e8ce
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 14 20:22:30 2016 +0000
 
-    port helper-scripts to using Tor authentication cookie usage
+    port anon-shared-helper-scripts to using Tor authentication cookie usage
     
     https://phabricator.whonix.org/T578
 
@@ -946,7 +988,7 @@ commit deaf05221fbb203c70f4c7663a89d11caa3a7301
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Oct 17 14:12:43 2015 +0000
 
-    added usr/lib/helper-scripts/settings_echo script
+    added usr/lib/anon-shared-helper-scripts/settings_echo script
 
 commit a589af6cb6671333ccbb8ce8fe8586381c511976
 Author: troubadoour <trobador@riseup.net>
@@ -970,13 +1012,13 @@ commit 18807e4395642515a35a5393cd4d2d3d3cdfee2a
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Oct 8 00:26:23 2015 +0000
 
-    usr/lib/helper-scripts/te_pe_tb_check: not only check if Tor bootstrap reached 100%, but also if a Tor circuit has actually been established
+    usr/lib/anon-shared-helper-scripts/te_pe_tb_check: not only check if Tor bootstrap reached 100%, but also if a Tor circuit has actually been established
 
 commit 08c000077948404ae2b3cc9528fe00a2f05d8b7c
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Sep 16 12:24:02 2015 +0000
 
-    usr/lib/helper-scripts/tor_bootstrap_check.bsh: native Qubes support
+    usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.bsh: native Qubes support
 
 commit 01c4d9b92f728241ed12fcfef93690c7aa807ae2
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -1201,7 +1243,7 @@ commit dea35c304584ff6de4a1099960b30d783034d255
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Sep 27 18:06:51 2014 +0000
 
-    /usr/lib/helper-scripts/tor_signal_newnym.py use same error handling as /usr/lib/helper-scripts/tor_bootstrap_check.py
+    /usr/lib/anon-shared-helper-scripts/tor_signal_newnym.py use same error handling as /usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.py
 
 commit 2c413d1e30c1ec740f085ae3f5a11c9c88704155
 Merge: 4e96919 268fa66
@@ -1220,7 +1262,7 @@ commit 5570ed375e4048a3500fe2e15b42924077561742
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Sep 27 10:13:14 2014 +0000
 
-    added /usr/lib/helper-scripts/tor_signal_newnym.py
+    added /usr/lib/anon-shared-helper-scripts/tor_signal_newnym.py
 
 commit 268fa666cabc16aefb9025420f52224f0e031d0d
 Author: troubadoour <trobador@riseup.net>
@@ -1322,7 +1364,7 @@ commit 5200af02927b4f4b43f15e9e97545aab545bf362
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Jul 24 15:21:25 2014 +0000
 
-    imported tordate from tails as usr/lib/helper-scripts/anondate
+    imported tordate from tails as usr/lib/anon-shared-helper-scripts/anondate
 
 commit 952e3d734defa7cb19304edfd9321deb833ef9f9
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -1406,7 +1448,7 @@ commit 0c407726f8adf336ae4e323cdc80f940cb6d18ba
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jun 27 19:04:21 2014 +0000
 
-    usr/lib/helper-scripts/te_pe_tb_check: deactivated check_package_manager_running_helper, causes problems with whonix-initializer since it locks dpkg
+    usr/lib/anon-shared-helper-scripts/te_pe_tb_check: deactivated check_package_manager_running_helper, causes problems with whonix-initializer since it locks dpkg
 
 commit 1ef556de803667e652c26c4da91adb9984d2fbed
 Author: Patrick Schleizer <adrelanos@riseup.net>
