@@ -3,7 +3,7 @@
 Library that can be used by other (anonymity related) packages that want to
 programmatically get information about states of Tor. Common code, that is
 often required. Includes bash and Python helper scripts.
-## How to install `anon-shared-helper-scripts` using apt-get ##
+## How to install `helper-scripts` using apt-get ##
 
 1\. Add [Whonix's Signing Key](https://www.whonix.org/wiki/Whonix_Signing_Key).
 
@@ -23,15 +23,15 @@ echo "deb http://deb.whonix.org buster main" | sudo tee /etc/apt/sources.list.d/
 sudo apt-get update
 ```
 
-5\. Install `anon-shared-helper-scripts`.
+5\. Install `helper-scripts`.
 
 ```
-sudo apt-get install anon-shared-helper-scripts
+sudo apt-get install helper-scripts
 ```
 
 ## How to Build deb Package ##
 
-Replace `apparmor-profile-torbrowser` with the actual name of this package with `anon-shared-helper-scripts` and see [instructions](https://www.whonix.org/wiki/Dev/Build_Documentation/apparmor-profile-torbrowser).
+Replace `apparmor-profile-torbrowser` with the actual name of this package with `helper-scripts` and see [instructions](https://www.whonix.org/wiki/Dev/Build_Documentation/apparmor-profile-torbrowser).
 
 ## Contact ##
 
@@ -40,4 +40,4 @@ Replace `apparmor-profile-torbrowser` with the actual name of this package with 
 
 ## Payments ##
 
-`anon-shared-helper-scripts` requires [payments](https://www.whonix.org/wiki/Payments) to stay alive!
+`helper-scripts` requires [payments](https://www.whonix.org/wiki/Payments) to stay alive!

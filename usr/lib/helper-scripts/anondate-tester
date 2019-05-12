@@ -13,8 +13,8 @@ cmd_item_list=(
 )
 
 for cmd_item in ${cmd_item_list[@]} ; do
-   echo "cmd_item: /usr/lib/anon-shared-helper-scripts/anondate $cmd_item $@"
-   output="$(/usr/lib/anon-shared-helper-scripts/anondate $cmd_item $@)"
+   echo "cmd_item: /usr/lib/helper-scripts/anondate $cmd_item $@"
+   output="$(/usr/lib/helper-scripts/anondate $cmd_item $@)"
    exit_code="$?"
    echo "output: $output"
    echo "exit_code: $exit_code"

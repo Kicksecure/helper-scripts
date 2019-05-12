@@ -5,4 +5,4 @@
 
 set -e
 
-/usr/lib/anon-shared-helper-scripts/settings_echo > /var/run/anon-shared-helper-scripts/settings_environment_file
+/usr/lib/helper-scripts/settings_echo > /var/run/helper-scripts/settings_environment_file

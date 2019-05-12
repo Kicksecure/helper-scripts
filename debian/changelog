@@ -1,304 +1,304 @@
-anon-shared-helper-scripts (3:5.0-1) unstable; urgency=medium
+helper-scripts (3:5.0-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 03 May 2019 11:15:03 +0000
 
-anon-shared-helper-scripts (3:4.9-1) unstable; urgency=medium
+helper-scripts (3:4.9-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 12 Apr 2019 16:23:05 +0000
 
-anon-shared-helper-scripts (3:4.8-1) unstable; urgency=medium
+helper-scripts (3:4.8-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 08 Apr 2019 13:03:12 +0000
 
-anon-shared-helper-scripts (3:4.7-1) unstable; urgency=medium
+helper-scripts (3:4.7-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Sat, 06 Apr 2019 11:54:28 +0000
 
-anon-shared-helper-scripts (3:4.6-1) unstable; urgency=medium
+helper-scripts (3:4.6-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 29 Mar 2019 09:44:14 +0000
 
-anon-shared-helper-scripts (3:4.5-1) unstable; urgency=medium
+helper-scripts (3:4.5-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Tue, 12 Mar 2019 11:17:38 +0000
 
-anon-shared-helper-scripts (3:4.4-1) unstable; urgency=medium
+helper-scripts (3:4.4-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 16 Nov 2018 09:43:37 +0000
 
-anon-shared-helper-scripts (3:4.3-1) unstable; urgency=medium
+helper-scripts (3:4.3-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Tue, 13 Nov 2018 12:29:48 +0000
 
-anon-shared-helper-scripts (3:4.2-1) unstable; urgency=medium
+helper-scripts (3:4.2-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 08 Nov 2018 06:19:27 +0000
 
-anon-shared-helper-scripts (3:4.1-1) unstable; urgency=medium
+helper-scripts (3:4.1-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 01 Nov 2018 07:40:22 +0000
 
-anon-shared-helper-scripts (3:4.0-1) unstable; urgency=medium
+helper-scripts (3:4.0-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 27 Aug 2018 15:51:28 +0000
 
-anon-shared-helper-scripts (3:3.9-1) unstable; urgency=medium
+helper-scripts (3:3.9-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 05 Feb 2018 14:17:07 +0000
 
-anon-shared-helper-scripts (3:3.8-1) unstable; urgency=medium
+helper-scripts (3:3.8-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 01 Feb 2018 14:48:09 +0000
 
-anon-shared-helper-scripts (3:3.7-1) unstable; urgency=medium
+helper-scripts (3:3.7-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 18 Jan 2018 17:30:38 +0000
 
-anon-shared-helper-scripts (3:3.6-1) unstable; urgency=medium
+helper-scripts (3:3.6-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 12 Jan 2018 20:08:43 +0000
 
-anon-shared-helper-scripts (3:3.5-1) unstable; urgency=medium
+helper-scripts (3:3.5-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 22 Dec 2017 00:50:10 +0000
 
-anon-shared-helper-scripts (3:3.4-1) unstable; urgency=medium
+helper-scripts (3:3.4-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 21 Dec 2017 20:09:02 +0000
 
-anon-shared-helper-scripts (3:3.3-1) unstable; urgency=medium
+helper-scripts (3:3.3-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 21 Dec 2017 19:49:03 +0000
 
-anon-shared-helper-scripts (3:3.2-1) unstable; urgency=medium
+helper-scripts (3:3.2-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 15 Dec 2017 18:38:46 +0000
 
-anon-shared-helper-scripts (3:3.1-1) unstable; urgency=medium
+helper-scripts (3:3.1-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 06 Mar 2017 20:02:12 +0000
 
-anon-shared-helper-scripts (3:3.0-1) unstable; urgency=medium
+helper-scripts (3:3.0-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 27 Feb 2017 01:38:23 +0000
 
-anon-shared-helper-scripts (3:2.9-1) unstable; urgency=medium
+helper-scripts (3:2.9-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 17 Feb 2017 13:44:54 +0000
 
-anon-shared-helper-scripts (3:2.8-1) unstable; urgency=medium
+helper-scripts (3:2.8-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 06 Feb 2017 02:06:50 +0000
 
-anon-shared-helper-scripts (3:2.7-1) unstable; urgency=medium
+helper-scripts (3:2.7-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Sun, 15 Jan 2017 15:21:16 +0000
 
-anon-shared-helper-scripts (3:2.6-1) unstable; urgency=medium
+helper-scripts (3:2.6-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 12 Jan 2017 02:49:11 +0000
 
-anon-shared-helper-scripts (3:2.5-1) unstable; urgency=medium
+helper-scripts (3:2.5-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 16 Dec 2016 16:19:01 +0000
 
-anon-shared-helper-scripts (3:2.4-1) unstable; urgency=medium
+helper-scripts (3:2.4-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Sat, 10 Dec 2016 00:10:56 +0000
 
-anon-shared-helper-scripts (3:2.3-1) unstable; urgency=medium
+helper-scripts (3:2.3-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 12 May 2016 15:26:03 +0000
 
-anon-shared-helper-scripts (3:2.2-1) unstable; urgency=medium
+helper-scripts (3:2.2-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Wed, 04 May 2016 22:03:23 +0000
 
-anon-shared-helper-scripts (3:2.1-1) unstable; urgency=medium
+helper-scripts (3:2.1-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Wed, 27 Apr 2016 18:54:06 +0000
 
-anon-shared-helper-scripts (3:2.0-1) unstable; urgency=medium
+helper-scripts (3:2.0-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 25 Apr 2016 23:27:52 +0000
 
-anon-shared-helper-scripts (3:1.9-1) unstable; urgency=medium
+helper-scripts (3:1.9-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 07 Apr 2016 22:54:28 +0000
 
-anon-shared-helper-scripts (3:1.8-1) unstable; urgency=medium
+helper-scripts (3:1.8-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 22 Oct 2015 23:12:32 +0000
 
-anon-shared-helper-scripts (3:1.7-1) unstable; urgency=medium
+helper-scripts (3:1.7-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Tue, 25 Aug 2015 14:07:44 +0000
 
-anon-shared-helper-scripts (3:1.6-1) unstable; urgency=medium
+helper-scripts (3:1.6-1) unstable; urgency=medium
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 24 Aug 2015 17:47:13 +0000
 
-anon-shared-helper-scripts (3:1.5-1) unstable; urgency=low
+helper-scripts (3:1.5-1) unstable; urgency=low
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Wed, 03 Jun 2015 14:59:14 +0000
 
-anon-shared-helper-scripts (3:1.4-1) unstable; urgency=low
+helper-scripts (3:1.4-1) unstable; urgency=low
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 30 Apr 2015 17:55:54 +0000
 
-anon-shared-helper-scripts (3:1.3-1) unstable; urgency=low
+helper-scripts (3:1.3-1) unstable; urgency=low
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Tue, 07 Apr 2015 17:41:16 +0000
 
-anon-shared-helper-scripts (3:1.2-1) unstable; urgency=low
+helper-scripts (3:1.2-1) unstable; urgency=low
 
   * New upstream version (local package).
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Tue, 24 Mar 2015 17:28:51 +0000
 
-anon-shared-helper-scripts (3:1.1-1) unstable; urgency=low
+helper-scripts (3:1.1-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Wed, 04 Feb 2015 00:51:32 +0000
 
-anon-shared-helper-scripts (3:1.0-1) unstable; urgency=low
+helper-scripts (3:1.0-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 23 Oct 2014 22:38:31 +0000
 
-anon-shared-helper-scripts (3:0.9-1) unstable; urgency=low
+helper-scripts (3:0.9-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 20 Oct 2014 00:27:45 +0000
 
-anon-shared-helper-scripts (3:0.8-1) unstable; urgency=low
+helper-scripts (3:0.8-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Mon, 13 Oct 2014 12:32:55 +0000
 
-anon-shared-helper-scripts (3:0.7-1) unstable; urgency=low
+helper-scripts (3:0.7-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Sun, 28 Sep 2014 20:04:32 +0000
 
-anon-shared-helper-scripts (3:0.6-1) unstable; urgency=low
+helper-scripts (3:0.6-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Sat, 27 Sep 2014 10:13:32 +0000
 
-anon-shared-helper-scripts (3:0.5-1) unstable; urgency=low
+helper-scripts (3:0.5-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Thu, 18 Sep 2014 16:07:07 +0000
 
-anon-shared-helper-scripts (3:0.4-1) unstable; urgency=low
+helper-scripts (3:0.4-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Tue, 26 Aug 2014 15:57:40 +0000
 
-anon-shared-helper-scripts (3:0.3-1) unstable; urgency=low
+helper-scripts (3:0.3-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Tue, 19 Aug 2014 18:41:12 +0000
 
-anon-shared-helper-scripts (3:0.2-2) unstable; urgency=low
+helper-scripts (3:0.2-2) unstable; urgency=low
 
   * Fixed changelog date.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Sun, 17 Aug 2014 20:49:48 +0000
 
-anon-shared-helper-scripts (3:0.2-1) unstable; urgency=low
+helper-scripts (3:0.2-1) unstable; urgency=low
 
   * New upstream version.
 
  -- Patrick Schleizer <adrelanos@riseup.net>  Sun, 17 Aug 2014 20:45:06 +0000
 
-anon-shared-helper-scripts (3:0.1-2) unstable; urgency=low
+helper-scripts (3:0.1-2) unstable; urgency=low
 
   * Initial release.
 

@@ -1,17 +1,17 @@
 ## Copyright (C) 2012 - 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
-Source: anon-shared-helper-scripts
+Source: helper-scripts
 Section: misc
 Priority: optional
 Maintainer: Patrick Schleizer <adrelanos@riseup.net>
 Build-Depends: debhelper (>= 12), genmkfile, dh-python
-Homepage: https://github.com/Whonix/anon-shared-helper-scripts
-Vcs-Browser: https://github.com/Whonix/anon-shared-helper-scripts
-Vcs-Git: https://github.com/Whonix/anon-shared-helper-scripts.git
+Homepage: https://github.com/Whonix/helper-scripts
+Vcs-Browser: https://github.com/Whonix/helper-scripts
+Vcs-Git: https://github.com/Whonix/helper-scripts.git
 Standards-Version: 4.3.0
 
-Package: anon-shared-helper-scripts
+Package: helper-scripts
 Architecture: all
 Depends: sudo, python3, python3-stem, ${misc:Depends}
 Description: Helper scripts useful for Anonymizing Linux Distributions

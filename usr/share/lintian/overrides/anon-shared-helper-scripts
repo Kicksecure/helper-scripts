@@ -2,4 +2,4 @@
 ## See the file COPYING for copying conditions.
 
 ## Read-only access is ok.
-anon-shared-helper-scripts: uses-dpkg-database-directly usr/lib/anon-shared-helper-scripts/pkg_manager_running_check
+helper-scripts: uses-dpkg-database-directly usr/lib/helper-scripts/pkg_manager_running_check

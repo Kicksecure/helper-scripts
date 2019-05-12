@@ -72,7 +72,7 @@ License: GPL-3+-with-additional-terms-1
  ATTORNEYS' FEES AND EXPENSES) OR ANY OTHER LIABILITY ARISING FROM, RELATED TO OR
  IN CONNECTION WITH YOUR ASSUMPTIONS OF LIABILITY.
 
-Files: usr/lib/anon-shared-helper-scripts/anondate
+Files: usr/lib/helper-scripts/anondate
 Copyright: (C) Amnesia <amnesia at boum dot org>
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify

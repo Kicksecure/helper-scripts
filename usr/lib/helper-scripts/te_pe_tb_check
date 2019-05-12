@@ -20,9 +20,9 @@ exit_code: $exit_code"
 
 trap "error_handler" ERR
 
-source /usr/lib/anon-shared-helper-scripts/tor_enabled_check
-source /usr/lib/anon-shared-helper-scripts/pkg_manager_running_check
-source /usr/lib/anon-shared-helper-scripts/tor_bootstrap_check.bsh
+source /usr/lib/helper-scripts/tor_enabled_check
+source /usr/lib/helper-scripts/pkg_manager_running_check
+source /usr/lib/helper-scripts/tor_bootstrap_check.bsh
 
 te_pe_tb_check() {
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
