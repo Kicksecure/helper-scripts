@@ -29,24 +29,6 @@
 
 ## bash script fragment
 
-if [ ! -d "/tmp/prepost" ]; then
-   mkdir --parents --mode=g+rw "/tmp/prepost"
-fi
-
-TEMP_DIR="$(mktemp --directory --tmpdir="/tmp/prepost")"
-
-[ -o xtrace ]
-## returns:
-## - 0, if xtrace (-x) is set
-## - 1, if xtrace (-x) is not set
-XTRACE="$?"
-
-## config-package-dev doesn't like 'set -o pipefail'
-## http://mailman.mit.edu/pipermail/config-package-dev/2015-May/000041.html
-#set -o pipefail
-
-set -o errtrace
-
 colors() {
    if [ "$TERM" = "" ]; then
       return 0
@@ -95,8 +77,6 @@ colors() {
    } 2>/dev/null ||:
 }
 
-colors
-
 source_config_folder() {
    ## dpkg sets envrionment variables
    ## example:
@@ -117,6 +97,7 @@ source_config_folder() {
    bash_n_exit_code: $bash_n_exit_code
    bash_n_output:
    $bash_n_output" >&2
+         rm -f "$TEMP_FILE_PRE_BSH"
          exit 1
       fi
       source "$i"
@@ -125,25 +106,14 @@ source_config_folder() {
 }
 
 disable_echo() {
-   exec 5>&1 1>> "$TEMP_DIR/output"
-   exec 6>&2 2>> "$TEMP_DIR/output"
+   exec 5>&1 1>> "$TEMP_FILE_PRE_BSH"
+   exec 6>&2 2>> "$TEMP_FILE_PRE_BSH"
 }
 
 enable_echo() {
    exec 1>&5
    exec 2>&6
 }
-
-if [ "$XTRACE" = "0" ]; then
-   true "INFO: Setting DEBDEBUG to 1, because xtrace (-x) is set."
-   DEBDEBUG="1"
-fi
-
-if [ "$DEBDEBUG" = "1" ]; then
-   set -x
-else
-   disable_echo
-fi
 
 force_echo() {
    if [ ! "$DEBDEBUG" = "1" ]; then
@@ -167,7 +137,7 @@ error_handler_pre() {
 
    if [ ! "$DEBDEBUG" = "1" ]; then
       local output
-      output="$(cat "$TEMP_DIR/output")"
+      output="$(cat "$TEMP_FILE_PRE_BSH")"
    fi
 
    if [ "$output" = "" ]; then
@@ -194,8 +164,36 @@ $output
 ####################################################################
 " 1>&2
 
+   rm -f "$TEMP_FILE_PRE_BSH"
    exit 1
 }
+
+[ -o xtrace ]
+## returns:
+## - 0, if xtrace (-x) is set
+## - 1, if xtrace (-x) is not set
+XTRACE="$?"
+
+## config-package-dev doesn't like 'set -o pipefail'
+## http://mailman.mit.edu/pipermail/config-package-dev/2015-May/000041.html
+#set -o pipefail
+
+set -o errtrace
+
+TEMP_FILE_PRE_BSH="$(mktemp)"
+
+if [ "$XTRACE" = "0" ]; then
+   true "INFO: Setting DEBDEBUG to 1, because xtrace (-x) is set."
+   DEBDEBUG="1"
+fi
+
+if [ "$DEBDEBUG" = "1" ]; then
+   set -x
+else
+   disable_echo
+fi
+
+colors
 
 ## {{ Set up error handler.
 if [ "$(type -t errorhandlergeneral)" = "function" ]; then
@@ -223,6 +221,7 @@ source_config_folder
 for skip_script in $SKIP_SCRIPTS; do
    if [ "$skip_script" = "$own_filename" ]; then
       force_echo "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
+      rm -f "$TEMP_FILE_PRE_BSH"
       exit 0
    fi
 done
@@ -233,6 +232,7 @@ unset skip_script
 
 if [ "$own_filename" = "$maintscript_name" ]; then
    force_echo "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
+   rm -f "$TEMP_FILE_PRE_BSH"
    exit 0
 fi
 
