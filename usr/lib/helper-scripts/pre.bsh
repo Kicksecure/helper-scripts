@@ -78,7 +78,7 @@ colors() {
 }
 
 source_config_folder() {
-   ## dpkg sets envrionment variables
+   ## dpkg sets environment variables
    ## example:
    ## DPKG_MAINTSCRIPT_PACKAGE=timezone-utc
 
