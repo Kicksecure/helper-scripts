@@ -25,7 +25,7 @@
 ## Shell options:
 ## - enable errtrace
 
-## {{{ pre.bsh 0.7
+## {{{ pre.bsh 0.8
 
 ## bash script fragment
 
