@@ -1,3 +1,20 @@
+commit a87cd4fa6cadc541262a90f810a585fa4c4bdc0b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 10 17:39:25 2019 +0000
+
+    avoid "clock is fast" false positives
+    
+    When using an old Tor consensus which might be the case when no Tor
+    circuit has been established yet, there is no point to check Tor
+    consensus time as it might be outdated leading to concluding that the
+    clock is fast.
+
+commit a4cb69c4dd9f26c1fdfbab4dcc09766687b04bde
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 10 15:41:18 2019 +0000
+
+    bumped changelog version
+
 commit fa3daccb65a70f88e135fa7878be8b29e3a7b57e
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jun 9 09:54:30 2019 +0000
