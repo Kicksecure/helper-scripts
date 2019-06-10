@@ -1,3 +1,27 @@
+commit fa3daccb65a70f88e135fa7878be8b29e3a7b57e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 9 09:54:30 2019 +0000
+
+    bump version number
+
+commit 3cf941f917340a9d3218496006ff7f49ab6dd6e1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 9 09:54:09 2019 +0000
+
+    typo
+
+commit c97f223529c2fe29868458d6106720a8f1764172
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 9 09:53:31 2019 +0000
+
+    refactoring, fix tmp folder creation error
+
+commit 69ab110b56de8687c5675650a412778c920ff29b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jun 8 11:14:00 2019 +0000
+
+    bumped changelog version
+
 commit 1f68a80a5843e8285a188b3473748802cbf73b92
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jun 8 00:05:33 2019 -0400
