@@ -145,6 +145,20 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
       check_tor_bootstrap_status
    fi
 
+   ## When using an old Tor consensus which might be the case when no Tor
+   ## circuit has been established yet, there is no point to check Tor
+   ## consensus time as it might be outdated leading to concluding that the
+   ## clock is fast.
+   if [ "$tor_circuit_established" = "0" ]; then
+      if [ "$VM" = "Gateway" ]; then
+         echo "<b>Tor is not yet fully bootstrapped.</b> $tor_bootstrap_percent % done.\
+   <br>Tor reports: $tor_bootstrap_status"
+      else
+         echo "<b>Tor is not yet fully bootstrapped.</b> Tor circuit: $tor_circuit_established_word."
+      fi
+      exit "2"
+   fi
+
    ## If the static timestamp based time sanity check failed, there is no
    ## need to run the Tor consensus based time sanity check. Avoiding
    ## duplicate output.
@@ -211,13 +225,9 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
       exit "0"
    fi
 
-   if [ "$VM" = "Gateway" ]; then
-      echo "<b>Tor is not yet fully bootstrapped.</b> $tor_bootstrap_percent % done.\
-<br>Tor reports: $tor_bootstrap_status"
-   else
-      echo "<b>Tor is not yet fully bootstrapped.</b> Tor circuit: $tor_circuit_established_word."
-   fi
-   exit "2"
+   echo "Tor Bootstrap Result: \
+   <b>ERROR tor_circuit_established is neither 0 nor 1. tor_circuit_established: $tor_circuit_established</b><br> Please report this bug!" >&2
+   exit "0"
 }
 
 te_pe_tb_check "$@"
