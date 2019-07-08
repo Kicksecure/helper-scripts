@@ -1,0 +1,61 @@
+str_replace(1) -- literal search and replace in files (in place) and in STDIN
+=============================================
+
+<span class="comment">
+# Copyright: Copyright (c) 2016 Samer-Al-iraqi
+# License: MIT License
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+</span>
+
+## SYNOPSIS
+
+`str_replace Search Replace File`
+
+## DESCRIPTION
+Non-Regex text search and replace for linux
+
+str_replace will enable you to do literal search and replace in files (in place) and in STDIN
+
+No messing with regular expression anymore. No more `sed` or `awk` or `perl -pie`. This handy script written in perl will replace text exactly as you want, No matter it has the so-called special characters or not. Just like `str_replace` PHP function.
+
+## RETURN VALUES
+0 ok.
+
+2 if file not found.
+
+## EXAMPLE
+To read input from STDIN and write to STDOUT.
+
+`STDIN | str_replace Search Replace`
+
+## NOTES
+
+* Search and replace always case-sensitive
+* Always do global Search and replace
+* Don't care about lines.
+* It may work in Windows as well.
+* tested with unicode (I surprised it worked correctly!)
+
+## AUTHOR
+This man page has been compiled and modified by
+Patrick Schleizer (adrelanos@riseup.net)
+based contains contents from
+https://github.com/Samer-Al-iraqi/Linux-str_replace/blob/master/README.md
+Copyright: Copyright (c) 2016 Samer-Al-iraqi
+License: MIT License
