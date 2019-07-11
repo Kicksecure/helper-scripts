@@ -1,3 +1,21 @@
+commit e34d17bd37f932219f33b49b0ba50c469c77bfa9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jul 11 07:21:54 2019 +0000
+
+    remove trailing space
+
+commit 9b56d46bbb7cfd032eec4492e332344b129f845f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jul 11 07:21:30 2019 +0000
+
+    import https://github.com/Samer-Al-iraqi/Linux-str_replace/commit/2a60110edb59bc620358e026d278b84f60d8e499
+
+commit 873dcd638b777d81efb34fe89ea985b5423b4a8b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jul 11 07:14:54 2019 +0000
+
+    bumped changelog version
+
 commit 8b5101e9f955e6a2ce7566771307f107976674e0
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Jul 8 19:11:04 2019 +0000
