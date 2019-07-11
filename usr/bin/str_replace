@@ -6,8 +6,8 @@ use warnings;
 
 my $numarg = $#ARGV + 1;
 if ($numarg < 2) {
-    print "Usage: str_replace Search Replace File\nOr: STDIN str_replace Search Replace";
-    exit;
+    print "Usage: str_replace Search Replace File\nOr: STDIN str_replace Search Replace\n";
+    exit 1;
 }
 
 my $find=$ARGV[0];
