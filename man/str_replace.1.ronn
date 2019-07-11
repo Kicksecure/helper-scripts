@@ -37,6 +37,8 @@ No messing with regular expression anymore. No more `sed` or `awk` or `perl -pie
 ## RETURN VALUES
 0 ok.
 
+1 syntax error.
+
 2 if file not found.
 
 ## EXAMPLE
