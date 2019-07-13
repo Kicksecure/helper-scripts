@@ -209,8 +209,13 @@ if [ "$(type -t errorhandlergeneral)" = "function" ]; then
    trap "errorhandlergeneral" ERR
 else
    ## Function errorhandlergeneral does not exist.
-   ## Fall back to a simpler error handler.
-   trap "error_handler_pre" ERR
+
+   ## Check if any trap is already declared.
+   if [ "$(trap -p ERR)" = "" ]; then
+      ## No trap exist yet.
+      ## Fall back to a simpler error handler.
+      trap "error_handler_pre" ERR
+   fi
 fi
 ## }}
 
