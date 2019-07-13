@@ -36,6 +36,16 @@
 
 ## Shell options: enables errtrace
 
+## Configuration Folders
+##
+## For example if the name of the package is 'security-misc':
+## - /etc/security-misc_maint.d/*.conf
+## - /usr/local/etc/security-misc_maint.d/*.conf
+##
+## For example if the name of the script is 'panic-on-oops':
+## - /etc/panic-on-oops_pre.d/*.conf
+## - /usr/local/etc/panic-on-oops_pre.d/*.conf
+
 ## {{{ pre.bsh 0.9
 
 ## bash script fragment
