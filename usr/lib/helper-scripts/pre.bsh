@@ -25,7 +25,7 @@
 ## Shell options:
 ## - enable errtrace
 
-## {{{ pre.bsh 0.8
+## {{{ pre.bsh 0.9
 
 ## bash script fragment
 
@@ -82,13 +82,25 @@ source_config_folder() {
    ## example:
    ## DPKG_MAINTSCRIPT_PACKAGE=timezone-utc
 
-   pre_bsh_settings_folder="${DPKG_MAINTSCRIPT_PACKAGE}_maint.d"
+   if [ "$DPKG_MAINTSCRIPT_PACKAGE" = "" ]; then
+      pre_bsh_settings_folder="${own_filename}_pre.d"
+   else
+      pre_bsh_settings_folder="${DPKG_MAINTSCRIPT_PACKAGE}_maint.d"
+   fi
 
    ## example:
    ## pre_bsh_settings_folder=timezone-utc_maint.d
 
    shopt -s nullglob
    local i
+
+   ## example:
+   ## /etc/panic-on-oops_pre.d/*.conf
+   ## /usr/local/etc/panic-on-oops_pre.d/*.conf
+
+   true "folder 1: /etc/${pre_bsh_settings_folder}/*.conf"
+   true "folder 2: /usr/local/etc/${pre_bsh_settings_folder}/*.conf"
+
    for i in /etc/${pre_bsh_settings_folder}/*.conf /usr/local/etc/${pre_bsh_settings_folder}/*.conf; do
       bash_n_exit_code="0"
       bash_n_output="$(bash -n "$i" 2>&1)" || { bash_n_exit_code="$?" ; true; };
@@ -168,12 +180,6 @@ $output
    exit 1
 }
 
-[ -o xtrace ]
-## returns:
-## - 0, if xtrace (-x) is set
-## - 1, if xtrace (-x) is not set
-XTRACE="$?"
-
 ## config-package-dev doesn't like 'set -o pipefail'
 ## http://mailman.mit.edu/pipermail/config-package-dev/2015-May/000041.html
 #set -o pipefail
@@ -182,7 +188,7 @@ set -o errtrace
 
 TEMP_FILE_PRE_BSH="$(mktemp)"
 
-if [ "$XTRACE" = "0" ]; then
+if test -o xtrace ; then
    true "INFO: Setting DEBDEBUG to 1, because xtrace (-x) is set."
    DEBDEBUG="1"
 fi
