@@ -149,6 +149,17 @@ source_config_folder() {
    shopt -u nullglob
 }
 
+check_scripts_to_skip() {
+   local skip_script
+   for skip_script in $SKIP_SCRIPTS; do
+      if [ "$skip_script" = "$own_filename" ]; then
+         force_echo "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
+         rm -f "$TEMP_FILE_PRE_BSH"
+         exit 0
+      fi
+   done
+}
+
 disable_echo() {
    exec 5>&1 1>> "$TEMP_FILE_PRE_BSH"
    exec 6>&2 2>> "$TEMP_FILE_PRE_BSH"
@@ -261,13 +272,6 @@ own_filename="${0##*/}"
 
 source_config_folder
 
-for skip_script in $SKIP_SCRIPTS; do
-   if [ "$skip_script" = "$own_filename" ]; then
-      force_echo "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
-      rm -f "$TEMP_FILE_PRE_BSH"
-      exit 0
-   fi
-done
-unset skip_script
+check_scripts_to_skip
 
 ## }}}
