@@ -3,6 +3,17 @@
 ## Copyright (C) 2012 - 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+## The idea of this bash fragment is:
+## Say nothing, if everything goes well, but dump everything on error.
+
+## It allows to easily look inside the xtrace of a (Debian maintainer) script,
+## when the DEBDEBUG environment variable is set to 1.
+
+## To use it in other scripts, use something like this:
+# if [ -f /usr/lib/helper-scripts/pre.bsh ]; then
+#    source /usr/lib/helper-scripts/pre.bsh
+# fi
+
 ## Error log:
 ## - implement trap ERR if function errorhandlergeneral does not exist
 ## - implements a simple error handler if non exists
