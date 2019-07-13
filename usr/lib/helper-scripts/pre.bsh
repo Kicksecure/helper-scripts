@@ -270,13 +270,4 @@ for skip_script in $SKIP_SCRIPTS; do
 done
 unset skip_script
 
-## example:
-## maintscript_name="timezone-utc.postinst"
-
-if [ "$own_filename" = "$maintscript_name" ]; then
-   force_echo "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
-   rm -f "$TEMP_FILE_PRE_BSH"
-   exit 0
-fi
-
 ## }}}
