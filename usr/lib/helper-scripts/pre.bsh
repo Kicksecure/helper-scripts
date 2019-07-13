@@ -5,33 +5,36 @@
 
 ## Error log:
 ## - implement trap ERR if function errorhandlergeneral does not exist
+## - implements a simple error handler if non exists
 ## - run silent by default
 ## - write xtrace to temporary log
 ## - show full xtrace on unexpected non-zero exit code
 ## - show exit code on unexpected non-zero exit code
 ## - run syntax check "bash -n" on this script
 ## - run syntax check "bash -n" on the script that sourced this script
-##
+
 ## DEBDEBUG:
-## - enable xtrace (-x) for maintainer script when DEBDEBUG environment
-##   variable is set to 1
-##   for example:
-##      sudo DEBDEBUG=1 dpkg -i /path/to/package.deb
 ##
+## enable xtrace (-x) for maintainer script when DEBDEBUG environment
+## variable is set to 1.
+## For example:
+##    sudo DEBDEBUG=1 dpkg -i /path/to/package.deb
+
 ## SKIP_SCRIPTS
-## - SKIP_SCRIPTS environment variable to skip scripts by name
-##   for example:
-##      sudo DEBDEBUG=1 SKIP_SCRIPTS=" security-misc.postinst " dpkg -i /path/to/package.deb
 ##
-##      export DEBDEBUG=1
-##      export SKIP_SCRIPTS+=" security-misc.postinst "
-##      sudo -E dpkg -i /path/to/package.deb
+## The SKIP_SCRIPTS environment variable to skip scripts by name
+## For example:
+##    sudo DEBDEBUG=1 SKIP_SCRIPTS=" security-misc.postinst " dpkg -i /path/to/package.deb
 ##
-## Colorful output:
-## - provide color function
+## another example:
 ##
-## Shell options:
-## - enable errtrace
+##    export DEBDEBUG=1
+##     export SKIP_SCRIPTS+=" security-misc.postinst "
+##     sudo -E dpkg -i /path/to/package.deb
+
+## Colorful output: provides color function
+
+## Shell options: enables errtrace
 
 ## {{{ pre.bsh 0.9
 
