@@ -15,9 +15,17 @@
 ## DEBDEBUG:
 ## - enable xtrace (-x) for maintainer script when DEBDEBUG environment
 ##   variable is set to 1
+##   for example:
+##      sudo DEBDEBUG=1 dpkg -i /path/to/package.deb
 ##
 ## SKIP_SCRIPTS
 ## - SKIP_SCRIPTS environment variable to skip scripts by name
+##   for example:
+##      sudo DEBDEBUG=1 SKIP_SCRIPTS=" security-misc.postinst " dpkg -i /path/to/package.deb
+##
+##      export DEBDEBUG=1
+##      export SKIP_SCRIPTS+=" security-misc.postinst "
+##      sudo -E dpkg -i /path/to/package.deb
 ##
 ## Colorful output:
 ## - provide color function
