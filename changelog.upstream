@@ -1,3 +1,62 @@
+commit 0ce99d88d8ecb8c5edf22cfa6bc98be6a28338e3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 13 18:42:18 2019 +0000
+
+    refactoring
+
+commit c78749e84685b93d82d4a49193832c4d07f176c7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 13 18:39:51 2019 +0000
+
+    fix
+
+commit 3b8d9a9f414388f84fa65913f1778320c63d06cb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 13 18:37:44 2019 +0000
+
+    comments
+
+commit 12b7dc85f3a871fb3614e42421a637446cb376ed
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 13 18:32:53 2019 +0000
+
+    comment
+
+commit b04ac9962746955a79a5bf113eabcb5a6852bbab
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 13 18:30:30 2019 +0000
+
+    comments
+
+commit c8a402be010b4afb707dda5a4f34276a5d5dc53a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 13 18:27:37 2019 +0000
+
+    comments
+
+commit 039e362cfc072fc5d865d78c48539aecd1ee1941
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 13 18:18:13 2019 +0000
+
+    do no overwrite existing trap ERR
+
+commit ebfff5931b9a101023002839671280cd8ce652f2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 13 18:13:19 2019 +0000
+
+    support also being imported by non-maintainer scripts
+    
+    parse config folders such as:
+    
+    /etc/panic-on-oops_pre.d/*.conf
+    /usr/local/etc/panic-on-oops_pre.d/*.conf
+
+commit ee39cf9f0d266c274939588457a3058398f8877b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jul 11 07:24:47 2019 +0000
+
+    bumped changelog version
+
 commit 1b279d5e7755cc0942b94c5c1617f2913a6c31fb
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Jul 11 07:24:31 2019 +0000
