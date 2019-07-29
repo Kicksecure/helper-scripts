@@ -163,9 +163,13 @@ check_scripts_to_skip() {
 disable_echo() {
    exec 5>&1 1>> "$TEMP_FILE_PRE_BSH"
    exec 6>&2 2>> "$TEMP_FILE_PRE_BSH"
+   disabled_echo=true
 }
 
 enable_echo() {
+   if [ ! "$disabled_echo" = "true" ]; then
+      return 0
+   fi
    exec 1>&5
    exec 2>&6
 }
@@ -181,9 +185,9 @@ force_echo() {
    ## No need to use "true" or "echo" in case DEBDEBUG is set to 1,
    ## because in that case we saw the output anyway, because set xtrace (-x) was set.
 
-   if [ ! "$DEBDEBUG" = "1" ]; then
-      disable_echo
-   fi
+#    if [ ! "$DEBDEBUG" = "1" ]; then
+#       disable_echo
+#    fi
 }
 
 error_handler_pre() {
@@ -197,11 +201,6 @@ error_handler_pre() {
 
    if [ "$output" = "" ]; then
       output="## See above."
-   fi
-
-   if [ ! "$DEBDEBUG" = "1" ]; then
-      exec 1>&5
-      exec 2>&6
    fi
 
    force_echo "
@@ -239,7 +238,9 @@ fi
 if [ "$DEBDEBUG" = "1" ]; then
    set -x
 else
-   disable_echo
+   if [ ! "$no_disable_echo" = "true" ]; then
+      disable_echo
+   fi
 fi
 
 colors
