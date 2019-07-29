@@ -1,3 +1,15 @@
+commit 6d479fc01dba1e503b307c8f3c78902bede50bd3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jul 29 09:35:41 2019 +0000
+
+    support no_disable_echo=true
+
+commit 6df5ddaab2fd4522852ce84d1c0035e4fd5443d5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 13 18:50:53 2019 +0000
+
+    bumped changelog version
+
 commit 0ce99d88d8ecb8c5edf22cfa6bc98be6a28338e3
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jul 13 18:42:18 2019 +0000
