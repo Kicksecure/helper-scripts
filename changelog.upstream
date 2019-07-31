@@ -1,3 +1,17 @@
+commit 598b0cd1367faa46bd7708041b717a078ccf894a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jul 31 10:57:10 2019 -0400
+
+    pre.bsh enable output by default
+    
+    can be disabled using: disable_echo=true
+
+commit 99353e9700cb73615f104892257201549c6b24fc
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jul 31 07:37:35 2019 +0000
+
+    bumped changelog version
+
 commit cfd1ffb0a118ac3da95a27046f9019932cc8aac7
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Jul 31 03:07:01 2019 -0400
