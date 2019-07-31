@@ -8,7 +8,7 @@ set -o pipefail
 
 variables() {
    [ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
-   [ -n "$TOR_LOG" ] || TOR_LOG="/var/run/tor/log"
+   [ -n "$TOR_LOG" ] || TOR_LOG="/run/tor/log"
    [ -n "$TOR_DIR" ] || TOR_DIR="/var/lib/tor"
    [ -n "$TOR_DESCRIPTORS" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
    [ -n "$NEW_TOR_DESCRIPTORS" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"

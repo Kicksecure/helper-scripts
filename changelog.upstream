@@ -902,7 +902,7 @@ commit 271a57cfb0c21dd3a9f2abe6cf9ce6701ebba23a
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 7 23:23:29 2016 +0000
 
-    first check if /var/run/qubes/this-is-templatevm exists before trying qubesdb
+    first check if /run/qubes/this-is-templatevm exists before trying qubesdb
 
 commit 82412a5834982d41998dd9c3e44d2bdd8a7e3818
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -1040,7 +1040,7 @@ Date:   Wed Aug 24 20:32:08 2016 +0000
 
     added firewall restarter
     
-    that restarts whonix-firewall when /var/run/sdwdate/first_success status file
+    that restarts whonix-firewall when /run/sdwdate/first_success status file
     was created
     
     https://phabricator.whonix.org/T533

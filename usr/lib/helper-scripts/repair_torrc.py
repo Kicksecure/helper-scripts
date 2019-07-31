@@ -65,7 +65,7 @@ if whonix and not os.path.exists(whonix_torrcd_path):
 torrc_text = '%s# %s\n' % (torrc_text, torrc_user_file_path)
 if not whonix:
     torrc_text = (torrc_text +
-        'Log notice file /var/run/tor/log\n')
+        'Log notice file /run/tor/log\n')
 
 if not os.path.exists(torrc_file_path):
     with open(torrc_file_path, "w+") as f:

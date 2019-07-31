@@ -5,4 +5,4 @@
 
 set -e
 
-/usr/lib/helper-scripts/settings_echo > /var/run/helper-scripts/settings_environment_file
+/usr/lib/helper-scripts/settings_echo > /run/helper-scripts/settings_environment_file
