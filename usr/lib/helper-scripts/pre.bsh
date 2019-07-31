@@ -238,7 +238,7 @@ fi
 if [ "$DEBDEBUG" = "1" ]; then
    set -x
 else
-   if [ ! "$no_disable_echo" = "true" ]; then
+   if [ "$disable_echo" = "true" ]; then
       disable_echo
    fi
 fi
