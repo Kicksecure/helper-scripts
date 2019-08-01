@@ -1,3 +1,21 @@
+commit a01a27a571b9f6cc55530d59256d5d3146f5c449
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 1 11:13:39 2019 +0000
+
+    readme
+
+commit ad34b1f92a6e043daafb91483822140d49af3471
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 1 02:37:34 2019 -0400
+
+    pre.bsh 1.0
+
+commit efc352c04903cf146946702348f6419cd84fdee2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jul 31 15:17:09 2019 +0000
+
+    bumped changelog version
+
 commit 598b0cd1367faa46bd7708041b717a078ccf894a
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Jul 31 10:57:10 2019 -0400
