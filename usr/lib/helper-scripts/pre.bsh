@@ -57,7 +57,7 @@
 ## - /etc/panic-on-oops_pre.d/*.conf
 ## - /usr/local/etc/panic-on-oops_pre.d/*.conf
 
-## {{{ pre.bsh 0.9
+## {{{ pre.bsh 1.0
 
 ## bash script fragment
 
