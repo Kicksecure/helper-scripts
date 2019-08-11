@@ -1,0 +1,105 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+set -x
+set -e
+
+if command -v qubesdb-read >/dev/null 2>&1 ; then
+   qubes_vm_type="$(qubesdb-read /qubes-vm-type)"
+fi
+
+cache_folder="/var/cache/anon-base-files"
+
+if [ "$qubes_vm_type" = "TemplateVM" ]; then
+   ## Separate done file for Qubes TemplateVMs to make this work with the
+   ## current home folder population for Qubes DispVMs.
+   ## https://github.com/QubesOS/qubes-core-agent-linux/blob/f380c346cf9af3f058b8ece853d7d4a5ece28815/misc/dispvm-prerun.sh#L6-L12
+   done_file="$cache_folder/first-boot-skel.TemplateVM.done"
+else
+   ## Non-Qubes-Whonix or non-Qubes TemplateVMs
+   done_file="$cache_folder/first-boot-skel.done"
+fi
+
+if [ -e "$done_file" ]; then
+   exit 0
+fi
+
+user_name="user"
+home_dir="/home/$user_name"
+
+if [ ! -d "$home_dir" ]; then
+   exit 0
+fi
+
+skel_folder="/etc/skel"
+
+if [ ! -d "$skel_folder" ]; then
+   exit 0
+fi
+
+pushd "$skel_folder"
+
+mkdir -p "$cache_folder"
+
+shopt -s dotglob
+shopt -s nullglob
+
+for fso in ./* ; do
+   true "fso: $fso"
+   ## Technically below for 'cp' it would also be possible to use '$fso' rather
+   ## than '$fso_basename', but the latter produces a prettier xtrace.
+   fso_basename="${fso##*/}"
+   if [ ".bashrc.whonix" = "$fso_basename" ]; then
+      ## We do not need /home/user/.bashrc.whonix.
+      ## /home/user/.bashrc is handled below.
+      continue
+   fi
+   if [ ".bashrc.whonix-orig" = "$fso_basename" ]; then
+      ## We do not need /home/user/.bashrc.whonix-orig.
+      ## /home/user/.bashrc is handled below.
+      continue
+   fi
+   if [ -d "$fso" ]; then
+      true "folder: yes"
+      cp --verbose --no-clobber --archive --parents --recursive "$fso_basename" "$home_dir"
+      chown --changes --recursive "$user_name:$user_name" "$home_dir/$fso_basename"
+   else
+      true "folder: no"
+      cp --verbose --no-clobber --archive "$fso_basename" "$home_dir"
+      chown --changes "$user_name:$user_name" "$home_dir/$fso_basename"
+   fi
+done
+
+if [ ! -f "$skel_folder/.bashrc.whonix-orig" ]; then
+   touch "$done_file"
+   exit 0
+fi
+if [ ! -f "$skel_folder/.bashrc.whonix" ]; then
+   touch "$done_file"
+   exit 0
+fi
+if [ ! -f "$skel_folder/.bashrc" ]; then
+   touch "$done_file"
+   exit 0
+fi
+
+if diff "$skel_folder/.bashrc.whonix" "$home_dir/.bashrc" >/dev/null ; then
+   ## no diff found
+   true "Already using Whonix $skel_folder/.bashrc.whonix. No need to copy $skel_folder/.bashrc.whonix."
+   touch "$done_file"
+   exit 0
+fi
+
+if diff "$skel_folder/.bashrc.whonix-orig" "$home_dir/.bashrc" >/dev/null ; then
+   ## no diff found
+   true "Overwriting default $home_dir/.bashrc ( which matches $skel_folder/.bashrc.whonix-orig ) with $skel_folder/.bashrc.whonix."
+   cp --verbose --archive "$skel_folder/.bashrc.whonix" "$home_dir/.bashrc"
+   chown --changes "$user_name:$user_name" "$home_dir/.bashrc"
+else
+   ## a diff was found
+   true "User customized $home_dir/.bashrc. Keeping it."
+fi
+
+touch "$done_file"
