@@ -1,3 +1,15 @@
+commit 10efd832c559a09c6eb2c61f7d20f5a45b464bce
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 11 14:14:33 2019 +0000
+
+    import from whonix-base-files
+
+commit 087200ae670e3f5335f3467411ce73fb5d9fe083
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 1 11:42:11 2019 +0000
+
+    bumped changelog version
+
 commit a01a27a571b9f6cc55530d59256d5d3146f5c449
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Aug 1 11:13:39 2019 +0000
