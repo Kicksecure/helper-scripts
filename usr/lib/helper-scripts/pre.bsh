@@ -137,7 +137,7 @@ source_config_folder() {
       bash_n_exit_code="0"
       bash_n_output="$(bash -n "$i" 2>&1)" || { bash_n_exit_code="$?" ; true; };
       if [ ! "$bash_n_exit_code" = "0" ]; then
-         force_echo "Invalid config file: $i
+         force_output "Invalid config file: $i
    bash_n_exit_code: $bash_n_exit_code
    bash_n_output:
    $bash_n_output" >&2
@@ -153,7 +153,7 @@ check_scripts_to_skip() {
    local skip_script
    for skip_script in $SKIP_SCRIPTS; do
       if [ "$skip_script" = "$own_filename" ]; then
-         force_echo "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
+         force_output "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
          rm -f "$TEMP_FILE_PRE_BSH"
          exit 0
       fi
@@ -161,33 +161,31 @@ check_scripts_to_skip() {
 }
 
 disable_echo() {
+   if [ "$disabled_echo" = "true" ]; then
+      return 0
+   fi
    exec 5>&1 1>> "$TEMP_FILE_PRE_BSH"
    exec 6>&2 2>> "$TEMP_FILE_PRE_BSH"
    disabled_echo=true
 }
 
 enable_echo() {
-   if [ ! "$disabled_echo" = "true" ]; then
-      return 0
+   if [ "$disabled_echo" = "true" ]; then
+      exec 1>&5
+      exec 2>&6
+      disabled_echo=false
    fi
-   exec 1>&5
-   exec 2>&6
 }
 
-force_echo() {
-   if [ ! "$DEBDEBUG" = "1" ]; then
+force_output() {
+   if [ "$disabled_echo" = "true" ]; then
+      redisable_echo="true"
       enable_echo
    fi
-
-   if [ ! "$DEBDEBUG" = "1" ]; then
-      echo "$@"
+   echo "$@"
+   if [ "$redisable_echo" = "true" ]; then
+      disable_echo
    fi
-   ## No need to use "true" or "echo" in case DEBDEBUG is set to 1,
-   ## because in that case we saw the output anyway, because set xtrace (-x) was set.
-
-#    if [ ! "$DEBDEBUG" = "1" ]; then
-#       disable_echo
-#    fi
 }
 
 error_handler_pre() {
@@ -203,7 +201,7 @@ error_handler_pre() {
       output="## See above."
    fi
 
-   force_echo "
+   force_output "
 ####################################################################
 ## ${red}${bold}BEGIN ERROR in $0 detected!${reset}
 ##
@@ -237,10 +235,10 @@ fi
 
 if [ "$DEBDEBUG" = "1" ]; then
    set -x
-else
-   if [ "$disable_echo" = "true" ]; then
-      disable_echo
-   fi
+fi
+
+if [ "$disable_echo" = "true" ]; then
+   disable_echo
 fi
 
 colors
