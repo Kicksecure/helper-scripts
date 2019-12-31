@@ -1,3 +1,15 @@
+commit 0980166b83f87c4acd17d479ce81c3f6d9886798
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 31 05:21:28 2019 -0500
+
+    add sudo askpass wrapper for automated testing
+
+commit e70da6c279e5b4d02c19b89908b08bfc816c73c3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 28 11:41:05 2019 +0000
+
+    bumped changelog version
+
 commit 3b4836f06454fbea5fdacd50137d43dad7884916
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Aug 28 11:35:17 2019 +0000
