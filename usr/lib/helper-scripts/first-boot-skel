@@ -51,6 +51,11 @@ for fso in ./* ; do
    ## Technically below for 'cp' it would also be possible to use '$fso' rather
    ## than '$fso_basename', but the latter produces a prettier xtrace.
    fso_basename="${fso##*/}"
+   if [ ".bashrc" = "$fso_basename" ]; then
+      ## We do not need /home/user/.bashrc.
+      ## /home/user/.bashrc is handled below.
+      continue
+   fi
    if [ ".bashrc.whonix" = "$fso_basename" ]; then
       ## We do not need /home/user/.bashrc.whonix.
       ## /home/user/.bashrc is handled below.
@@ -67,7 +72,8 @@ for fso in ./* ; do
       chown --changes --recursive "$user_name:$user_name" "$home_dir/$fso_basename"
    else
       true "folder: no"
-      cp --verbose --no-clobber --archive "$fso_basename" "$home_dir"
+      ## Require '--dereference' otherwise the 'chown' below could fail.
+      cp --verbose --no-clobber --archive --dereference "$fso_basename" "$home_dir"
       chown --changes "$user_name:$user_name" "$home_dir/$fso_basename"
    fi
 done
