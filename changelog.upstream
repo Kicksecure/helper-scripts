@@ -1,3 +1,16 @@
+commit 05d45c314857c900df80764aad055ac8115401af
+Merge: 647f9a7 4f39642
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 12:13:20 2020 -0400
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 4f39642802bd5e028b7e98afc34a4d7e7c92554b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Feb 13 14:11:53 2020 +0000
+
+    bumped changelog version
+
 commit 647f9a73811590b46b5e5d9b30457c288aafa0ed
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Feb 13 06:17:32 2020 -0500
