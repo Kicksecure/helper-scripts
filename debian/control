@@ -5,7 +5,7 @@ Source: helper-scripts
 Section: misc
 Priority: optional
 Maintainer: Patrick Schleizer <adrelanos@riseup.net>
-Build-Depends: debhelper (>= 12), dh-python, ronn
+Build-Depends: debhelper (>= 12), dh-python
 Homepage: https://github.com/Whonix/helper-scripts
 Vcs-Browser: https://github.com/Whonix/helper-scripts
 Vcs-Git: https://github.com/Whonix/helper-scripts.git
