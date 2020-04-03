@@ -1,3 +1,27 @@
+commit 25b420de4e99259ff3c31f146924af5654f65c9e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Apr 3 09:47:21 2020 -0400
+
+    readme
+
+commit d168caac50b37d5e17bbdc40a05005179808392d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Apr 3 05:37:36 2020 -0400
+
+    merge package curl-scripts into this package
+
+commit dd7ec3650e528b96f5240a1e29d9d1d513c5a555
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Apr 3 05:34:54 2020 -0400
+
+    description
+
+commit 7b95ab2ca0c9e8cf735ddb75aaa6104f2e72ca89
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 2 07:48:30 2020 -0400
+
+    bumped changelog version
+
 commit 01caa7a382aeb8c53da1d533480589eb42035451
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Apr 2 07:22:34 2020 -0400
