@@ -1,4 +1,8 @@
-# Helper scripts useful for Anonymizing Linux Distributions #
+# Helper scripts useful for Linux Distributions #
+
+Contains a script for curl progress bar in terminal. Includes another script
+to convert curl exit codes to curl status messages. Implemented in bash.
+Common code that can be used by other scripts.
 
 Library that can be used by other (anonymity related) packages that want to
 programmatically get information about states of Tor. Common code, that is
