@@ -112,7 +112,7 @@ colors() {
 source_config_folder() {
    ## dpkg sets environment variables
    ## example:
-   ## DPKG_MAINTSCRIPT_PACKAGE=timezone-utc
+   ## DPKG_MAINTSCRIPT_PACKAGE=security-misc
 
    if [ "$DPKG_MAINTSCRIPT_PACKAGE" = "" ]; then
       pre_bsh_settings_folder="${own_filename}_pre.d"
@@ -121,7 +121,7 @@ source_config_folder() {
    fi
 
    ## example:
-   ## pre_bsh_settings_folder=timezone-utc_maint.d
+   ## pre_bsh_settings_folder=security-misc_maint.d
 
    shopt -s nullglob
    local i
