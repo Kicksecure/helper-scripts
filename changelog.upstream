@@ -1,3 +1,51 @@
+commit 4ca2c5b889d3adbb32c863af7cd7eec5dcc88931
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 13:08:15 2020 +0000
+
+    readme
+
+commit 5801c4616f8dcc3fa1665eb537df22e4ecd114ae
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 11:45:03 2020 +0000
+
+    output
+
+commit 8b1d3cc75dbbcb91a384c748cc7db84c09012182
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 11:43:21 2020 +0000
+
+    Depends: python3-scapy (leak tests)
+
+commit c232e565a615ad4b998c88edfb8ae3250c8c842f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 11:42:24 2020 +0000
+
+    depend on shebang
+
+commit 36da6713cb162787cc4ea46c5859230706405d5e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 11:41:58 2020 +0000
+
+    update path
+
+commit cc8115483cea59675c23dafd3eeba1b1a86e42a9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 11:41:14 2020 +0000
+
+    auto generate auto-generated-man-pages/leaktest.8
+
+commit be06540a362043d0ba9183e7276b0f23e3b9deac
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 11:41:01 2020 +0000
+
+    import from anon-ws-leaktest
+
+commit 5534c940a1b5fbb958c1aa6b0d018480b67698e8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 10:47:44 2020 +0000
+
+    bumped changelog version
+
 commit 238e287e0910ca55f1611cd0b1bd6f4638a92fce
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Apr 7 10:46:00 2020 +0000
