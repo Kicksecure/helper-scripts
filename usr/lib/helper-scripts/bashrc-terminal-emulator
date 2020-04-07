@@ -1,0 +1,24 @@
+#!/bin/bash
+
+## Copyright (C) 2020 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+if [ -z "$PS1" ]; then
+   true "If not running interactively, don't do anything."
+   return
+fi
+
+shopt -q login_shell
+var="$?"
+if [ "$var" = "0" ]; then
+   true "running in a login shell, don't do anything."
+   ## Login shells are greeted by /etc/motd.
+   return
+fi
+
+## We run in a terminal emulator.
+
+## Let's greet it with motd.
+#if [ -f /etc/motd ]; then
+#   echo "$(cat /etc/motd)"
+#fi
