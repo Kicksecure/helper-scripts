@@ -7,6 +7,11 @@ Common code that can be used by other scripts.
 Library that can be used by other (anonymity related) packages that want to
 programmatically get information about states of Tor. Common code, that is
 often required. Includes bash and Python helper scripts.
+
+Leak Test for Anonymity Distribution Workstations
+Integrated leak test.
+Needs to be manually run.
+See: https://www.whonix.org/wiki/Dev/Leak_Tests
 ## How to install `helper-scripts` using apt-get ##
 
 1\. Download [Whonix's Signing Key]().
