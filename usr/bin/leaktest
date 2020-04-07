@@ -14,12 +14,12 @@ fi
 echo "leaktest: Starting leak test, hit ctrl+c to abort..."
 echo "leaktest: Make sure leaktest is already running on Whonix-Gateway."
 
-echo "leaktest: python /usr/lib/helper-scripts/leak-tests/exhaustive_ip_send.py..."
-python /usr/lib/helper-scripts/leak-tests/exhaustive_ip_send.py
+echo "leaktest: /usr/lib/helper-scripts/leak-tests/exhaustive_ip_send.py..."
+/usr/lib/helper-scripts/leak-tests/exhaustive_ip_send.py
 echo "leaktest: python /usr/lib/helper-scripts/leak-tests/tcp_test.py..."
-python /usr/lib/helper-scripts/leak-tests/tcp_test.py
-echo "leaktest: python /usr/lib/helper-scripts/leak-tests/udp_test.py..."
-python /usr/lib/helper-scripts/leak-tests/udp_test.py
+/usr/lib/helper-scripts/leak-tests/tcp_test.py
+echo "leaktest: /usr/lib/helper-scripts/leak-tests/udp_test.py..."
+/usr/lib/helper-scripts/leak-tests/udp_test.py
 
 echo "leaktest: Leaktest finished."
 echo "leaktest: See Whonix/LeakTestsOld on instructions how to interpret the results."
