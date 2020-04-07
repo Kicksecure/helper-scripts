@@ -1,3 +1,33 @@
+commit d2fb8d8d7e94b8af67a080a140833d262c0d3bd8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 10:32:14 2020 +0000
+
+    show motd
+
+commit 9dacd696fcc3ac195005016293ca35f99f997c47
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 10:30:34 2020 +0000
+
+    convert to script
+
+commit c4786729ce952432009b4ca775926b8bc6081571
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 7 10:28:32 2020 +0000
+
+    import from whonix-base-files
+
+commit ba85b5b1e96ee02f0677f53b58fb3913d49910e9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Apr 6 20:05:01 2020 +0000
+
+    comment
+
+commit 4d61f82bd108e35700c8b4c14d526f7d4f1054d0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Apr 3 10:01:47 2020 -0400
+
+    bumped changelog version
+
 commit 25b420de4e99259ff3c31f146924af5654f65c9e
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Apr 3 09:47:21 2020 -0400
