@@ -3,9 +3,11 @@
 ## Copyright (C) 2020 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+## This script gets `source`ed.
+
 if [ -z "$PS1" ]; then
    true "If not running interactively, don't do anything."
-   exit 0
+   return 0
 fi
 
 shopt -q login_shell
@@ -13,13 +15,13 @@ var="$?"
 if [ "$var" = "0" ]; then
    true "running in a login shell, don't do anything."
    ## Login shells are greeted by /etc/motd.
-   exit 0
+   return 0
 fi
 
 ## We run in a terminal emulator.
 
 if ! test -d /etc/update-motd.d ; then
-   exit 0
+   return 0
 fi
 
 run-parts /etc/update-motd.d || true
