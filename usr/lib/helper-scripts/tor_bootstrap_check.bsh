@@ -74,7 +74,7 @@ check_tor_bootstrap_helper_run_helper_script() {
          check_bootstrap_helper_script_exit_code="277"
       fi
    else
-      check_bootstrap_helper_script_output="ERROR: File $check_bootstrap_helper_bootstrap_file does not exist. Please report this Whonix bug!"
+      check_bootstrap_helper_script_output="ERROR: File '$check_bootstrap_helper_bootstrap_file' does not exist. check_bootstrap_helper_script: '$check_bootstrap_helper_script' Please report this Whonix bug!"
    fi
 }
 
