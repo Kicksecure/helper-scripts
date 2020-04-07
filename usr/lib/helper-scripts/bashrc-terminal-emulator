@@ -5,7 +5,7 @@
 
 if [ -z "$PS1" ]; then
    true "If not running interactively, don't do anything."
-   return
+   exit 0
 fi
 
 shopt -q login_shell
@@ -13,7 +13,7 @@ var="$?"
 if [ "$var" = "0" ]; then
    true "running in a login shell, don't do anything."
    ## Login shells are greeted by /etc/motd.
-   return
+   exit 0
 fi
 
 ## We run in a terminal emulator.
