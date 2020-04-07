@@ -1,0 +1,47 @@
+leaktest(8) -- try to produce a leak
+=============================================
+
+<span class="comment">
+# Copyright (C) 2012 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+# See the file COPYING for copying conditions.
+</span>
+
+## SYNOPSIS
+
+leaktest
+
+## DESCRIPTION
+
+Anon-Workstation specific leaktest.
+
+Advanced users, developers and auditors only!
+
+Runs the leak tests /usr/lib/leaktest-workstation/exhaustive_ip_send.py,
+/usr/lib/leaktest-workstation/tcp_test.py and
+/usr/lib/leaktest-workstation/udp_test.py.
+
+There are other leak tests as well, please refer to the online
+documentation.
+
+## RETURN VALUES
+
+Return codes do not implicate the existence or absence of leaks!
+Returns 0, if no script error has been caught, otherwise returns 1.
+Please report a bug in case you catch return value 1.
+
+## HOW TO INTERPRET THE RESULT
+
+It requires a background on basic networking, which is unfortunately outside
+the scope of this man page and documentation. Online
+documentation pages LeakTests and LeakTestsOld contain hints for
+interpretation and other leak tests.
+
+## WWW
+
+https://www.whonix.org/wiki/Dev/Leak_Tests
+
+https://www.whonix.org/wiki/Dev/Leak_Tests_Old
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@riseup.net).

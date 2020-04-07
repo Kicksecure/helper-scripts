@@ -1,0 +1,25 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+set -e
+set -o pipefail
+
+if [ "$(id -u)" != "0" ]; then
+  echo "leaktest: This script must be run as root (sudo)"
+  exit 1
+fi
+
+echo "leaktest: Starting leak test, hit ctrl+c to abort..."
+echo "leaktest: Make sure leaktest is already running on Whonix-Gateway."
+
+echo "leaktest: python /usr/lib/leaktest-workstation/exhaustive_ip_send.py..."
+python /usr/lib/leaktest-workstation/exhaustive_ip_send.py
+echo "leaktest: python /usr/lib/leaktest-workstation/tcp_test.py..."
+python /usr/lib/leaktest-workstation/tcp_test.py
+echo "leaktest: python /usr/lib/leaktest-workstation/udp_test.py..."
+python /usr/lib/leaktest-workstation/udp_test.py
+
+echo "leaktest: Leaktest finished."
+echo "leaktest: See Whonix/LeakTestsOld on instructions how to interpret the results."
