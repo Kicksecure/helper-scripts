@@ -18,7 +18,8 @@ fi
 
 ## We run in a terminal emulator.
 
-## Let's greet it with motd.
-#if [ -f /etc/motd ]; then
-#   echo "$(cat /etc/motd)"
-#fi
+if ! test -d /etc/update-motd.d ; then
+   exit 0
+fi
+
+run-parts /etc/update-motd.d || true
