@@ -1,0 +1,26 @@
+.\" generated with Ronn-NG/v0.8.0
+.\" http://github.com/apjanke/ronn-ng/tree/0.8.0
+.TH "LEAKTEST" "8" "April 2020" "helper-scripts" "helper-scripts Manual"
+.SH "NAME"
+\fBleaktest\fR \- try to produce a leak
+.P
+.SH "SYNOPSIS"
+leaktest
+.SH "DESCRIPTION"
+Anon\-Workstation specific leaktest\.
+.P
+Advanced users, developers and auditors only!
+.P
+Runs the leak tests /usr/lib/leaktest\-workstation/exhaustive_ip_send\.py, /usr/lib/leaktest\-workstation/tcp_test\.py and /usr/lib/leaktest\-workstation/udp_test\.py\.
+.P
+There are other leak tests as well, please refer to the online documentation\.
+.SH "RETURN VALUES"
+Return codes do not implicate the existence or absence of leaks! Returns 0, if no script error has been caught, otherwise returns 1\. Please report a bug in case you catch return value 1\.
+.SH "HOW TO INTERPRET THE RESULT"
+It requires a background on basic networking, which is unfortunately outside the scope of this man page and documentation\. Online documentation pages LeakTests and LeakTestsOld contain hints for interpretation and other leak tests\.
+.SH "WWW"
+https://www\.whonix\.org/wiki/Dev/Leak_Tests
+.P
+https://www\.whonix\.org/wiki/Dev/Leak_Tests_Old
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@riseup\.net)\.
