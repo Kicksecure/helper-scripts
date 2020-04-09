@@ -1,3 +1,15 @@
+commit c66883f153e288fc1f57ec8c1b3238ec1bb34052
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 9 12:29:15 2020 +0000
+
+    usr/lib/helper-scripts/bashrc-terminal-emulator: standalone support
+
+commit 351a7780880470e9292502d348151054e0f45c45
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Apr 8 09:46:55 2020 +0000
+
+    bumped changelog version
+
 commit b0a16c54bdf0765bab3a7632af652f6a14778e4a
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Apr 7 21:07:18 2020 +0000
