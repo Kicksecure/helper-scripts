@@ -4,10 +4,13 @@
 ## See the file COPYING for copying conditions.
 
 ## This script gets `source`ed.
+## Using both 'return 0' and 'exit 0' to support both, `source`ing as well as
+## executing this script.
 
 if [ -z "$PS1" ]; then
    true "If not running interactively, don't do anything."
    return 0
+   exit 0
 fi
 
 shopt -q login_shell
@@ -16,12 +19,14 @@ if [ "$var" = "0" ]; then
    true "running in a login shell, don't do anything."
    ## Login shells are greeted by /etc/motd.
    return 0
+   exit 0
 fi
 
 ## We run in a terminal emulator.
 
 if ! test -d /etc/update-motd.d ; then
    return 0
+   exit 0
 fi
 
 run-parts /etc/update-motd.d || true
