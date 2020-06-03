@@ -15,7 +15,8 @@ Package: helper-scripts
 Architecture: all
 Depends: sudo, python3, python3-stem, python3-scapy, python3-yaml,
  ${misc:Depends}
-Replaces: anon-shared-helper-scripts, curl-scripts, anon-ws-leaktest
+Replaces: anon-shared-helper-scripts, curl-scripts, anon-ws-leaktest,
+ python-guimessages, python3-guimessages
 Description: Helper scripts useful for Linux Distributions
  Contains a script for curl progress bar in terminal. Includes another script
  to convert curl exit codes to curl status messages. Implemented in bash.
