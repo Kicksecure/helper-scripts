@@ -13,7 +13,8 @@ Standards-Version: 4.3.0
 
 Package: helper-scripts
 Architecture: all
-Depends: sudo, python3, python3-stem, python3-scapy, ${misc:Depends}
+Depends: sudo, python3, python3-stem, python3-scapy, python3-yaml,
+ ${misc:Depends}
 Replaces: anon-shared-helper-scripts, curl-scripts, anon-ws-leaktest
 Description: Helper scripts useful for Linux Distributions
  Contains a script for curl progress bar in terminal. Includes another script
@@ -28,3 +29,8 @@ Description: Helper scripts useful for Linux Distributions
  Integrated leak test.
  Needs to be manually run.
  See: https://www.whonix.org/wiki/Dev/Leak_Tests
+ .
+ Translatable GUI Messages
+ Generic modules guimessage.py and translations.py.
+ Called with two parameters: .yaml file path and yaml section. Return
+ translations according to distribution local language (Python 'locale').
