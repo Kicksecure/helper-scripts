@@ -12,6 +12,11 @@ Leak Test for Anonymity Distribution Workstations
 Integrated leak test.
 Needs to be manually run.
 See: https://www.whonix.org/wiki/Dev/Leak_Tests
+
+Translatable GUI Messages
+Generic modules guimessage.py and translations.py.
+Called with two parameters: .yaml file path and yaml section. Return
+translations according to distribution local language (Python 'locale').
 ## How to install `helper-scripts` using apt-get ##
 
 1\. Download [Whonix's Signing Key]().
