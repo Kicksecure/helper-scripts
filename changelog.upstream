@@ -1,3 +1,27 @@
+commit fa31e348ab80c6f56a70e43078cc5cf77e6257de
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 3 09:55:21 2020 -0400
+
+    readme
+
+commit 9dd4956f5877c6e08ca10cd846d50e11825e0bd7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 3 07:54:47 2020 -0400
+
+    Replaces: python-guimessages, python3-guimessages
+
+commit 1e40a365cd7b99894c3d84e85e8c50bb376575b1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 3 07:43:13 2020 -0400
+
+    merge python-guimessages into helper-scripts
+
+commit 432e439840c4b9738ffa205cd665dca6b60b5c91
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 16 08:35:05 2020 -0400
+
+    bumped changelog version
+
 commit 4a2f1ff06e15cdce052c24312af3b7ce3b8e9766
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Apr 15 14:05:32 2020 -0400

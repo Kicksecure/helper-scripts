@@ -1,3 +1,9 @@
+helper-scripts (3:8.2-1) unstable; urgency=medium
+
+  * New upstream version (local package).
+
+ -- Patrick Schleizer <adrelanos@riseup.net>  Wed, 03 Jun 2020 13:55:22 +0000
+
 helper-scripts (3:8.1-1) unstable; urgency=medium
 
   * New upstream version (local package).
