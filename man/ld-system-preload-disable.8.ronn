@@ -1,0 +1,28 @@
+ld-system-preload-disable(8) -- disable /etc/ld.so.preload per application
+=============================================
+
+<span class="comment">
+# Copyright (C) 2020 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+# See the file COPYING for copying conditions.
+</span>
+
+## SYNOPSIS
+
+ld-system-preload-disable command
+
+## DESCRIPTION
+
+Uses brwap to hide /etc/ld.so.preload from application so it will be ignored.
+
+Does not modify LD_PRELOAD environment variable.
+
+Prepend ld-system-preload-disable in front of the actual application / command
+intended to be run.
+
+## RETURN VALUES
+
+Returns what application returns.
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@riseup.net).

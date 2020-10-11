@@ -1,0 +1,8 @@
+#!/bin/bash
+
+## Copyright (C) 2020 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+## This fails if file /etc/ld.so.preload does not exists.
+## bwrap: Can't create file at /etc/ld.so.preload: Permission denied
+bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "${@}"
