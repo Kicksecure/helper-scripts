@@ -1,0 +1,18 @@
+.\" generated with Ronn-NG/v0.8.0
+.\" http://github.com/apjanke/ronn-ng/tree/0.8.0
+.TH "LD\-SYSTEM\-PRELOAD\-DISABLE" "8" "January 2020" "helper-scripts" "helper-scripts Manual"
+.SH "NAME"
+\fBld\-system\-preload\-disable\fR \- disable /etc/ld\.so\.preload per application
+.P
+.SH "SYNOPSIS"
+ld\-system\-preload\-disable command
+.SH "DESCRIPTION"
+Uses brwap to hide /etc/ld\.so\.preload from application so it will be ignored\.
+.P
+Does not modify LD_PRELOAD environment variable\.
+.P
+Prepend ld\-system\-preload\-disable in front of the actual application / command intended to be run\.
+.SH "RETURN VALUES"
+Returns what application returns\.
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@riseup\.net)\.
