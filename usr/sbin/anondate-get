@@ -84,6 +84,8 @@ if anondate --has-consensus ; then
          exit 0
       fi
    fi
+else
+   echo "$0: WARNING: has no Tor consensus yet." >&2
 fi
 
 if anondate --tor-cert-lifetime-valid ; then
