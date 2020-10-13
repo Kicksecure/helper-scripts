@@ -1,3 +1,31 @@
+commit e33a76a7390339f42ee8c760b54056815f82b362
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Oct 13 12:31:18 2020 -0400
+
+    readme
+
+commit c52ed61d04a6393337d1a953cb0d76050cbb6103
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Oct 11 12:39:03 2020 -0400
+
+    genmkfile manpages
+
+commit d13cd5aeedfc09f5a811b05c95ef059065091380
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Oct 11 12:31:04 2020 -0400
+
+    add ld-system-preload-disable
+    
+    http://forums.whonix.org/t/hardened-malloc-hardened-memory-allocator/7474/116
+    
+    Thanks to @madaidan for the suggestion!
+
+commit a64bb8cac489f028f2a8474d29d5a0b68d41e6f6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 3 09:55:22 2020 -0400
+
+    bumped changelog version
+
 commit fa31e348ab80c6f56a70e43078cc5cf77e6257de
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Jun 3 09:55:21 2020 -0400
