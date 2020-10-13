@@ -17,9 +17,13 @@ Translatable GUI Messages
 Generic modules guimessage.py and translations.py.
 Called with two parameters: .yaml file path and yaml section. Return
 translations according to distribution local language (Python 'locale').
+
+Provides the ld-system-preload-disable wrapper to disable /etc/ld.so.preload
+per application via bubblewrap. Useful if hardened_malloc is being globally
+preloaded and needs to be disabled for some applications.
 ## How to install `helper-scripts` using apt-get ##
 
-1\. Download [Whonix's Signing Key]().
+1\. Download Whonix's Signing Key.
 
 ```
 wget https://www.whonix.org/patrick.asc
