@@ -20,6 +20,7 @@ import sys
 from scapy.all import *
 
 # define the target gateway & data payload
+# IP HARDCODED but only needed during manual leak testing.
 target = "10.152.152.10"
 #target = "45.33.32.156"
 

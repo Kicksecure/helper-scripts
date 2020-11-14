@@ -22,6 +22,7 @@ check_tor_bootstrap_helper_variables() {
 
    if [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
       if [ "$GATEWAY_IP" = "" ]; then
+         ## IP HARDCODED. Set GATEWAY_IP through /etc/whonix.d configuration folder instead.
          GATEWAY_IP="10.152.152.10"
       fi
       if [ "$gateway_control_port" = "" ]; then
