@@ -4,4 +4,4 @@
 ## See the file COPYING for copying conditions.
 
 ## Parses AppArmor denial logs to hide unnecessary information and remove duplicates.
-sudo journalctl _TRANSPORT=audit --output cat "${@}" | grep "DENIED" | sed -e 's/pid=.* comm/comm/g' | sed -e's/ fsuid.*//g' | awk '!x[$0]++'
+sudo journalctl _TRANSPORT=audit --output cat "${@}" | grep "DENIED" | sed -e 's/pid=.* comm/comm/g' | sed -e 's/ fsuid.*//g' | awk '!x[$0]++'
