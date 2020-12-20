@@ -15,6 +15,13 @@ true "
 #####################################################################
 "
 
+if ! test -f /etc/ld.so.preload ; then
+   ## ld-system-preload-disable fails if /etc/ld.so.preload does not exists.
+   ## bwrap: Can't create file at /etc/ld.so.preload: Permission denied
+   ## Therefore ensure that at least and empty /etc/ld.so.preload exists.
+   touch /etc/ld.so.preload
+fi
+
 ## workaround for 'dh_installinit should run systemd-tmpfiles if a
 ## /usr/lib/tmpfiles.d/ snippet gets shipped for systemd-only packages
 ## also' - http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=795519
