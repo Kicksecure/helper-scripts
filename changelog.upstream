@@ -1,3 +1,83 @@
+commit bc377604032d1391112b520afc0f641404dae50e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 20 07:47:32 2020 -0500
+
+    make sure `/etc/ld.so.preload` exists
+    
+    `ld-system-preload-disable` fails if `/etc/ld.so.preload` does not exists.
+    
+    > bwrap: Can't create file at /etc/ld.so.preload: Permission denied
+    
+    Therefore ensure that at least and empty `/etc/ld.so.preload` exists.
+
+commit 484dbbd43c82d06ce0bc81512b8c535774346d0d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 20 02:35:11 2020 -0500
+
+    apparmor-info: exit non-zero if there are DENIED messages
+    
+    https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/30
+
+commit 83191248a9038781c0b56df5aeaf5e94ce5b2a45
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 20 02:20:30 2020 -0500
+
+    do not hardcode sudo
+    
+    https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/29
+
+commit a13d07795c5dbbabc530fb48fc121640b7b28899
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 20 02:02:48 2020 -0500
+
+    genmkfile manpages
+
+commit 2cad94a96266e12c6222a797abf82e206f9d3cc3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 20 02:00:18 2020 -0500
+
+    add man/apparmor-info.8.ronn
+
+commit f69c246d2d063b0684df4ef03ab35cc5c8c366d8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 20 01:58:26 2020 -0500
+
+    chmod +x usr/sbin/apparmor-info
+
+commit 281ada2ea8f5ecc9b8d2c2ddce8134c50b514044
+Merge: 190fca2 7eea58a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 20 01:58:03 2020 -0500
+
+    Merge remote-tracking branch 'github/master'
+
+commit 7eea58a090934520236b75300270e217056631d0
+Merge: 190fca2 6acce20
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 20 06:57:25 2020 +0000
+
+    Merge pull request #5 from madaidan/apparmor-info
+    
+    Create apparmor-info
+
+commit 6acce208880f87f273d8a9784b98f32ac87ef385
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Sat Dec 19 16:49:48 2020 +0000
+
+    Space
+
+commit 3ddf9feba6ddebc7657712c6a604c9dfe500889e
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Sat Dec 19 16:48:50 2020 +0000
+
+    Create apparmor-info
+
+commit 190fca262b239e79078fda7678ead6c0c07d9716
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Nov 14 11:54:28 2020 -0500
+
+    bumped changelog version
+
 commit 3938874ab048110557c73be357842707f61878dc
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Nov 14 07:56:12 2020 -0500
