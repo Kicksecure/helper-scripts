@@ -14,4 +14,11 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 ## Parses AppArmor denial logs to hide unnecessary information and remove duplicates.
-journalctl _TRANSPORT=audit --output cat "${@}" | grep "DENIED" | sed -e 's/pid=.* comm/comm/g' | sed -e 's/ fsuid.*//g' | awk '!x[$0]++'
+output="$(journalctl _TRANSPORT=audit --output cat "${@}" | grep "DENIED" | sed -e 's/pid=.* comm/comm/g' | sed -e 's/ fsuid.*//g' | awk '!x[$0]++')"
+
+if [ "$output" = "" ]; then
+   exit 0
+fi
+
+echo "$output"
+exit 1

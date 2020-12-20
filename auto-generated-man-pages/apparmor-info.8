@@ -8,5 +8,19 @@
 apparmor\-info
 .SH "DESCRIPTION"
 Shows AppArmor DENIED log messages\.
+.P
+If there are no DENIED log messages, outputs nothing\.
+.SH "RETURN VALUES"
+.IP "\[ci]" 4
+\fB0\fR No DENIED messages found, OK\.
+.IP "\[ci]" 4
+\fB1\fR DENIED messages found\.
+.IP "" 0
+.SH "EXAMPLE"
+\fBsudo apparmor\-info ; echo $?\fR
+.P
+\fB0\fR
+.P
+No output from \fBapparmor\-info\fR with exit code \fB0\fR\. Meaning, no DENIED messages found, OK\.
 .SH "AUTHOR"
 This man page has been written by Patrick Schleizer (adrelanos@riseup\.net)\.

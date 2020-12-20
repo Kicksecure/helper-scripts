@@ -14,6 +14,20 @@ apparmor-info
 
 Shows AppArmor DENIED log messages.
 
+If there are no DENIED log messages, outputs nothing.
+
+## RETURN VALUES
+* `0` No DENIED messages found, OK.
+* `1` DENIED messages found.
+
+## EXAMPLE
+`sudo apparmor-info ; echo $?`
+
+`0`
+
+No output from `apparmor-info` with exit code `0`.
+Meaning, no DENIED messages found, OK.
+
 ## AUTHOR
 
 This man page has been written by Patrick Schleizer (adrelanos@riseup.net).
