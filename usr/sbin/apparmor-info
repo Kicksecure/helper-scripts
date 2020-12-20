@@ -3,5 +3,15 @@
 ## Copyright (C) 2020 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+## https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/22
+
+## Not using sudo hardcoded below.
+## https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/29
+if [ "$(id -u)" != "0" ]; then
+   echo "ERROR: Must run as root." >&2
+   echo "sudo $0" >&2
+   exit 112
+fi
+
 ## Parses AppArmor denial logs to hide unnecessary information and remove duplicates.
-sudo journalctl _TRANSPORT=audit --output cat "${@}" | grep "DENIED" | sed -e 's/pid=.* comm/comm/g' | sed -e 's/ fsuid.*//g' | awk '!x[$0]++'
+journalctl _TRANSPORT=audit --output cat "${@}" | grep "DENIED" | sed -e 's/pid=.* comm/comm/g' | sed -e 's/ fsuid.*//g' | awk '!x[$0]++'
