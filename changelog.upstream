@@ -1,3 +1,17 @@
+commit 98bafcc63b2d937020fcdc339c67128fae76060b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Dec 26 04:15:44 2020 -0500
+
+    also show apparmor `DENIED` messages
+    
+    https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/42
+
+commit 05b6f771e9cd7c84b3514091ac730783a51066f9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 20 07:57:57 2020 -0500
+
+    bumped changelog version
+
 commit bc377604032d1391112b520afc0f641404dae50e
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Dec 20 07:47:32 2020 -0500
