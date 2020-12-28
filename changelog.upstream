@@ -1,3 +1,27 @@
+commit e6a8d816df1811ed1019a1f38f1e078e66ddeda7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Dec 28 07:11:24 2020 -0500
+
+    import changes from limit-low
+
+commit d3ca063ddc8c15bea66d0f01c10aaf19c1da802d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Dec 28 07:10:49 2020 -0500
+
+    systemctl -user import-environment
+
+commit 7aa41153a547f08ce632f3fa32db82da5f36fd9c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Dec 28 06:59:10 2020 -0500
+
+    fix
+
+commit de2180538a4ab9f9fa3bbc37ae2dfe1ad84c6725
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Dec 28 05:46:31 2020 -0500
+
+    bumped changelog version
+
 commit 5b552aadf061e2929b311115e379e90172227f0d
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Dec 28 05:45:46 2020 -0500
