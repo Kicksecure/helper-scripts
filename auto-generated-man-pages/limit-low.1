@@ -1,0 +1,33 @@
+.\" generated with Ronn-NG/v0.8.0
+.\" http://github.com/apjanke/ronn-ng/tree/0.8.0
+.TH "LIMIT\-LOW" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
+.SH "NAME"
+\fBlimit\-low\fR \- start application with limited low system resources wrapper
+.SH "SYNOPSIS"
+\fBlimit\-low application parameters\fR
+.SH "DESCRIPTION"
+Wrapper around \fBsystemd\-run\fR setting \fBsystemd\-run\fR parameters to run an application with limited system resources\.
+.P
+Available are \fBlimit\-low\fR and \fBlimit\-medium\fR\. Perhaps in future other wrappers as well\.
+.SH "RETURN VALUES"
+Same as wrapped application\.
+.SH "EXAMPLES"
+run system resources limited application as user:
+.P
+\fBlimit\-low stress \-\-cpu 8 \-\-io 4 \-\-vm 2 \-\-vm\-bytes 128M \-\-timeout 10s\fR
+.P
+run system resources limited application as root:
+.P
+\fBsudo limit\-low stress \-\-cpu 8 \-\-io 4 \-\-vm 2 \-\-vm\-bytes 128M \-\-timeout 10s\fR
+.P
+use inside pipes:
+.P
+\fBecho a | limit\-low grep a\fR
+.P
+interactive use:
+.P
+\fBlimit\-low nano file\-name\fR
+.SH "Website"
+https://forums\.whonix\.org/t/constrained\-system\-resources\-program\-starter\-wrapper/10914
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@riseup\.net)\.
