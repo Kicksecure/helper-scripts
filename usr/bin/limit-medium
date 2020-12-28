@@ -59,6 +59,8 @@ else
    ## systemctl import-environment
    ## systemctl show-environment
    ## And then compare the difference.
+   ## Related:
+   ## https://github.com/systemd/systemd/issues/18098
 fi
 
 if [ "$DEBUG" = "true" ] ;then
