@@ -1,3 +1,23 @@
+commit 1ab55bfaf11527686882f6a75d417a627a242592
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Dec 28 05:33:19 2020 -0500
+
+    add `limit-medium`
+
+commit 5beca845f940f2231173b7c4692e3b4c89330256
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Dec 28 04:37:57 2020 -0500
+
+    add `limit-low` - constrained system resources program starter wrapper
+    
+    https://forums.whonix.org/t/constrained-system-resources-program-starter-wrapper/10914
+
+commit 67b226805002a33f88f7be13aac871e6a82bf2af
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Dec 26 04:56:39 2020 -0500
+
+    bumped changelog version
+
 commit 98bafcc63b2d937020fcdc339c67128fae76060b
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Dec 26 04:15:44 2020 -0500
