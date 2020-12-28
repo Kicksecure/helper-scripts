@@ -44,8 +44,21 @@ if [ "$(id -u)" != "0" ]; then
    ## I.e. running as a user such as user "user".
    ## Therefore adding parameter "--user".
    user_arg="--user"
+
+   ## Otherwise some environment variables are missing in Non-Qubes-Whonix.
+   ## This lead to Tor Browser issues due to missing environment variables.
+   systemctl -user import-environment
 else
    user_arg=""
+
+   ## Not doing this because there is no known user case that requires this and
+   ## because the security impact of this has not been researched.
+   #systemctl import-environment
+   ## When researching this, run:
+   ## systemctl show-environment
+   ## systemctl import-environment
+   ## systemctl show-environment
+   ## And then compare the difference.
 fi
 
 if [ "$DEBUG" = "true" ] ;then
