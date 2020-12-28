@@ -47,7 +47,7 @@ if [ "$(id -u)" != "0" ]; then
 
    ## Otherwise some environment variables are missing in Non-Qubes-Whonix.
    ## This lead to Tor Browser issues due to missing environment variables.
-   systemctl -user import-environment
+   systemctl --user import-environment
 else
    user_arg=""
 
