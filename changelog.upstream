@@ -1,3 +1,21 @@
+commit 5b552aadf061e2929b311115e379e90172227f0d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Dec 28 05:45:46 2020 -0500
+
+    genmkfile manpages
+
+commit 542288b010b75016c0ce1c92d1a2423024d15b61
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Dec 28 05:45:37 2020 -0500
+
+    add manpages
+
+commit 7f925018ab0b2745c4481d9323dd10b37c55f6dd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Dec 28 05:34:53 2020 -0500
+
+    bumped changelog version
+
 commit 1ab55bfaf11527686882f6a75d417a627a242592
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Dec 28 05:33:19 2020 -0500
