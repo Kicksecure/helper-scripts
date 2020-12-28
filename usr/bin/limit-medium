@@ -6,6 +6,8 @@
 ## If you modify limit-low, also consider similar modification to other
 ## 'limit-*' wrapper scripts such as limit-medium and limit-high.
 
+## https://forums.whonix.org/t/constrained-system-resources-program-starter-wrapper/10914
+
 ## limit-low design goals:
 ## - Do one thing and do it well.
 ## - The one thing is to be a wrapper that limits system resources for wrapped
