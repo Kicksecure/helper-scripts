@@ -1,0 +1,44 @@
+limit-low(1) -- start application with limited low system resources wrapper
+=============================================
+
+## SYNOPSIS
+
+`limit-low application parameters`
+
+## DESCRIPTION
+
+Wrapper around `systemd-run` setting `systemd-run` parameters to run an
+application with limited system resources.
+
+Available are `limit-low` and `limit-medium`. Perhaps in future other wrappers
+as well.
+
+## RETURN VALUES
+
+Same as wrapped application.
+
+## EXAMPLES
+
+run system resources limited application as user:
+
+`limit-low stress --cpu 8 --io 4 --vm 2 --vm-bytes 128M --timeout 10s`
+
+run system resources limited application as root:
+
+`sudo limit-low stress --cpu 8 --io 4 --vm 2 --vm-bytes 128M --timeout 10s`
+
+use inside pipes:
+
+`echo a | limit-low grep a`
+
+interactive use:
+
+`limit-low nano file-name`
+
+## Website
+
+https://forums.whonix.org/t/constrained-system-resources-program-starter-wrapper/10914
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@riseup.net).
