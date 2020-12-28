@@ -43,7 +43,9 @@ if [ "$(id -u)" != "0" ]; then
    ## Not running as root user.
    ## I.e. running as a user such as user "user".
    ## Therefore adding parameter "--user".
-   user_arg=-"-user"
+   user_arg="--user"
+else
+   user_arg=""
 fi
 
 if [ "$DEBUG" = "true" ] ;then
