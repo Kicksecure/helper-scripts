@@ -41,21 +41,33 @@
 
 set -e
 
-#testcommand="stress --cpu 8 --io 4 --vm 2 --vm-bytes 128M --timeout 30s"
-#testcommand=hello
-#testcommand="dd if=/dev/zero of=/tmp/xxx bs=10M count=1"
+if [[ "$@" = "" ]]; then
+   base_name="${0##*/}"
+   echo "$base_name: ERROR: syntax:" >&2
+   echo "$base_name application [parameters]" >&2
+   exit 1
+fi
 
-ulimit -m 10000
-ulimit -v 10000
+mem_available="$(cat /proc/meminfo | grep MemAvailable | cut -d ":" -f 2)"
+mem_available="$(echo "$mem_available" | str_replace "kB" "")"
+
+percent=20
+
+fraction="$(( $mem_available * $percent / 100 ))"
+
+ulimit -m "$fraction"
+ulimit -v "$fraction"
+
+## Already set to 0 on Debian by default.
+## Hence, cannot be further lowered per application.
+## https://superuser.com/questions/934113/real-time-option-in-ulimit
+## https://unix.stackexchange.com/questions/8983/set-default-nice-value-for-a-given-user-limits-conf
+#ulimit -e 10
 
 ## The maximum number of processes available
 ulimit -u 300
 
 #ulimit -a
-
-# ionice --class 3 \
-# nice -n 19 \
-# $testcommand
 
 ionice --class 3 \
 nice -n 19 \
