@@ -1,3 +1,27 @@
+commit 9271a90fb5aae82d9ff5b876de288731659a6052
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 3 06:19:12 2021 -0500
+
+    adjust for limit-medium
+
+commit 29cf73ad6cf1bd8955ec3843b3e4927bc0c5692c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 3 06:16:49 2021 -0500
+
+    same as limit-low
+
+commit 086a8b8b3f23ee9a5afda483acff5e46c2275c15
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 3 06:13:58 2021 -0500
+
+    improve limit-low
+
+commit 0403ef52b4d4120fa577bdd9232dcf8758e1fca1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jan 1 16:10:08 2021 -0500
+
+    bumped changelog version
+
 commit bf1c45bf96b2815689f6fc056448cc3a1c67d293
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jan 1 16:09:50 2021 -0500
