@@ -41,6 +41,11 @@
 
 set -e
 
+ionice_class=3
+ionice_classdata=""
+niceness=19
+percent_memory=20
+
 if [[ "$@" = "" ]]; then
    base_name="${0##*/}"
    echo "$base_name: ERROR: syntax:" >&2
@@ -48,12 +53,17 @@ if [[ "$@" = "" ]]; then
    exit 1
 fi
 
-mem_available="$(cat /proc/meminfo | grep MemAvailable | cut -d ":" -f 2)"
-mem_available="$(echo "$mem_available" | str_replace "kB" "")"
-
-percent=20
-
-fraction="$(( $mem_available * $percent / 100 ))"
+if [ "$maxmem" = "" ]; then
+   ## Meaningless in Qubes since Qubes dynamically assigns RAM as needed.
+   mem_available="$(cat /proc/meminfo | grep MemAvailable | cut -d ":" -f 2)"
+   mem_available="$(echo "$mem_available" | str_replace "kB" "")"
+   ## mem_available is in KB already.
+   fraction="$(( $mem_available * $percent_memory / 100 ))"
+else
+   ## maxmem is MB
+   ## convert to kB
+   fraction="$(( $maxmem * 1000 ))"
+fi
 
 ulimit -m "$fraction"
 ulimit -v "$fraction"
@@ -69,6 +79,13 @@ ulimit -u 300
 
 #ulimit -a
 
-ionice --class 3 \
-nice -n 19 \
-"$@"
+if [ "$ionice_classdata" = "" ]; then
+   ## ionice: ignoring given class data for idle class
+   ionice --class "$ionice_class" \
+   nice -n "$niceness" \
+   "$@"
+else
+   ionice --class "$ionice_class" --classdata "$ionice_classdata" \
+   nice -n "$niceness" \
+   "$@"
+fi
