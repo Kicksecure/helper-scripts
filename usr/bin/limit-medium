@@ -41,90 +41,34 @@
 
 set -e
 
-if [ "$(id -u)" != "0" ]; then
-   ## Not running as root user.
-   ## I.e. running as a user such as user "user".
-   ## Therefore adding parameter "--user".
-   user_arg="--user"
-
-   ## Otherwise some environment variables are missing in Non-Qubes-Whonix.
-   ## This lead to Tor Browser issues due to missing environment variables.
-   systemctl --user import-environment
-else
-   user_arg=""
-
-   ## Not doing this because there is no known user case that requires this and
-   ## because the security impact of this has not been researched.
-   #systemctl import-environment
-   ## When researching this, run:
-   ## systemctl show-environment
-   ## systemctl import-environment
-   ## systemctl show-environment
-   ## And then compare the difference.
-   ## Related:
-   ## https://github.com/systemd/systemd/issues/18098
+if [[ "$@" = "" ]]; then
+   base_name="${0##*/}"
+   echo "$base_name: ERROR: syntax:" >&2
+   echo "$base_name application [parameters]" >&2
+   exit 1
 fi
 
-if [ "$DEBUG" = "true" ] ;then
-   quiet_maybe=""
-   unit_maybe="--unit=testtest"
+mem_available="$(cat /proc/meminfo | grep MemAvailable | cut -d ":" -f 2)"
+mem_available="$(echo "$mem_available" | str_replace "kB" "")"
 
-   ## useful for debugging (root):
-   ## sudo systemctl show testtest.scope
-   ## sudo systemctl show testtest.scope | grep CPU
-   ## sudo systemctl status testtest.scop
+percent=20
 
-   ## useful for debugging (user):
-   ## systemctl --user show testtest.scope
-   ## systemctl --user show testtest.scope | grep CPU
-   ## systemctl --user status testtest.scop
+fraction="$(( $mem_available * $percent / 100 ))"
 
-   ## Example systemd-run output:
-   ## Running scope as unit: run-r0d607a8f35dc4dea909b830f9d922b99.scope
-else
-   quiet_maybe="--quiet"
-   unit_maybe=""
-fi
+ulimit -m "$fraction"
+ulimit -v "$fraction"
 
-## https://www.freedesktop.org/software/systemd/man/systemd-run.html
-## https://www.freedesktop.org/software/systemd/man/systemd.resource-control.html
+## Already set to 0 on Debian by default.
+## Hence, cannot be further lowered per application.
+## https://superuser.com/questions/934113/real-time-option-in-ulimit
+## https://unix.stackexchange.com/questions/8983/set-default-nice-value-for-a-given-user-limits-conf
+#ulimit -e 10
 
-## TODO: MemoryHigh and MemoryMax should be relative values. Not hardcoded.
+## The maximum number of processes available
+ulimit -u 300
 
-## Using similar parameters below.
-## Quote systemd.resource-control:
-## --shell, -S
-## A shortcut for "--pty --same-dir --wait --collect --service-type=exec $SHELL", i.e. requests an interactive shell in the current working directory, running in service context, accessible with a single switch.
+#ulimit -a
 
-## --pty/--pipe is not compatible in timer or --scope mode.
-
-## TODO: required? --property=IOReadIOPSMax="/dev/disk/ 1K" \
-
-systemd-run \
-   --pty --same-dir --wait --collect --service-type=exec \
-   --pipe \
-   $user_arg \
-   $quiet_maybe \
-   $unit_maybe \
-   --nice=10 \
-   --property=MemoryAccounting=yes \
-   --property=MemoryHigh=1000M \
-   --property=MemoryMax=1100M \
-   --property=CPUAccounting=yes \
-   --property=CPUQuota=80% \
-   --property=CPUWeight=80 \
-   --property=CPUShares=900 \
-   --property=TasksAccounting=yes \
-   --property=TasksMax=3000 \
-   --property=IOAccounting=yes \
-   --property=IOWeight=80 \
-   -- \
-   "$@"
-
-## requires package dbus-user-session
-## systemd-run --pty --same-dir --wait --collect --service-type=exec --pipe --user --quiet --nice=19 --property=MemoryAccounting=yes --property=MemoryHigh=300M --property=MemoryMax=500M --property=CPUAccounting=yes --property=CPUQuota=5% --property=CPUWeight=1 --property=CPUShares=2 --property=TasksAccounting=yes --property=TasksMax=200 --property=IOAccounting=yes --property=IOWeight=1 '--property=IOReadIOPSMax=/dev/disk/ 1K' -- mousepad
-##
-## Otherwise:
-## Failed to start transient service unit: Process org.freedesktop.systemd1 exited with status 1
-
-true "$0: OK"
+ionice --class 3 \
+nice -n 19 \
+"$@"
