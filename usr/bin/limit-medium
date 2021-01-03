@@ -51,7 +51,7 @@ fi
 mem_available="$(cat /proc/meminfo | grep MemAvailable | cut -d ":" -f 2)"
 mem_available="$(echo "$mem_available" | str_replace "kB" "")"
 
-percent=20
+percent=80
 
 fraction="$(( $mem_available * $percent / 100 ))"
 
@@ -69,6 +69,6 @@ ulimit -u 300
 
 #ulimit -a
 
-ionice --class 3 \
-nice -n 19 \
+ionice --class 2 --classdata 5 \
+nice -n 10 \
 "$@"
