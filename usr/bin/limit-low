@@ -72,15 +72,18 @@ ulimit -m "$fraction"
 ## crash torbrowser
 ulimit -v "$fraction"
 
+## -e   The maximum scheduling priority ("nice")
 ## Already set to 0 on Debian by default.
 ## Hence, cannot be further lowered per application.
 ## https://superuser.com/questions/934113/real-time-option-in-ulimit
 ## https://unix.stackexchange.com/questions/8983/set-default-nice-value-for-a-given-user-limits-conf
 #ulimit -e 10
 
+## -u   The maximum number of processes available to a single user.
 ## The maximum number of processes available
 ulimit -u 300
 
+## -a   All current limits are reported.
 #ulimit -a
 
 if [ "$ionice_classdata" = "" ]; then
