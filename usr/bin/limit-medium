@@ -65,7 +65,11 @@ else
    fraction="$(( $maxmem * 1000 ))"
 fi
 
+## -m   The maximum resident set size.
 ulimit -m "$fraction"
+
+## -v   The maximum amount of virtual memory available to the process.
+## crash torbrowser
 ulimit -v "$fraction"
 
 ## Already set to 0 on Debian by default.
