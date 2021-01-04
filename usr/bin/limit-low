@@ -69,8 +69,9 @@ fi
 ulimit -m "$fraction"
 
 ## -v   The maximum amount of virtual memory available to the process.
-## crash torbrowser
-ulimit -v "$fraction"
+## Crash torbrowser, possibly other applications.
+## https://superuser.com/questions/472587/why-does-limiting-my-virtual-memory-to-512mb-with-ulimit-v-crash-the-jvm
+#ulimit -v "$fraction"
 
 ## -e   The maximum scheduling priority ("nice")
 ## Already set to 0 on Debian by default.
