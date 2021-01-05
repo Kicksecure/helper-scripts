@@ -1,3 +1,43 @@
+commit 282827a440fd9c6bae52026fd93cc44db78e0a2b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 5 08:21:50 2021 -0500
+
+    work on anondate
+
+commit 4cbb9f0afe265f879e96e072bfff37b4b3dcee66
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 4 04:39:29 2021 -0500
+
+    cannot use ulimit -v yet
+    
+    https://superuser.com/questions/472587/why-does-limiting-my-virtual-memory-to-512mb-with-ulimit-v-crash-the-jvm
+
+commit 8ee99ea3f2d0d59a4b53244834b0b571c9b5d7e2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 4 04:32:13 2021 -0500
+
+    comments
+
+commit 38bfc82a5f9213c70a8ffe4117718cebaf8f37bf
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 4 04:28:26 2021 -0500
+
+    comments
+
+commit a34207cc74be3523ed9325afded93da392784355
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 3 07:09:48 2021 -0500
+
+    add support for environment variable `maxmem`
+    
+    refactoring
+
+commit 4ec5fa63248e1f4c340bd6d5ec4ae42d4ca9c721
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 3 06:19:50 2021 -0500
+
+    bumped changelog version
+
 commit 9271a90fb5aae82d9ff5b876de288731659a6052
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jan 3 06:19:12 2021 -0500
