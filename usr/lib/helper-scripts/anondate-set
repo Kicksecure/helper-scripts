@@ -1,0 +1,16 @@
+#!/bin/bash
+
+## Copyright (C) 2014 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+set -x
+set -e
+
+if [ "$(id -u)" != "0" ]; then
+   echo "$0: ERROR: Must run as root."
+   exit 112
+fi
+
+time_result="$(/usr/lib/helper-scripts/anondate-get)"
+
+date --set "$time_result"

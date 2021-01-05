@@ -1,0 +1,94 @@
+#!/bin/bash
+
+## Copyright (C) 2014 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+## If tor@default is stopped.
+# sudo /usr/lib/helper-scripts/anondate-tester
+#
+# cmd_item: /usr/lib/helper-scripts/anondate --has-consensus
+# output:
+# exit_code: 4
+# ----------
+# cmd_item: /usr/lib/helper-scripts/anondate --current-time-in-valid-range
+# sed: can't read /var/lib/tor/cached-microdesc-consensus: No such file or directory
+# output:
+# exit_code: 1
+# ----------
+# cmd_item: /usr/lib/helper-scripts/anondate --show-valid-after
+# sed: can't read /var/lib/tor/cached-microdesc-consensus: No such file or directory
+# output:
+# exit_code: 1
+# ----------
+# cmd_item: /usr/lib/helper-scripts/anondate --show-valid-until
+# sed: can't read /var/lib/tor/cached-microdesc-consensus: No such file or directory
+# output:
+# exit_code: 1
+# ----------
+# cmd_item: /usr/lib/helper-scripts/anondate --show-middle-range
+# sed: can't read /var/lib/tor/cached-microdesc-consensus: No such file or directory
+# output:
+# exit_code: 1
+# ----------
+# cmd_item: /usr/lib/helper-scripts/anondate --tor-cert-lifetime-invalid
+# output:
+# exit_code: 3
+# ----------
+# cmd_item: /usr/lib/helper-scripts/anondate --tor-cert-valid-after
+# output:
+# exit_code: 3
+# ----------
+
+if [ "$(id -u)" != "0" ]; then
+   echo "$0: ERROR: Must run as root."
+   exit 112
+fi
+
+source /usr/lib/helper-scripts/tor_bootstrap_check.bsh
+check_tor_bootstrap_helper
+
+if [ "$tor_bootstrap_percent" = "100" ]; then
+   echo "$0: INFO: 100% Tor bootstrap, ok."
+   if tor_circuit_established_check="$(/usr/lib/helper-scripts/tor_circuit_established_check.py)" ; then
+      echo "$0: INFO: tor_circuit_established_check.py, ok."
+      if [ "$tor_circuit_established_check" = "1" ]; then
+         echo "$0: INFO: Tor circuit already established, ok."
+      else
+         echo "$0: WARNING: Tor circuit not yet established."
+      fi
+   else
+      echo "$0: WARNING: tor_circuit_established_check.py failed."
+   fi
+else
+   echo "$0: WARNING: Tor bootstrap not done."
+fi
+
+## TODO: Tor cert valid after must be after Tor consensus middle range to avoid using stale Tor consensus
+
+if /usr/lib/helper-scripts/anondate --has-consensus ; then
+   echo "$0: INFO: has Tor consensus, ok."
+   if /usr/lib/helper-scripts/anondate --current-time-in-valid-range ; then
+      echo "$0: INFO: current time in valid in range, ok."
+      exit 0
+   else
+      echo "$0: WARNING: current time in NOT in valid range."
+      if middle_range="$(/usr/lib/helper-scripts/anondate --show-middle-range)" ; then
+         echo "$0: INFO: middle_range: '$middle_range'"
+         echo "$middle_range"
+         exit 0
+      fi
+   fi
+fi
+
+if /usr/lib/helper-scripts/anondate --tor-cert-lifetime-invalid ; then
+   echo "$0: WARNING: Tor certificate lifetime invalid."
+   if time_result="$(/usr/lib/helper-scripts/anondate --tor-cert-valid-after)" ; then
+      echo "$0: INFO: Tor certificate life date: $time_result"
+      echo "$time_result"
+      exit 0
+   else
+      echo "$0: WARNING: Could not find out Tor certificate life date."
+   fi
+else
+   echo "$0: INFO: Tor certificate lifetime valid, ok."
+fi

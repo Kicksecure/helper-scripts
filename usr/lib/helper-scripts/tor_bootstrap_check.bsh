@@ -45,9 +45,8 @@ check_tor_bootstrap_helper_variables() {
 }
 
 check_tor_bootstrap_helper_run_helper_script() {
-   if [ "$TEMP_DIR" = "" ]; then
-      echo "Variable TEMP_DIR was empty." >&2
-      TEMP_DIR="$(mktemp --directory)"
+   if [ "$TOR_BOOTSTRAP_TEMP_DIR" = "" ]; then
+      TOR_BOOTSTRAP_TEMP_DIR="$(mktemp --directory)"
    fi
 
    check_tor_bootstrap_helper_variables
@@ -77,6 +76,8 @@ check_tor_bootstrap_helper_run_helper_script() {
    else
       check_bootstrap_helper_script_output="ERROR: File '$check_bootstrap_helper_bootstrap_file' does not exist. check_bootstrap_helper_script: '$check_bootstrap_helper_script' Please report this Whonix bug!"
    fi
+
+   rm -r -f "$TOR_BOOTSTRAP_TEMP_DIR"
 }
 
 check_tor_bootstrap_helper() {

@@ -8,7 +8,7 @@ set -o pipefail
 
 variables() {
    [ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
-   [ -n "$TOR_LOG" ] || TOR_LOG="/run/tor/log"
+   [ -n "$TOR_LOG" ] || TOR_LOG="$(journalctl --boot --output cat --no-pager -u tor@default)"
    [ -n "$TOR_DIR" ] || TOR_DIR="/var/lib/tor"
    [ -n "$TOR_DESCRIPTORS" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
    [ -n "$NEW_TOR_DESCRIPTORS" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"
@@ -102,6 +102,8 @@ parse_cmd_options() {
       if [ -e "${TOR_CONSENSUS}" ]; then
          consensus="$TOR_CONSENSUS"
       else
+         ## make unverified consensus ISOTime accessible through Tor's ControlPort
+         ## https://gitlab.torproject.org/tpo/core/tor/-/issues/16845
          consensus="$TOR_UNVERIFIED_CONSENSUS"
       fi
    elif [ "$unverified_only_" = "true" ]; then
@@ -153,7 +155,7 @@ parse_cmd_options() {
 
 root_check() {
    if [ "$(id -u)" != "0" ]; then
-      echo "ERROR: Must run as root."
+      echo "$0: ERROR: Must run as root."
       exit 112
    fi
 }
@@ -176,6 +178,7 @@ show-valid-after() {
    if [ "$show_valid_after_" = "true" ]; then
       echo "$vstart"
    fi
+   #/usr/lib/helper-scripts/tor_consensus_valid-after.py
 }
 
 show-valid-until() {
@@ -183,6 +186,7 @@ show-valid-until() {
    if [ "$show_valid_until_" = "true" ]; then
       echo "$vend"
    fi
+   #/usr/lib/helper-scripts/tor_consensus_valid-until.py
 }
 
 show-middle-range() {
@@ -225,7 +229,7 @@ ${vendcons}"
 }
 
 tor_cert_lifetime_invalid() {
-   if [ ! -r "$TOR_LOG" ]; then
+   if [ "$TOR_LOG" = "" ]; then
       exit 3
    fi
 
@@ -239,10 +243,12 @@ tor_cert_lifetime_invalid() {
    ## Sep 03 10:32:59.000 [warn] Certificate already expired. Either their clock is set wrong, or your clock is wrong.
    ## Sep 03 10:32:59.000 [warn] (certificate lifetime runs from Aug 16 00:00:00 2014 GMT through Jul 29 23:59:59 2015 GMT. Your time is Sep 03 10:32:59 2015 UTC.)
 
+   ## Certificate not yet valid. Either their clock is set wrong, or your clock is wrong.
+   ## (certificate lifetime runs from Sep 13 00:00:00 2020 GMT through Sep 13 00:00:00 2021 GMT. Your time is Jan 05 14:31:46 2000 UTC.)
+
    ## The log severity will be "warn" if bootstrapping with
    ## authorities and "info" with bridges.
-   grep "\[\(warn\|info\)\] Certificate \(not yet valid\|already expired\)\." "${TOR_LOG}" | tail -n 1
-   if [ "$?" = "0" ]; then
+   if echo "${TOR_LOG}" | grep -q "Certificate \(not yet valid\|already expired\)\." ; then
       return 0
    else
       return 1
@@ -250,12 +256,15 @@ tor_cert_lifetime_invalid() {
 }
 
 tor_cert_valid_after() {
-   if [ ! -r "$TOR_LOG" ]; then
+   if [ "$TOR_LOG" = "" ]; then
       exit 3
    fi
 
+   ## make certificate lifetime accessible through Tor's ControlPort
+   ## https://gitlab.torproject.org/tpo/core/tor/-/issues/16822
+
    ## Only print the last = freshest match
-   sed -n 's/^.*certificate lifetime runs from \(.*\) through.*$/\1/p' "${TOR_LOG}" | tail -n 1
+   echo "${TOR_LOG}" | sed -n 's/^.*certificate lifetime runs from \(.*\) through.*$/\1/p' | tail -n 1
 
    ## Example output:
    ## Jun 16 00:00:00 2014 GMT
