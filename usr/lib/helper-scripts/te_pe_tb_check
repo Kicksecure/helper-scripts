@@ -142,7 +142,9 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
       exit 1
    fi
 
-   if [ "$VM" = "Gateway" ]; then
+   if [ "$VM" = "Workstation" ]; then
+      true "INFO: skipping check_tor_bootstrap_status because workstation has no access to it."
+   else
       check_tor_bootstrap_status
    fi
 
@@ -151,11 +153,11 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
    ## consensus time as it might be outdated leading to concluding that the
    ## clock is fast.
    if [ "$tor_circuit_established" = "0" ]; then
-      if [ "$VM" = "Gateway" ]; then
+      if [ "$VM" = "Workstation" ]; then
+         echo "<b>Tor is not yet fully bootstrapped.</b> Tor circuit: $tor_circuit_established_word."
+      else
          echo "<b>Tor is not yet fully bootstrapped.</b> $tor_bootstrap_percent % done.\
    <br>Tor reports: $tor_bootstrap_status"
-      else
-         echo "<b>Tor is not yet fully bootstrapped.</b> Tor circuit: $tor_circuit_established_word."
       fi
       exit "2"
    fi
