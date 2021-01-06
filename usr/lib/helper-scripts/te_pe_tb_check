@@ -43,8 +43,8 @@ te_pe_tb_check() {
 - A hardware issue (for example bios clock issues).<br>"
 
    ## Debugging.
-   true "$FUNCNAME: CURL: $CURL"
-   true "$FUNCNAME: LD_PRELOAD: $LD_PRELOAD"
+   true "$FUNCNAME: INFO: CURL: $CURL"
+   true "$FUNCNAME: INFO: LD_PRELOAD: $LD_PRELOAD"
 
    if [ -e /usr/share/timesanitycheck/shared ]; then
       ## provides: time_sanity_check
@@ -68,7 +68,7 @@ $clock_causes"
    check_tor_enabled_do
 
    if [ "$TOR_ENABLED" = "1" ]; then
-      true "INFO: Ok, Tor already enabled."
+      true "$FUNCNAME: INFO: Ok, Tor already enabled."
    else
       if [ -f /usr/share/whonix/marker ]; then
          echo "<b>Tor is disabled.</b> Please enable Tor using whonixsetup.<br> \
@@ -84,9 +84,9 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
    ## sets: package_manager_waiting_msg
    #check_package_manager_running_helper ## pkg_manager_running_check
    #if [ "$check_apt_get_exit_code" = "0" ]; then
-      #true "Package manager not busy, ok."
+      #true "$FUNCNAME: INFO: Package manager not busy, ok."
    #else
-      #echo "$package_manager_waiting_msg"
+      #echo "$FUNCNAME: INFO: $package_manager_waiting_msg"
 
       #exit 2
    #fi
@@ -141,7 +141,7 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
    fi
 
    if [ "$VM" = "Workstation" ]; then
-      true "INFO: skipping check_tor_bootstrap_status because workstation has no access to it."
+      true "$FUNCNAME: INFO: skipping check_tor_bootstrap_status because workstation has no access to it."
    else
       check_tor_bootstrap_status
    fi
