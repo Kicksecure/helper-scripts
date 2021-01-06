@@ -133,9 +133,7 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
 <br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
          else
             echo "Tor Bootstrap Result: \
-<b>Tor's Control Port could not be reached.</b><br> \
-<br>Did you start Gateway beforehand?
-<br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
+<b>Tor's Control Port could not be reached.</b>"
          fi
       fi
 
