@@ -1,3 +1,39 @@
+commit 0a1031c7333c7110125d3968028fa90f385db7c6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:29:12 2021 -0500
+
+    no man pages for anondate for now
+
+commit ae7ef701df195a0f4311a471ee1fb86a58b650e3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:27:40 2021 -0500
+
+    update path
+
+commit cf053a01a0859abaee4b0f78421771055664c7c8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:26:13 2021 -0500
+
+    refactoring
+
+commit 1cb5257656d7c3bcd8c4cefd014053c5f1091cfc
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:25:00 2021 -0500
+
+    move anondate scripts to /usr/sbin folder
+
+commit 6474fd5985010a8d1fd66db330281d086e5f1296
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:24:16 2021 -0500
+
+    update path
+
+commit b66abfb22f8bfc17d27d262a78611ec2c35879f6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 5 08:22:02 2021 -0500
+
+    bumped changelog version
+
 commit 282827a440fd9c6bae52026fd93cc44db78e0a2b
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Jan 5 08:21:50 2021 -0500
