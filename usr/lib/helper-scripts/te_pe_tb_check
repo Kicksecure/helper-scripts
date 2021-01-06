@@ -30,7 +30,7 @@ te_pe_tb_check() {
    elif [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
       VM="Workstation"
    else
-      VM="Could not determine if this is gateway or workstation. Please report this bug."
+      VM="Other"
    fi
 
    clock_causes="\
