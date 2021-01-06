@@ -1,3 +1,39 @@
+commit 2eac90e69cd193681aa61d030a49874ae103011d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:47:20 2021 -0500
+
+    output
+
+commit 5001d6a483fa6b5d8f8d26cc94d193a08f192c89
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:46:10 2021 -0500
+
+    output
+
+commit 42d6d0542fe52bfd6a69b09e71b8d3c85709673b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:42:21 2021 -0500
+
+    also provide Tor bootstrap information on Non-Whonix
+
+commit 9d2514656a8048ac1f8df188562e441c75dd7343
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:39:16 2021 -0500
+
+    refactoring
+
+commit 048562ed76c5b0b0165770f876d08c4a7a738e51
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:33:53 2021 -0500
+
+    output
+
+commit df17982b27a25cdc7e232ac3d7b3d73242e8657a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 6 05:31:03 2021 -0500
+
+    bumped changelog version
+
 commit 0a1031c7333c7110125d3968028fa90f385db7c6
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Jan 6 05:29:12 2021 -0500
