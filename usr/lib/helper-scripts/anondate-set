@@ -11,6 +11,6 @@ if [ "$(id -u)" != "0" ]; then
    exit 112
 fi
 
-time_result="$(/usr/lib/helper-scripts/anondate-get)"
+time_result="$(anondate-get)"
 
 date --set "$time_result"

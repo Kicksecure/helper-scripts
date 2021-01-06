@@ -4,37 +4,37 @@
 ## See the file COPYING for copying conditions.
 
 ## If tor@default is stopped.
-# sudo /usr/lib/helper-scripts/anondate-tester
+# sudo /usr/sbin/anondate-tester
 #
-# cmd_item: /usr/lib/helper-scripts/anondate --has-consensus
+# cmd_item: /usr/sbin/anondate --has-consensus
 # output:
 # exit_code: 4
 # ----------
-# cmd_item: /usr/lib/helper-scripts/anondate --current-time-in-valid-range
+# cmd_item: /usr/sbin/anondate --current-time-in-valid-range
 # sed: can't read /var/lib/tor/cached-microdesc-consensus: No such file or directory
 # output:
 # exit_code: 1
 # ----------
-# cmd_item: /usr/lib/helper-scripts/anondate --show-valid-after
+# cmd_item: /usr/sbin/anondate --show-valid-after
 # sed: can't read /var/lib/tor/cached-microdesc-consensus: No such file or directory
 # output:
 # exit_code: 1
 # ----------
-# cmd_item: /usr/lib/helper-scripts/anondate --show-valid-until
+# cmd_item: /usr/sbin/anondate --show-valid-until
 # sed: can't read /var/lib/tor/cached-microdesc-consensus: No such file or directory
 # output:
 # exit_code: 1
 # ----------
-# cmd_item: /usr/lib/helper-scripts/anondate --show-middle-range
+# cmd_item: /usr/sbin/anondate --show-middle-range
 # sed: can't read /var/lib/tor/cached-microdesc-consensus: No such file or directory
 # output:
 # exit_code: 1
 # ----------
-# cmd_item: /usr/lib/helper-scripts/anondate --tor-cert-lifetime-invalid
+# cmd_item: /usr/sbin/anondate --tor-cert-lifetime-invalid
 # output:
 # exit_code: 3
 # ----------
-# cmd_item: /usr/lib/helper-scripts/anondate --tor-cert-valid-after
+# cmd_item: /usr/sbin/anondate --tor-cert-valid-after
 # output:
 # exit_code: 3
 # ----------
@@ -65,14 +65,14 @@ fi
 
 ## TODO: Tor cert valid after must be after Tor consensus middle range to avoid using stale Tor consensus
 
-if /usr/lib/helper-scripts/anondate --has-consensus ; then
+if /usr/sbin/anondate --has-consensus ; then
    echo "$0: INFO: has Tor consensus, ok."
-   if /usr/lib/helper-scripts/anondate --current-time-in-valid-range ; then
+   if /usr/sbin/anondate --current-time-in-valid-range ; then
       echo "$0: INFO: current time in valid in range, ok."
       exit 0
    else
       echo "$0: WARNING: current time in NOT in valid range."
-      if middle_range="$(/usr/lib/helper-scripts/anondate --show-middle-range)" ; then
+      if middle_range="$(/usr/sbin/anondate --show-middle-range)" ; then
          echo "$0: INFO: middle_range: '$middle_range'"
          echo "$middle_range"
          exit 0
@@ -80,9 +80,9 @@ if /usr/lib/helper-scripts/anondate --has-consensus ; then
    fi
 fi
 
-if /usr/lib/helper-scripts/anondate --tor-cert-lifetime-invalid ; then
+if /usr/sbin/anondate --tor-cert-lifetime-invalid ; then
    echo "$0: WARNING: Tor certificate lifetime invalid."
-   if time_result="$(/usr/lib/helper-scripts/anondate --tor-cert-valid-after)" ; then
+   if time_result="$(/usr/sbin/anondate --tor-cert-valid-after)" ; then
       echo "$0: INFO: Tor certificate life date: $time_result"
       echo "$time_result"
       exit 0
