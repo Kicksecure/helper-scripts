@@ -22,6 +22,8 @@ trap "error_handler" ERR
 
 source /usr/lib/helper-scripts/tor_enabled_check
 source /usr/lib/helper-scripts/pkg_manager_running_check
+
+## provides check_tor_bootstrap_status
 source /usr/lib/helper-scripts/tor_bootstrap_check.bsh
 
 te_pe_tb_check() {
@@ -66,8 +68,7 @@ $clock_causes"
    check_tor_enabled_do
 
    if [ "$TOR_ENABLED" = "1" ]; then
-      ## Ok.
-      true
+      true "INFO: Ok, Tor already enabled."
    else
       if [ -f /usr/share/whonix/marker ]; then
          echo "<b>Tor is disabled.</b> Please enable Tor using whonixsetup.<br> \
