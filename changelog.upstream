@@ -1,3 +1,27 @@
+commit 4f9e7057ad3559b82e43956202624cd02a510def
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 02:15:29 2021 -0500
+
+    non-UTC fix
+
+commit aaba9b798ebdf11e7a91b75740bcf3c98905df6f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 02:11:15 2021 -0500
+
+    output
+
+commit 5644bc55c1c55e76c324190f0a8d7d2e66d408d5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 02:02:10 2021 -0500
+
+    refactoring
+
+commit 99ce57a4fa4de973e9ea17360fd8b9fbdf7f0b9f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 01:46:38 2021 -0500
+
+    bumped changelog version
+
 commit 9b0ca51562f2ad50ad6be9f9b314204faa756dbb
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jan 9 01:45:54 2021 -0500
