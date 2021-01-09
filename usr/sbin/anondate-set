@@ -12,11 +12,27 @@ exit_code=1
 
 trap exit_handler EXIT
 
+set_date() {
+   echo "$0: INFO: Running: 'date --utc \"+%Y-%m-%d %H:%M:%S\" --set "$time_result"'"
+   date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result"
+   exit_code="$?"
+}
+
 if [ "$(whoami)" = "sdwdate" ]; then
-   true
-elif [ "$(id -u)" != "0" ]; then
+   anondate_state_folder=/run/sdwdate
+elif [ "$(id -u)" = "0" ]; then
+   anondate_state_folder=/run/anondate
+   mkdir -p "$anondate_state_folder"
+else
    echo "$0: ERROR: Must run as root." >&2
    exit 112
+fi
+anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
+
+if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
+   echo "$0: INFO: Status file '$anondate_tor_certificate_lifetime_set_file' exists."
+else
+   echo "$0: INFO: Status file '$anondate_tor_certificate_lifetime_set_file' does not yet exist."
 fi
 
 echo "$0: INFO: running anondate-get..."
@@ -24,11 +40,25 @@ echo "$0: INFO: running anondate-get..."
 anondate_get_exit_code=0
 time_result="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
 
-if [ ! "$anondate_get_exit_code" = "0" ]; then
+if [ "$anondate_get_exit_code" = "0" ]; then
+   echo "$0: INFO: anondate-get returned Tor consensus middle range time."
+   set_date
+elif [ "$anondate_get_exit_code" = "1" ]; then
    echo "$0: INFO: Setting time using anondate either not possible or not required."
    exit_code=2
-else
-   echo "$0: INFO: Running: 'date --utc --set "$time_result"'"
-   date --utc --set "$time_result"
-   exit_code="$?"
+elif [ "$anondate_get_exit_code" = "2" ]; then
+   if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
+      echo "$0: INFO: No, not again setting system clock to Tor certificate lifetime."
+   else
+      echo "$0: INFO: Yes, setting system clock to Tor certificate lifetime."
+      set_date
+      echo "$0: INFO: Creating status file '$anondate_tor_certificate_lifetime_set_file'."
+      touch "$anondate_tor_certificate_lifetime_set_file"
+      echo "$0: INFO: Done, created status file '$anondate_tor_certificate_lifetime_set_file'."
+      ## If clock was too fast, restart of Tor is required.
+      echo "$0: INFO: Tor restart using 'systemctl restart tor@default'..."
+      systemctl --no-pager restart tor@default
+      echo "$0: INFO: Tor restart done."
+      exit_code=2
+   fi
 fi

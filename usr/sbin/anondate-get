@@ -6,6 +6,11 @@
 ## Write all informational messages to stderr.
 ## Write date to stdout.
 
+## exit codes:
+## 0: show Tor consensus time middle range
+## 1: error
+## 2: show Tor certificate lifetime
+
 ## If tor@default is stopped.
 # sudo anondate-tester
 #
@@ -43,13 +48,27 @@
 # ----------
 
 #set -x
+set -e
+
+exit_handler() {
+   echo "$0: INFO: Exiting with exit code $exit_code." >&2
+   exit "$exit_code"
+}
+
+exit_code=1
+
+trap exit_handler EXIT
 
 if [ "$(whoami)" = "sdwdate" ]; then
-   true
-elif [ "$(id -u)" != "0" ]; then
+   anondate_state_folder=/run/sdwdate
+elif [ "$(id -u)" = "0" ]; then
+   anondate_state_folder=/run/anondate
+else
    echo "$0: ERROR: Must run as root." >&2
+   exit_code=112
    exit 112
 fi
+anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
 
 source /usr/lib/helper-scripts/tor_bootstrap_check.bsh
 check_tor_bootstrap_helper
@@ -85,6 +104,7 @@ if middle_range="$(anondate --show-middle-range)" ; then
       echo "$0: WARNING: current time in NOT in valid range." >&2
       echo "$0: INFO: middle_range: '$middle_range'" >&2
       echo "$middle_range"
+      exit_code="0"
       exit 0
    fi
 else
@@ -104,15 +124,13 @@ else
       time_result_unixtime="$(date --utc --date="$time_result" "+%s")"
       current_unixtime="$(date --utc "+%s")"
       if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
-         echo "$0: INFO: Clock already later than Tor certificate life date, ok." >&2
+         echo "$0: INFO: Clock LATER than Tor certificate life date, ok." >&2
       else
-         echo "$0: WARNING: Clock earlier later than Tor certificate life date." >&2
-         echo "$time_result"
-         exit 0
+         echo "$0: INFO: Clock EARLIER than Tor certificate life date." >&2
       fi
+      echo "$time_result"
+      exit_code=2
    else
       echo "$0: WARNING: Could not find out Tor certificate life date." >&2
    fi
 fi
-
-exit 1
