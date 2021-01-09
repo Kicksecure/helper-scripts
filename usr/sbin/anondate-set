@@ -10,14 +10,13 @@ if [ "$(id -u)" != "0" ]; then
    exit 112
 fi
 
+echo "$0: INFO: running anondate-get..."
+
 anondate_get_exit_code=0
 time_result="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
 
 if [ ! "$anondate_get_exit_code" = "0" ]; then
    echo "$0: INFO: Setting time using anondate either not possible or not required."
-   echo "$0: INFO: Output of anondate-get:"
-   echo "$time_result"
-   echo "$0: INFO: Exiting."
    exit 1
 fi
 

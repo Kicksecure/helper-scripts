@@ -3,6 +3,9 @@
 ## Copyright (C) 2014 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+## Write all informational messages to stderr.
+## Write date to stdout.
+
 ## If tor@default is stopped.
 # sudo anondate-tester
 #
@@ -40,7 +43,7 @@
 # ----------
 
 if [ "$(id -u)" != "0" ]; then
-   echo "$0: ERROR: Must run as root."
+   echo "$0: ERROR: Must run as root." >&2
    exit 112
 fi
 
@@ -48,31 +51,31 @@ source /usr/lib/helper-scripts/tor_bootstrap_check.bsh
 check_tor_bootstrap_helper
 
 if [ "$tor_bootstrap_percent" = "100" ]; then
-   echo "$0: INFO: 100% Tor bootstrap, ok."
+   echo "$0: INFO: 100% Tor bootstrap, ok." >&2
    if tor_circuit_established_check="$(/usr/lib/helper-scripts/tor_circuit_established_check.py)" ; then
-      echo "$0: INFO: tor_circuit_established_check.py, ok."
+      echo "$0: INFO: tor_circuit_established_check.py, ok." >&2
       if [ "$tor_circuit_established_check" = "1" ]; then
-         echo "$0: INFO: Tor circuit already established, ok."
+         echo "$0: INFO: Tor circuit already established, ok." >&2
       else
-         echo "$0: WARNING: Tor circuit not yet established."
+         echo "$0: WARNING: Tor circuit not yet established." >&2
       fi
    else
-      echo "$0: WARNING: tor_circuit_established_check.py failed."
+      echo "$0: WARNING: tor_circuit_established_check.py failed." >&2
    fi
 else
-   echo "$0: WARNING: Tor bootstrap not done."
+   echo "$0: WARNING: Tor bootstrap not done." >&2
 fi
 
 ## TODO: Tor cert valid after must be after Tor consensus middle range to avoid using stale Tor consensus
 
 if anondate --has-consensus ; then
-   echo "$0: INFO: has Tor consensus, ok."
+   echo "$0: INFO: has Tor consensus, ok." >&2
    if anondate --current-time-in-valid-range ; then
-      echo "$0: INFO: current time in valid in range, ok."
+      echo "$0: INFO: current time in valid in range, ok." >&2
    else
-      echo "$0: WARNING: current time in NOT in valid range."
+      echo "$0: WARNING: current time in NOT in valid range." >&2
       if middle_range="$(anondate --show-middle-range)" ; then
-         echo "$0: INFO: middle_range: '$middle_range'"
+         echo "$0: INFO: middle_range: '$middle_range'" >&2
          echo "$middle_range"
          exit 0
       fi
@@ -80,16 +83,16 @@ if anondate --has-consensus ; then
 fi
 
 if anondate --tor-cert-lifetime-invalid ; then
-   echo "$0: WARNING: Tor certificate lifetime invalid."
+   echo "$0: WARNING: Tor certificate lifetime invalid." >&2
    if time_result="$(anondate --tor-cert-valid-after)" ; then
-      echo "$0: INFO: Tor certificate life date: $time_result"
+      echo "$0: INFO: Tor certificate life date: $time_result" >&2
       echo "$time_result"
       exit 0
    else
-      echo "$0: WARNING: Could not find out Tor certificate life date."
+      echo "$0: WARNING: Could not find out Tor certificate life date." >&2
    fi
 else
-   echo "$0: INFO: Tor certificate lifetime valid, ok."
+   echo "$0: INFO: Tor certificate lifetime valid, ok." >&2
 fi
 
 exit 1
