@@ -1,3 +1,99 @@
+commit 1a380bc5ef031e37827593ed8008a30690e9922e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 06:31:17 2021 -0500
+
+    add debian install file (generated using "genmkfile debinstfile")
+
+commit a280b65520dc6952ba7451c642c8b49f4260757d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 06:31:54 2021 -0500
+
+    anondate
+
+commit 0e6e03b26b2b248fc478c63f2a47cb5fbbf173c6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Oct 12 20:12:56 2020 -0400
+
+    anondate
+
+commit ea09b07ad1dc9ee5d535c9ee1ce4d02dfe0914ca
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 05:48:53 2021 -0500
+
+    anondate
+
+commit 99b33533f63e843218f2f787cab43a24db9797f6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 9 02:55:14 2000 -0500
+
+    anondate
+
+commit 8c0efb8771637ccb1a4d0127dec6e9f91eaecbb2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 04:30:28 2021 -0500
+
+    anondate
+
+commit 16c108d57b771895006fdcc263fc97b9fa5cd142
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 04:31:42 2021 -0500
+
+    anondate
+
+commit fe44065404d40db9a081b63cad5a37579afb8403
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 03:31:57 2021 -0500
+
+    fix time using anondate
+
+commit da4f6dfafcbcfab3610f8b6e79effb5dc8bc010a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 9 02:37:17 2000 -0500
+
+    anondate
+
+commit 1c8c2baab4092cde11ebe4073ef14352e02ed40a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 9 02:36:25 2000 -0500
+
+    work on fixing time using anondate
+
+commit bcd4fc99c8a817b30a45f7c9c6baa3a1ffabe6f4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 9 02:35:57 2000 -0500
+
+    minor
+
+commit 24e19d8f81759567fed20d0abb2ec9ae51abbf82
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 02:31:37 2021 -0500
+
+    anondate
+
+commit 6565f3078f6f0df822ca6d85ad212c2fec93e959
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 02:48:08 2021 -0500
+
+    anondate
+
+commit 3225056de5224f89c7295b653025d0d959eeb4fc
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 02:47:24 2021 -0500
+
+    anondate
+
+commit 917e79246bd5721da2a3fcf2d8c9694a8ca42388
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 02:46:26 2021 -0500
+
+    anondate
+
+commit 1bfa6f6209dcfe01addbe2b03d49bf7ad92400f4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 02:19:49 2021 -0500
+
+    bumped changelog version
+
 commit 4f9e7057ad3559b82e43956202624cd02a510def
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jan 9 02:15:29 2021 -0500
