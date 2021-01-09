@@ -238,6 +238,16 @@ te_pe_tb_check() {
    tor_consensus_time_sanity_check
 
    tor_circuit_established_check
+
+   if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
+      anondate-set
+      return 0
+   fi
+
+   if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
+      anondate-set
+      return 0
+   fi
 }
 
 te_pe_tb_check "$@"

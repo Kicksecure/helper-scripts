@@ -69,7 +69,6 @@ if anondate --has-consensus ; then
    echo "$0: INFO: has Tor consensus, ok."
    if anondate --current-time-in-valid-range ; then
       echo "$0: INFO: current time in valid in range, ok."
-      exit 0
    else
       echo "$0: WARNING: current time in NOT in valid range."
       if middle_range="$(anondate --show-middle-range)" ; then
@@ -92,3 +91,5 @@ if anondate --tor-cert-lifetime-invalid ; then
 else
    echo "$0: INFO: Tor certificate lifetime valid, ok."
 fi
+
+exit 1

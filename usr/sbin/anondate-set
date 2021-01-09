@@ -3,7 +3,6 @@
 ## Copyright (C) 2014 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
-set -x
 set -e
 
 if [ "$(id -u)" != "0" ]; then
@@ -11,6 +10,15 @@ if [ "$(id -u)" != "0" ]; then
    exit 112
 fi
 
-time_result="$(anondate-get)"
+anondate_get_exit_code=0
+time_result="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
 
-date --set "$time_result"
+if [ ! "$anondate_get_exit_code" = "0" ]; then
+   echo "$0: INFO: Setting time using anondate either not possible or not required."
+   echo "$0: INFO: Output of anondate-get:"
+   echo "$time_result"
+   echo "$0: INFO: Exiting."
+   exit 1
+fi
+
+date --utc --set "$time_result"
