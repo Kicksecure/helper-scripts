@@ -20,6 +20,13 @@ exit_code: $exit_code"
 
 trap "error_handler" ERR
 
+exit_handler() {
+   echo "$0: end"
+   echo ""
+}
+
+trap "exit_handler" EXIT
+
 source /usr/lib/helper-scripts/tor_enabled_check
 source /usr/lib/helper-scripts/pkg_manager_running_check
 
@@ -47,7 +54,7 @@ timesanitycheck_static() {
    source /usr/share/timesanitycheck/shared
    time_sanity_check
    if [ "$time_sanity_check_exit_code" = "0" ]; then
-      echo "Static Time Sanity Check: $time_sanity_check_msg_static" >&2
+      echo "Static Time Sanity Check: $time_sanity_check_msg_static"
    else
       echo "Static Time Sanity Check: $time_sanity_check_msg_static"
       timesanitycheck_static_timestamp_based_failed="true"
@@ -194,7 +201,7 @@ tor_consensus_time_sanity_check() {
    fi
 
    if [ "$clock_tor_consensus_check_result" = "ok" ]; then
-      echo "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>" >&2
+      echo "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>"
    else
       echo "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>"
    fi
@@ -219,13 +226,15 @@ exit_success_if_tor_circuit_already_established() {
 }
 
 run_anondate_set() {
-   echo "$0: Running anondate-set..." >&2
+   echo "Running anondate-set..."
    ## This has a sudoers exception.
    anondate-set
    exit 2
 }
 
 te_pe_tb_check() {
+   echo "$0: start"
+
    detect_vm_type
 
    timesanitycheck_static

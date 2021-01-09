@@ -86,7 +86,9 @@ if anondate --has-consensus ; then
    fi
 fi
 
-if anondate --tor-cert-lifetime-invalid ; then
+if anondate --tor-cert-lifetime-valid ; then
+   echo "$0: INFO: Tor certificate lifetime valid, ok." >&2
+else
    echo "$0: WARNING: Tor certificate lifetime invalid according to Tor log. This information might be outdated and not matter." >&2
    if time_result="$(anondate --tor-cert-valid-after)" ; then
       echo "$0: INFO: Tor certificate life date: $time_result" >&2
@@ -102,8 +104,6 @@ if anondate --tor-cert-lifetime-invalid ; then
    else
       echo "$0: WARNING: Could not find out Tor certificate life date." >&2
    fi
-else
-   echo "$0: INFO: Tor certificate lifetime valid, ok." >&2
 fi
 
 exit 1

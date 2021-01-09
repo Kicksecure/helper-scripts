@@ -9,7 +9,7 @@ set -o pipefail
 
 variables() {
    [ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
-   [ -n "$TOR_LOG" ] || TOR_LOG="$(journalctl --boot --output cat --no-pager -u tor@default)"
+   [ -n "$TOR_LOG" ] || TOR_LOG="journalctl --boot --output cat --no-pager -u tor@default"
    [ -n "$TOR_DIR" ] || TOR_DIR="/var/lib/tor"
    [ -n "$TOR_DESCRIPTORS" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
    [ -n "$NEW_TOR_DESCRIPTORS" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"
@@ -52,8 +52,8 @@ parse_cmd_options() {
                show_middle_range_="true"
                shift
                ;;
-           --tor-cert-lifetime-invalid)
-               tor_cert_lifetime_invalid_="true"
+           --tor-cert-lifetime-valid)
+               tor_cert_lifetime_valid_="true"
                shift
                ;;
            --tor-cert-valid-after)
@@ -133,8 +133,8 @@ parse_cmd_options() {
       show-middle-range
       exit "$?"
    fi
-   if [ "$tor_cert_lifetime_invalid_" = "true" ]; then
-      tor_cert_lifetime_invalid
+   if [ "$tor_cert_lifetime_valid_" = "true" ]; then
+      tor_cert_lifetime_valid
       exit "$?"
    fi
    if [ "$tor_cert_valid_after_" = "true" ]; then
@@ -231,11 +231,7 @@ ${vendcons}"
    fi
 }
 
-tor_cert_lifetime_invalid() {
-   if [ "$TOR_LOG" = "" ]; then
-      exit 3
-   fi
-
+tor_cert_lifetime_valid() {
    ## TODO:
    ## To be sure that we only grep relevant information, we
    ## should delete the log when Tor is started, which we do
@@ -251,23 +247,21 @@ tor_cert_lifetime_invalid() {
 
    ## The log severity will be "warn" if bootstrapping with
    ## authorities and "info" with bridges.
-   if echo "${TOR_LOG}" | grep -q "Certificate \(not yet valid\|already expired\)\." ; then
-      return 0
-   else
+
+   ## For some reason 'grep -q' does not work here.
+   if $TOR_LOG | grep "Certificate \(not yet valid\|already expired\)\." >/dev/null ; then
       return 1
+   else
+      return 0
    fi
 }
 
 tor_cert_valid_after() {
-   if [ "$TOR_LOG" = "" ]; then
-      exit 3
-   fi
-
    ## make certificate lifetime accessible through Tor's ControlPort
    ## https://gitlab.torproject.org/tpo/core/tor/-/issues/16822
 
    ## Only print the last = freshest match
-   echo "${TOR_LOG}" | sed -n 's/^.*certificate lifetime runs from \(.*\) through.*$/\1/p' | tail -n 1
+   $TOR_LOG | sed -n 's/^.*certificate lifetime runs from \(.*\) through.*$/\1/p' | tail -n 1
 
    ## Example output:
    ## Jun 16 00:00:00 2014 GMT

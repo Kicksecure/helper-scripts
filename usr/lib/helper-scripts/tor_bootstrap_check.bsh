@@ -43,39 +43,21 @@ check_tor_bootstrap_helper_variables() {
 }
 
 check_tor_bootstrap_helper_run_helper_script() {
-   if [ "$TOR_BOOTSTRAP_TEMP_DIR" = "" ]; then
-      TOR_BOOTSTRAP_TEMP_DIR="$(mktemp --directory)"
-   fi
-
    check_tor_bootstrap_helper_variables
 
    check_tor_bootstrap_helper_kill_after="5s"
    check_tor_bootstrap_helper_timeout_after="10s"
-   check_bootstrap_helper_bootstrap_file="$TEMP_DIR/tor_check_bootstrap_helper_bootstrap_file"
 
-   rm --force "$check_bootstrap_helper_bootstrap_file"
    check_bootstrap_helper_script_exit_code="0"
+
+   check_bootstrap_helper_script_output=$( \
    timeout \
       --kill-after="$check_tor_bootstrap_helper_kill_after" \
       "$check_tor_bootstrap_helper_timeout_after" \
       $check_bootstrap_helper_script \
-      > "$check_bootstrap_helper_bootstrap_file" \
       2>&1 \
-      &
-   lastpid="$!"
-   wait "$lastpid" || { check_bootstrap_helper_script_exit_code="$?" ; true; };
-
-   if [ -f "$check_bootstrap_helper_bootstrap_file" ]; then
-      check_bootstrap_helper_script_output="$(cat "$check_bootstrap_helper_bootstrap_file")"
-      if [ "$check_bootstrap_helper_script_output" = "" ]; then
-         check_bootstrap_helper_script_output="Variable check_bootstrap_helper_script_output is empty."
-         check_bootstrap_helper_script_exit_code="277"
-      fi
-   else
-      check_bootstrap_helper_script_output="ERROR: File '$check_bootstrap_helper_bootstrap_file' does not exist. check_bootstrap_helper_script: '$check_bootstrap_helper_script' Please report this Whonix bug!"
-   fi
-
-   rm -r -f "$TOR_BOOTSTRAP_TEMP_DIR"
+      ) \
+      || { check_bootstrap_helper_script_exit_code="$?" ; true; };
 }
 
 check_tor_bootstrap_helper() {
