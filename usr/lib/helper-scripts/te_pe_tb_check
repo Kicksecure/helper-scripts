@@ -174,11 +174,11 @@ tor_consensus_time_sanity_check() {
          true
       else
          clock_tor_consensus_check_result="slow"
-         clock_tor_consensus_check_msg="The clock might be too slow. Clock is slower than consensus/valid-after $tor_consensus_valid_after_output. $clock_causes"
+         clock_tor_consensus_check_msg="The clock might be too slow. Clock is slower than consensus/valid-after $tor_consensus_valid_after_output."
       fi
       if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
          clock_tor_consensus_check_result="fast"
-         clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. $clock_causes"
+         clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output."
       else
          true
       fi
@@ -187,7 +187,7 @@ tor_consensus_time_sanity_check() {
       clock_tor_consensus_check_msg="Might not have downloaded a Tor consensus yet."
    else
       clock_tor_consensus_check_result="error"
-      clock_tor_consensus_check_msg="Consensus time sanity check failed. $clock_causes"
+      clock_tor_consensus_check_msg="Consensus time sanity check failed."
    fi
 
    if [ "$clock_tor_consensus_check_result" = "ok" ]; then
