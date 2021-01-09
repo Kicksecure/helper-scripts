@@ -196,7 +196,7 @@ show-valid-after() {
 show-valid-until() {
    vend="$(/usr/lib/helper-scripts/tor_consensus_valid-until.py)"
    #vend="$(sed -n "/^valid-until \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
-   if [ "$vstart" = "" ]; then
+   if [ "$vend" = "" ]; then
       exit 1
    fi
    if [ "$show_valid_until_" = "true" ]; then
