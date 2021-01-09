@@ -240,11 +240,13 @@ te_pe_tb_check() {
    tor_circuit_established_check
 
    if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
+      echo "Running anondate-set..." >&2
       anondate-set
       return 0
    fi
 
    if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
+      echo "Running anondate-set..." >&2
       anondate-set
       return 0
    fi
