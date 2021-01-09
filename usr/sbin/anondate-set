@@ -21,4 +21,6 @@ if [ ! "$anondate_get_exit_code" = "0" ]; then
    exit 1
 fi
 
+echo "$0: INFO: Running: 'date --utc --set "$time_result"'"
 date --utc --set "$time_result"
+echo "$0: INFO: Exiting."
