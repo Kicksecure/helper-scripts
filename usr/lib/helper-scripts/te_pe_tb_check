@@ -26,7 +26,7 @@ source /usr/lib/helper-scripts/pkg_manager_running_check
 ## provides check_tor_bootstrap_status
 source /usr/lib/helper-scripts/tor_bootstrap_check.bsh
 
-te_pe_tb_check() {
+detect_vm_type() {
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
       VM="Gateway"
    elif [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
@@ -34,36 +34,30 @@ te_pe_tb_check() {
    else
       VM="Other"
    fi
+}
 
-   clock_causes="\
-<br><br>Possible causes:<br>
-- The host clock is wrong -> shut down the VM, fix the clock in the host and restart the VM.<br>
-- The VM clock is wrong -> manually fix the clock. Restart Tor if necessary. Then restart sdwdate.<br>
-- A host clock attack succeeded.<br>
-- A hardware issue (for example bios clock issues).<br>"
-
-   ## Debugging.
-   true "$FUNCNAME: INFO: CURL: $CURL"
-   true "$FUNCNAME: INFO: LD_PRELOAD: $LD_PRELOAD"
-
-   if [ -e /usr/share/timesanitycheck/shared ]; then
-      ## provides: time_sanity_check
-      ## sets: time_sanity_check_exit_code
-      ## sets: time_sanity_check_msg_static
-      source /usr/share/timesanitycheck/shared
-      time_sanity_check
-      if [ "$time_sanity_check_exit_code" = "0" ]; then
-         echo "$time_sanity_check_msg_static" >&2
-      else
-         echo "$time_sanity_check_msg_static
-$clock_causes"
-         timesanitycheck_static_timestamp_based_failed="true"
-         if [ "$VM" = "Gateway" ]; then
-            exit 1
-         fi
-      fi
+timesanitycheck_static() {
+   if [ ! -e /usr/share/timesanitycheck/shared ]; then
+      return 0
    fi
 
+   ## provides: time_sanity_check
+   ## sets: time_sanity_check_exit_code
+   ## sets: time_sanity_check_msg_static
+   source /usr/share/timesanitycheck/shared
+   time_sanity_check
+   if [ "$time_sanity_check_exit_code" = "0" ]; then
+      echo "Static Time Sanity Check: $time_sanity_check_msg_static" >&2
+   else
+      echo "Static Time Sanity Check: $time_sanity_check_msg_static"
+      timesanitycheck_static_timestamp_based_failed="true"
+      if [ "$VM" = "Gateway" ]; then
+         exit 1
+      fi
+   fi
+}
+
+exit_if_tor_not_yet_enabled() {
    ## Sets: TOR_ENABLED
    check_tor_enabled_do
 
@@ -79,18 +73,9 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
 
       exit 1
    fi
+}
 
-   ## sets: check_apt_get_exit_code
-   ## sets: package_manager_waiting_msg
-   #check_package_manager_running_helper ## pkg_manager_running_check
-   #if [ "$check_apt_get_exit_code" = "0" ]; then
-      #true "$FUNCNAME: INFO: Package manager not busy, ok."
-   #else
-      #echo "$FUNCNAME: INFO: $package_manager_waiting_msg"
-
-      #exit 2
-   #fi
-
+check_tor_circuit_established_yet() {
    ## sets: check_bootstrap_helper_script
    ## sets: lastpid
    ## sets: tor_bootstrap_percent
@@ -139,7 +124,9 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
 
       exit 1
    fi
+}
 
+tor_bootstrap_check() {
    if [ "$VM" = "Workstation" ]; then
       true "$FUNCNAME: INFO: skipping check_tor_bootstrap_status because workstation has no access to it."
    else
@@ -159,68 +146,74 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
       fi
       exit "2"
    fi
+}
 
+tor_consensus_time_sanity_check() {
    ## If the static timestamp based time sanity check failed, there is no
    ## need to run the Tor consensus based time sanity check. Avoiding
    ## duplicate output.
-   if [ ! "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
-      ## sets: tor_consensus_valid_after_exit_code
-      ## sets: tor_consensus_valid_after_output
-      ## sets: tor_consensus_valid_after_unixtime
-      tor_consensus_valid-after
-
-      ## sets: tor_consensus_valid_until_exit_code
-      ## sets: tor_consensus_valid_until_output
-      ## sets: tor_consensus_valid_until_unixtime
-      tor_consensus_valid-until
-
-      current_unixtime="$(date +"%s")"
-
-      if [ "$tor_consensus_valid_after_exit_code" = "0" ] && [ "$tor_consensus_valid_until_exit_code" = "0" ]; then
-         clock_tor_consensus_check_result="ok"
-         if [ "$current_unixtime" -ge "$tor_consensus_valid_after_unixtime" ]; then
-            true
-         else
-            clock_tor_consensus_check_result="slow"
-            clock_tor_consensus_check_msg="The clock might be too slow. Clock is slower than consensus/valid-after $tor_consensus_valid_after_output. $clock_causes"
-         fi
-         if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
-            clock_tor_consensus_check_result="fast"
-            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. $clock_causes"
-         else
-            true
-         fi
-      elif [ "$tor_consensus_valid_after_exit_code" = "277" ] && [ "$tor_consensus_valid_until_exit_code" = "277" ]; then
-         clock_tor_consensus_check_result="noneyet"
-         clock_tor_consensus_check_msg="Might not have downloaded a Tor consensus yet."
-      else
-         clock_tor_consensus_check_result="error"
-         clock_tor_consensus_check_msg="Consensus time sanity check failed. $clock_causes"
-      fi
-
-      if [ "$clock_tor_consensus_check_result" = "ok" ]; then
-         clock_tor_consensus_check_result="ok"
-         clock_tor_consensus_check_msg="Clock within consensus parameters consensus/valid-after $tor_consensus_valid_after_output and consensus/valid-until $tor_consensus_valid_until_output."
-      fi
-
-      if [ "$clock_tor_consensus_check_result" = "ok" ]; then
-         echo "<p>$clock_tor_consensus_check_msg</p>" >&2
-      else
-         echo "<p>$clock_tor_consensus_check_msg</p>"
-      fi
-
-      ## TODO
-      ## Would have to parse tor_bootstrap_status.
-      ## In case Tor cannot fetch Tor consensus $tor_consensus_valid_after_exit_code /
-      ## $tor_consensus_valid_until_exit_code may be zero but $tor_consensus_valid_until_output
-      ## may be empty.
-      #if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
-      #   if [ "$VM" = "Gateway" ]; then
-      #      exit "1"
-      #   fi
-      #fi
+   if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
+      return 0
    fi
 
+   ## sets: tor_consensus_valid_after_exit_code
+   ## sets: tor_consensus_valid_after_output
+   ## sets: tor_consensus_valid_after_unixtime
+   tor_consensus_valid-after
+
+   ## sets: tor_consensus_valid_until_exit_code
+   ## sets: tor_consensus_valid_until_output
+   ## sets: tor_consensus_valid_until_unixtime
+   tor_consensus_valid-until
+
+   current_unixtime="$(date +"%s")"
+
+   if [ "$tor_consensus_valid_after_exit_code" = "0" ] && [ "$tor_consensus_valid_until_exit_code" = "0" ]; then
+      clock_tor_consensus_check_result="ok"
+      if [ "$current_unixtime" -ge "$tor_consensus_valid_after_unixtime" ]; then
+         true
+      else
+         clock_tor_consensus_check_result="slow"
+         clock_tor_consensus_check_msg="The clock might be too slow. Clock is slower than consensus/valid-after $tor_consensus_valid_after_output. $clock_causes"
+      fi
+      if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
+         clock_tor_consensus_check_result="fast"
+         clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. $clock_causes"
+      else
+         true
+      fi
+   elif [ "$tor_consensus_valid_after_exit_code" = "277" ] && [ "$tor_consensus_valid_until_exit_code" = "277" ]; then
+      clock_tor_consensus_check_result="noneyet"
+      clock_tor_consensus_check_msg="Might not have downloaded a Tor consensus yet."
+   else
+      clock_tor_consensus_check_result="error"
+      clock_tor_consensus_check_msg="Consensus time sanity check failed. $clock_causes"
+   fi
+
+   if [ "$clock_tor_consensus_check_result" = "ok" ]; then
+      clock_tor_consensus_check_result="ok"
+      clock_tor_consensus_check_msg="Clock within consensus parameters consensus/valid-after $tor_consensus_valid_after_output and consensus/valid-until $tor_consensus_valid_until_output."
+   fi
+
+   if [ "$clock_tor_consensus_check_result" = "ok" ]; then
+      echo "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>" >&2
+   else
+      echo "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>"
+   fi
+
+   ## TODO
+   ## Would have to parse tor_bootstrap_status.
+   ## In case Tor cannot fetch Tor consensus $tor_consensus_valid_after_exit_code /
+   ## $tor_consensus_valid_until_exit_code may be zero but $tor_consensus_valid_until_output
+   ## may be empty.
+   #if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
+   #   if [ "$VM" = "Gateway" ]; then
+   #      exit "1"
+   #   fi
+   #fi
+}
+
+tor_circuit_established_check() {
    if [ "$tor_circuit_established" = "1" ]; then
       echo "<p>Tor fully bootstrapped.</p>"
       exit "0"
@@ -229,6 +222,22 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
    echo "Tor Bootstrap Result: \
    <b>ERROR tor_circuit_established is neither 0 nor 1. tor_circuit_established: $tor_circuit_established</b><br> Please report this bug!" >&2
    exit "0"
+}
+
+te_pe_tb_check() {
+   detect_vm_type
+
+   timesanitycheck_static
+
+   exit_if_tor_not_yet_enabled
+
+   check_tor_circuit_established_yet
+
+   tor_bootstrap_check
+
+   tor_consensus_time_sanity_check
+
+   tor_circuit_established_check
 }
 
 te_pe_tb_check "$@"
