@@ -72,21 +72,28 @@ fi
 
 ## TODO: Tor cert valid after must be after Tor consensus middle range to avoid using stale Tor consensus
 
-if anondate --has-consensus ; then
-   echo "$0: INFO: has Tor consensus, ok." >&2
-   if anondate --current-time-in-valid-range ; then
+## Needs acccess to TOR_DIR /var/lib/tor.
+# if anondate --has-consensus ; then
+# echo "$0: INFO: has Tor consensus, ok." >&2
+
+if middle_range="$(anondate --show-middle-range)" ; then
+   if [ "$middle_range" = "" ]; then
+      echo "$0: WARNING: Tor consensus time middle range result empty." >&2
+   elif anondate --current-time-in-valid-range ; then
       echo "$0: INFO: current time in valid in range, ok." >&2
    else
       echo "$0: WARNING: current time in NOT in valid range." >&2
-      if middle_range="$(anondate --show-middle-range)" ; then
-         echo "$0: INFO: middle_range: '$middle_range'" >&2
-         echo "$middle_range"
-         exit 0
-      fi
+      echo "$0: INFO: middle_range: '$middle_range'" >&2
+      echo "$middle_range"
+      exit 0
    fi
 else
-   echo "$0: WARNING: has no Tor consensus yet." >&2
+   echo "$0: WARNING: could not determine Tor consensus time middle range." >&2
 fi
+
+# else
+#    echo "$0: WARNING: has no Tor consensus yet." >&2
+# fi
 
 if anondate --tor-cert-lifetime-valid ; then
    echo "$0: INFO: Tor certificate lifetime valid, ok." >&2

@@ -15,7 +15,7 @@ cmd_item_list=(
 "--show-valid-after"
 "--show-valid-until"
 "--show-middle-range"
-"--tor-cert-lifetime-invalid"
+"--tor-cert-lifetime-valid"
 "--tor-cert-valid-after"
 )
 

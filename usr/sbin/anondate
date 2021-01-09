@@ -4,6 +4,7 @@
 ## Copyright (C) 2014 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+#set -x
 set -e
 set -o pipefail
 
@@ -164,7 +165,12 @@ root_check() {
 }
 
 has_consensus() {
+   if ! test -r "$TOR_DIR". ; then
+      echo "$0: ERROR: Cannot read TOR_DIR: '$TOR_DIR'" >&2
+      exit 4
+   fi
    if [ ! -r "$consensus" ]; then
+      echo "$0: ERROR: Cannot read consensus file: '$consensus'" >&2
       exit 4
    fi
    local grep_exit_code="0"
@@ -177,19 +183,25 @@ has_consensus() {
 }
 
 show-valid-after() {
-   vstart="$(sed -n "/^valid-after \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
+   vstart="$(/usr/lib/helper-scripts/tor_consensus_valid-after.py)"
+   #vstart="$(sed -n "/^valid-after \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
+   if [ "$vstart" = "" ]; then
+      exit 1
+   fi
    if [ "$show_valid_after_" = "true" ]; then
       echo "$vstart"
    fi
-   #/usr/lib/helper-scripts/tor_consensus_valid-after.py
 }
 
 show-valid-until() {
-   vend="$(sed -n "/^valid-until \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
+   vend="$(/usr/lib/helper-scripts/tor_consensus_valid-until.py)"
+   #vend="$(sed -n "/^valid-until \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
+   if [ "$vstart" = "" ]; then
+      exit 1
+   fi
    if [ "$show_valid_until_" = "true" ]; then
       echo "$vend"
    fi
-   #/usr/lib/helper-scripts/tor_consensus_valid-until.py
 }
 
 show-middle-range() {
