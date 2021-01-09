@@ -42,7 +42,9 @@
 # exit_code: 3
 # ----------
 
-if [ "$(id -u)" != "0" ]; then
+if [ "$(whoami)" = "sdwdate" ]; then
+   true
+elif [ "$(id -u)" != "0" ]; then
    echo "$0: ERROR: Must run as root." >&2
    exit 112
 fi
@@ -88,10 +90,10 @@ if anondate --tor-cert-lifetime-invalid ; then
       echo "$0: INFO: Tor certificate life date: $time_result" >&2
       time_result_unixtime="$(date --utc --date="$time_result" "+%s")"
       current_unixtime="$(date --utc "+%s")"
-      if [ "$time_result_unixtime" -ge "$time_result_unixtime" ]; then
+      if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
          echo "$0: INFO: Clock already later than Tor certificate life date, ok." >&2
       else
-         echo "$0: WARNING: Clock earlier later than Tor certificate life date, ok." >&2
+         echo "$0: WARNING: Clock earlier later than Tor certificate life date." >&2
          echo "$time_result"
          exit 0
       fi

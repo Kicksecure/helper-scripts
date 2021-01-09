@@ -5,8 +5,10 @@
 
 set -e
 
-if [ "$(id -u)" != "0" ]; then
-   echo "$0: ERROR: Must run as root."
+if [ "$(whoami)" = "sdwdate" ]; then
+   true
+elif [ "$(id -u)" != "0" ]; then
+   echo "$0: ERROR: Must run as root." >&2
    exit 112
 fi
 

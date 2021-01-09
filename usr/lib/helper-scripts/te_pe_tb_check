@@ -218,6 +218,13 @@ exit_success_if_tor_circuit_already_established() {
    fi
 }
 
+run_anondate_set() {
+   echo "Running anondate-set..." >&2
+   ## This has a sudoers exception.
+   anondate-set
+   exit 2
+}
+
 te_pe_tb_check() {
    detect_vm_type
 
@@ -234,15 +241,11 @@ te_pe_tb_check() {
    exit_success_if_tor_circuit_already_established
 
    if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
-      echo "Running anondate-set..." >&2
-      anondate-set
-      exit 2
+      run_anondate_set
    fi
 
    if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
-      echo "Running anondate-set..." >&2
-      anondate-set
-      exit 2
+      run_anondate_set
    fi
 }
 
