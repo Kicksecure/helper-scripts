@@ -166,7 +166,7 @@ tor_consensus_time_sanity_check() {
    ## sets: tor_consensus_valid_until_unixtime
    tor_consensus_valid-until
 
-   current_unixtime="$(date +"%s")"
+   current_unixtime="$(date --utc +"%s")"
 
    if [ "$tor_consensus_valid_after_exit_code" = "0" ] && [ "$tor_consensus_valid_until_exit_code" = "0" ]; then
       clock_tor_consensus_check_result="ok"
