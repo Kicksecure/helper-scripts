@@ -6,13 +6,9 @@
 set -x
 set -e
 
-if command -v qubesdb-read >/dev/null 2>&1 ; then
-   qubes_vm_type="$(qubesdb-read /qubes-vm-type)"
-fi
-
 cache_folder="/var/cache/anon-base-files"
 
-if [ "$qubes_vm_type" = "TemplateVM" ]; then
+if test -f /run/qubes/this-is-templatevm ; then
    ## Separate done file for Qubes TemplateVMs to make this work with the
    ## current home folder population for Qubes DispVMs.
    ## https://github.com/QubesOS/qubes-core-agent-linux/blob/f380c346cf9af3f058b8ece853d7d4a5ece28815/misc/dispvm-prerun.sh#L6-L12

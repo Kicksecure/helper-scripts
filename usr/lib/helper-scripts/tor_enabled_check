@@ -14,13 +14,9 @@ check_tor_enabled_do() {
    fi
 
    ## Skip this test, if running in Qubes TemplateVM.
-   if command -v qubesdb-read >/dev/null 2>&1 ; then
-      local qubes_vm_type
-      qubes_vm_type="$(qubesdb-read /qubes-vm-type)" || true
-      if [ "$qubes_vm_type" = "TemplateVM" ]; then
-         TOR_ENABLED="1"
-         return 0
-      fi
+   if test -f /run/qubes/this-is-templatevm ; then
+      TOR_ENABLED="1"
+      return 0
    fi
 
    local line file_name file_name_list i

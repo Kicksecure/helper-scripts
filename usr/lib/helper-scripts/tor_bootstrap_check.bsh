@@ -5,9 +5,7 @@
 
 check_tor_bootstrap_helper_variables() {
    if command -v qubesdb-read >/dev/null 2>&1 ; then
-      local qubes_vm_type
-      qubes_vm_type="$(qubesdb-read /qubes-vm-type)" || true
-      if [ "$qubes_vm_type" = "TemplateVM" ] || [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
+      if [ -f /run/qubes/this-is-templatevm ] || [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
          ## 'qubesdb-read /qubes-gateway' could fail if NetVM is set to 'none'.
          if [ "$GATEWAY_IP" = "" ]; then
             gateway_ip_error=""
