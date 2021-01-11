@@ -1,3 +1,51 @@
+commit 6c8a7dd880c82b003e7d1289bcd292e14179f09e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 11 03:32:07 2021 -0500
+
+    anondate
+
+commit a8dc287cc1988c58f2f8105b4b4509b976e27685
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 11 03:32:21 2021 -0500
+
+    anondate
+
+commit 63e2235aabf3dce9abf3fbda8f5efb4edc187247
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 8 21:34:38 2000 -0500
+
+    anondate
+
+commit 587c7f0895e7cf9548e2d6a8c0ed08f843319c58
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 11 02:23:46 2021 -0500
+
+    anondate
+
+commit d7d8bdbd52cd2c3dc2737fc5a4f7c193b6c037a2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 11 02:23:36 2021 -0500
+
+    anondate
+
+commit bc7e680a365cfb2d935b95a0ea7b1e4abc85ff02
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 11 02:21:25 2021 -0500
+
+    output
+
+commit 8cb2547a19865a16483ae9c521e7b92d769a974f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 11 02:05:35 2021 -0500
+
+    show exit code and its meaning
+
+commit bc7146ceab477cb85bfda40ecb7f033c0bd06fee
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 10 23:16:16 2021 -0500
+
+    bumped changelog version
+
 commit 7c0c8ac604866991d885a4c1c186b4684c41dc71
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jan 10 09:28:50 2021 +0000
