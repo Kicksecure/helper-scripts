@@ -245,7 +245,7 @@ exit_success_if_tor_circuit_already_established() {
 run_anondate_set() {
    echo "Running anondate-set..."
 
-   anondate-set || true
+   anondate-set 2>&1 || true
 
    exit_code=2
    exit "$exit_code"
