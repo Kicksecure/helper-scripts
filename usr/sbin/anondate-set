@@ -29,7 +29,6 @@ trap exit_handler EXIT
 set_date() {
    echo "$0: INFO: Running: 'date --utc \"+%Y-%m-%d %H:%M:%S\" --set "$time_result"'"
    date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result"
-   exit_code="$?"
 }
 
 if [ "$(whoami)" = "sdwdate" ]; then
@@ -57,9 +56,12 @@ time_result="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
 if [ "$anondate_get_exit_code" = "0" ]; then
    echo "$0: INFO: anondate-get returned Tor consensus middle range time."
    set_date
+   exit_code=0
+   exit 0
 elif [ "$anondate_get_exit_code" = "1" ]; then
    echo "$0: INFO: anondate-get error."
    exit_code=1
+   exit 1
 elif [ "$anondate_get_exit_code" = "2" ]; then
    if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
       echo "$0: INFO: No, not again setting system clock to Tor certificate lifetime."
@@ -80,11 +82,14 @@ elif [ "$anondate_get_exit_code" = "2" ]; then
       else
          echo "$0: ERROR: Tor restart not implemented for users other than \
 root and sdwdate." >&2
+         exit_code=112
          exit 112
       fi
 
       exit_code=2
+      exit 2
    fi
 fi
 
 exit_code=3
+exit 3
