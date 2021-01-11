@@ -1,3 +1,75 @@
+commit 7c0c8ac604866991d885a4c1c186b4684c41dc71
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 10 09:28:50 2021 +0000
+
+    apparmor
+
+commit b42e95f904330831096b56208eb232b110ea4ed0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 10 03:30:00 2021 -0500
+
+    renamed:    usr/lib/helper-scripts/te_pe_tb_check -> usr/lib/helper-scripts/onion-time-pre-script
+
+commit 8c722a2e3ced8104d12c7f542849e7951ee2504d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 10 03:28:53 2021 -0500
+
+    anondate
+
+commit 55ab47ef0e58d0f6349637f8a5d6cdf90bf521d3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 10 03:27:51 2021 -0500
+
+    anondate
+
+commit f6fd4ca87e1400394346857ae8c90dc3648706f9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 10 02:52:17 2021 -0500
+
+    minor
+
+commit 036359d58546d445e46e8d8b4c8034abcb880c1c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 10 02:51:48 2021 -0500
+
+    new file:   usr/lib/helper-scripts/restart-tor
+
+commit 10983a3bd5ac0168ef1df9ff3d677bd3e206221c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 8 21:40:32 2050 -0500
+
+    anondate
+
+commit 5ac03586f6c49d62979264324c5eb371d7cbc0f0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 8 21:36:26 2050 -0500
+
+    comment
+
+commit 3c502ffb4b045dbbf4769dfc8ee0d034a425f956
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 18:32:57 2021 -0500
+
+    anondate
+
+commit f88a29cfed3c705f0cf997554ecf1b07dc9090a0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 18:31:15 2021 -0500
+
+    anondate
+
+commit c886b8adc5bdc9b0fa7fc49d75ae36b53d82b238
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 8 21:51:46 2050 -0500
+
+    anondate
+
+commit aa536456cf0e80ed2a55b6ab5c2483577927d6d8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 08:40:56 2021 -0500
+
+    bumped changelog version
+
 commit 1bbdc67d292e7447e2c455bfa372e44341506400
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jan 9 08:40:47 2021 -0500
