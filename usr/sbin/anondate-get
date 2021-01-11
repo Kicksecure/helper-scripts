@@ -51,7 +51,19 @@
 set -e
 
 exit_handler() {
-   echo "$0: INFO: Exiting with exit code $exit_code." >&2
+   if [ "$exit_code" = "" ]; then
+      "$0: No exit code set yet. Setting to 1."
+   fi
+   if [ "$exit_code" = "0" ]; then
+      meaning="Showed Tor consensus time middle range."
+   elif [ "$exit_code" = "1" ]; then
+      meaning="error"
+   elif [ "$exit_code" = "2" ]; then
+      meaning="Showed Tor certificate life time."
+   elif [ "$exit_code" = "3" ]; then
+      meaning="Could not determine any time using Tor from consensus or certificate life time."
+   fi
+   echo "$0: END: Exiting with code_code '$exit_code' indicating '$meaning'." >&2
    exit "$exit_code"
 }
 
@@ -134,3 +146,6 @@ else
       echo "$0: WARNING: Could not find out Tor certificate life date." >&2
    fi
 fi
+
+exit_code=3
+exit 3

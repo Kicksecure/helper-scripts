@@ -4,7 +4,21 @@
 ## See the file COPYING for copying conditions.
 
 exit_handler() {
-   echo "$0: INFO: Exiting with exit code $exit_code."
+   if [ "$exit_code" = "" ]; then
+      "$0: No exit code set yet. Setting to 1."
+   fi
+   if [ "$exit_code" = "0" ]; then
+      meaning="Set time using Tor consensus middle range time."
+   elif [ "$exit_code" = "1" ]; then
+      meaning="error"
+   elif [ "$exit_code" = "2" ]; then
+      meaning="Success, set system clock using Tor certificate lifetime."
+   elif [ "$exit_code" = "3" ]; then
+      meaning="Setting time using anondate either not possible or not required."
+   else
+      meaning="Unknown."
+   fi
+   echo "$0: END: Exiting with code_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 
@@ -44,8 +58,8 @@ if [ "$anondate_get_exit_code" = "0" ]; then
    echo "$0: INFO: anondate-get returned Tor consensus middle range time."
    set_date
 elif [ "$anondate_get_exit_code" = "1" ]; then
-   echo "$0: INFO: Setting time using anondate either not possible or not required."
-   exit_code=2
+   echo "$0: INFO: anondate-get error."
+   exit_code=1
 elif [ "$anondate_get_exit_code" = "2" ]; then
    if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
       echo "$0: INFO: No, not again setting system clock to Tor certificate lifetime."
@@ -72,3 +86,5 @@ root and sdwdate." >&2
       exit_code=2
    fi
 fi
+
+exit_code=3

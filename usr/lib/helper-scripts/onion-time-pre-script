@@ -30,8 +30,10 @@ exit_handler() {
       meaning="wait, show error icon and retry."
    elif [ "$exit_code" = "2" ]; then
       meaning="wait, show busy icon and retry."
+   else
+      meaning="Unknown."
    fi
-   echo "$0: End. Exiting with code_code '$exit_code' indicating '$meaning'."
+   echo "$0: END: Exiting with code_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 
