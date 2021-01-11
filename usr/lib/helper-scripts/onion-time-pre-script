@@ -12,7 +12,7 @@ set -o pipefail
 set -e errtrace
 
 error_handler() {
-   local exit_code="$?"
+   exit_code="$?"
    echo "\
 BASH_COMMAND: $BASH_COMMAND
 exit_code: $exit_code"
@@ -21,8 +21,18 @@ exit_code: $exit_code"
 trap "error_handler" ERR
 
 exit_handler() {
-   echo "$0: end"
-   echo ""
+   if [ "$exit_code" = "" ]; then
+      "$0: No exit code set yet. Setting to 1."
+   fi
+   if [ "$exit_code" = "0" ]; then
+      meaning="success"
+   elif [ "$exit_code" = "1" ]; then
+      meaning="wait, show error icon and retry."
+   elif [ "$exit_code" = "2" ]; then
+      meaning="wait, show busy icon and retry."
+   fi
+   echo "$0: End. Exiting with code_code '$exit_code' indicating '$meaning'."
+   exit "$exit_code"
 }
 
 trap "exit_handler" EXIT
@@ -75,7 +85,8 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo whonixsetup"
          echo "Tor is disabled. Please enable Tor in the Tor config."
       fi
 
-      exit 1
+      exit_code=1
+      exit "$exit_code"
    fi
 }
 
@@ -94,7 +105,8 @@ check_tor_circuit_established_yet() {
       if [ "$tor_circuit_established_check_exit_code" = "$invalid_exit_code" ]; then
          echo "Tor Bootstrap Result: \
    <b>ERROR ($tor_circuit_established_check_exit_code).</b><br> Please report this bug!"
-         exit 1
+         exit_code=1
+         exit "$exit_code"
       fi
    done
 
@@ -126,7 +138,8 @@ check_tor_circuit_established_yet() {
          fi
       fi
 
-      exit 1
+      exit_code=1
+      exit "$exit_code"
    fi
 }
 
@@ -213,7 +226,8 @@ tor_consensus_time_sanity_check() {
    ## may be empty.
    #if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
    #   if [ "$VM" = "Gateway" ]; then
-   #      exit 1
+   #      exit_code=1
+   #      exit "$exit_code"
    #   fi
    #fi
 }
@@ -221,7 +235,8 @@ tor_consensus_time_sanity_check() {
 exit_success_if_tor_circuit_already_established() {
    if [ "$tor_circuit_established" = "1" ]; then
       echo "<p>Tor fully bootstrapped.</p>"
-      exit 0
+      exit_code=0
+      exit "$exit_code"
    fi
 }
 
@@ -231,7 +246,7 @@ run_anondate_set() {
 }
 
 te_pe_tb_check() {
-   echo "$0: start"
+   echo "$0: Start."
 
    detect_vm_type
 
@@ -256,7 +271,8 @@ te_pe_tb_check() {
    fi
 
    ## Clock OK but not fully bootstrapped yet. Wait.
-   exit 2
+   exit_code=2
+   exit "$exit_code"
 }
 
 te_pe_tb_check "$@"
