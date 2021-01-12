@@ -5,7 +5,6 @@
 
 /usr/sbin/anondate-set flags=(attach_disconnected,complain) {
   #include <abstractions/base>
-  #include <abstractions/python>
 
   /usr/sbin/anondate-set r,
   ## TODO
