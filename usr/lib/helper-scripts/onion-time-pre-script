@@ -234,6 +234,12 @@ tor_consensus_time_sanity_check() {
    #fi
 }
 
+connectivity_test() {
+    ## TODO: optional connectivity test
+    #/usr/bin/url_to_unixtime 127.0.0.1 9050 http://expyuzz4wqqyqhjn.onion 80 true 2>&1
+    true "Not yet implemented."
+}
+
 exit_success_if_tor_circuit_already_established() {
    if [ "$tor_circuit_established" = "1" ]; then
       echo "<p>Tor fully bootstrapped.</p>"
@@ -265,6 +271,8 @@ te_pe_tb_check() {
    tor_bootstrap_check
 
    tor_consensus_time_sanity_check
+
+   connectivity_test
 
    exit_success_if_tor_circuit_already_established
 
