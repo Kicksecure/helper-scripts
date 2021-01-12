@@ -8,7 +8,8 @@
   #include <abstractions/python>
 
   /usr/sbin/anondate-set r,
-  /usr/sbin/anondate-get rix,
+  ## TODO
+  /usr/sbin/anondate-get rUx,
   /{,usr/}bin/id rix,
   /{,usr/}bin/whoami rix,
 
