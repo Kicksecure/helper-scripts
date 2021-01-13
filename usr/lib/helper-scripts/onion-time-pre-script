@@ -168,6 +168,10 @@ tor_bootstrap_check() {
    else
       echo "<b>Tor is not yet fully bootstrapped.</b> $tor_bootstrap_percent % done.\
 <br>Tor reports: $tor_bootstrap_status"
+
+      if echo "$tor_bootstrap_status" | grep -q "REASON=TIMEOUT" ; then
+         echo "<b>Tor reports: REASON=TIMEOUT</b>"
+      fi
    fi
 }
 
