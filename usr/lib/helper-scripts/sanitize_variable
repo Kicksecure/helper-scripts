@@ -1,0 +1,19 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+sanitize_variable() {
+   local input
+   input="$@"
+
+   sanitize_variable_output="$(/usr/lib/msgcollector/striphtml "$input")"
+   sanitize_variable_output="$@"
+
+   actual_string_length="${#sanitize_variable_output}"
+
+   if [ "$actual_string_length" -gt "$max_string_length" ]; then
+      ## Shorten excess length $sanitize_variable_output to $max_string_length chars.
+      sanitize_variable_output="${sanitize_variable_output:0:$max_string_length}"
+   fi
+}
