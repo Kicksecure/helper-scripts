@@ -97,11 +97,9 @@ curl_exit_codes() {
    for line in $codes; do
       local number
       IFS="$OIFS"
-      read number _ <<< "$line"
-      ## Remove "[".
-      number="${number:1}"
-      ## Remove "]".
-      number="${number:0:-1}"
+      number="${line:0:3}"
+      number="${number//[/""}"
+      number="${number//]/""}"
       true "number: $number | line: $line"
       if [ "$number" = "$1" ]; then
          ## exit code found.
