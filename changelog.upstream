@@ -1,3 +1,43 @@
+commit 44777abce95ceb228c501c5f6c4d1a5df25ad270
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jan 15 02:12:17 2021 -0500
+
+    apparmor
+
+commit ddfd9d9a138ba230c4feb02246e9ae78bd38af9f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jan 15 01:02:42 2021 -0500
+
+    add tor-circuit-established-check apparmor profile
+
+commit 9eb2224dbf1b9e804bf693f9060fdd94819572f1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jan 15 00:39:04 2021 -0500
+
+    update path
+
+commit 8c6ea38a98fca825f10aee27910b1c1d28800188
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jan 15 00:35:25 2021 -0500
+
+    renamed:    usr/lib/helper-scripts/tor_circuit_established_check.py -> usr/bin/tor-circuit-established-check
+
+commit 77441e6c8a233f27c0e4a3c25f90a799d8a5856d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 14 09:37:11 2021 -0500
+
+    prevent bash `<<<` to prevent creation of temporary file to simplify creation of apparmor profiles
+    
+    Use of `<<<` results in use of temporary files by bash.
+    
+    https://unix.stackexchange.com/questions/429285/cannot-create-temp-file-for-here-document-permission-denied
+
+commit 5c0ab73b829d1ab65b49c240e9d58fadcedf5a00
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 14 02:33:04 2021 -0500
+
+    bumped changelog version
+
 commit d42fba9f5b80645f01492ceb461393c5c65e7ac0
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Jan 14 02:32:47 2021 -0500
