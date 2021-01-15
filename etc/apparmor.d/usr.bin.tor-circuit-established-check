@@ -4,27 +4,7 @@
 #include <tunables/global>
 
 /usr/bin/tor-circuit-established-check flags=(attach_disconnected) {
-  #include <abstractions/base>
-  #include <abstractions/python>
-
-  ptrace (read),
-
-  /usr/bin/tor-circuit-established-check r,
-
-  / r,
-  /{,usr/}bin/ r,
-  /{,usr/}bin/ps rix,
-  /{,usr/}bin/dash rix,
-  /{,usr/}bin/uname rix,
-
-  owner @{PROC}/*/fd/ r,
-  owner @{PROC}/*/stat r,
-  owner @{PROC}/*/mounts r,
-  @{PROC}/ r,
-  @{PROC}/uptime r,
-  @{PROC}/sys/kernel/osrelease r,
-
-  /run/tor/control.authcookie r,
+  #include <abstractions/tor-circuit-established-check>
 
   # Site-specific additions and overrides. See local/README for details.
   #include <local/usr.bin.tor-circuit-established-check>

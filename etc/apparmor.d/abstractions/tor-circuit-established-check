@@ -1,0 +1,21 @@
+  #include <abstractions/base>
+  #include <abstractions/python>
+
+  ptrace (read),
+
+  /usr/bin/tor-circuit-established-check r,
+
+  / r,
+  /{,usr/}bin/ r,
+  /{,usr/}bin/ps rix,
+  /{,usr/}bin/dash rix,
+  /{,usr/}bin/uname rix,
+
+  owner @{PROC}/*/fd/ r,
+  owner @{PROC}/*/stat r,
+  owner @{PROC}/*/mounts r,
+  @{PROC}/ r,
+  @{PROC}/uptime r,
+  @{PROC}/sys/kernel/osrelease r,
+
+  /run/tor/control.authcookie r,
