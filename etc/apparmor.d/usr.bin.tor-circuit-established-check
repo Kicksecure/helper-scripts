@@ -1,0 +1,31 @@
+## Copyright (C) 2017 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+#include <tunables/global>
+
+/usr/bin/tor-circuit-established-check flags=(attach_disconnected) {
+  #include <abstractions/base>
+  #include <abstractions/python>
+
+  ptrace (read),
+
+  /usr/bin/tor-circuit-established-check r,
+
+  / r,
+  /{,usr/}bin/ r,
+  /{,usr/}bin/ps rix,
+  /{,usr/}bin/dash rix,
+  /{,usr/}bin/uname rix,
+
+  owner @{PROC}/*/fd/ r,
+  owner @{PROC}/*/stat r,
+  owner @{PROC}/*/mounts r,
+  @{PROC}/ r,
+  @{PROC}/uptime r,
+  @{PROC}/sys/kernel/osrelease r,
+
+  /run/tor/control.authcookie r,
+
+  # Site-specific additions and overrides. See local/README for details.
+  #include <local/usr.bin.tor-circuit-established-check>
+}
