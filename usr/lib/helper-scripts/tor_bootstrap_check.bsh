@@ -88,7 +88,7 @@ check_tor_bootstrap_status() {
 }
 
 check_tor_circuit_established() {
-   check_bootstrap_helper_script="/usr/lib/helper-scripts/tor_circuit_established_check.py"
+   check_bootstrap_helper_script="/usr/bin/tor-circuit-established-check"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output

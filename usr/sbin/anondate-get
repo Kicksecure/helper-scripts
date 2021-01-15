@@ -87,7 +87,7 @@ check_tor_bootstrap_helper
 
 if [ "$tor_bootstrap_percent" = "100" ]; then
    echo "$0: INFO: 100% Tor bootstrap, ok." >&2
-   if tor_circuit_established_check="$(/usr/lib/helper-scripts/tor_circuit_established_check.py)" ; then
+   if tor_circuit_established_check="$(/usr/bin/tor-circuit-established-check)" ; then
       echo "$0: INFO: tor_circuit_established_check.py, ok." >&2
       if [ "$tor_circuit_established_check" = "1" ]; then
          echo "$0: INFO: Tor circuit already established, ok." >&2
