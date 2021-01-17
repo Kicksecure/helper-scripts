@@ -56,21 +56,7 @@ detect_vm_type() {
 }
 
 timesanitycheck_static() {
-   if [ ! -e /usr/share/timesanitycheck/shared ]; then
-      return 0
-   fi
-
-   ## provides: time_sanity_check
-   ## sets: time_sanity_check_exit_code
-   ## sets: time_sanity_check_msg_static
-   source /usr/share/timesanitycheck/shared
-   time_sanity_check
-   if [ "$time_sanity_check_exit_code" = "0" ]; then
-      echo "Static Time Sanity Check: $time_sanity_check_msg_static"
-   else
-      echo "Static Time Sanity Check: $time_sanity_check_msg_static"
-      timesanitycheck_static_timestamp_based_failed="true"
-   fi
+   timesanitycheck || true
 }
 
 exit_if_tor_not_yet_enabled() {
