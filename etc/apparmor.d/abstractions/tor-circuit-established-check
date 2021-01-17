@@ -11,9 +11,13 @@
   /{,usr/}bin/dash rix,
   /{,usr/}bin/uname rix,
 
-  owner @{PROC}/*/fd/ r,
-  owner @{PROC}/*/stat r,
-  owner @{PROC}/*/mounts r,
+  ## Can probably add keyword `owner` when this abstraction is no longer
+  ## required.
+  @{PROC}/*/fd/ r,
+  @{PROC}/*/stat r,
+  @{PROC}/*/mounts r,
+  @{PROC}/*/status r,
+
   @{PROC}/ r,
   @{PROC}/uptime r,
   @{PROC}/sys/kernel/osrelease r,
