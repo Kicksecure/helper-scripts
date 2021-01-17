@@ -33,7 +33,7 @@ exit_handler() {
    else
       meaning="Unknown."
    fi
-   echo "$0: END: Exiting with code_code '$exit_code' indicating '$meaning'."
+   echo "$0: END: Exiting with exit_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 

@@ -63,7 +63,7 @@ exit_handler() {
    elif [ "$exit_code" = "3" ]; then
       meaning="Could not determine any time using Tor from consensus or certificate life time."
    fi
-   echo "$0: END: Exiting with code_code '$exit_code' indicating '$meaning'." >&2
+   echo "$0: END: Exiting with exit_code '$exit_code' indicating '$meaning'." >&2
    exit "$exit_code"
 }
 
