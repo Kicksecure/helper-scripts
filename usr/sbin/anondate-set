@@ -40,6 +40,10 @@ else
    echo "$0: ERROR: Must run as root." >&2
    exit 112
 fi
+
+[ -n "$LC_TIME" ] || export LC_TIME=C
+[ -n "$TZ" ] || export TZ=UTC
+
 anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
 
 if test -f "$anondate_tor_certificate_lifetime_set_file" ; then

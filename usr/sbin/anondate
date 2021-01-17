@@ -17,6 +17,8 @@ variables() {
    [ -n "$TOR_CONSENSUS" ] || TOR_CONSENSUS="${TOR_DIR}/cached-microdesc-consensus"
    [ -n "$TOR_UNVERIFIED_CONSENSUS" ] || TOR_UNVERIFIED_CONSENSUS="${TOR_DIR}/unverified-microdesc-consensus"
    [ -n "$DATE_RE" ] || DATE_RE='[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]'
+   [ -n "$LC_TIME" ] || export LC_TIME=C
+   [ -n "$TZ" ] || export TZ=UTC
 }
 
 parse_cmd_options() {
