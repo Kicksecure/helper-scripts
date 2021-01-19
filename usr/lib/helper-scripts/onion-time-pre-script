@@ -144,16 +144,13 @@ tor_bootstrap_check() {
    ## consensus time as it might be outdated leading to concluding that the
    ## clock is fast.
 
-   if [ ! "$tor_circuit_established" = "0" ]; then
-      return 0
-   fi
-   ## tor_circuit_established=0
+   ## Could be 100% bootstrap process but still no Tor circuit established yet.
 
    if [ "$VM" = "Workstation" ]; then
-      echo "<b>Tor is not yet fully bootstrapped.</b> Tor circuit: $tor_circuit_established_word."
+      echo "Tor circuit: $tor_circuit_established_word."
    else
-      echo "<b>Tor is not yet fully bootstrapped.</b> $tor_bootstrap_percent % done.\
-<br>Tor reports: $tor_bootstrap_status"
+      echo "Tor reports: $tor_bootstrap_status
+Tor circuit: $tor_circuit_established_word."
 
       if echo "$tor_bootstrap_status" | grep -q "REASON=TIMEOUT" ; then
          echo "<b>Tor reports: REASON=TIMEOUT</b>"
@@ -235,9 +232,15 @@ connectivity_test() {
 
 exit_success_if_tor_circuit_already_established() {
    if [ "$tor_circuit_established" = "1" ]; then
-      echo "<p>Tor fully bootstrapped.</p>"
+      echo "<p>Tor already reports circuit established.</p>"
       exit_code=0
       exit "$exit_code"
+   else
+      ## Happened that Tor bootstrap was 100% done but not circuit established.
+      ## Example Tor log:
+      ## Bootstrapped 100% (done): Done
+      ## Our directory information is no longer up-to-date enough to build circuits: We're missing descriptors for 1/2 of our primary entry guards (total microdescriptors: 6967/6984). That's ok. We will try to fetch missing descriptors soon.
+      echo "<p>No Tor circuit established yet.</p>"
    fi
 }
 
