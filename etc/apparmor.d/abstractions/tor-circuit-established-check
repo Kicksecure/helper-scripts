@@ -1,6 +1,11 @@
   #include <abstractions/base>
   #include <abstractions/python>
 
+  ## AVC apparmor="DENIED" operation="capable" profile="/usr/bin/tor-circuit-established-check" comm="tor-circuit-est" capability=1  capname="dac_override"
+  ## AVC apparmor="DENIED" operation="capable" profile="/usr/bin/tor-circuit-established-check" comm="sh" capability=2  capname="dac_read_search"
+  capability dac_override,
+  capability dac_read_search,
+
   ptrace (read),
 
   /usr/bin/tor-circuit-established-check r,
