@@ -1,3 +1,15 @@
+commit 8c35d9be344ae5428929ee3d31a671259589294e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 19 06:12:07 2021 -0500
+
+    handle case when 100% Tor bootstrap done but still no Tor circuit established yet
+
+commit 668c13c4dde22e3f6d7891932dcfb326f8d5e237
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 17 02:15:05 2021 -0500
+
+    bumped changelog version
+
 commit 5c94f3ff4cda9d6392f072ead38a6a6240755dcc
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jan 17 00:22:48 2021 -0500
