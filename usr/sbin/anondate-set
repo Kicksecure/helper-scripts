@@ -3,6 +3,11 @@
 ## Copyright (C) 2014 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+## Design:
+## Does not needlessly set the time if not needed.
+##
+## used by /usr/lib/helper-scripts/onion-time-pre-script
+
 exit_handler() {
    if [ "$exit_code" = "" ]; then
       "$0: No exit code set yet. Setting to 1."
