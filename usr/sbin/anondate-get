@@ -62,7 +62,10 @@ exit_handler() {
       meaning="Showed Tor certificate life time."
    elif [ "$exit_code" = "3" ]; then
       meaning="Could not determine any time using Tor from consensus or certificate life time."
+   elif [ "$exit_code" = "4" ]; then
+      meaning="Setting time using anondate either not possible or not required."
    fi
+
    echo "$0: END: Exiting with exit_code '$exit_code' indicating '$meaning'." >&2
    exit "$exit_code"
 }
@@ -112,12 +115,22 @@ fi
 # echo "$0: INFO: has Tor consensus, ok." >&2
 
 if middle_range="$(anondate --show-middle-range)" ; then
+   valid_after="$(anondate --show-valid-after)"
+   ## example valid_after:
+   ## 2021-01-21 15:00:00
+   valid_until="$(anondate --show-valid-until)"
+   ## example valid_until:
+   ## 2021-01-21 18:00:00
+
+   range_info="valid_after: $valid_after | middle_range: $middle_range | valid_until: $valid_until"
+
    if [ "$middle_range" = "" ]; then
       echo "$0: WARNING: Tor consensus time middle range result empty." >&2
    elif anondate --current-time-in-valid-range ; then
-      echo "$0: INFO: current time in valid in range, ok." >&2
+      echo "$0: INFO: local system time is already within valid range, ok. ($range_info)" >&2
+      exit_code=4
    else
-      echo "$0: WARNING: current time in NOT in valid range." >&2
+      echo "$0: WARNING: local system time is NOT with valid time range. ($range_info)" >&2
       echo "$0: INFO: middle_range: '$middle_range'" >&2
       echo "$middle_range"
       exit_code="0"
@@ -152,5 +165,7 @@ else
    fi
 fi
 
-exit_code=3
-exit 3
+if [ "$exit_code" = "" ]; then
+   exit_code=3
+fi
+exit "$exit_code"
