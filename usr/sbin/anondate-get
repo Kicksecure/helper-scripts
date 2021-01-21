@@ -10,6 +10,8 @@
 ## 0: show Tor consensus time middle range
 ## 1: error
 ## 2: show Tor certificate lifetime
+## 3: Could not determine any time using Tor from consensus or certificate life time.
+## 4: Setting time using anondate either not possible or not required.
 
 ## If tor@default is stopped.
 # sudo anondate-tester
