@@ -245,9 +245,12 @@ exit_success_if_tor_circuit_already_established() {
 }
 
 anondate_use() {
-   echo "Running anondate-set..."
+   local cmd
+   cmd=anondate-set
 
-   anondate-set 2>&1 || true
+   echo "Running ${cmd}..."
+
+   $cmd 2>&1 || true
 
    exit_code=2
    exit "$exit_code"
