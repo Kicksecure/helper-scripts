@@ -248,7 +248,7 @@ anondate_use() {
    local cmd
    ## anondate-get vs anondate-get
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
-   cmd=anondate-set
+   cmd=anondate-get
 
    echo "Running ${cmd}..."
 
