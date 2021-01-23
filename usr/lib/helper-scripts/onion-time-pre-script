@@ -244,7 +244,7 @@ exit_success_if_tor_circuit_already_established() {
    fi
 }
 
-run_anondate_set() {
+anondate_use() {
    echo "Running anondate-set..."
 
    anondate-set 2>&1 || true
@@ -273,11 +273,11 @@ te_pe_tb_check() {
    exit_success_if_tor_circuit_already_established
 
    if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
-      run_anondate_set
+      anondate_use
    fi
 
    if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
-      run_anondate_set
+      anondate_use
    fi
 
    ## Clock OK but not fully bootstrapped yet. Wait.
