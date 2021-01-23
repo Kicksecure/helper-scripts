@@ -32,7 +32,8 @@ exit_code=1
 trap exit_handler EXIT
 
 set_date() {
-   echo "$0: INFO: Running: 'date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result\"'"
+   echo "$0: INFO: Running the following command:"
+   echo "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result\""
    date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result"
 }
 
