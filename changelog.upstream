@@ -1,3 +1,77 @@
+commit 669f732bf417ab7dcabe5293b3e3df2693ab6cb8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 04:05:42 2021 -0500
+
+    fix
+
+commit 8aca12f620f3a3acb5c8c596a13ff3a964b18d37
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 04:05:32 2021 -0500
+
+    fix
+
+commit c03f2260fce9ab72001989e00b2143377b65d610
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 04:04:55 2021 -0500
+
+    give up on anondate-set for now
+    
+    https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
+
+commit ddf33a7e00c4cc070ed33b5fa4e6c83b3a0b6025
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 03:22:14 2021 -0500
+
+    refactoring
+
+commit 441890830d047070271872b6b0a922a586dc0efe
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 03:10:36 2021 -0500
+
+    output
+
+commit 58d7617e819f780656ac51f7b766e11f5c60e92f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 03:08:19 2021 -0500
+
+    output
+
+commit 870382b5da32eaf2d35b61053b7aa83b385388c6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 01:46:44 2021 -0500
+
+    new file:   usr/bin/minimum-unixtime-show
+
+commit 92114a3b8146b72ab9f4995a04d8bfcffc5e67d6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 21 10:38:04 2021 -0500
+
+    comment
+
+commit 77f48aae683f10ac28febbb3ee8c371464c1dd2a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 21 10:36:08 2021 -0500
+
+    comment
+
+commit 3e1f0af5388ec4989b487b26a63b033e7951b3bb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 21 10:33:42 2021 -0500
+
+    anondate
+
+commit 4bb591c3dfa5f98f7e9c0169d0036943f6010c97
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 20 11:14:59 2021 -0500
+
+    apparmor
+
+commit ce6b9851e9d6940f06c039d27e5fd837b2a3afdd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 19 19:39:54 2021 -0500
+
+    bumped changelog version
+
 commit 8c35d9be344ae5428929ee3d31a671259589294e
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Jan 19 06:12:07 2021 -0500
