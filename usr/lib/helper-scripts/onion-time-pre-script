@@ -246,6 +246,8 @@ exit_success_if_tor_circuit_already_established() {
 
 anondate_use() {
    local cmd
+   ## anondate-get vs anondate-get
+   ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
    cmd=anondate-set
 
    echo "Running ${cmd}..."
