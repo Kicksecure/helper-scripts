@@ -1,0 +1,81 @@
+#!/bin/bash
+
+## Copyright (C) 2021 - 2021 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+## output:
+## stdout: unixtime only
+## stderr: verbose output and errors
+
+## exit codes:
+## 0: success
+## non-zero: error
+
+[ -n "$LC_TIME" ] || export LC_TIME=C
+[ -n "$TZ" ] || export TZ=UTC
+
+check_valid() {
+   if [[ ! "$1" != *[!0-9]* ]]; then
+      return 1
+   fi
+   expected_string_lenght=10
+   actual_string_length="${#1}"
+   if [ ! "$actual_string_length" = "$expected_string_lenght" ]; then
+      return 1
+   fi
+   return 0
+}
+
+show_minimum_unixtime() {
+   date --utc "+%Y-%m-%d %H:%M:%S" --date "@$minimum_unixtime" >&2
+   echo "$minimum_unixtime"
+}
+
+if test -f /usr/local/etc/minimum-unixtime.override ; then
+   file_contents="$(cat /usr/local/etc/minimum-unixtime.override)"
+   if check_valid "$file_contents" ; then
+      show_minimum_unixtime
+      exit 0
+   else
+      echo "$0: ERROR: File contents of file '/usr/local/etc/minimum-unixtime.override' invalid! file_contents:" >&2
+      echo "$file_contents" >&2
+      exit 1
+   fi
+fi
+
+if test -f /etc/minimum-unixtime.override ; then
+   file_contents="$(cat /etc/minimum-unixtime.override)"
+   if check_valid "$file_contents" ; then
+      show_minimum_unixtime
+      exit 0
+   else
+      echo "$0: ERROR: File contents of file '/usr/local/etc/minimum-unixtime.override' invalid! file_contents:" >&2
+      echo "$file_contents" >&2
+      exit 1
+   fi
+fi
+
+time_replay_protection_files_list="\
+/usr/share/timesanitycheck/minimum_unixtime
+/var/lib/sdwdate/time-replay-protection-utc-unixtime
+/etc/minimum-unixtime
+/usr/local/etc/minimum-unixtime"
+
+minimum_unixtime=0
+
+for file_name in $time_replay_protection_files_list ; do
+   if ! test -f "$file_name" ; then
+      continue
+   fi
+   file_contents="$(cat "$file_name")"
+   if ! check_valid "$file_contents" ; then
+      continue
+   fi
+   minimum_unixtime_new="$file_contents"
+   if [ "$minimum_unixtime_new" -gt "$minimum_unixtime" ]; then
+      minimum_unixtime="$minimum_unixtime_new"
+   fi
+done
+
+show_minimum_unixtime
+exit 0
