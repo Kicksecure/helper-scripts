@@ -1,3 +1,33 @@
+commit 4b046fb8b84cf849b6bd82461d2f7776fa4b0c72
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 26 07:09:13 2021 -0500
+
+    whonixcheck -> systemcheck migration
+
+commit c1cf4cabf8d1cbb3406492c5d9f5e0e9d3249110
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 26 03:41:21 2021 -0500
+
+    anondate-get: do not show time earlier than minimum-unixtime-show
+
+commit c3f5241ea9a6218907f5240a0bc5df025a7212a2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 26 03:30:24 2021 -0500
+
+    anondate-set: do not set time earlier than minimum-unixtime-show
+
+commit 7ad34f8c7594d0ddcce4be12a660e2d0463649b9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 26 03:23:48 2021 -0500
+
+    add minimum-time-check
+
+commit 88ced89d12c226b077ab131144a27fb056cf1d8a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 04:41:21 2021 -0500
+
+    bumped changelog version
+
 commit 669f732bf417ab7dcabe5293b3e3df2693ab6cb8
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jan 23 04:05:42 2021 -0500
