@@ -1,0 +1,23 @@
+#!/bin/bash
+
+## Copyright (C) 2021 - 2021 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+## output:
+## stdout: nothing
+## stderr: error
+
+## exit codes:
+## 0: success
+## non-zero: error
+
+set -e
+
+minium_unixtime="$(minimum-unixtime-show 2>/dev/null)"
+unixtime_to_validate="$1"
+
+if [ "$unixtime_to_validate" -ge "$minium_unixtime" ]; then
+   exit 0
+fi
+
+exit 1
