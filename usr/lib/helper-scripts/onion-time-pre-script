@@ -107,7 +107,7 @@ check_tor_circuit_established_yet() {
             echo "Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand? \
-<br>Please run whonixcheck on Gateway."
+<br>Please run systemcheck on Gateway."
          else
             echo "Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
@@ -118,7 +118,7 @@ check_tor_circuit_established_yet() {
             echo "Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand? \
-<br>Please run whonixcheck on Gateway.
+<br>Please run systemcheck on Gateway.
 <br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
          else
             echo "Tor Bootstrap Result: \

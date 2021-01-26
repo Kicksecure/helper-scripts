@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 ## Required to run apt-get dist-upgrade --simulate as user (non-root).
-## Required for whonixcheck function check_operating_system.
+## Required for systemcheck function check_operating_system.
 ## Exception to run /usr/bin/apt-get-update as user
 ## is defined in /etc/sudoers.d/.
 
