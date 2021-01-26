@@ -32,6 +32,12 @@ exit_code=1
 trap exit_handler EXIT
 
 set_date() {
+   unixtime="$(date --utc --date "$time_result" "+%s")"
+   if ! minimum-time-check "$unixtime" ; then
+      echo "$0: ERROR: time_result '$time_result' unixtime '$unixtime' earlier than minimum-unixtime-show '$(minimum-unixtime-show)'" >&2
+      exit_code=3
+      exit 3
+   fi
    echo "$0: INFO: Running the following command:"
    echo "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result\""
    date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result"
