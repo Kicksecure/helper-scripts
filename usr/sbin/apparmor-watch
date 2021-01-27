@@ -17,5 +17,5 @@ while read -r -d $'\n' line; do
    line=$(echo "$line" | grep "ALLOWED\|DENIED")
    line=$(echo "$line" | sed -e 's/pid=.* comm/comm/g')
    line=$(echo "$line" | sed -e 's/ fsuid.*//g')
-   echo "line: $line"
+   echo "$line"
 done < <( journalctl _TRANSPORT=audit --follow --lines=0 --output cat "${@}" )
