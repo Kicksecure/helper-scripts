@@ -1,3 +1,45 @@
+commit c011934e030774c650161f680a695987d8f296fe
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 27 04:08:20 2021 -0500
+
+    minor
+
+commit a0c94e436e1cdc3ddf65e786cee5707d2430330c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 27 04:07:20 2021 -0500
+
+    minor
+
+commit 011bd354c87244c3f823e44bf8fc7ddcc23b3c3f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 27 04:07:02 2021 -0500
+
+    output
+
+commit eb218ca57fbb06c543a5e7a60ff4c56ef722e6c3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 27 04:03:18 2021 -0500
+
+    genmkfile manpages
+
+commit 8aabfbbe96595b92d8cc7bf35fb3ca690d9a2313
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 27 04:02:55 2021 -0500
+
+    add new tool apparmor-watch
+
+commit 05f0047012147061ac0d1c783a5a274774f5f962
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 27 03:21:15 2021 -0500
+
+    apparmor
+
+commit a23d22bab580a68be6cd767f895553eb05ce685d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 26 09:48:32 2021 -0500
+
+    bumped changelog version
+
 commit 4b046fb8b84cf849b6bd82461d2f7776fa4b0c72
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Jan 26 07:09:13 2021 -0500
