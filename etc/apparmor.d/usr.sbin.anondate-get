@@ -7,6 +7,10 @@
   #include <abstractions/base>
   #include <abstractions/python>
 
+  ## TODO: bullseye
+  #include <abstractions/tor-circuit-established-check>
+  ## /usr/bin/tor-circuit-established-check Pix,
+
   /usr/sbin/anondate-get r,
   /usr/sbin/anondate rix,
   /{,usr/}bin/id rix,
