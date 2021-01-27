@@ -14,11 +14,11 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 while read -r -d $'\n' line; do
-   if [ "$line" = "" ]; then
-      continue
-   fi
    line=$(echo "$line" | grep "ALLOWED\|DENIED")
    line=$(echo "$line" | sed -e 's/pid=.* comm/comm/g')
    line=$(echo "$line" | sed -e 's/ fsuid.*//g')
+   if [ "$line" = "" ]; then
+      continue
+   fi
    echo "$line"
 done < <( journalctl _TRANSPORT=audit --follow --lines=0 --output cat "${@}" )
