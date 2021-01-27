@@ -167,7 +167,7 @@ root_check() {
 }
 
 has_consensus() {
-   if ! test -r "$TOR_DIR". ; then
+   if ! test -r "$TOR_DIR" ; then
       echo "$0: ERROR: Cannot read TOR_DIR: '$TOR_DIR'" >&2
       exit 4
    fi
