@@ -8,7 +8,7 @@
 
   ptrace (read),
 
-  /usr/bin/tor-circuit-established-check r,
+  /usr/bin/tor-circuit-established-check rix,
 
   / r,
   /{,usr/}bin/ r,
