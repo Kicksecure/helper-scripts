@@ -275,17 +275,44 @@ te_pe_tb_check() {
 
    connectivity_test
 
-   exit_success_if_tor_circuit_already_established
+   ## Cannot use this at this point. While seeing the following log:
+   ##
+   ## 2021-02-26 14:21:15 - sdwdate - INFO - PREPARATION:
+   ## 2021-02-26 14:21:15 - sdwdate - INFO - /usr/lib/helper-scripts/onion-time-pre-script: Start.
+   ## Within minimum time Sun Jan 17 00:00:00 UTC 2021 and expiration timestamp Tue May 17 10:00:00 UTC 2033.
+   ## Tor reports: NOTICE BOOTSTRAP PROGRESS=100 TAG=done SUMMARY="Done"
+   ## Tor circuit: established.
+   ## Tor Consensus Time Sanity Check: The clock might be too fast. Clock is faster than consensus/valid-until 2021-02-26 01:00:00.
+   ## Tor already reports circuit established.
+   ## /usr/lib/helper-scripts/onion-time-pre-script: END: Exiting with exit_code '0' indicating 'success'.
+   ## 2021-02-26 14:21:15 - sdwdate - INFO - PREPARATION RESULT: SUCCESS.
+   ##
+   ## Tor reporting "circuit established" by itself is not a reliable determination,
+   ## if onion connections can be established. Some Tor onion connections where still timing out.
+   ## This happens when turning off Whonix-Gateway for example for one day.
+   ## Tor still uses the old Tor consensus until it downloads the new Tor consensus.
+   ## Therefore Tor Consensus Time Sanity Check will show in clock being too fast,
+   ## which resulted in testing in onion time sources to be mistakenly considered
+   ## too fast, while these where actually correct.
+   #exit_success_if_tor_circuit_already_established
 
    if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
       anondate_use
+      ## Time incorrect by a lot. Indicate error.
+      exit_code=1
+      exit "$exit_code"
    fi
 
    if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
       anondate_use
+      ## Time incorrect but not by giant amounts.
+      ## Probably non-fatal issue. Indicate wait.
+      exit_code=2
+      exit "$exit_code"
    fi
 
-   ## Clock OK but not fully bootstrapped yet. Wait.
+   exit_success_if_tor_circuit_already_established
+
    exit_code=2
    exit "$exit_code"
 }
