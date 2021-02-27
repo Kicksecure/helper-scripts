@@ -1,3 +1,21 @@
+commit 49ade9df8108c4de0b03474d66ed7c33fedb3eb5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Feb 27 03:38:47 2021 -0500
+
+    readme
+
+commit 657c918b9448d728b1099272fa7faa99e6a5c87e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Feb 27 03:38:31 2021 -0500
+
+    improve onion-time-pre-script
+
+commit bbeaeeb22c378ec0914b86f6729822c59d5dc523
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 5 04:40:59 2021 -0500
+
+    bumped changelog version
+
 commit f1948020b1cce7742a4edb493413a3f4c9985d41
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Feb 5 01:50:24 2021 -0500
