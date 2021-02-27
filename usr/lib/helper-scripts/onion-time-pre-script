@@ -56,7 +56,7 @@ detect_vm_type() {
 }
 
 timesanitycheck_static() {
-   timesanitycheck || true
+   echo "Static Time Sanity Check: $(timesanitycheck)" || true
 }
 
 exit_if_tor_not_yet_enabled() {
