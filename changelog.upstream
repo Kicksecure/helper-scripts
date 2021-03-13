@@ -1,3 +1,21 @@
+commit 0ae844a0b26e8d03b41eccc9d37ec0124bce7587
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 13 03:56:52 2021 -0500
+
+    hardened-malloc-type-test
+
+commit a536530ad078e29381ff9ced69ec26b3b840c88b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 13 03:12:12 2021 -0500
+
+    add hardened-malloc-enabled-test
+
+commit abcbd62a46696c62b6eace5bebfc5552e27f1267
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Feb 27 05:17:11 2021 -0500
+
+    bumped changelog version
+
 commit 286e3fab653eea8164c83cb379952fbd9f68b556
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Feb 27 04:57:53 2021 -0500
