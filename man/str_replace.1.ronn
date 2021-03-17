@@ -56,7 +56,7 @@ To read input from STDIN and write to STDOUT.
 
 ## AUTHOR
 This man page has been compiled and modified by
-Patrick Schleizer (adrelanos@riseup.net)
+Patrick Schleizer (adrelanos@whonix.org)
 based contains contents from
 https://github.com/Samer-Al-iraqi/Linux-str_replace/blob/master/README.md
 Copyright: Copyright (c) 2016 Samer-Al-iraqi

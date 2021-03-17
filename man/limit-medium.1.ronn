@@ -41,4 +41,4 @@ https://forums.whonix.org/t/constrained-system-resources-program-starter-wrapper
 
 ## AUTHOR
 
-This man page has been written by Patrick Schleizer (adrelanos@riseup.net).
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).

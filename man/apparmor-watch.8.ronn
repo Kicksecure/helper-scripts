@@ -2,7 +2,7 @@ watch(8) -- Watch AppArmor DENIED and ALLOWED Log Messages
 =============================================
 
 <span class="comment">
-# Copyright (C) 2020 - 2020 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+# Copyright (C) 2020 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 # See the file COPYING for copying conditions.
 </span>
 
@@ -19,4 +19,4 @@ Watches for AppArmor DENIED and ALLOWED log messages.
 
 ## AUTHOR
 
-This man page has been written by Patrick Schleizer (adrelanos@riseup.net).
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).
