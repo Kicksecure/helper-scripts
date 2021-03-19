@@ -20,7 +20,27 @@ check_tor_bootstrap_helper_variables() {
 
    if [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
       if [ "$GATEWAY_IP" = "" ]; then
-         ## IP HARDCODED. Set GATEWAY_IP through /etc/systemcheck.d configuration folder instead.
+         ## IP HARDCODED. Set GATEWAY_IP through the following configuration folder instead.
+         ## (Replace IP "10.152.152.10" with the actual IP intended to use.)
+         ##
+         ## systemcheck:
+         ## /etc/systemcheck.d/50_user.conf
+         ##
+         ## tb-updater:
+         ## /etc/torbrowser.d/50_user.conf
+         ##
+         ## Legacy for Whonix below version 15.0.1.6.9:
+         ## whonixcheck:
+         ## /etc/whonix.d/50_user.conf
+         ##
+         ## With the following contents:
+         ## GATEWAY_IP="10.152.152.10"
+         ##
+         ## sdwdate:
+         ## config file:
+         ## /etc/sdwdate.d/50_user.conf
+         ## contents
+         ## PROXY_IP="10.152.152.10"
          GATEWAY_IP="10.152.152.10"
       fi
       if [ "$gateway_control_port" = "" ]; then
