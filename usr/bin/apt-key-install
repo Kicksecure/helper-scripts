@@ -1,0 +1,48 @@
+#!/bin/bash
+
+## Copyright (C) 2021 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -e
+set -o pipefail
+
+source_file="$1"
+target_file="$2"
+
+if [ "$source_file" = "" ] || [ "$target_file" = "" ]; then
+   echo "$0: ERROR: syntax: $0 source-file target-file" >&2
+   exit 2
+fi
+
+if ! test -r "$source_file" ; then
+   echo "$0: ERROR: source file does not exist or not readable!" >&2
+   exit 3
+fi
+
+target_folder="${target_file%/*}"
+
+if ! test -w "$target_folder" ; then
+   echo "$0: ERROR: target_folder '$target_folder' not writeable!" >&2
+   exit 4
+fi
+
+exit_handler() {
+   rm -rf "$temp_dir"
+}
+
+trap exit_handler EXIT
+
+[ -n "$temp_dir" ] || temp_dir="$(mktemp --directory)"
+if ! test -w "$temp_dir" ; then
+   echo "$0: ERROR: temp_dir '$temp_dir' not writeable!" >&2
+   exit 5
+fi
+
+gpg-dearmor "$source_file" "$target_file"
+
+if ! test -r "$target_file" ; then
+   echo "$0: ERROR: target_file '$target_file' not readable after writing!" >&2
+   exit 6
+fi
+
+echo "$0: INFO: OK."
