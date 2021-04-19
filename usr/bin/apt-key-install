@@ -26,18 +26,6 @@ if ! test -w "$target_folder" ; then
    exit 4
 fi
 
-exit_handler() {
-   rm -rf "$temp_dir"
-}
-
-trap exit_handler EXIT
-
-[ -n "$temp_dir" ] || temp_dir="$(mktemp --directory)"
-if ! test -w "$temp_dir" ; then
-   echo "$0: ERROR: temp_dir '$temp_dir' not writeable!" >&2
-   exit 5
-fi
-
 gpg-dearmor "$source_file" "$target_file"
 
 if ! test -r "$target_file" ; then
