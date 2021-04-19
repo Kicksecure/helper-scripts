@@ -22,7 +22,13 @@ fi
 target_folder="${target_file%/*}"
 
 if ! test -w "$target_folder" ; then
-   echo "$0: ERROR: target_folder '$target_folder' not writeable!" >&2
+   echo "$0: ERROR: target_folder '$target_folder' not writeable!
+
+By Debian default, root rights are required to write to folder '/etc/apt/trusted.gpg.d'.
+
+Perhaps prepending 'sudo' would help? Consider:
+
+sudo $0 $source_file $target_file" >&2
    exit 4
 fi
 
