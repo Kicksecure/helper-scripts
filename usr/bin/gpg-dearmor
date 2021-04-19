@@ -19,7 +19,7 @@ if ! test -r "$source_file" ; then
    exit 3
 fi
 
-target_folder="${source_file%/*}"
+target_folder="${target_file%/*}"
 
 if ! test -w "$target_folder" ; then
    echo "$0: ERROR: target_folder '$target_folder' not writeable!" >&2
