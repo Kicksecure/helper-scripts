@@ -15,7 +15,7 @@ if [ "$source_file" = "" ] || [ "$target_file" = "" ]; then
 fi
 
 if ! test -r "$source_file" ; then
-   echo "$0: ERROR: source file does not exist or not readable!" >&2
+   echo "$0: ERROR: source file '$source_file' does not exist or not readable!" >&2
    exit 3
 fi
 
