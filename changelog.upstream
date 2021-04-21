@@ -1,3 +1,63 @@
+commit 7be085f3c055825e12eccbb5850b31db3d905306
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 19 02:39:27 2021 -0400
+
+    output
+
+commit 6efd6f1c9b386fe151fb0f3e45dc54d80aa05283
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 19 02:34:52 2021 -0400
+
+    cleanup
+
+commit cafb4af56a6534b60bf5c2193eec26f5bbe7b717
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 19 02:30:00 2021 -0400
+
+    output
+
+commit 07d51a029408c5b5e0d6cff1a415977feea338c7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 19 02:29:02 2021 -0400
+
+    fix
+
+commit 17f4f481b270db3b64edfa434998a0bec9805e9f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 19 02:28:32 2021 -0400
+
+    refactoring
+
+commit 5b0c3c7e9526691ce1b0e27bf51ef6994596963f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 19 02:25:46 2021 -0400
+
+    `apt-key-install`: utility to install APT signing key to system
+    
+    Input file can be either, gpg keys in either ASCII-armored or binary format.
+    
+    due to `apt-key` deprecation by Debian
+    
+    https://forums.whonix.org/t/apt-key-deprecation-apt-2-2-changes/11240/1
+
+commit 5ffcd6d28454195889c8dd208a35a5d405524430
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 18 13:41:35 2021 -0400
+
+    `gpg-dearmor`: wrapper to convert gpg ASCII-armored format binary format
+    
+    due to `apt-key` deprecation by Debian
+    
+    since only gpg binary format is understood by Debian's APT
+    
+    https://forums.whonix.org/t/apt-key-deprecation-apt-2-2-changes/11240
+
+commit f6cdfd97768c3649f0bc88f3ab4c1723d65062d4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Mar 19 10:37:22 2021 -0400
+
+    bumped changelog version
+
 commit 68c5fede415c26e7e0b0fcd7e5ad75d3fd35d454
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Mar 19 10:37:08 2021 -0400
