@@ -226,7 +226,7 @@ tor_consensus_time_sanity_check() {
 
 connectivity_test() {
     ## TODO: optional connectivity test
-    #/usr/bin/url_to_unixtime 127.0.0.1 9050 http://expyuzz4wqqyqhjn.onion 80 true 2>&1
+    #/usr/bin/url_to_unixtime 127.0.0.1 9050 http://2gzyxa5ihm7nsggfxnu52rck2vv4rvmdlkiu3zzui5du4xyclen53wid.onion 80 true 2>&1
     true "Not yet implemented."
 }
 
