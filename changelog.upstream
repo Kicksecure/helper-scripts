@@ -1,3 +1,18 @@
+commit 9aa8fe97277d7bdbdf8530c796b512345b6bed8f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 24 04:43:15 2021 -0400
+
+    Disable running `anondate-get` as diagnostic utility
+    
+    since it can currently not be run due to no new privs apparmor issues with
+    sdwdate apparmor profile. This AppArmor bug is likely fixed in Debian bullseye.
+
+commit 94f45917e0306c492ace95eb7f271616ccf5aa7c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 5 08:34:28 2021 -0400
+
+    bumped changelog version
+
 commit 5676b4209b9a0cc20dc0774b08e36ef70c4b7a5f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Apr 24 07:43:31 2021 -0400
