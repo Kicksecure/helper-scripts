@@ -245,6 +245,9 @@ exit_success_if_tor_circuit_already_established() {
 }
 
 anondate_use() {
+   ## TODO: anondate-get can currently not be used due to sdwdate apparmor issue no new privs. Possibly fixed in Debian bullseye and above.
+   return 0
+
    local cmd
    ## anondate-get vs anondate-get
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
