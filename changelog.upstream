@@ -1,3 +1,37 @@
+commit 62f41ae25fb266183bdb28c8faec10b9c0d0a79a
+Merge: 9c4bc02 3f81ccf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 30 14:14:09 2021 -0400
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit 3f81ccf17f028a43d4ca9105f5f8219702d18a0a
+Merge: 9c4bc02 fa66630
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 30 14:09:14 2021 -0400
+
+    Merge pull request #6 from madaidan/cat
+    
+    Remove unnecessary cat calls
+
+commit fa66630cbb81e99cbfe34326bd14558cc26b8e97
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Sun May 30 02:29:23 2021 +0000
+
+    Remove unnecessary cat call
+
+commit 1ac0cdca37dcaa073caebdccce58ff4c7f47f4ae
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Sun May 30 02:28:38 2021 +0000
+
+    Remove unnecessary cat calls
+
+commit 9c4bc028ca7f0af8aad49270f4228f3c8000172f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 24 04:46:11 2021 -0400
+
+    bumped changelog version
+
 commit 9aa8fe97277d7bdbdf8530c796b512345b6bed8f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 24 04:43:15 2021 -0400
