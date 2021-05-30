@@ -3,12 +3,12 @@
 ## Copyright (C) 2020 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-if cat "/proc/$$/maps" | grep -q libhardened_malloc_kicksecure.so ; then
+if grep -q "libhardened_malloc_kicksecure.so" "/proc/$$/maps"; then
     echo "kicksecure"
     exit 0
 fi
 
-if cat "/proc/$$/maps" | grep -q libhardened_malloc.so ; then
+if grep -q "libhardened_malloc.so" "/proc/$$/maps"; then
     echo "original"
     exit 0
 fi
