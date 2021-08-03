@@ -39,11 +39,11 @@ exit_handler() {
 
 trap "exit_handler" EXIT
 
-source /usr/lib/helper-scripts/tor_enabled_check
-source /usr/lib/helper-scripts/pkg_manager_running_check
+source /usr/libexec/helper-scripts/tor_enabled_check
+source /usr/libexec/helper-scripts/pkg_manager_running_check
 
 ## provides check_tor_bootstrap_status
-source /usr/lib/helper-scripts/tor_bootstrap_check.bsh
+source /usr/libexec/helper-scripts/tor_bootstrap_check.bsh
 
 detect_vm_type() {
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
@@ -281,13 +281,13 @@ te_pe_tb_check() {
    ## Cannot use this at this point. While seeing the following log:
    ##
    ## 2021-02-26 14:21:15 - sdwdate - INFO - PREPARATION:
-   ## 2021-02-26 14:21:15 - sdwdate - INFO - /usr/lib/helper-scripts/onion-time-pre-script: Start.
+   ## 2021-02-26 14:21:15 - sdwdate - INFO - /usr/libexec/helper-scripts/onion-time-pre-script: Start.
    ## Within minimum time Sun Jan 17 00:00:00 UTC 2021 and expiration timestamp Tue May 17 10:00:00 UTC 2033.
    ## Tor reports: NOTICE BOOTSTRAP PROGRESS=100 TAG=done SUMMARY="Done"
    ## Tor circuit: established.
    ## Tor Consensus Time Sanity Check: The clock might be too fast. Clock is faster than consensus/valid-until 2021-02-26 01:00:00.
    ## Tor already reports circuit established.
-   ## /usr/lib/helper-scripts/onion-time-pre-script: END: Exiting with exit_code '0' indicating 'success'.
+   ## /usr/libexec/helper-scripts/onion-time-pre-script: END: Exiting with exit_code '0' indicating 'success'.
    ## 2021-02-26 14:21:15 - sdwdate - INFO - PREPARATION RESULT: SUCCESS.
    ##
    ## Tor reporting "circuit established" by itself is not a reliable determination,

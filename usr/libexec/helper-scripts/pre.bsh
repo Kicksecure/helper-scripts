@@ -10,8 +10,8 @@
 ## when the DEBDEBUG environment variable is set to 1.
 
 ## To use it in other scripts, use something like this:
-# if [ -f /usr/lib/helper-scripts/pre.bsh ]; then
-#    source /usr/lib/helper-scripts/pre.bsh
+# if [ -f /usr/libexec/helper-scripts/pre.bsh ]; then
+#    source /usr/libexec/helper-scripts/pre.bsh
 # fi
 
 ## Error log:

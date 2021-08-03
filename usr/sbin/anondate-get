@@ -100,7 +100,7 @@ fi
 
 anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
 
-source /usr/lib/helper-scripts/tor_bootstrap_check.bsh
+source /usr/libexec/helper-scripts/tor_bootstrap_check.bsh
 check_tor_bootstrap_helper
 
 if [ "$tor_bootstrap_percent" = "100" ]; then

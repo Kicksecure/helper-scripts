@@ -185,7 +185,7 @@ has_consensus() {
 }
 
 show-valid-after() {
-   vstart="$(/usr/lib/helper-scripts/tor_consensus_valid-after.py)"
+   vstart="$(/usr/libexec/helper-scripts/tor_consensus_valid-after.py)"
    #vstart="$(sed -n "/^valid-after \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
    if [ "$vstart" = "" ]; then
       exit 1
@@ -196,7 +196,7 @@ show-valid-after() {
 }
 
 show-valid-until() {
-   vend="$(/usr/lib/helper-scripts/tor_consensus_valid-until.py)"
+   vend="$(/usr/libexec/helper-scripts/tor_consensus_valid-until.py)"
    #vend="$(sed -n "/^valid-until \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
    if [ "$vend" = "" ]; then
       exit 1

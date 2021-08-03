@@ -86,7 +86,7 @@ check_tor_bootstrap_helper() {
 }
 
 check_tor_bootstrap_status() {
-   check_bootstrap_helper_script="/usr/lib/helper-scripts/tor_bootstrap_check.py"
+   check_bootstrap_helper_script="/usr/libexec/helper-scripts/tor_bootstrap_check.py"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
@@ -130,7 +130,7 @@ check_tor_circuit_established() {
 }
 
 tor_consensus_valid-after() {
-   check_bootstrap_helper_script="/usr/lib/helper-scripts/tor_consensus_valid-after.py"
+   check_bootstrap_helper_script="/usr/libexec/helper-scripts/tor_consensus_valid-after.py"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
@@ -144,7 +144,7 @@ tor_consensus_valid-after() {
 }
 
 tor_consensus_valid-until() {
-   check_bootstrap_helper_script="/usr/lib/helper-scripts/tor_consensus_valid-until.py"
+   check_bootstrap_helper_script="/usr/libexec/helper-scripts/tor_consensus_valid-until.py"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output

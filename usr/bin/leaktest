@@ -13,12 +13,12 @@ fi
 
 echo "leaktest: Starting leak test, hit ctrl+c to abort..."
 
-echo "leaktest: /usr/lib/helper-scripts/leak-tests/exhaustive_ip_send.py..."
-/usr/lib/helper-scripts/leak-tests/exhaustive_ip_send.py
-echo "leaktest: python /usr/lib/helper-scripts/leak-tests/tcp_test.py..."
-/usr/lib/helper-scripts/leak-tests/tcp_test.py
-echo "leaktest: /usr/lib/helper-scripts/leak-tests/udp_test.py..."
-/usr/lib/helper-scripts/leak-tests/udp_test.py
+echo "leaktest: /usr/libexec/helper-scripts/leak-tests/exhaustive_ip_send.py..."
+/usr/libexec/helper-scripts/leak-tests/exhaustive_ip_send.py
+echo "leaktest: python /usr/libexec/helper-scripts/leak-tests/tcp_test.py..."
+/usr/libexec/helper-scripts/leak-tests/tcp_test.py
+echo "leaktest: /usr/libexec/helper-scripts/leak-tests/udp_test.py..."
+/usr/libexec/helper-scripts/leak-tests/udp_test.py
 
 echo "leaktest: Leaktest finished."
 echo "leaktest: See https://www.whonix.org/wiki/Dev/Leak_Tests_Old on instructions how to interpret the results."
