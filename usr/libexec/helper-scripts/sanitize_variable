@@ -7,7 +7,7 @@ sanitize_variable() {
    local input
    input="$@"
 
-   sanitize_variable_output="$(/usr/lib/msgcollector/striphtml "$input")"
+   sanitize_variable_output="$(/usr/libexec/msgcollector/striphtml "$input")"
    sanitize_variable_output="$@"
 
    actual_string_length="${#sanitize_variable_output}"
