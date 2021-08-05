@@ -1,3 +1,72 @@
+commit 471fce916ba13a3c805f5af3c8c6d0ad41f0ade0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Aug 5 10:10:14 2021 -0400
+
+    fix
+
+commit 5a2fa69ffb57370db997eabdddbb223eb6aa3711
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 4 06:42:11 2021 -0400
+
+    move /usr/lib/msgcollector to /usr/libexec/msgcollector as per lintian FHS
+
+commit 335905818a608ea664c54c7ecc3f301d208e49be
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 3 12:48:54 2021 -0400
+
+    move /usr/lib/helper-scripts and /usr/lib/curl-scripts to /usr/libexec/helper-scripts as per lintian FHS
+
+commit c7eeb8ff733eda66299ac7031ed023ff9c826e6b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 3 11:51:30 2021 -0400
+
+    update lintian tag name
+
+commit 69d0ef314f790bcad95062c10bfaf7077ae0970c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 3 11:47:33 2021 -0400
+
+    re-generate man pages (generated using "genmkfile manpages")
+
+commit 8e93e6281aa4611c63dd66bbbbf99d85671e8234
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 3 11:43:19 2021 -0400
+
+    man page
+
+commit 8a95a1cb7f1e01762ec607abbe5702c0ee766010
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 3 11:10:33 2021 -0400
+
+    move usr/lib/helper-scripts/ to usr/libexec/helper-scripts
+    move usr/lib/curl-scripts to usr/libexec/helper-scripts
+    
+    as per lintian FHS
+
+commit bc2687650c77098b03258c7fa84122aa1bab5b1b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 3 11:09:09 2021 -0400
+
+    lintian
+
+commit b726a5772bec0e3dd9150d883b9d18145dcdcd98
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 3 05:48:21 2021 -0400
+
+    bullseye
+
+commit b368ad1688a667d95b8f2945ecf127f8e53c4fd5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 1 16:24:31 2021 -0400
+
+    readme
+
+commit 86b892cdce4c2cee409595c027816dd4eae1d0bd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 4 05:58:21 2021 -0400
+
+    bumped changelog version
+
 commit ab21083cf0330f081172ca060b1fa996b6387442
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jun 4 05:53:44 2021 -0400
