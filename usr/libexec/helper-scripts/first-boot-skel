@@ -18,6 +18,10 @@ else
    done_file="$cache_folder/first-boot-skel.done"
 fi
 
+if [ "$1" = "force" ]; then
+   rm -f "$done_file"
+fi
+
 if [ -e "$done_file" ]; then
    exit 0
 fi
