@@ -1,3 +1,19 @@
+commit e021874a31e4a4ed9f2c46ff1925c5dfa79691de
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 10 14:58:08 2021 -0400
+
+    implement `/usr/libexec/helper-scripts/first-boot-skel` `force`
+    
+    to ease Default Home Folder Configuration Files Reset
+    
+    https://www.whonix.org/wiki/Desktop#Default_Home_Folder_Configuration_Files_Reset
+
+commit 2e868e95343d1d5dc4eee0115030a16857bef6a5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Aug 5 16:45:06 2021 -0400
+
+    bumped changelog version
+
 commit 471fce916ba13a3c805f5af3c8c6d0ad41f0ade0
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Aug 5 10:10:14 2021 -0400
