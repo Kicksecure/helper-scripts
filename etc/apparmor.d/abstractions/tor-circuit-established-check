@@ -28,3 +28,6 @@
   @{PROC}/sys/kernel/osrelease r,
 
   /run/tor/control.authcookie r,
+
+  ## Not needed. Works without.
+  deny /etc/ssl/openssl.cnf r,
