@@ -16,9 +16,9 @@ Anon-Workstation specific leaktest.
 
 Advanced users, developers and auditors only!
 
-Runs the leak tests /usr/lib/leaktest-workstation/exhaustive_ip_send.py,
-/usr/lib/leaktest-workstation/tcp_test.py and
-/usr/lib/leaktest-workstation/udp_test.py.
+Runs the leak tests /usr/libexec/helper-scripts/leak-tests/exhaustive_ip_send.py,
+/usr/libexec/helper-scripts/leak-tests/tcp_test.py and
+/usr/libexec/helper-scripts/leak-tests/udp_test.py.
 
 There are other leak tests as well, please refer to the online
 documentation.
