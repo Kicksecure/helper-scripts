@@ -102,6 +102,8 @@ check_tor_bootstrap_status() {
       tor_bootstrap_timeout_type="sigterm"
    elif [ "$check_bootstrap_helper_script_exit_code" = "137" ]; then
       tor_bootstrap_timeout_type="sigkill"
+   elif [ "$check_bootstrap_helper_script_exit_code" = "254" ]; then
+      tor_bootstrap_timeout_type="invalid-exit-code-please-report-this-bug"
    else
       tor_bootstrap_timeout_type="none"
    fi
@@ -112,9 +114,8 @@ check_tor_circuit_established() {
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
+   ## sets: tor_bootstrap_timeout_type
    check_tor_bootstrap_helper_run_helper_script
-
-   tor_circuit_established_check_exit_code="$check_bootstrap_helper_script_exit_code"
 
    if [ "$check_bootstrap_helper_script_exit_code" = "0" ]; then
       tor_circuit_established="$check_bootstrap_helper_script_output"

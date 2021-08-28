@@ -91,8 +91,10 @@ check_tor_circuit_established_yet() {
 
    for invalid_exit_code in "124" "137" "254" ; do
       if [ "$tor_circuit_established_check_exit_code" = "$invalid_exit_code" ]; then
-         echo "Tor Bootstrap Result: \
-   <b>ERROR ($tor_circuit_established_check_exit_code).</b><br> Please report this bug!"
+         echo "Tor Bootstrap Result:
+<br>check_bootstrap_helper_script: $check_bootstrap_helper_script
+<br>tor_bootstrap_timeout_type: $tor_bootstrap_timeout_type
+<br>tor_circuit_established_check_exit_code: $tor_circuit_established_check_exit_code"
          exit_code=1
          exit "$exit_code"
       fi
