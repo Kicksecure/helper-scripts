@@ -1,3 +1,15 @@
+commit 8a4939227c4ff0016451a3be8a8de8f7c7360b56
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 28 13:42:54 2021 -0400
+
+    improve diagnostic messages
+
+commit c36eab190e32bbb12002a8b2a23e7af3d9e4de6a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 22 05:30:12 2021 -0400
+
+    bumped changelog version
+
 commit 451f44eb9a6a9788cd5203195582c919baaea620
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Aug 22 05:22:27 2021 -0400
