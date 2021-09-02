@@ -117,6 +117,8 @@ check_tor_circuit_established() {
    ## sets: tor_bootstrap_timeout_type
    check_tor_bootstrap_helper_run_helper_script
 
+   tor_circuit_established_check_exit_code="$check_bootstrap_helper_script_exit_code"
+
    if [ "$check_bootstrap_helper_script_exit_code" = "0" ]; then
       tor_circuit_established="$check_bootstrap_helper_script_output"
       if [ "$tor_circuit_established" = "1" ]; then
