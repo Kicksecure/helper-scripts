@@ -1,3 +1,17 @@
+commit 0199146c78a421c0429654636299a6e2fd795672
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 8 17:14:54 2021 -0400
+
+    terminal-wrapper: xfce4-terminal --hold
+    
+    supported since Debian bullseye
+
+commit 771537aa31a719a3c5a75ee948a0b6f9f2d99aee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 2 15:44:34 2021 -0400
+
+    bumped changelog version
+
 commit c8b605f6acfc6d5d5ab5d45d11506cabe02d901f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Sep 2 15:44:24 2021 -0400
