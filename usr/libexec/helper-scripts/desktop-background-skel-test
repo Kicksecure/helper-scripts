@@ -1,0 +1,16 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Script to simplify testing Xfce settings files.
+
+set -x
+set -e
+
+sudo systemctl stop gdm3
+sudo killall xfconfd || true
+sleep 2
+sudo rm --verbose --force /home/user/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+sudo cp --verbose /home/user/new /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+sudo systemctl restart gdm3
