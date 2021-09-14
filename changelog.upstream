@@ -1,3 +1,15 @@
+commit 6472efd1ce1769338881020e5aac03a221ccb6e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 14 16:46:28 2021 -0400
+
+    add /usr/libexec/helper-scripts/desktop-background-skel-test
+
+commit 9f891266e7515ed75ddcba34d5d13fd704cd3b80
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 11 18:45:04 2021 -0400
+
+    bumped changelog version
+
 commit 3e73ec87cb466ed8efcc00ee661e7ec5d66991d3
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Sep 11 16:31:27 2021 -0400
