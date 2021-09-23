@@ -1,0 +1,16 @@
+anon-consensus-delete(8) -- Tor consensus deletion
+=============================================
+
+<!--
+# Copyright (C) 2021 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+`anon-consensus-delete`
+
+## DESCRIPTION
+anon-consensus-delete is a user-friendly wrapper that deletes all Tor consensus files.
+
+## AUTHOR
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org)

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+#### meta start
+#### project Whonix
+#### category tor and usability
+#### description
+#### gateway_only yes
+## stops Tor, deletes Tor consensus and restarts Tor
+#### meta end
+
+if ! [ "$(id -u)" = 0 ]; then
+   echo "$0: ERROR: This script must run as root/sudo! run:"
+   echo "sudo $0"
+   exit 1
+fi
+
+systemctl stop tor
+
+rm -f /var/lib/tor/cached-certs
+rm -f /var/lib/tor/cached-microdesc-consensus
+rm -f /var/lib/tor/cached-microdescs
+rm -f /var/lib/tor/cached-microdescs.new
+
+systemctl restart tor
