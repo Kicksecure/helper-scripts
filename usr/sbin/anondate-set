@@ -90,14 +90,12 @@ elif [ "$anondate_get_exit_code" = "2" ]; then
 
       ## If clock was too fast, restart of Tor is required.
       if [ "$(whoami)" = "sdwdate" ]; then
-         echo "$0: INFO: Tor restart using by creating \
-/run/sdwdate/request_tor_restart request file."
+         echo "$0: INFO: Deleting Tor consensus and Tor restart using by creating /run/sdwdate/request_tor_restart request file."
          touch /run/sdwdate/request_tor_restart
       elif [ "$(id -u)" = "0" ]; then
          sudo -u sdwdate touch /run/sdwdate/request_tor_restart
       else
-         echo "$0: ERROR: Tor restart not implemented for users other than \
-root and sdwdate." >&2
+         echo "$0: ERROR: Tor restart not implemented for users other than 'root' and 'sdwdate'." >&2
          exit_code=112
          exit 112
       fi
