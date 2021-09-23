@@ -1,3 +1,27 @@
+commit ec23b71adfc46180020dcdcea201f52b38fc13da
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 23 10:17:53 2021 -0400
+
+    output
+
+commit 7c368c595b6ab1b7a1fe9d49f7a3e8ca76d1531b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 23 10:17:20 2021 -0400
+
+    genmkfile manpages
+
+commit 48a0adb850051907efcb41e1643453ac08d966ce
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 23 10:17:00 2021 -0400
+
+    imported anon-consensus-del from anon-gw-anonymizer-config
+
+commit 866242b3d85c9eaebfd8b7aad24c31d778a6e826
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 15 03:51:04 2021 -0400
+
+    bumped changelog version
+
 commit 8675eff244d926a4fab4735f6472a56715ff5ce6
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Sep 15 03:41:44 2021 -0400
