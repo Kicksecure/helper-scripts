@@ -56,17 +56,36 @@ restart_tor_if_running() {
 }
 
 set_date() {
+   current_time_human_readable="$(date --utc "+%Y-%m-%d %H:%M:%S")"
+   current_unixtime="$(date --utc "+%s")"
+
    time_result_unixtime="$(date --utc --date "$time_result_human_readable" "+%s")"
 
-   if ! minimum-time-check "$time_result_unixtime" ; then
+   if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
+      output_cmd "INFO: Not setting clock backwards.
 
+'$current_unixtime' -ge '$time_result_unixtime'
+(function: set_date)
+
+time_result_human_readable: '$time_result_human_readable'
+time_result_unixtime: '$time_result_unixtime'
+earlier than
+current_time_human_readable: '$current_time_human_readable'
+current_unixtime: '$current_unixtime'" >&2
+
+      exit_code=3
+      exit 3
+   fi
+
+   if ! minimum-time-check "$time_result_unixtime" ; then
       ## capture stdout
       minimum_unixtime_show_unixtime="$(minimum-unixtime-show 2>/dev/null)"
       ## capture stderr
       minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
       output_cmd "ERROR: minimum-time-check failed.
-command: minimum-time-check '$time_result_unixtime'
+
+command: minimum-time-check: '$time_result_unixtime'
 (function: set_date)
 
 time_result_human_readable: '$time_result_human_readable'
