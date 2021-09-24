@@ -62,9 +62,9 @@ set_date() {
    time_result_unixtime="$(date --utc --date "$time_result_human_readable" "+%s")"
 
    if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
-      output_cmd "INFO: Not setting clock backwards.
+      output_cmd "INFO: The 'anondate-get' time_result is earlier than the current system time, ok.
 
-The 'anondate-get' time result is earlier than the current system time.
+Not setting clock backwards.
 
 Debugging information:
 '$current_unixtime' -ge '$time_result_unixtime'
@@ -78,6 +78,8 @@ current_unixtime: '$current_unixtime'" >&2
 
       exit_code=3
       exit 3
+   else
+      output_cmd "INFO: The 'anondate-get' time_result is later than the current system time, ok"
    fi
 
    if ! minimum-time-check "$time_result_unixtime" ; then
@@ -86,7 +88,7 @@ current_unixtime: '$current_unixtime'" >&2
       ## capture stderr
       minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
-      output_cmd "INFO: minimum-time-check determined the time_result to be obsolete, ok.
+      output_cmd "INFO: minimum-time-check determined the time_result earlier than minimum time, ok.
 
 The 'anondate-get' time result is earlier than 'minimum-unixtime-show'.
 Not setting system clock earlier than 'minimum-unixtime-show'.
@@ -102,6 +104,10 @@ minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'" >&2
 
       exit_code=3
       exit 3
+   else
+      output_cmd "INFO: minimum-time-check determined the time_result to be later than minimum time, ok.
+The 'anondate-get' time result is later than 'minimum-unixtime-show'.
+Setting system clock forward."
    fi
 
    output_cmd "INFO: Running the following command:"
