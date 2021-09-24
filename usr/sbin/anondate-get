@@ -170,7 +170,7 @@ if time_result="$(anondate --show-middle-range)" ; then
       output_cmd "WARNING: local system time is NOT with valid time range. ($range_info)" >&2
       output_cmd "INFO: middle_range: '$time_result'" >&2
       minimum_time_check
-      output_cmd "$time_result"
+      echo "$time_result"
       exit_code="0"
       exit 0
    fi
