@@ -69,11 +69,11 @@ set_date() {
 command: minimum-time-check '$time_result_unixtime'
 (function: set_date)
 
-time_result_human_readable '$time_result_human_readable'
-time_result_unixtime '$time_result_unixtime'
+time_result_human_readable: '$time_result_human_readable'
+time_result_unixtime: '$time_result_unixtime'
 earlier than
-minimum_unixtime_show_human_readable '$minimum_unixtime_show_human_readable'
-minimum_unixtime_show_unixtime '$minimum_unixtime_show_unixtime'" >&2
+minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'
+minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'" >&2
 
       exit_code=3
       exit 3

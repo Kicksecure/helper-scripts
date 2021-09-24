@@ -89,13 +89,13 @@ minimum_time_check() {
       time_result_unixtime="$(date --utc --date="$time_result" "+%s")"
 
       output_cmd "ERROR: minimum-time-check failed.
-command: minimum-time-check '$time_result_unixtime'
+command: minimum-time-check: '$time_result_unixtime'
 
-                   time_result '$time_result'
-                time_result_unixtime '$time_result_unixtime'
+time_result '$time_result'
+time_result_unixtime: '$time_result_unixtime'
 earlier than
-minimum_unixtime_show_human_readable '$minimum_unixtime_show_human_readable'
-minimum_unixtime_show_unixtime '$minimum_unixtime_show_unixtime'"
+minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'
+minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
 
       return 1
    fi
