@@ -84,7 +84,19 @@ exit_handler() {
 
 minimum_time_check() {
    if ! minimum-time-check "$time_result_unixtime" ; then
-      output_cmd "$0: ERROR: time_result '$time_result' unixtime '$time_result_unixtime' earlier than minimum-unixtime-show '$(minimum-unixtime-show)'" >&2
+
+      ## capture stdout
+      minimum_unixtime_show_unixtime="$(minimum-unixtime-show 2>/dev/null)"
+      ## capture stderr
+      minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
+
+      output_cmd "$0: ERROR:
+                         time_result '$time_result'
+          time_result_unixtime '$time_result_unixtime'
+earlier than
+minimum_unixtime_show_human_readable '$minimum_unixtime_show_human_readable'
+minimum_unixtime_show_unixtime '$minimum_unixtime_show_unixtime'" >&2
+
       exit_code=1
       exit 1
    fi
