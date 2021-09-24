@@ -20,7 +20,7 @@ output_cmd() {
 
 exit_handler() {
    if [ "$exit_code" = "" ]; then
-      meaning="Unexpected error. No exit code set yet. Setting exit_code to 1."
+      meaning="Unexpected error (1). No exit code set yet. Setting exit_code to 1."
       exit_code=1
    elif [ "$exit_code" = "0" ]; then
       meaning="Set time using Tor consensus middle range time."
@@ -31,7 +31,7 @@ exit_handler() {
    elif [ "$exit_code" = "3" ]; then
       meaning="Setting time using anondate either not possible or not required."
    else
-      meaning="Unknown."
+      meaning="Unexpected error (2)."
    fi
    output_cmd "END: Exiting with exit_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
