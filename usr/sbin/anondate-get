@@ -135,14 +135,14 @@ check_tor_bootstrap_helper
 if [ "$tor_bootstrap_percent" = "100" ]; then
    output_cmd "INFO: 100% Tor bootstrap, ok."
    if tor_circuit_established_check="$(/usr/bin/tor-circuit-established-check)" ; then
-      output_cmd "INFO: tor_circuit_established_check.py, ok."
+      output_cmd "INFO: tor-circuit-established-check, ok."
       if [ "$tor_circuit_established_check" = "1" ]; then
          output_cmd "INFO: Tor circuit already established, ok."
       else
          output_cmd "WARNING: Tor circuit not yet established."
       fi
    else
-      output_cmd "WARNING: tor_circuit_established_check.py failed."
+      output_cmd "WARNING: tor-circuit-established-check failed."
    fi
 else
    output_cmd "WARNING: Tor bootstrap not done."
