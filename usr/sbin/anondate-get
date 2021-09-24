@@ -7,7 +7,7 @@
 ## Write date to stdout.
 
 ## exit codes:
-## 0: show Tor consensus time middle range
+## 0: show Tor consensus time middle range or minimum time
 ## 1: error
 ## 2: show Tor certificate lifetime
 ## 3: Could not determine any time using Tor from consensus or certificate life time.
