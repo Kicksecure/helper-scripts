@@ -58,10 +58,25 @@ restart_tor_if_running() {
 set_date() {
    unixtime="$(date --utc --date "$time_result" "+%s")"
    if ! minimum-time-check "$unixtime" ; then
-      output_cmd "$0: ERROR: time_result '$time_result' unixtime '$unixtime' earlier than minimum-unixtime-show '$(minimum-unixtime-show)'" >&2
+
+      ## capture stdout
+      minimum_unixtime_show_unixtime="$(minimum-unixtime-show 2>/dev/null)"
+      ## capture stderr
+      minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
+
+      output_cmd "$0 (set_date): ERROR: minimum-time-check failed.
+command: minimum-time-check "$unixtime"
+
+time_result '$time_result'
+unixtime '$unixtime'
+earlier than
+minimum_unixtime_show_human_readable '$minimum_unixtime_show_human_readable'
+minimum_unixtime_show_unixtime '$(minimum-unixtime-show)'" >&2
+
       exit_code=3
       exit 3
    fi
+
    output_cmd "$0: INFO: Running the following command:"
    output_cmd "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result\""
    date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result"
