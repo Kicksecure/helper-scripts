@@ -191,9 +191,9 @@ else
       time_result_unixtime="$(date --utc --date="$time_result" "+%s")"
       current_unixtime="$(date --utc "+%s")"
       if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
-         output_cmd "INFO: Clock LATER than Tor certificate life date, ok." >&2
+         output_cmd "INFO: System clock is LATER than Tor certificate life date, ok." >&2
       else
-         output_cmd "INFO: Clock EARLIER than Tor certificate life date." >&2
+         output_cmd "INFO: System clock is EARLIER than Tor certificate life date." >&2
       fi
       minimum_time_check
       output_cmd "$time_result"
