@@ -13,9 +13,9 @@ date_cmd(){
 }
 
 output_cmd() {
-   msg="$(date_cmd) - $0 - $@"
-   echo "$msg"
-   echo "$msg" | systemd-cat --identifier="anondate" || true
+   msg="$@"
+   echo "@ $msg"
+   echo "@ $msg" | systemd-cat --identifier="anondate" || true
 }
 
 exit_handler() {
@@ -108,6 +108,8 @@ minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'" >&2
    output_cmd "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result_human_readable\""
    date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result_human_readable"
 }
+
+output_cmd "$(date_cmd) - $0 - START"
 
 if [ "$(whoami)" = "sdwdate" ]; then
    anondate_state_folder=/run/sdwdate
