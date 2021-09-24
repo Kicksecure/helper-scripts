@@ -250,6 +250,7 @@ anondate_use() {
    ## https://gitlab.com/apparmor/apparmor/-/wikis/AppArmorStacking#seccomp-and-no_new_privs
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
    ## /usr/libexec/sdwdate/sdwdate-restart-tor-request-file-watcher
+   echo "Running 'anondate-set' (by creating file /run/sdwdate/request_tor_restart)..."
    touch /run/sdwdate/request_tor_restart
 
    exit_code=2
