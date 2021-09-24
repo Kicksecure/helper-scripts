@@ -180,7 +180,7 @@ tor_consensus_time_sanity_check() {
 
    current_unixtime="$(date --utc +"%s")"
 
-   if [ "$tor_consensus_valid_after_exit_code" = "0" ] && [ "$tor_consensus_valid_until_exit_code" = "0" ]; then
+   if [ ! "$tor_consensus_valid_after_unixtime" = "" ] && [ ! "$tor_consensus_valid_until_unixtime" = "" ]; then
       clock_tor_consensus_check_result="ok"
       if [ "$current_unixtime" -ge "$tor_consensus_valid_after_unixtime" ]; then
          true
