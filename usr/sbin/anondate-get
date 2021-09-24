@@ -76,8 +76,6 @@ exit_handler() {
       meaning="Could not determine any time using Tor from consensus or certificate life time."
    elif [ "$exit_code" = "4" ]; then
       meaning="Setting time using anondate either not possible or not required."
-   elif [ "$exit_code" = "5" ]; then
-      meaning="Showed minium unixtime (minimum-unixtime-show)."
    fi
 
    output_cmd "END: Exiting with exit_code '$exit_code' indicating '$meaning'."
