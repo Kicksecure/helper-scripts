@@ -20,10 +20,9 @@ output_cmd() {
 
 exit_handler() {
    if [ "$exit_code" = "" ]; then
-      meaning="No exit code set yet. Setting to 1."
+      meaning="Unexpected error. No exit code set yet. Setting exit_code to 1."
       exit_code=1
-   fi
-   if [ "$exit_code" = "0" ]; then
+   elif [ "$exit_code" = "0" ]; then
       meaning="Set time using Tor consensus middle range time."
    elif [ "$exit_code" = "1" ]; then
       meaning="error"

@@ -64,10 +64,9 @@ output_cmd() {
 
 exit_handler() {
    if [ "$exit_code" = "" ]; then
-      meaning="No exit code set yet. Setting to 1."
+      meaning="Unexpected error (1). No exit code set yet. Setting exit_code to 1."
       exit_code=1
-   fi
-   if [ "$exit_code" = "0" ]; then
+   elif [ "$exit_code" = "0" ]; then
       meaning="Showed Tor consensus time middle range or minimum time."
    elif [ "$exit_code" = "1" ]; then
       meaning="error"
@@ -77,6 +76,8 @@ exit_handler() {
       meaning="Could not determine any time using Tor from consensus or certificate life time."
    elif [ "$exit_code" = "4" ]; then
       meaning="Setting time using anondate either not possible or not required."
+   else
+      meaning="Unexpected error (2)."
    fi
 
    output_cmd "END: Exiting with exit_code '$exit_code' indicating '$meaning'."
