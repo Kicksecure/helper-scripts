@@ -15,12 +15,12 @@
 [ -n "$TZ" ] || export TZ=UTC
 
 check_valid() {
-   if [[ ! "$1" != *[!0-9]* ]]; then
-      return 1
-   fi
    expected_string_lenght=10
    actual_string_length="${#1}"
    if [ ! "$actual_string_length" = "$expected_string_lenght" ]; then
+      return 1
+   fi
+   if [[ ! "$1" != *[!0-9]* ]]; then
       return 1
    fi
    return 0
