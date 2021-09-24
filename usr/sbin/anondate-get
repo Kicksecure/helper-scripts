@@ -85,9 +85,9 @@ exit_handler() {
 }
 
 minimum_time_check() {
-   if ! minimum-time-check "$1" ; then
-      time_result_unixtime="$(date --utc --date="$time_result" "+%s")"
+   time_result_unixtime="$(date --utc --date="$1" "+%s")"
 
+   if ! minimum-time-check "$time_result_unixtime" ; then
       output_cmd "ERROR: minimum-time-check failed.
 command: minimum-time-check: '$time_result_unixtime'
 
@@ -202,7 +202,7 @@ else
          output_cmd "INFO: System clock is EARLIER than Tor certificate life date."
       fi
       if minimum_time_check "$time_result" ; then
-         output_cmd "$time_result"
+         echo "$time_result"
          exit_code=2
          exit 2
       else
