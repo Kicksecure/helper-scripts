@@ -161,7 +161,7 @@ tor_consensus_valid-until() {
    tor_consensus_valid_until_exit_code="$check_bootstrap_helper_script_exit_code"
    tor_consensus_valid_until_output="$check_bootstrap_helper_script_output"
    tor_consensus_valid_until_unixtime=""
-   if [ "$check_bootstrap_helper_script_exit_code" = "0" ]; then
+   if [ ! "$check_bootstrap_helper_script_exit_code" = "0" ]; then
       return 0
    fi
    if [ "$tor_consensus_valid_until_output" = "" ]; then
