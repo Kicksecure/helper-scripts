@@ -1,3 +1,39 @@
+commit 3449194476ab5e31035fe011c259aa4074fa508e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 11:57:49 2021 -0400
+
+    add edanondate output to journal (and therefore sdwdate-log-viewer)
+
+commit a8e72f8da1f0cc8d28dba6b2f29137d9c68b3cf5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 11:44:36 2021 -0400
+
+    apparmor
+
+commit 6568a5523b9d32adc06ddb4814cbc7a064310e5d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 11:42:26 2021 -0400
+
+    apparmor
+
+commit 80e30078f4e653bea9b85c5f9f24b0206efa572c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 11:33:38 2021 -0400
+
+    apparmor
+
+commit ba05cd447fab73c1f95bb47008ab3721fc39a512
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 11:32:31 2021 -0400
+
+    apparmor profiles rebased on aa-logprof
+
+commit 1dbc35b52f9351849a5cf8b258f7cc67727a94e7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 11:09:36 2021 -0400
+
+    bumped changelog version
+
 commit 4746cbd02d32b4e513accaed677c0bee28b531f6
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Sep 24 11:06:10 2021 -0400
