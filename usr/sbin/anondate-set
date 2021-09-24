@@ -20,7 +20,8 @@ output_cmd() {
 
 exit_handler() {
    if [ "$exit_code" = "" ]; then
-      "No exit code set yet. Setting to 1."
+      meaning="No exit code set yet. Setting to 1."
+      exit_code=1
    fi
    if [ "$exit_code" = "0" ]; then
       meaning="Set time using Tor consensus middle range time."

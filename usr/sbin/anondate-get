@@ -65,6 +65,7 @@ output_cmd() {
 exit_handler() {
    if [ "$exit_code" = "" ]; then
       meaning="No exit code set yet. Setting to 1."
+      exit_code=1
    fi
    if [ "$exit_code" = "0" ]; then
       meaning="Showed Tor consensus time middle range or minimum time."
