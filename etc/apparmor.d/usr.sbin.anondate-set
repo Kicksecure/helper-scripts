@@ -1,17 +1,20 @@
+# Last Modified: Thu Sep 23 15:22:12 2021
+#include <tunables/global>
+
 ## Copyright (C) 2017 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-#include <tunables/global>
 
 /usr/sbin/anondate-set flags=(attach_disconnected,complain) {
   #include <abstractions/base>
+  #include <abstractions/tor>
+  #include <local/usr.sbin.anondate-set>
 
-  /usr/sbin/anondate-set r,
-  ## TODO
+  /usr/bin/date mrix,
   /usr/sbin/anondate-get rUx,
+  /usr/sbin/anondate-set r,
   /{,usr/}bin/id rix,
   /{,usr/}bin/whoami rix,
+  owner /run/anondate/ w,
 
-  # Site-specific additions and overrides. See local/README for details.
-  #include <local/usr.sbin.anondate-set>
 }
