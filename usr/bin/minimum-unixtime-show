@@ -61,7 +61,7 @@ time_replay_protection_files_list="\
 /etc/minimum-unixtime
 /usr/local/etc/minimum-unixtime"
 
-minimum_unixtime=0
+minimum_unixtime=1632441600
 
 for file_name in $time_replay_protection_files_list ; do
    if ! test -f "$file_name" ; then
