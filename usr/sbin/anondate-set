@@ -56,7 +56,7 @@ restart_tor_if_running() {
 }
 
 set_date() {
-   time_result_unixtime="$(date --utc --date "$time_result" "+%s")"
+   time_result_unixtime="$(date --utc --date "$time_result_human_readable" "+%s")"
 
    if ! minimum-time-check "$time_result_unixtime" ; then
 
@@ -69,7 +69,7 @@ set_date() {
 command: minimum-time-check '$time_result_unixtime'
 (function: set_date)
 
-time_result '$time_result'
+time_result_human_readable '$time_result_human_readable'
 time_result_unixtime '$time_result_unixtime'
 earlier than
 minimum_unixtime_show_human_readable '$minimum_unixtime_show_human_readable'
@@ -80,8 +80,8 @@ minimum_unixtime_show_unixtime '$minimum_unixtime_show_unixtime'" >&2
    fi
 
    output_cmd "INFO: Running the following command:"
-   output_cmd "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result\""
-   date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result"
+   output_cmd "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result_human_readable\""
+   date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result_human_readable"
 }
 
 if [ "$(whoami)" = "sdwdate" ]; then
@@ -108,7 +108,7 @@ fi
 output_cmd "INFO: running anondate-get..."
 
 anondate_get_exit_code=0
-time_result="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
+time_result_human_readable="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
 
 if [ "$anondate_get_exit_code" = "0" ]; then
    output_cmd "INFO: anondate-get returned Tor consensus middle range time or minimum time."
