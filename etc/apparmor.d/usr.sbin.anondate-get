@@ -1,4 +1,4 @@
-# Last Modified: Thu Sep 23 15:22:11 2021
+# Last Modified: Fri Sep 24 16:54:49 2021
 #include <tunables/global>
 
 ## Copyright (C) 2017 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
@@ -7,15 +7,22 @@
 
 /usr/sbin/anondate-get flags=(attach_disconnected,complain) {
   #include <abstractions/base>
+  #include <abstractions/bash>
   #include <abstractions/nameservice>
   #include <abstractions/python>
   #include <abstractions/tor-circuit-established-check>
   #include <local/usr.sbin.anondate-get>
 
+  /usr/bin/bash ix,
+  /usr/bin/date mrix,
+  /usr/bin/minimum-unixtime-show mrix,
+  /usr/bin/minimum-unixtime-show r,
+  /usr/bin/systemd-cat mrix,
   /usr/bin/timeout mrix,
   /usr/sbin/anondate rix,
   /usr/sbin/anondate-get r,
   /{,usr/}bin/id rix,
   /{,usr/}bin/whoami rix,
+  /usr/libexec/helper-scripts/ r,
 
 }
