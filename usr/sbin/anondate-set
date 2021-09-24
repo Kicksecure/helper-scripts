@@ -64,14 +64,15 @@ set_date() {
       ## capture stderr
       minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
-      output_cmd "(set_date):ERROR: minimum-time-check failed.
-command: minimum-time-check "$unixtime"
+      output_cmd "ERROR: minimum-time-check failed.
+command: minimum-time-check '$unixtime'
+(function: set_date)
 
 time_result '$time_result'
 unixtime '$unixtime'
 earlier than
 minimum_unixtime_show_human_readable '$minimum_unixtime_show_human_readable'
-minimum_unixtime_show_unixtime '$(minimum-unixtime-show)'" >&2
+minimum_unixtime_show_unixtime '$minimum_unixtime_show_unixtime'" >&2
 
       exit_code=3
       exit 3
@@ -109,7 +110,7 @@ anondate_get_exit_code=0
 time_result="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
 
 if [ "$anondate_get_exit_code" = "0" ]; then
-   output_cmd "INFO: anondate-get returned Tor consensus middle range time."
+   output_cmd "INFO: anondate-get returned Tor consensus middle range time or minimum time."
    set_date
    exit_code=0
    exit 0
