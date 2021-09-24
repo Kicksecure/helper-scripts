@@ -90,9 +90,9 @@ minimum_time_check() {
       ## capture stderr
       minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
-      output_cmd "$0: ERROR:
-                         time_result '$time_result'
-          time_result_unixtime '$time_result_unixtime'
+      output_cmd "$0: ERROR: minimum_time_check failed.
+                   time_result '$time_result'
+                time_result_unixtime '$time_result_unixtime'
 earlier than
 minimum_unixtime_show_human_readable '$minimum_unixtime_show_human_readable'
 minimum_unixtime_show_unixtime '$minimum_unixtime_show_unixtime'" >&2
