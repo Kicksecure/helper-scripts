@@ -10,7 +10,13 @@ set -o pipefail
 
 variables() {
    [ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
+
+   if test -r /run/tor/log ; then
+      [ -n "$TOR_LOG" ] || TOR_LOG="cat /run/tor/log"
+   fi
+   ## Does not include certificate lifetime.
    [ -n "$TOR_LOG" ] || TOR_LOG="journalctl --boot --output cat --no-pager -u tor@default"
+
    [ -n "$TOR_DIR" ] || TOR_DIR="/var/lib/tor"
    [ -n "$TOR_DESCRIPTORS" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
    [ -n "$NEW_TOR_DESCRIPTORS" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"
