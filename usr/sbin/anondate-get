@@ -58,7 +58,7 @@ date_cmd(){
 
 output_cmd() {
    msg="$(date_cmd) - $0 - $@"
-   echo "$msg"
+   echo "$msg" >&2
    echo "$msg" | systemd-cat --identifier="anondate" || true
 }
 
@@ -80,7 +80,7 @@ exit_handler() {
       meaning="Showed minium unixtime (minimum-unixtime-show)."
    fi
 
-   output_cmd "END: Exiting with exit_code '$exit_code' indicating '$meaning'." >&2
+   output_cmd "END: Exiting with exit_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 
@@ -95,11 +95,11 @@ command: minimum-time-check '$time_result_unixtime'
                 time_result_unixtime '$time_result_unixtime'
 earlier than
 minimum_unixtime_show_human_readable '$minimum_unixtime_show_human_readable'
-minimum_unixtime_show_unixtime '$minimum_unixtime_show_unixtime'" >&2
+minimum_unixtime_show_unixtime '$minimum_unixtime_show_unixtime'"
 
       return 1
    fi
-   output_cmd "INFO: time_result later than minimum-unixtime-show, ok." >&2
+   output_cmd "INFO: time_result later than minimum-unixtime-show, ok."
 }
 
 exit_code=1
@@ -111,7 +111,7 @@ if [ "$(whoami)" = "sdwdate" ]; then
 elif [ "$(id -u)" = "0" ]; then
    anondate_state_folder=/run/anondate
 else
-   output_cmd "ERROR: Must run as root." >&2
+   output_cmd "ERROR: Must run as root."
    exit_code=112
    exit 112
 fi
@@ -130,26 +130,26 @@ source /usr/libexec/helper-scripts/tor_bootstrap_check.bsh
 check_tor_bootstrap_helper
 
 if [ "$tor_bootstrap_percent" = "100" ]; then
-   output_cmd "INFO: 100% Tor bootstrap, ok." >&2
+   output_cmd "INFO: 100% Tor bootstrap, ok."
    if tor_circuit_established_check="$(/usr/bin/tor-circuit-established-check)" ; then
-      output_cmd "INFO: tor_circuit_established_check.py, ok." >&2
+      output_cmd "INFO: tor_circuit_established_check.py, ok."
       if [ "$tor_circuit_established_check" = "1" ]; then
-         output_cmd "INFO: Tor circuit already established, ok." >&2
+         output_cmd "INFO: Tor circuit already established, ok."
       else
-         output_cmd "WARNING: Tor circuit not yet established." >&2
+         output_cmd "WARNING: Tor circuit not yet established."
       fi
    else
-      output_cmd "WARNING: tor_circuit_established_check.py failed." >&2
+      output_cmd "WARNING: tor_circuit_established_check.py failed."
    fi
 else
-   output_cmd "WARNING: Tor bootstrap not done." >&2
+   output_cmd "WARNING: Tor bootstrap not done."
 fi
 
 ## TODO: Tor cert valid after must be after Tor consensus middle range to avoid using stale Tor consensus
 
 ## Needs access to TOR_DIR /var/lib/tor.
 # if anondate --has-consensus ; then
-# output_cmd "INFO: has Tor consensus, ok." >&2
+# output_cmd "INFO: has Tor consensus, ok."
 
 if time_result="$(anondate --show-middle-range)" ; then
    valid_after="$(anondate --show-valid-after)"
@@ -162,9 +162,9 @@ if time_result="$(anondate --show-middle-range)" ; then
    range_info="valid_after: $valid_after | middle_range: $time_result | valid_until: $valid_until"
 
    if [ "$time_result" = "" ]; then
-      output_cmd "WARNING: Tor consensus time middle range result empty." >&2
+      output_cmd "WARNING: Tor consensus time middle range result empty."
    elif anondate --current-time-in-valid-range ; then
-      output_cmd "INFO: local system time is already within valid range, ok. ($range_info)" >&2
+      output_cmd "INFO: local system time is already within valid range, ok. ($range_info)"
       if minimum_time_check "$time_result" ; then
          exit_code=4
          ## Deliberately not 'exit' here.
@@ -172,8 +172,8 @@ if time_result="$(anondate --show-middle-range)" ; then
          ## Permit script to flow through 'anondate --tor-cert-lifetime-valid' part.
       fi
    else
-      output_cmd "WARNING: local system time is NOT with valid time range. ($range_info)" >&2
-      output_cmd "INFO: middle_range: '$time_result'" >&2
+      output_cmd "WARNING: local system time is NOT with valid time range. ($range_info)"
+      output_cmd "INFO: middle_range: '$time_result'"
       if minimum_time_check "$time_result" ; then
          echo "$time_result"
          exit_code="0"
@@ -181,39 +181,39 @@ if time_result="$(anondate --show-middle-range)" ; then
       fi
    fi
 else
-   output_cmd "WARNING: could not determine Tor consensus time middle range." >&2
+   output_cmd "WARNING: could not determine Tor consensus time middle range."
 fi
 
 # else
-#    output_cmd "WARNING: has no Tor consensus yet." >&2
+#    output_cmd "WARNING: has no Tor consensus yet."
 # fi
 
 if anondate --tor-cert-lifetime-valid ; then
-   output_cmd "INFO: Tor certificate lifetime valid, ok." >&2
+   output_cmd "INFO: Tor certificate lifetime valid, ok."
 else
-   output_cmd "WARNING: Tor certificate lifetime invalid according to Tor log. This information might be outdated and not matter." >&2
+   output_cmd "WARNING: Tor certificate lifetime invalid according to Tor log. This information might be outdated and not matter."
    if time_result="$(anondate --tor-cert-valid-after)" ; then
-      output_cmd "INFO: Tor certificate life date: $time_result" >&2
+      output_cmd "INFO: Tor certificate life date: $time_result"
       time_result_unixtime="$(date --utc --date="$time_result" "+%s")"
       current_unixtime="$(date --utc "+%s")"
       if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
-         output_cmd "INFO: System clock is LATER than Tor certificate life date, ok." >&2
+         output_cmd "INFO: System clock is LATER than Tor certificate life date, ok."
       else
-         output_cmd "INFO: System clock is EARLIER than Tor certificate life date." >&2
+         output_cmd "INFO: System clock is EARLIER than Tor certificate life date."
       fi
       if minimum_time_check "$time_result" ; then
          output_cmd "$time_result"
          exit_code=2
          exit 2
       else
-         output_cmd "INFO: Show minimum time instead." >&2
-         output_cmd "INFO: minimum time: $minimum_unixtime_show_human_readable" >&2
+         output_cmd "INFO: Show minimum time instead."
+         output_cmd "INFO: minimum time: $minimum_unixtime_show_human_readable"
          echo "$minimum_unixtime_show_human_readable"
          exit_code=0
          exit 0
       fi
    else
-      output_cmd "WARNING: Could not find out Tor certificate life date." >&2
+      output_cmd "WARNING: Could not find out Tor certificate life date."
    fi
 fi
 
