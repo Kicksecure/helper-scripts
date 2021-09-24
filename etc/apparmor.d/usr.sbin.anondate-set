@@ -10,9 +10,9 @@
   #include <abstractions/tor>
   #include <local/usr.sbin.anondate-set>
 
-  /usr/bin/date mrix,
   /usr/sbin/anondate-get rUx,
   /usr/sbin/anondate-set r,
+  /{,usr/}bin/date mrix,
   /{,usr/}bin/id rix,
   /{,usr/}bin/whoami rix,
   owner /run/anondate/ w,
