@@ -52,6 +52,10 @@
 #set -x
 set -e
 
+date_cmd(){
+   date -u +"%Y-%m-%d %T"
+}
+
 output_cmd() {
    msg="$(date_cmd) - $0 - $@"
    echo "$msg"

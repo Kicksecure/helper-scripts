@@ -8,6 +8,10 @@
 ##
 ## used by /usr/libexec/helper-scripts/onion-time-pre-script
 
+date_cmd(){
+   date -u +"%Y-%m-%d %T"
+}
+
 output_cmd() {
    msg="$(date_cmd) - $0 - $@"
    echo "$msg"
