@@ -1,3 +1,81 @@
+commit 634368a2e49f554cdfaa1c4a00d7a4d73daad404
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 14:50:36 2021 -0400
+
+    aa-logprof
+
+commit 932c2a893e31945f4ce9fcef1268fd4c52f2a067
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 14:47:15 2021 -0400
+
+    debugging
+
+commit 6923306cb6974a37cb6c65290fcf4b4bcefe14e6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 14:44:04 2021 -0400
+
+    fix
+
+commit 740e4a3e301d8cde63a69fe0e499f9b864b0594b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 14:35:34 2021 -0400
+
+    typo
+
+commit 4122f095df331f32d97a7f312dbab6ab4c2563c2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 14:35:00 2021 -0400
+
+    cleanup
+
+commit 011f50cbb380cdd186a506a143e8e68c127cad56
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 14:24:27 2021 -0400
+
+    comment
+
+commit d56fbd0e27bcd780645fb4b404e0770690358b9c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 14:24:08 2021 -0400
+
+    refactoring
+
+commit 3659666a92054b628c2b8c762a56cdfc5a184452
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 14:22:55 2021 -0400
+
+    anondate-get: show minimum time instead if later than Tor certificate lifetime
+
+commit 94f8c4d73f639d36eb3540b27da1558a585a9f02
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 14:22:54 2021 -0400
+
+    fix
+
+commit 34f37f823923c8e1db1531fc1cab966d46941d81
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 13:38:49 2021 -0400
+
+    output
+
+commit b752d08ac8797211953bc5361e3411e5db4133bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 13:35:11 2021 -0400
+
+    Fixed certificate lifetime parsing by anondate.
+
+commit d6b085322005f92f1aeb8ae9cb951921c7f77ab4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 13:11:16 2021 -0400
+
+    Fixed parsing Tor consensus time if Tor has not fetched a Tor consensus yet.
+
+commit e0e2f53e5f5301c24c55357b12c72d55a2c08cd1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 12:46:11 2021 -0400
+
+    bumped changelog version
+
 commit a3402093320b606ad8005e5134e1e4c88221e0af
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Sep 24 12:45:37 2021 -0400
