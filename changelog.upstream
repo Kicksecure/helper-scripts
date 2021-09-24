@@ -1,3 +1,15 @@
+commit 4746cbd02d32b4e513accaed677c0bee28b531f6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 24 11:06:10 2021 -0400
+
+    redesign recovery from slow clock
+
+commit 970fe29bec33ab2c1f2e60145de9490352c64f52
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 23 10:59:21 2021 -0400
+
+    bumped changelog version
+
 commit ec23b71adfc46180020dcdcea201f52b38fc13da
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Sep 23 10:17:53 2021 -0400
