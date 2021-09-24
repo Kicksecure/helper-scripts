@@ -13,10 +13,10 @@
 
 set -e
 
-minium_unixtime="$(minimum-unixtime-show 2>/dev/null)"
+minimum_unixtime="$(minimum-unixtime-show 2>/dev/null)"
 unixtime_to_validate="$1"
 
-if [ "$unixtime_to_validate" -ge "$minium_unixtime" ]; then
+if [ "$unixtime_to_validate" -ge "$minimum_unixtime" ]; then
    exit 0
 fi
 
