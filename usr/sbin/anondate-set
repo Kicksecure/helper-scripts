@@ -20,7 +20,7 @@ output_cmd() {
 
 exit_handler() {
    if [ "$exit_code" = "" ]; then
-      "$0: No exit code set yet. Setting to 1."
+      "No exit code set yet. Setting to 1."
    fi
    if [ "$exit_code" = "0" ]; then
       meaning="Set time using Tor consensus middle range time."
@@ -33,7 +33,7 @@ exit_handler() {
    else
       meaning="Unknown."
    fi
-   output_cmd "$0: END: Exiting with exit_code '$exit_code' indicating '$meaning'."
+   output_cmd "END: Exiting with exit_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 
@@ -43,15 +43,15 @@ trap exit_handler EXIT
 
 restart_tor_if_running() {
    if systemctl --no-pager --no-block status tor@default ; then
-      true "$0: INFO: tor@default running, stopping..."
+      true "INFO: tor@default running, stopping..."
       systemctl --no-pager --no-block stop tor@default || true
-      true "$0: INFO: Deleting Tor consensus..."
+      true "INFO: Deleting Tor consensus..."
       ## provided by package helper-scripts
       anon-consensus-del
-      true "$0: INFO: Restart Tor..."
+      true "INFO: Restart Tor..."
       systemctl --no-pager --no-block start tor@default || true
    else
-      true "$0: INFO: tor@default not running, not deleting Tor consensus and not restarting Tor."
+      true "INFO: tor@default not running, not deleting Tor consensus and not restarting Tor."
    fi
 }
 
@@ -64,7 +64,7 @@ set_date() {
       ## capture stderr
       minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
-      output_cmd "$0 (set_date): ERROR: minimum-time-check failed.
+      output_cmd "(set_date):ERROR: minimum-time-check failed.
 command: minimum-time-check "$unixtime"
 
 time_result '$time_result'
@@ -77,7 +77,7 @@ minimum_unixtime_show_unixtime '$(minimum-unixtime-show)'" >&2
       exit 3
    fi
 
-   output_cmd "$0: INFO: Running the following command:"
+   output_cmd "INFO: Running the following command:"
    output_cmd "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result\""
    date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result"
 }
@@ -88,7 +88,7 @@ elif [ "$(id -u)" = "0" ]; then
    anondate_state_folder=/run/anondate
    mkdir -p "$anondate_state_folder"
 else
-   output_cmd "$0: ERROR: Must run as root." >&2
+   output_cmd "ERROR: Must run as root." >&2
    exit 112
 fi
 
@@ -98,40 +98,40 @@ fi
 anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
 
 if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
-   output_cmd "$0: INFO: Status file '$anondate_tor_certificate_lifetime_set_file' exists."
+   output_cmd "INFO: Status file '$anondate_tor_certificate_lifetime_set_file' exists."
 else
-   output_cmd "$0: INFO: Status file '$anondate_tor_certificate_lifetime_set_file' does not yet exist."
+   output_cmd "INFO: Status file '$anondate_tor_certificate_lifetime_set_file' does not yet exist."
 fi
 
-output_cmd "$0: INFO: running anondate-get..."
+output_cmd "INFO: running anondate-get..."
 
 anondate_get_exit_code=0
 time_result="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
 
 if [ "$anondate_get_exit_code" = "0" ]; then
-   output_cmd "$0: INFO: anondate-get returned Tor consensus middle range time."
+   output_cmd "INFO: anondate-get returned Tor consensus middle range time."
    set_date
    exit_code=0
    exit 0
 elif [ "$anondate_get_exit_code" = "1" ]; then
-   output_cmd "$0: INFO: anondate-get error."
+   output_cmd "INFO: anondate-get error."
    exit_code=1
    exit 1
 elif [ "$anondate_get_exit_code" = "2" ]; then
    if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
-      output_cmd "$0: INFO: No, not again setting system clock to Tor certificate lifetime."
+      output_cmd "INFO: No, not again setting system clock to Tor certificate lifetime."
    else
-      output_cmd "$0: INFO: Yes, setting system clock to Tor certificate lifetime."
+      output_cmd "INFO: Yes, setting system clock to Tor certificate lifetime."
       set_date
-      output_cmd "$0: INFO: Creating status file '$anondate_tor_certificate_lifetime_set_file'."
+      output_cmd "INFO: Creating status file '$anondate_tor_certificate_lifetime_set_file'."
       touch "$anondate_tor_certificate_lifetime_set_file"
-      output_cmd "$0: INFO: Done, created status file '$anondate_tor_certificate_lifetime_set_file'."
+      output_cmd "INFO: Done, created status file '$anondate_tor_certificate_lifetime_set_file'."
 
       ## If clock was too fast, restart of Tor is required.
       if [ "$(id -u)" = "0" ]; then
          restart_tor_if_running
       else
-         output_cmd "$0: ERROR: Tor restart not implemented for users other than 'root'." >&2
+         output_cmd "ERROR: Tor restart not implemented for users other than 'root'." >&2
          exit_code=112
          exit 112
       fi
