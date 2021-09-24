@@ -6,7 +6,6 @@
 
 
 /usr/bin/tor-circuit-established-check flags=(attach_disconnected) {
-  #include <abstractions/nameservice>
   #include <abstractions/tor-circuit-established-check>
   #include <local/usr.bin.tor-circuit-established-check>
 
