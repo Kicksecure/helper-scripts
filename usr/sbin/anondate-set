@@ -64,6 +64,9 @@ set_date() {
    if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
       output_cmd "INFO: Not setting clock backwards.
 
+The 'anondate-get' time result is earlier than the current system time.
+
+Debugging information:
 '$current_unixtime' -ge '$time_result_unixtime'
 (function: set_date)
 
@@ -84,6 +87,9 @@ current_unixtime: '$current_unixtime'" >&2
       minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
       output_cmd "ERROR: minimum-time-check failed.
+
+The 'anondate-get' time result is earlier than 'minimum-unixtime-show'.
+Not setting system clock earlier than 'minimum-unixtime-show'.
 
 command: minimum-time-check: '$time_result_unixtime'
 (function: set_date)
