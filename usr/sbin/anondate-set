@@ -8,6 +8,12 @@
 ##
 ## used by /usr/libexec/helper-scripts/onion-time-pre-script
 
+output_cmd() {
+   msg="$(date_cmd) - $0 - $@"
+   echo "$msg"
+   echo "$msg" | systemd-cat --identifier="anondate" || true
+}
+
 exit_handler() {
    if [ "$exit_code" = "" ]; then
       "$0: No exit code set yet. Setting to 1."
@@ -23,7 +29,7 @@ exit_handler() {
    else
       meaning="Unknown."
    fi
-   echo "$0: END: Exiting with exit_code '$exit_code' indicating '$meaning'."
+   output_cmd "$0: END: Exiting with exit_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 
@@ -48,12 +54,12 @@ restart_tor_if_running() {
 set_date() {
    unixtime="$(date --utc --date "$time_result" "+%s")"
    if ! minimum-time-check "$unixtime" ; then
-      echo "$0: ERROR: time_result '$time_result' unixtime '$unixtime' earlier than minimum-unixtime-show '$(minimum-unixtime-show)'" >&2
+      output_cmd "$0: ERROR: time_result '$time_result' unixtime '$unixtime' earlier than minimum-unixtime-show '$(minimum-unixtime-show)'" >&2
       exit_code=3
       exit 3
    fi
-   echo "$0: INFO: Running the following command:"
-   echo "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result\""
+   output_cmd "$0: INFO: Running the following command:"
+   output_cmd "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result\""
    date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result"
 }
 
@@ -63,7 +69,7 @@ elif [ "$(id -u)" = "0" ]; then
    anondate_state_folder=/run/anondate
    mkdir -p "$anondate_state_folder"
 else
-   echo "$0: ERROR: Must run as root." >&2
+   output_cmd "$0: ERROR: Must run as root." >&2
    exit 112
 fi
 
@@ -73,40 +79,40 @@ fi
 anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
 
 if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
-   echo "$0: INFO: Status file '$anondate_tor_certificate_lifetime_set_file' exists."
+   output_cmd "$0: INFO: Status file '$anondate_tor_certificate_lifetime_set_file' exists."
 else
-   echo "$0: INFO: Status file '$anondate_tor_certificate_lifetime_set_file' does not yet exist."
+   output_cmd "$0: INFO: Status file '$anondate_tor_certificate_lifetime_set_file' does not yet exist."
 fi
 
-echo "$0: INFO: running anondate-get..."
+output_cmd "$0: INFO: running anondate-get..."
 
 anondate_get_exit_code=0
 time_result="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
 
 if [ "$anondate_get_exit_code" = "0" ]; then
-   echo "$0: INFO: anondate-get returned Tor consensus middle range time."
+   output_cmd "$0: INFO: anondate-get returned Tor consensus middle range time."
    set_date
    exit_code=0
    exit 0
 elif [ "$anondate_get_exit_code" = "1" ]; then
-   echo "$0: INFO: anondate-get error."
+   output_cmd "$0: INFO: anondate-get error."
    exit_code=1
    exit 1
 elif [ "$anondate_get_exit_code" = "2" ]; then
    if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
-      echo "$0: INFO: No, not again setting system clock to Tor certificate lifetime."
+      output_cmd "$0: INFO: No, not again setting system clock to Tor certificate lifetime."
    else
-      echo "$0: INFO: Yes, setting system clock to Tor certificate lifetime."
+      output_cmd "$0: INFO: Yes, setting system clock to Tor certificate lifetime."
       set_date
-      echo "$0: INFO: Creating status file '$anondate_tor_certificate_lifetime_set_file'."
+      output_cmd "$0: INFO: Creating status file '$anondate_tor_certificate_lifetime_set_file'."
       touch "$anondate_tor_certificate_lifetime_set_file"
-      echo "$0: INFO: Done, created status file '$anondate_tor_certificate_lifetime_set_file'."
+      output_cmd "$0: INFO: Done, created status file '$anondate_tor_certificate_lifetime_set_file'."
 
       ## If clock was too fast, restart of Tor is required.
       if [ "$(id -u)" = "0" ]; then
          restart_tor_if_running
       else
-         echo "$0: ERROR: Tor restart not implemented for users other than 'root'." >&2
+         output_cmd "$0: ERROR: Tor restart not implemented for users other than 'root'." >&2
          exit_code=112
          exit 112
       fi
