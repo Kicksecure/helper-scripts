@@ -86,7 +86,7 @@ current_unixtime: '$current_unixtime'" >&2
       ## capture stderr
       minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
-      output_cmd "ERROR: minimum-time-check failed.
+      output_cmd "INFO: minimum-time-check determined the time_result to be obsolete, ok.
 
 The 'anondate-get' time result is earlier than 'minimum-unixtime-show'.
 Not setting system clock earlier than 'minimum-unixtime-show'.
