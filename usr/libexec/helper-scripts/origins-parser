@@ -5,10 +5,9 @@
 
 PROJECT_NAME="$(cat /etc/dpkg/origins/default | grep "Vendor:" | awk '{print $2}')"
 PROJECT_HOMEPAGE="$(cat /etc/dpkg/origins/default | grep "Vendor-URL:" | awk '{print $2}')"
-="16"
 
 if test -r /etc/whonix_version ; then
    derivative_major_release_version="$(cat "/etc/whonix_version")"
-elif test -f /etc/kicksecure_version ; then
+elif test -r /etc/kicksecure_version ; then
    derivative_major_release_version="$(cat "/etc/kicksecure_version")"
 fi
