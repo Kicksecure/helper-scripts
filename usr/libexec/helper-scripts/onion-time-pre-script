@@ -56,7 +56,7 @@ detect_vm_type() {
 }
 
 onion_time_script_status() {
-   if test -r /run/sdwdate/onion-time-script-after-boot ; then
+   if [ -f /run/sdwdate/onion-time-script-after-boot ]; then
       echo "status: Subsequent run after boot."
       onion_time_script_status_boot=true
    else
