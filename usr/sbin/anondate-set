@@ -11,26 +11,26 @@
 output_cmd() {
    msg="$@"
    echo "@ $msg"
-   if [ ! -w "${anondate_state_folder}/current-message.txt" ]; then
-      true "ERROR: '${anondate_state_folder}/current-message.txt' not writeable!"
+   if [ ! -w "${anondate_state_folder}/anondate-set-current-message.txt" ]; then
+      true "ERROR: '${anondate_state_folder}/anondate-set-current-message.txt' not writeable!"
       return 0
    fi
-   echo "@ $msg" | tee -a "${anondate_state_folder}/current-message.txt" || true
+   echo "@ $msg" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" || true
 }
 
 systemd_cat_maybe() {
-   if [ -f "${anondate_state_folder}/current-message.txt" ]; then
-      current_message="$(cat "${anondate_state_folder}/current-message.txt")"
+   if [ -f "${anondate_state_folder}/anondate-set-current-message.txt" ]; then
+      current_message="$(cat "${anondate_state_folder}/anondate-set-current-message.txt")"
    fi
-   if [ -f "${anondate_state_folder}/old-message.txt" ]; then
-      old_message="$(cat "${anondate_state_folder}/old-message.txt")"
+   if [ -f "${anondate_state_folder}/anondate-set-old-message.txt" ]; then
+      old_message="$(cat "${anondate_state_folder}/anondate-set-old-message.txt")"
    fi
 
    if [ "$current_message" = "$old_message" ]; then
       true "INFO: current_message equals old_message. Skipping systemd-cat."
       return 0
    fi
-   cp "${anondate_state_folder}/current-message.txt" "${anondate_state_folder}/old-message.txt"
+   cp "${anondate_state_folder}/anondate-set-current-message.txt" "${anondate_state_folder}/anondate-set-old-message.txt"
    echo "@ $current_message" | systemd-cat --identifier="anondate" || true
 }
 
@@ -142,8 +142,8 @@ else
    exit 112
 fi
 
-rm -f "${anondate_state_folder}/current-message.txt"
-touch "${anondate_state_folder}/current-message.txt"
+rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
+touch "${anondate_state_folder}/anondate-set-current-message.txt"
 
 output_cmd "$0 - START"
 
