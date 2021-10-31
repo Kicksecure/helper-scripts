@@ -79,7 +79,7 @@ set_date() {
    time_result_unixtime="$(date --utc --date "$time_result_human_readable" "+%s")"
 
    if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
-      output_cmd "INFO: The 'anondate-get' time_result is earlier than the current system time, ok. Not setting clock backwards." >&2
+      output_cmd "INFO: The 'anondate-get' time_result is earlier than the current system time, ok. Not setting clock backwards."
       if [ "$debugging" = "true" ]; then
          output_cmd "INFO: Debugging information:
    '$current_unixtime' -ge '$time_result_unixtime'
@@ -89,7 +89,7 @@ set_date() {
    time_result_unixtime: '$time_result_unixtime'
    earlier than
    current_time_human_readable: '$current_time_human_readable'
-   current_unixtime: '$current_unixtime'" >&2
+   current_unixtime: '$current_unixtime'"
       fi
 
       exit_code=3
@@ -104,26 +104,23 @@ set_date() {
       ## capture stderr
       minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
-      output_cmd "INFO: minimum-time-check determined the time_result earlier than minimum time, ok.
-
-The 'anondate-get' time result is earlier than 'minimum-unixtime-show'.
-Not setting system clock earlier than 'minimum-unixtime-show'.
-
-command: minimum-time-check: '$time_result_unixtime'
-(function: set_date)
-
-time_result_human_readable: '$time_result_human_readable'
-time_result_unixtime: '$time_result_unixtime'
-earlier than
-minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'
-minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'" >&2
+      output_cmd "INFO: minimum-time-check determined the time_result earlier than minimum time, ok."
+      output_cmd "INFO: The 'anondate-get' time result is earlier than 'minimum-unixtime-show'."
+      output_cmd "INFO: Not setting system clock earlier than 'minimum-unixtime-show'."
+      output_cmd "INFO: command: minimum-time-check: '$time_result_unixtime'"
+      output_cmd "INFO: (function: set_date)"
+      output_cmd "INFO: time_result_human_readable: '$time_result_human_readable'"
+      output_cmd "INFO: time_result_unixtime: '$time_result_unixtime'"
+      output_cmd "INFO: earlier than"
+      output_cmd "INFO: minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'"
+      output_cmd "INFO: minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
 
       exit_code=3
       exit 3
    else
-      output_cmd "INFO: minimum-time-check determined the time_result to be later than minimum time, ok.
-The 'anondate-get' time result is later than 'minimum-unixtime-show'.
-Setting system clock forward."
+      output_cmd "INFO: minimum-time-check determined the time_result to be later than minimum time, ok."
+      output_cmd "The 'anondate-get' time result is later than 'minimum-unixtime-show'."
+      output_cmd "Setting system clock forward..."
    fi
 
    output_cmd "INFO: Running the following command:"
