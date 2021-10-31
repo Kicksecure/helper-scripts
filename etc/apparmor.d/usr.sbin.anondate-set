@@ -1,4 +1,4 @@
-# Last Modified: Thu Sep 23 15:51:39 2021
+# Last Modified: Sun Oct 31 23:18:22 2021
 #include <tunables/global>
 
 ## Copyright (C) 2017 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
@@ -23,6 +23,6 @@
   /usr/sbin/anondate-set r,
   /var/lib/sdwdate/time-replay-protection-utc-unixtime r,
   /{,usr/}bin/whoami rix,
-  /run/anondate/ w,
+  /run/anondate/ rw,
 
 }
