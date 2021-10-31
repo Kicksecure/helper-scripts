@@ -54,7 +54,7 @@ set -e
 
 output_cmd() {
    msg="$@"
-   echo "@ $msg" >&2
+   echo "%% $msg" >&2
 }
 
 exit_handler() {
@@ -75,7 +75,7 @@ exit_handler() {
       meaning="Unexpected error (2)."
    fi
 
-   output_cmd "END: Exiting with exit_code '$exit_code' indicating '$meaning'."
+   output_cmd "*** END ***: Exiting with exit_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 
@@ -83,16 +83,13 @@ minimum_time_check() {
    time_result_unixtime="$(date --utc --date="$1" "+%s")"
 
    if ! minimum-time-check "$time_result_unixtime" ; then
-      output_cmd "INFO: minimum-time-check determined the time_result to be obsolete, ok.
-
-command: minimum-time-check: '$time_result_unixtime'
-
-time_result: '$time_result'
-time_result_unixtime: '$time_result_unixtime'
-earlier than
-minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'
-minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
-
+      output_cmd "INFO: minimum-time-check determined the time_result to be obsolete, ok."
+      output_cmd "INFO: command: minimum-time-check: '$time_result_unixtime'"
+      output_cmd "INFO: time_result: '$time_result'"
+      output_cmd "INFO: time_result_unixtime: '$time_result_unixtime'"
+      output_cmd "INFO: earlier than"
+      output_cmd "INFO: minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'"
+      output_cmd "INFO: minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
       return 1
    fi
    output_cmd "INFO: time_result later than minimum-unixtime-show, ok."
@@ -113,7 +110,8 @@ else
    exit 112
 fi
 
-output_cmd "$0 - START"
+output_cmd "*** START ***"
+output_cmd "INFO: $0"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
 [ -n "$TZ" ] || export TZ=UTC

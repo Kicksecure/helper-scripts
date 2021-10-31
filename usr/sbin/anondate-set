@@ -31,7 +31,7 @@ systemd_cat_maybe() {
       return 0
    fi
    cp "${anondate_state_folder}/anondate-set-current-message.txt" "${anondate_state_folder}/anondate-set-old-message.txt"
-   echo "@ $current_message" | systemd-cat --identifier="anondate" || true
+   echo "$current_message" | systemd-cat --identifier="anondate" || true
 }
 
 exit_handler() {
@@ -49,7 +49,7 @@ exit_handler() {
    else
       meaning="Unexpected error (2)."
    fi
-   output_cmd "END: Exiting with exit_code '$exit_code' indicating '$meaning'."
+   output_cmd "### END: ### Exiting with exit_code '$exit_code' indicating '$meaning'."
    systemd_cat_maybe || true
    exit "$exit_code"
 }
@@ -145,7 +145,8 @@ fi
 rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
 touch "${anondate_state_folder}/anondate-set-current-message.txt"
 
-output_cmd "$0 - START"
+output_cmd "### START ###"
+output_cmd "INFO: $0"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
 [ -n "$TZ" ] || export TZ=UTC
