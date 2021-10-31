@@ -161,7 +161,14 @@ fi
 output_cmd "INFO: running anondate-get..."
 
 anondate_get_exit_code=0
-time_result_human_readable="$(anondate-get)" || { anondate_get_exit_code="$?" ; true; };
+anondate-get 1> "${anondate_state_folder}/anondate-get-stdout.txt" 2> "${anondate_state_folder}/anondate-get-stderr.txt" || { anondate_get_exit_code="$?" ; true; };
+
+anondate_stdout="$(cat "${anondate_state_folder}/anondate-get-stdout.txt")"
+anondate_stderr="$(cat "${anondate_state_folder}/anondate-get-stderr.txt")"
+
+time_result_human_readable="$anondate_stdout"
+
+output_cmd "$anondate_stderr"
 
 if [ "$anondate_get_exit_code" = "0" ]; then
    output_cmd "INFO: anondate-get returned Tor consensus middle range time or minimum time."
