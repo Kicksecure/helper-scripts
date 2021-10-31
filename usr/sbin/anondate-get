@@ -54,8 +54,28 @@ set -e
 
 output_cmd() {
    msg="$@"
-   echo "@@ $msg" >&2
-   echo "@@ $msg" | systemd-cat --identifier="anondate" || true
+   echo "@ $msg" >&2
+   if [ ! -w "${anondate_state_folder}/anondate-get-current-message.txt" ]; then
+      true "ERROR: '${anondate_state_folder}/anondate-get-current-message.txt' not writeable!"
+      return 0
+   fi
+   echo "@ $msg" | tee -a "${anondate_state_folder}/anondate-get-current-message.txt" || true
+}
+
+systemd_cat_maybe() {
+   if [ -f "${anondate_state_folder}/anondate-get-current-message.txt" ]; then
+      current_message="$(cat "${anondate_state_folder}/anondate-get-current-message.txt")"
+   fi
+   if [ -f "${anondate_state_folder}/anondate-get-old-message.txt" ]; then
+      old_message="$(cat "${anondate_state_folder}/anondate-get-old-message.txt")"
+   fi
+
+   if [ "$current_message" = "$old_message" ]; then
+      true "INFO: current_message equals old_message. Skipping systemd-cat."
+      return 0
+   fi
+   cp "${anondate_state_folder}/anondate-get-current-message.txt" "${anondate_state_folder}/anondate-get-old-message.txt"
+   echo "@ $current_message" | systemd-cat --identifier="anondate" || true
 }
 
 exit_handler() {
@@ -77,6 +97,7 @@ exit_handler() {
    fi
 
    output_cmd "END: Exiting with exit_code '$exit_code' indicating '$meaning'."
+   systemd_cat_maybe || true
    exit "$exit_code"
 }
 
@@ -103,17 +124,21 @@ exit_code=1
 
 trap exit_handler EXIT
 
-output_cmd "$0 - START"
-
 if [ "$(whoami)" = "sdwdate" ]; then
    anondate_state_folder=/run/sdwdate
 elif [ "$(id -u)" = "0" ]; then
    anondate_state_folder=/run/anondate
 else
-   output_cmd "ERROR: Must run as root."
+   anondate_state_folder=/run/anondate
+   echo "ERROR: Must run as root."
    exit_code=112
    exit 112
 fi
+
+rm -f "${anondate_state_folder}/anondate-get-current-message.txt"
+touch "${anondate_state_folder}/anondate-get-current-message.txt"
+
+output_cmd "$0 - START"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
 [ -n "$TZ" ] || export TZ=UTC
