@@ -55,29 +55,15 @@ detect_vm_type() {
    fi
 }
 
-counter_read() {
-   counter=0
-   if test -r /run/sdwdate/request_tor_restart ; then
-      counter="$(cat /run/sdwdate/counter)" || true
-   fi
-   if [ "$counter" = "" ]; then
-      counter=0
-   fi
-   if [ "$counter" = "0" ]; then
-      echo "status: First run after boot. counter: $counter"
+onion_time_script_status() {
+   if test -r /run/sdwdate/onion-time-script-after-boot ; then
+      echo "status: Subsequent run after boot."
+      onion_time_script_status_boot=true
    else
-      echo "status: Subsequent run after boot. counter: $counter"
+      echo "status: First run after boot."
+      onion_time_script_status_boot=false
+      touch /run/sdwdate/onion-time-script-after-boot
    fi
-}
-
-counter_increment() {
-   if ! test -r /run/sdwdate/counter ; then
-      echo 0 | tee /run/sdwdate/counter >/dev/null
-      return 0
-   fi
-   counter_read
-   counter="$( $counter + 1 )"
-   echo "$counter" | tee /run/sdwdate/counter >/dev/null
 }
 
 timesanitycheck_static() {
@@ -215,7 +201,7 @@ tor_consensus_time_sanity_check() {
       fi
       if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
          clock_tor_consensus_check_result="fast"
-         if [ "$counter" = "0" ]; then
+         if [ "$onion_time_script_status_boot" = "true" ]; then
             clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output.
 extra guess: Tor consensus might be outdated and download might still be in progress since this is the first run after boot."
          else
@@ -293,8 +279,7 @@ te_pe_tb_check() {
 
    detect_vm_type
 
-   ## sets: counter
-   counter_read
+   onion_time_script_status
 
    timesanitycheck_static
 
