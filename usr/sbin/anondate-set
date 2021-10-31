@@ -15,7 +15,7 @@ output_cmd() {
       true "ERROR: '${anondate_state_folder}/anondate-set-current-message.txt' not writeable!"
       return 0
    fi
-   echo "@ $msg" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" || true
+   echo "@ $msg" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" >/dev/null || true
 }
 
 systemd_cat_maybe() {
