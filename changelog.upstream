@@ -1,3 +1,27 @@
+commit 511f02ebdd09b96adeeeaf7f4b24dcbac1131f5d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 31 12:24:51 2021 -0400
+
+    code simplification
+
+commit 21f03ed1009107e10b36695881ca86b43013ed8f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 31 12:19:19 2021 -0400
+
+    anondate: lower verbosity to avoid spamming logs
+
+commit 84c4121938d8d8d1d73bc43fd0c842777b8508f0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 31 11:58:20 2021 -0400
+
+    onion-time-pre-script: add counter how many times script was run; output
+
+commit 9d39b7317ce8fb4d1cc604398ac39156657a6569
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 12 19:49:20 2021 -0400
+
+    bumped changelog version
+
 commit 36fb126920a65948ea8288da0164a45683ee5cf7
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Oct 12 19:44:07 2021 -0400
