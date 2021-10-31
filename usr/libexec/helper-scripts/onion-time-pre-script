@@ -55,6 +55,31 @@ detect_vm_type() {
    fi
 }
 
+counter_read() {
+   counter=0
+   if test -r /run/sdwdate/request_tor_restart ; then
+      counter="$(cat /run/sdwdate/counter)" || true
+   fi
+   if [ "$counter" = "" ]; then
+      counter=0
+   fi
+   if [ "$counter" = "0" ]; then
+      echo "status: First run after boot. counter: $counter"
+   else
+      echo "status: Subsequent run after boot. counter: $counter"
+   fi
+}
+
+counter_increment() {
+   if ! test -r /run/sdwdate/counter ; then
+      echo 0 | tee /run/sdwdate/counter >/dev/null
+      return 0
+   fi
+   counter_read
+   counter="$( $counter + 1 )"
+   echo "$counter" | tee /run/sdwdate/counter >/dev/null
+}
+
 timesanitycheck_static() {
    echo "Static Time Sanity Check: $(timesanitycheck)" || true
 }
@@ -190,7 +215,13 @@ tor_consensus_time_sanity_check() {
       fi
       if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
          clock_tor_consensus_check_result="fast"
-         clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output."
+         if [ "$counter" = "0" ]; then
+            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output.
+extra guess: Tor consensus might be outdated and download might still be in progress since this is the first run after boot."
+         else
+            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output.
+extra guess: None."
+         fi
       else
          true
       fi
@@ -229,7 +260,7 @@ tor_consensus_time_sanity_check() {
 connectivity_test() {
     ## TODO: optional connectivity test
     #/usr/bin/url_to_unixtime 127.0.0.1 9050 http://2gzyxa5ihm7nsggfxnu52rck2vv4rvmdlkiu3zzui5du4xyclen53wid.onion 80 true 2>&1
-    true "Not yet implemented."
+    true "connectivity_test: Not yet implemented."
 }
 
 exit_success_if_tor_circuit_already_established() {
@@ -250,7 +281,7 @@ anondate_use() {
    ## https://gitlab.com/apparmor/apparmor/-/wikis/AppArmorStacking#seccomp-and-no_new_privs
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
    ## /usr/libexec/sdwdate/sdwdate-restart-tor-request-file-watcher
-   echo "Running 'anondate-set' (by creating file /run/sdwdate/request_tor_restart)..."
+   echo "anondate_use: Running 'anondate-set' (by creating file /run/sdwdate/request_tor_restart)..."
    touch /run/sdwdate/request_tor_restart
 
    exit_code=2
@@ -261,6 +292,9 @@ te_pe_tb_check() {
    echo "$0: Start."
 
    detect_vm_type
+
+   ## sets: counter
+   counter_read
 
    timesanitycheck_static
 
