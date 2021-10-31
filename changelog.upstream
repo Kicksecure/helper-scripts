@@ -1,3 +1,27 @@
+commit ba8a6a31786f9b8a8e21dce672c5944caf457389
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 31 18:40:29 2021 -0400
+
+    refactoring
+
+commit 18e02945bd021996a0a4d90c04a6dd0cae5e79c0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 31 18:36:59 2021 -0400
+
+    anondate: unduplicate output in journal
+
+commit c5cc77c0cc6b628d150019f3889f7d1fa07ee1a3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 31 17:12:07 2021 -0400
+
+    fix
+
+commit 01a39cdb7242225b66d44fb08c78e77a387abfa9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 31 15:11:24 2021 -0400
+
+    bumped changelog version
+
 commit 511f02ebdd09b96adeeeaf7f4b24dcbac1131f5d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 31 12:24:51 2021 -0400
