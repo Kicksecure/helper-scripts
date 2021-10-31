@@ -52,10 +52,6 @@
 #set -x
 set -e
 
-date_cmd(){
-   date -u +"%Y-%m-%d %T"
-}
-
 output_cmd() {
    msg="$@"
    echo "@@ $msg" >&2
@@ -107,7 +103,7 @@ exit_code=1
 
 trap exit_handler EXIT
 
-output_cmd "$(date_cmd) - $0 - START"
+output_cmd "$0 - START"
 
 if [ "$(whoami)" = "sdwdate" ]; then
    anondate_state_folder=/run/sdwdate
@@ -179,7 +175,7 @@ if time_result="$(anondate --show-middle-range)" ; then
          ## Permit script to flow through 'anondate --tor-cert-lifetime-valid' part.
       fi
    else
-      output_cmd "WARNING: local system time is NOT with valid time range. ($range_info)"
+      output_cmd "WARNING: local system time is NOT within valid time range. ($range_info)"
       output_cmd "INFO: middle_range: '$time_result'"
       if minimum_time_check "$time_result" ; then
          echo "$time_result"
