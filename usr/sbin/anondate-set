@@ -10,7 +10,11 @@
 
 output_cmd() {
    msg="$@"
-   echo "@ $msg"
+   if [ "$indent_style" = "true " ]; then
+      echo "   $msg"
+   else
+      echo "$msg"
+   fi
    if [ ! -w "${anondate_state_folder}/anondate-set-current-message.txt" ]; then
       true "ERROR: '${anondate_state_folder}/anondate-set-current-message.txt' not writeable!"
       return 0
@@ -107,13 +111,13 @@ set_date() {
       output_cmd "INFO: minimum-time-check determined the time_result is earlier than minimum time, ok."
       output_cmd "INFO: The 'anondate-get' time result is earlier than 'minimum-unixtime-show'."
       output_cmd "INFO: Not setting system clock earlier than 'minimum-unixtime-show'."
-      output_cmd " INFO: command: minimum-time-check: '$time_result_unixtime'"
-      output_cmd " INFO: (function: set_date)"
-      output_cmd " INFO: time_result_human_readable: '$time_result_human_readable'"
-      output_cmd " INFO: time_result_unixtime: '$time_result_unixtime'"
-      output_cmd " INFO: earlier than"
-      output_cmd " INFO: minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'"
-      output_cmd " INFO: minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
+      output_cmd "debug: command: minimum-time-check: '$time_result_unixtime'"
+      output_cmd "debug: (function: set_date)"
+      output_cmd "debug: time_result_human_readable: '$time_result_human_readable'"
+      output_cmd "debug: time_result_unixtime: '$time_result_unixtime'"
+      output_cmd "debug: earlier than"
+      output_cmd "debug: minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'"
+      output_cmd "debug: minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
 
       exit_code=3
       exit 3
@@ -142,6 +146,8 @@ fi
 rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
 touch "${anondate_state_folder}/anondate-set-current-message.txt"
 
+indent_style=true
+
 output_cmd "### START ###"
 output_cmd "INFO: $0"
 
@@ -166,7 +172,9 @@ anondate_stderr="$(cat "${anondate_state_folder}/anondate-get-stderr.txt")"
 
 time_result_human_readable="$anondate_stdout"
 
+indent_style=false
 output_cmd "$anondate_stderr"
+indent_style=true
 
 if [ "$anondate_get_exit_code" = "0" ]; then
    output_cmd "INFO: anondate-get returned Tor consensus middle range time or minimum time."

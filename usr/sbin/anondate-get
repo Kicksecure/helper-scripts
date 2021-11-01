@@ -54,7 +54,7 @@ set -e
 
 output_cmd() {
    msg="$@"
-   echo "%% $msg" >&2
+   echo "      $msg" >&2
 }
 
 exit_handler() {
@@ -84,12 +84,12 @@ minimum_time_check() {
 
    if ! minimum-time-check "$time_result_unixtime" ; then
       output_cmd "INFO: minimum-time-check determined the time_result to be obsolete, ok."
-      output_cmd " INFO: command: minimum-time-check: '$time_result_unixtime'"
-      output_cmd " INFO: time_result: '$time_result'"
-      output_cmd " INFO: time_result_unixtime: '$time_result_unixtime'"
-      output_cmd " INFO: earlier than"
-      output_cmd " INFO: minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'"
-      output_cmd " INFO: minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
+      output_cmd "debug: command: minimum-time-check: '$time_result_unixtime'"
+      output_cmd "debug: time_result: '$time_result'"
+      output_cmd "debug: time_result_unixtime: '$time_result_unixtime'"
+      output_cmd "debug: earlier than"
+      output_cmd "debug: minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'"
+      output_cmd "debug: minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
       return 1
    fi
    output_cmd "INFO: time_result later than minimum-unixtime-show, ok."
