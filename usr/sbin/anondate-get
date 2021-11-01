@@ -75,7 +75,7 @@ exit_handler() {
       meaning="Unexpected error (2)."
    fi
 
-   output_cmd "*** END ***: Exiting with exit_code '$exit_code' indicating '$meaning'."
+   output_cmd "*** END: *** Exiting with exit_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 
