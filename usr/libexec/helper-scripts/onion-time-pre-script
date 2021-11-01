@@ -207,11 +207,9 @@ tor_consensus_time_sanity_check() {
       if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
          clock_tor_consensus_check_result="fast"
          if [ "$onion_time_script_status_boot" = "true" ]; then
-            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output.
-extra guess: Tor consensus might be outdated and download might still be in progress since this is the first run after boot."
+            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. extra guess: Tor consensus might be outdated and download might still be in progress since this is the first run after boot."
          else
-            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output.
-extra guess: None."
+            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. extra guess: None."
          fi
       else
          true
