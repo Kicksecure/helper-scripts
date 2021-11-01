@@ -127,7 +127,7 @@ set_date() {
       exit 3
    else
       output_cmd "INFO: minimum-time-check determined the time_result to be later than minimum time, ok."
-      output_cmd "INFO: The 'anondate-get' time result is later than 'minimum-unixtime-show'."
+      output_cmd "debug: The 'anondate-get' time result is later than 'minimum-unixtime-show', ok."
       output_cmd "INFO: Setting system clock forward..."
    fi
 
@@ -152,8 +152,7 @@ touch "${anondate_state_folder}/anondate-set-current-message.txt"
 
 indent_style=true
 
-output_cmd "### START: ###"
-output_cmd "INFO: $0"
+output_cmd "### START: ### $0"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
 [ -n "$TZ" ] || export TZ=UTC
