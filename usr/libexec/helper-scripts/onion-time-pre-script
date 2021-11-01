@@ -83,10 +83,10 @@ exit_if_tor_not_yet_enabled() {
       true "$FUNCNAME: INFO: Ok, Tor already enabled."
    else
       if [ -f /usr/share/whonix/marker ]; then
-         output_cmd "<b>Tor is disabled.</b> Please enable Tor using Anon Connection Wizard or setup-dist.<br> \
+         output_cmd "Tor is disabled. Please enable Tor using Anon Connection Wizard or setup-dist.\
 Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo setup-dist"
       else
-         output_cmd "Tor is disabled. Please enable Tor in the Tor config."
+         output_cmd "WARNING: Tor enabled check: Tor is disabled. Please enable Tor in the Tor config."
       fi
 
       exit_code=1
@@ -108,9 +108,9 @@ check_tor_circuit_established_yet() {
    for invalid_exit_code in "124" "137" "254" ; do
       if [ "$tor_circuit_established_check_exit_code" = "$invalid_exit_code" ]; then
          output_cmd "Tor Bootstrap Result:
-<br>check_bootstrap_helper_script: $check_bootstrap_helper_script
-<br>tor_bootstrap_timeout_type: $tor_bootstrap_timeout_type
-<br>tor_circuit_established_check_exit_code: $tor_circuit_established_check_exit_code"
+check_bootstrap_helper_script: $check_bootstrap_helper_script
+tor_bootstrap_timeout_type: $tor_bootstrap_timeout_type
+tor_circuit_established_check_exit_code: $tor_circuit_established_check_exit_code"
          exit_code=1
          exit "$exit_code"
       fi
@@ -119,28 +119,28 @@ check_tor_circuit_established_yet() {
    if [ "$tor_circuit_established_check_exit_code" = "255" ]; then
       if [ "$VM" = "Gateway" ]; then
          output_cmd "Tor Bootstrap Result: \
-<b>Tor's Control Port could not be reached.</b><br>"
+Tor's Control Port could not be reached."
       elif [ "$VM" = "Workstation" ]; then
          if [ -f /usr/share/whonix/marker ]; then
             output_cmd "Tor Bootstrap Result: \
-<b>Tor's Control Port could not be reached.</b><br> \
-<br>Did you start Gateway beforehand? \
-<br>Please run systemcheck on Gateway."
+Tor's Control Port could not be reached.\
+Did you start Gateway beforehand? \
+Please run systemcheck on Gateway."
          else
             output_cmd "Tor Bootstrap Result: \
-<b>Tor's Control Port could not be reached.</b><br> \
-<br>Did you start Gateway beforehand?"
+Tor's Control Port could not be reached.\
+Did you start Gateway beforehand?"
          fi
       else
          if [ -f /usr/share/whonix/marker ]; then
             output_cmd "Tor Bootstrap Result: \
-<b>Tor's Control Port could not be reached.</b><br> \
-<br>Did you start Gateway beforehand? \
-<br>Please run systemcheck on Gateway.
-<br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
+Tor's Control Port could not be reached.\
+Did you start Gateway beforehand? \
+Please run systemcheck on Gateway.
+$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
          else
             output_cmd "Tor Bootstrap Result: \
-<b>Tor's Control Port could not be reached.</b>"
+Tor's Control Port could not be reached."
          fi
       fi
 
@@ -171,7 +171,7 @@ tor_bootstrap_check() {
       output_cmd "Tor circuit: $tor_circuit_established_word"
 
       if echo "$tor_bootstrap_status" | grep -q "REASON=TIMEOUT" ; then
-         output_cmd "<b>Tor reports: REASON=TIMEOUT</b>"
+         output_cmd "Tor reports: REASON=TIMEOUT"
       fi
    fi
 }
@@ -228,9 +228,9 @@ tor_consensus_time_sanity_check() {
    fi
 
    if [ "$clock_tor_consensus_check_result" = "ok" ]; then
-      output_cmd "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>"
+      output_cmd "Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg"
    else
-      output_cmd "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>"
+      output_cmd "Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg"
    fi
 
    ## TODO
@@ -254,7 +254,7 @@ connectivity_test() {
 
 exit_success_if_tor_circuit_already_established() {
    if [ "$tor_circuit_established" = "1" ]; then
-      output_cmd "<p>Tor already reports circuit established.</p>"
+      output_cmd "Tor already reports circuit established."
       exit_code=0
       exit "$exit_code"
    else
@@ -262,7 +262,7 @@ exit_success_if_tor_circuit_already_established() {
       ## Example Tor log:
       ## Bootstrapped 100% (done): Done
       ## Our directory information is no longer up-to-date enough to build circuits: We're missing descriptors for 1/2 of our primary entry guards (total microdescriptors: 6967/6984). That's ok. We will try to fetch missing descriptors soon.
-      output_cmd "<p>No Tor circuit established yet.</p>"
+      output_cmd "No Tor circuit established yet."
    fi
 }
 
