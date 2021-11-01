@@ -1,4 +1,4 @@
-# Last Modified: Fri Sep 24 16:54:49 2021
+# Last Modified: Mon Nov  1 09:28:55 2021
 #include <tunables/global>
 
 ## Copyright (C) 2017 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
@@ -10,19 +10,20 @@
   #include <abstractions/bash>
   #include <abstractions/nameservice>
   #include <abstractions/python>
+  #include <abstractions/timesanitycheck>
   #include <abstractions/tor-circuit-established-check>
   #include <local/usr.sbin.anondate-get>
 
   /usr/bin/bash ix,
+  /usr/bin/cat mrix,
   /usr/bin/date mrix,
   /usr/bin/minimum-unixtime-show mrix,
-  /usr/bin/minimum-unixtime-show r,
   /usr/bin/systemd-cat mrix,
   /usr/bin/timeout mrix,
+  /usr/libexec/helper-scripts/ r,
   /usr/sbin/anondate rix,
   /usr/sbin/anondate-get r,
   /{,usr/}bin/id rix,
   /{,usr/}bin/whoami rix,
-  /usr/libexec/helper-scripts/ r,
 
 }
