@@ -80,13 +80,13 @@ exit_if_tor_not_yet_enabled() {
    check_tor_enabled_do
 
    if [ "$TOR_ENABLED" = "1" ]; then
-      true "$FUNCNAME: INFO: Ok, Tor already enabled."
+      true "Tor enabled check: Tor already enabled, ok."
    else
       if [ -f /usr/share/whonix/marker ]; then
-         output_cmd "Tor is disabled. Please enable Tor using Anon Connection Wizard or setup-dist.\
+         output_cmd "Tor enabled check: Tor is disabled. Please enable Tor using Anon Connection Wizard or setup-dist.\
 Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo setup-dist"
       else
-         output_cmd "WARNING: Tor enabled check: Tor is disabled. Please enable Tor in the Tor config."
+         output_cmd "Tor enabled check: Tor is disabled. Please enable Tor in the Tor config."
       fi
 
       exit_code=1
