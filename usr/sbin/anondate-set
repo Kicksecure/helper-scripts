@@ -10,8 +10,8 @@
 
 output_cmd() {
    msg="$@"
-   if [ "$indent_style" = "true " ]; then
-      echo "   $msg"
+   if [ "$indent_style" = "true" ]; then
+      echo "____ $msg"
    else
       echo "$msg"
    fi
@@ -19,7 +19,11 @@ output_cmd() {
       true "ERROR: '${anondate_state_folder}/anondate-set-current-message.txt' not writeable!"
       return 0
    fi
-   echo "@ $msg" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" >/dev/null || true
+   if [ "$indent_style" = "true" ]; then
+      echo "____ $msg" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" >/dev/null || true
+   else
+      echo "$msg" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" >/dev/null || true
+   fi
 }
 
 systemd_cat_maybe() {
@@ -148,7 +152,7 @@ touch "${anondate_state_folder}/anondate-set-current-message.txt"
 
 indent_style=true
 
-output_cmd "### START ###"
+output_cmd "### START: ###"
 output_cmd "INFO: $0"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C

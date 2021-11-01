@@ -11,6 +11,11 @@
 set -o pipefail
 set -e errtrace
 
+output_cmd() {
+   msg="$@"
+   echo "__ $msg"
+}
+
 error_handler() {
    exit_code="$?"
    echo "\
@@ -33,7 +38,7 @@ exit_handler() {
    else
       meaning="Unknown."
    fi
-   echo "$0: END: Exiting with exit_code '$exit_code' indicating '$meaning'."
+   output_cmd "### END: ### Exiting with exit_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 
@@ -57,17 +62,17 @@ detect_vm_type() {
 
 onion_time_script_status() {
    if [ -f /run/sdwdate/onion-time-script-after-boot ]; then
-      echo "status: Subsequent run after boot."
+      output_cmd "status: Subsequent run after boot."
       onion_time_script_status_boot=true
    else
-      echo "status: First run after boot."
+      output_cmd "status: First run after boot."
       onion_time_script_status_boot=false
       touch /run/sdwdate/onion-time-script-after-boot
    fi
 }
 
 timesanitycheck_static() {
-   echo "Static Time Sanity Check: $(timesanitycheck)" || true
+   output_cmd "Static Time Sanity Check: $(timesanitycheck)" || true
 }
 
 exit_if_tor_not_yet_enabled() {
@@ -78,10 +83,10 @@ exit_if_tor_not_yet_enabled() {
       true "$FUNCNAME: INFO: Ok, Tor already enabled."
    else
       if [ -f /usr/share/whonix/marker ]; then
-         echo "<b>Tor is disabled.</b> Please enable Tor using Anon Connection Wizard or setup-dist.<br> \
+         output_cmd "<b>Tor is disabled.</b> Please enable Tor using Anon Connection Wizard or setup-dist.<br> \
 Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo setup-dist"
       else
-         echo "Tor is disabled. Please enable Tor in the Tor config."
+         output_cmd "Tor is disabled. Please enable Tor in the Tor config."
       fi
 
       exit_code=1
@@ -102,7 +107,7 @@ check_tor_circuit_established_yet() {
 
    for invalid_exit_code in "124" "137" "254" ; do
       if [ "$tor_circuit_established_check_exit_code" = "$invalid_exit_code" ]; then
-         echo "Tor Bootstrap Result:
+         output_cmd "Tor Bootstrap Result:
 <br>check_bootstrap_helper_script: $check_bootstrap_helper_script
 <br>tor_bootstrap_timeout_type: $tor_bootstrap_timeout_type
 <br>tor_circuit_established_check_exit_code: $tor_circuit_established_check_exit_code"
@@ -113,28 +118,28 @@ check_tor_circuit_established_yet() {
 
    if [ "$tor_circuit_established_check_exit_code" = "255" ]; then
       if [ "$VM" = "Gateway" ]; then
-         echo "Tor Bootstrap Result: \
+         output_cmd "Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br>"
       elif [ "$VM" = "Workstation" ]; then
          if [ -f /usr/share/whonix/marker ]; then
-            echo "Tor Bootstrap Result: \
+            output_cmd "Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand? \
 <br>Please run systemcheck on Gateway."
          else
-            echo "Tor Bootstrap Result: \
+            output_cmd "Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand?"
          fi
       else
          if [ -f /usr/share/whonix/marker ]; then
-            echo "Tor Bootstrap Result: \
+            output_cmd "Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b><br> \
 <br>Did you start Gateway beforehand? \
 <br>Please run systemcheck on Gateway.
 <br>$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
          else
-            echo "Tor Bootstrap Result: \
+            output_cmd "Tor Bootstrap Result: \
 <b>Tor's Control Port could not be reached.</b>"
          fi
       fi
@@ -160,13 +165,13 @@ tor_bootstrap_check() {
    ## Could be 100% bootstrap process but still no Tor circuit established yet.
 
    if [ "$VM" = "Workstation" ]; then
-      echo "Tor circuit: $tor_circuit_established_word."
+      output_cmd "Tor circuit: $tor_circuit_established_word"
    else
-      echo "Tor reports: $tor_bootstrap_status
-Tor circuit: $tor_circuit_established_word."
+      output_cmd "Tor reports: $tor_bootstrap_status"
+      output_cmd "Tor circuit: $tor_circuit_established_word"
 
       if echo "$tor_bootstrap_status" | grep -q "REASON=TIMEOUT" ; then
-         echo "<b>Tor reports: REASON=TIMEOUT</b>"
+         output_cmd "<b>Tor reports: REASON=TIMEOUT</b>"
       fi
    fi
 }
@@ -225,9 +230,9 @@ extra guess: None."
    fi
 
    if [ "$clock_tor_consensus_check_result" = "ok" ]; then
-      echo "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>"
+      output_cmd "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>"
    else
-      echo "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>"
+      output_cmd "<p>Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg</p>"
    fi
 
    ## TODO
@@ -251,7 +256,7 @@ connectivity_test() {
 
 exit_success_if_tor_circuit_already_established() {
    if [ "$tor_circuit_established" = "1" ]; then
-      echo "<p>Tor already reports circuit established.</p>"
+      output_cmd "<p>Tor already reports circuit established.</p>"
       exit_code=0
       exit "$exit_code"
    else
@@ -259,7 +264,7 @@ exit_success_if_tor_circuit_already_established() {
       ## Example Tor log:
       ## Bootstrapped 100% (done): Done
       ## Our directory information is no longer up-to-date enough to build circuits: We're missing descriptors for 1/2 of our primary entry guards (total microdescriptors: 6967/6984). That's ok. We will try to fetch missing descriptors soon.
-      echo "<p>No Tor circuit established yet.</p>"
+      output_cmd "<p>No Tor circuit established yet.</p>"
    fi
 }
 
@@ -267,7 +272,7 @@ anondate_use() {
    ## https://gitlab.com/apparmor/apparmor/-/wikis/AppArmorStacking#seccomp-and-no_new_privs
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
    ## /usr/libexec/sdwdate/sdwdate-restart-tor-request-file-watcher
-   echo "anondate_use: Running 'anondate-set' (by creating file /run/sdwdate/request_tor_restart)..."
+   output_cmd "anondate_use: Running 'anondate-set' (by creating file /run/sdwdate/request_tor_restart)..."
    touch /run/sdwdate/request_tor_restart
 
    exit_code=2
@@ -275,7 +280,8 @@ anondate_use() {
 }
 
 te_pe_tb_check() {
-   echo "$0: Start."
+   output_cmd "### START: ###"
+   output_cmd "INFO: $0"
 
    detect_vm_type
 

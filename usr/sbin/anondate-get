@@ -54,7 +54,7 @@ set -e
 
 output_cmd() {
    msg="$@"
-   echo "      $msg" >&2
+   echo "______ $msg" >&2
 }
 
 exit_handler() {
@@ -75,7 +75,7 @@ exit_handler() {
       meaning="Unexpected error (2)."
    fi
 
-   output_cmd "*** END: *** Exiting with exit_code '$exit_code' indicating '$meaning'."
+   output_cmd "### END: ### Exiting with exit_code '$exit_code' indicating '$meaning'."
    exit "$exit_code"
 }
 
@@ -110,7 +110,7 @@ else
    exit 112
 fi
 
-output_cmd "*** START ***"
+output_cmd "### START: ###"
 output_cmd "INFO: $0"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
