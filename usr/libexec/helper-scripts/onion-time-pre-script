@@ -83,7 +83,7 @@ exit_if_tor_not_yet_enabled() {
       true "Tor enabled check: Tor already enabled, ok."
    else
       if [ -f /usr/share/whonix/marker ]; then
-         output_cmd "Tor enabled check: Tor is disabled. Please enable Tor using Anon Connection Wizard or setup-dist.\
+         output_cmd "Tor enabled check: Tor is disabled. Please enable Tor using Anon Connection Wizard or setup-dist. \
 Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo setup-dist"
       else
          output_cmd "Tor enabled check: Tor is disabled. Please enable Tor in the Tor config."
@@ -207,7 +207,8 @@ tor_consensus_time_sanity_check() {
       if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
          clock_tor_consensus_check_result="fast"
          if [ "$onion_time_script_status_boot" = "true" ]; then
-            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. extra guess: Tor consensus might be outdated and download might still be in progress since this is the first run after boot."
+            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. \
+            extra guess: Tor consensus might be outdated and download might still be in progress since this is the first run after boot."
          else
             clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. extra guess: None."
          fi
