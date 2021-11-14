@@ -74,7 +74,7 @@ restart_tor_if_running() {
       output_cmd "INFO: tor@default running, stopping..."
       ## Not a good idea to use '--no-block'.
       systemctl --no-pager stop tor@default || true
-      output_cmd "INFO: Deleting Tor consensus..."
+      output_cmd "INFO: Deleting Tor consensus files..."
       ## provided by package helper-scripts
       anon-consensus-del-files
       output_cmd "INFO: Restart Tor..."
