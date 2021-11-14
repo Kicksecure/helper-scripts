@@ -117,7 +117,6 @@ set_date() {
 
       output_cmd "INFO: minimum-time-check determined the time_result is earlier than minimum time, ok."
       output_cmd "INFO: The 'anondate-get' time result is earlier than 'minimum-unixtime-show'."
-      output_cmd "INFO: Not setting system clock earlier than 'minimum-unixtime-show'."
       output_cmd "debug: command: minimum-time-check: '$time_result_unixtime'"
       output_cmd "debug: (function: set_date)"
       output_cmd "debug: time_result_human_readable: '$time_result_human_readable'"
@@ -125,6 +124,7 @@ set_date() {
       output_cmd "debug: earlier than"
       output_cmd "debug: minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'"
       output_cmd "debug: minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
+      output_cmd "INFO: Not setting system clock earlier than 'minimum-unixtime-show'."
 
       exit_code=3
       exit 3
