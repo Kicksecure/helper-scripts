@@ -174,7 +174,7 @@ else
    output_cmd "INFO: Status file '$anondate_tor_certificate_lifetime_set_file' does not yet exist."
 fi
 
-output_cmd "INFO: running anondate-get..."
+output_cmd "INFO: Running anondate-get..."
 
 anondate_get_exit_code=0
 anondate-get 1> "${anondate_state_folder}/anondate-get-stdout.txt" 2> "${anondate_state_folder}/anondate-get-stderr.txt" || { anondate_get_exit_code="$?" ; true; };
