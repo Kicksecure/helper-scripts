@@ -142,7 +142,6 @@ set_date() {
 }
 
 who_ami="$(whoami)"
-output_cmd "INFO: who_ami: $who_ami"
 
 if [ "$who_ami" = "sdwdate" ]; then
    anondate_state_folder=/run/sdwdate
@@ -155,14 +154,15 @@ else
    exit 112
 fi
 
-output_cmd "INFO: anondate_state_folder: $anondate_state_folder"
-
 rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
 touch "${anondate_state_folder}/anondate-set-current-message.txt"
 
 indent_style=true
 
 output_cmd "### START: ### $0"
+
+output_cmd "INFO: who_ami: $who_ami"
+output_cmd "INFO: anondate_state_folder: $anondate_state_folder"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
 [ -n "$TZ" ] || export TZ=UTC
