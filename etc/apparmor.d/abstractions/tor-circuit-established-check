@@ -33,3 +33,9 @@
 
   ## Not needed. Works without.
   deny /etc/ssl/openssl.cnf r,
+
+  ## TODO: Why is this needed?
+  /run/anondate/anondate-get-stderr.txt rw,
+  ## Adding just in case.
+  /run/anondate/ rw,
+  /run/anondate/** rw,
