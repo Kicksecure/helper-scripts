@@ -23,6 +23,7 @@
   /{,usr/}bin/cat mrix,
   /{,usr/}bin/cp mrix,
   /{,usr/}bin/rm mrix,
+  /{,usr/}bin/touch mrix,
   /{,usr/}bin/minimum-time-check mrix,
   /{,usr/}bin/minimum-unixtime-show mrix,
   /{,usr/}bin/systemd-cat mrix,
