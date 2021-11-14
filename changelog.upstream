@@ -1,3 +1,131 @@
+commit a00ee4c8a85483bc6da092f041657fe4cae97709
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:32:43 2021 -0500
+
+    refactoring
+
+commit c9da12553176c75987c7b915d1bade9a300993d1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:32:15 2021 -0500
+
+    output
+
+commit e3552ef8c0e035e43f863bc8679ece5882573d51
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:30:52 2021 -0500
+
+    output
+
+commit 8ff5ed47024b912530dcfe548bcbfeff08d6c45e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:29:15 2021 -0500
+
+    anondate
+
+commit cacb722769d76d2f03b90aeb4d2eaccdedb0abbc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:28:32 2021 -0500
+
+    output
+
+commit 44f86b29cc5623d98b36f2680970ed678cff03f2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:27:49 2021 -0500
+
+    refactoring
+
+commit bed3e765833cbe587e088977ced78c0428f23af9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:25:21 2021 -0500
+
+    apparmor
+
+commit 1b5397fd6b3a3826ab6dfaa2121a8f98aee276c2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:23:12 2021 -0500
+
+    onion-time-pre-script: add user check to prevent broken file permissions
+
+commit 6a6ef6b5e9238bb9fabccc95a1ba6909f9b9460f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:13:23 2021 -0500
+
+    output
+
+commit f2a02e3b8f824b13770590866fa5b000dd9b4abc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 05:07:29 2021 -0500
+
+    output
+
+commit b6500bf8ac29a69233fb8ca53d4c0e519dad925c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:51:08 2021 -0500
+
+    comment
+
+commit 3ee83fdbcb66058d895a02e59b7940b914065f47
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:50:14 2021 -0500
+
+    output
+
+commit 9e8627cf147cdabe36d65bc69a24eb987ce95374
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:49:25 2021 -0500
+
+    anondate-set: disable Tor restart code since not needed
+
+commit 4c4c2ba5d5ae76ab0400ee1f0dc9736f967ec087
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:38:59 2021 -0500
+
+    add `usr/sbin/anon-consensus-del-files`
+
+commit 4b0497157282b44598e1c5b6d1eefa6372b5c531
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:38:30 2021 -0500
+
+    split into `anon-consensus-del` and `anon-consensus-del-files`
+
+commit ce7e24018f220c05be51a8e5753b4e21b01e95e5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:36:27 2021 -0500
+
+    fix
+
+commit 5d566c76e5b2e0082fcd4c43787b69405e6f61d9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:34:32 2021 -0500
+
+    fix
+
+commit 57600a3b585adc89936c18f2e72b61f7eca64711
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:27:42 2021 -0500
+
+    comment
+
+commit 2408b889d37ad49b7d0bef6e6fa1defce27ffbd0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:21:38 2021 -0500
+
+    output
+
+commit 3de950184dc5c7d08230dd865f226ce9e124310b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 04:09:38 2021 -0500
+
+    more descriptive file name
+    
+    `/run/sdwdate/request_tor_restart` -> `/run/sdwdate/request_anondate-set`
+
+commit ecd159c8751828ba2e0a97e1c27d0f0e04efafc3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 9 16:16:06 2021 -0500
+
+    bumped changelog version
+
 commit b73cb5543dbdd53572f986752518a8442b8064e9
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Nov 9 16:15:05 2021 -0500
