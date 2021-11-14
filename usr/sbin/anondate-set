@@ -141,7 +141,9 @@ set_date() {
    date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result_human_readable"
 }
 
-if [ "$(whoami)" = "sdwdate" ]; then
+who_ami="$(whoami)"
+
+if [ "$who_ami" = "sdwdate" ]; then
    anondate_state_folder=/run/sdwdate
 elif [ "$(id -u)" = "0" ]; then
    anondate_state_folder=/run/anondate
