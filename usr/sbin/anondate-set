@@ -63,8 +63,6 @@ exit_handler() {
    exit "$exit_code"
 }
 
-exit_code=1
-
 trap exit_handler EXIT
 
 restart_tor_if_running() {
