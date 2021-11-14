@@ -74,7 +74,7 @@ restart_tor_if_running() {
       systemctl --no-pager stop tor@default || true
       true "INFO: Deleting Tor consensus..."
       ## provided by package helper-scripts
-      anon-consensus-del
+      anon-consensus-del-files
       true "INFO: Restart Tor..."
       systemctl --no-pager --no-block start tor@default || true
    else

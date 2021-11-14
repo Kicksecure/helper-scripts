@@ -8,7 +8,7 @@
 #### category tor and usability
 #### description
 #### gateway_only yes
-## stops Tor, deletes Tor consensus and restarts Tor
+## Stops Tor, deletes Tor consensus using `anon-consensus-del-files` and restarts Tor.
 #### meta end
 
 if ! [ "$(id -u)" = 0 ]; then
@@ -19,9 +19,6 @@ fi
 
 systemctl --no-pager stop tor
 
-rm -f /var/lib/tor/cached-certs
-rm -f /var/lib/tor/cached-microdesc-consensus
-rm -f /var/lib/tor/cached-microdescs
-rm -f /var/lib/tor/cached-microdescs.new
+anon-consensus-del-files
 
 systemctl --no-pager restart tor
