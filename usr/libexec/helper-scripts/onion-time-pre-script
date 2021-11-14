@@ -63,7 +63,7 @@ detect_vm_type() {
 anondate_folder() {
    output_cmd "user: $USER"
 
-   if [ "$(whoami)" = "sdwdate" ]; then
+   if [ "$USER" = "sdwdate" ]; then
       anondate_state_folder=/run/sdwdate
    elif [ "$(id -u)" = "0" ]; then
       anondate_state_folder=/run/anondate
