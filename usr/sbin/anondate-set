@@ -67,6 +67,7 @@ trap exit_handler EXIT
 
 restart_tor_if_running() {
    ## This function restart_tor_if_running is currently not in use.
+   ## Would not be easy to make this work since this script runs under user 'sdwdate'.
 
    ## Not a good idea to use '--no-block'.
    if systemctl --no-pager status tor@default ; then
