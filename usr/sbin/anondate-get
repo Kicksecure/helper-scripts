@@ -113,6 +113,8 @@ else
    exit 112
 fi
 
+output_cmd "INFO: anondate_state_folder: $anondate_state_folder"
+
 output_cmd "### START: ### $0"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
