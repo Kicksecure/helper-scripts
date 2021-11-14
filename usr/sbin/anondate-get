@@ -187,7 +187,7 @@ if time_result="$(anondate --show-middle-range)" ; then
       output_cmd "WARNING: local system time is NOT within Tor consensus time valid time range. ($range_info)"
       if minimum_time_check "$time_result" ; then
          output_cmd "INFO: minimum-time-check determined Tor consensus time middle range to be valid (B), ok."
-         output_cmd "INFO: Show Tor consensus time middle range..."
+         output_cmd "INFO: Showing Tor consensus time middle range..."
          output_cmd "INFO: Tor consensus time middle_range: '$time_result'"
          echo "$time_result"
          exit_code=0
@@ -220,11 +220,15 @@ else
          output_cmd "INFO: System clock is EARLIER than Tor certificate life date."
       fi
       if minimum_time_check "$time_result" ; then
+         output_cmd "INFO: minimum-time-check determined Tor certificate lifetime to be valid, ok."
+         output_cmd "INFO: Showing Tor certificate lifetime as result..."
+         output_cmd "INFO: Tor certificate lifetime: $time_result"
          echo "$time_result"
          exit_code=2
          exit 2
       else
-         output_cmd "INFO: Show minimum time instead."
+         output_cmd "INFO: minimum-time-check determined Tor certificate lifetime to be obsolete, ok."
+         output_cmd "INFO: Showing minimum time instead as result..."
          output_cmd "INFO: minimum time: $minimum_unixtime_show_human_readable"
          echo "$minimum_unixtime_show_human_readable"
          exit_code=0
