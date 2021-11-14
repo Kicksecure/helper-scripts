@@ -142,6 +142,7 @@ set_date() {
 }
 
 who_ami="$(whoami)"
+output_cmd "INFO: who_ami: $who_ami"
 
 if [ "$who_ami" = "sdwdate" ]; then
    anondate_state_folder=/run/sdwdate
