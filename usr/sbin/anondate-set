@@ -67,6 +67,8 @@ exit_code=1
 trap exit_handler EXIT
 
 restart_tor_if_running() {
+   ## This function restart_tor_if_running is currently not in use.
+
    ## Not a good idea to use '--no-block'.
    if systemctl --no-pager status tor@default ; then
       true "INFO: tor@default running, stopping..."
@@ -201,13 +203,15 @@ elif [ "$anondate_get_exit_code" = "2" ]; then
       output_cmd "INFO: Done, created status file '$anondate_tor_certificate_lifetime_set_file'."
 
       ## If clock was too fast, restart of Tor is required.
-      if [ "$(id -u)" = "0" ]; then
-         restart_tor_if_running
-      else
-         output_cmd "ERROR: Tor restart not implemented for users other than 'root'." >&2
-         exit_code=112
-         exit 112
-      fi
+      ## Would this be still required or was this fixed in upstream in Tor?
+      ## Since clock is currently not set backwards anyhow, there is actually no need to restart Tor.
+#       if [ "$(id -u)" = "0" ]; then
+#          restart_tor_if_running
+#       else
+#          output_cmd "ERROR: Tor restart not implemented for users other than 'root'." >&2
+#          exit_code=112
+#          exit 112
+#       fi
 
       exit_code=2
       exit 2
