@@ -164,7 +164,7 @@ if time_result="$(anondate --show-middle-range)" ; then
    if [ "$time_result" = "" ]; then
       output_cmd "WARNING: Tor consensus time middle range result empty."
    elif anondate --current-time-in-valid-range ; then
-      output_cmd "INFO: local system time is already within valid range, ok. ($range_info)"
+      output_cmd "INFO: local system time is already within Tor consensus time valid range, ok. ($range_info)"
       if minimum_time_check "$time_result" ; then
          ## Deliberately not doing 'echo "$time_result"' here.
          ## - Since local system time is already within valid range there is no need to fix the clock.
@@ -176,7 +176,7 @@ if time_result="$(anondate --show-middle-range)" ; then
          ## Permit script to flow through 'anondate --tor-cert-lifetime-valid' part.
       fi
    else
-      output_cmd "WARNING: local system time is NOT within valid time range. ($range_info)"
+      output_cmd "WARNING: local system time is NOT within Tor consensus time valid time range. ($range_info)"
       output_cmd "INFO: middle_range: '$time_result'"
       if minimum_time_check "$time_result" ; then
          echo "$time_result"
