@@ -67,9 +67,11 @@ exit_code=1
 trap exit_handler EXIT
 
 restart_tor_if_running() {
-   if systemctl --no-pager --no-block status tor@default ; then
+   ## Not a good idea to use '--no-block'.
+   if systemctl --no-pager status tor@default ; then
       true "INFO: tor@default running, stopping..."
-      systemctl --no-pager --no-block stop tor@default || true
+      ## Not a good idea to use '--no-block'.
+      systemctl --no-pager stop tor@default || true
       true "INFO: Deleting Tor consensus..."
       ## provided by package helper-scripts
       anon-consensus-del
