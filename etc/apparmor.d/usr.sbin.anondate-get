@@ -14,12 +14,12 @@
   #include <abstractions/tor-circuit-established-check>
   #include <local/usr.sbin.anondate-get>
 
-  /usr/bin/bash ix,
-  /usr/bin/cat mrix,
-  /usr/bin/date mrix,
-  /usr/bin/minimum-unixtime-show mrix,
-  /usr/bin/systemd-cat mrix,
-  /usr/bin/timeout mrix,
+  /{,usr/}bash ix,
+  /{,usr/}cat mrix,
+  /{,usr/}date mrix,
+  /{,usr/}minimum-unixtime-show mrix,
+  /{,usr/}systemd-cat mrix,
+  /{,usr/}timeout mrix,
   /usr/libexec/helper-scripts/ r,
   /usr/sbin/anondate rix,
   /usr/sbin/anondate-get r,
