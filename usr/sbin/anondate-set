@@ -4,9 +4,10 @@
 ## See the file COPYING for copying conditions.
 
 ## Design:
-## Does not needlessly set the time if not needed.
+## - Does not needlessly set the time if not needed.
+## - Only set time forward, not backwards.
 ##
-## used by /usr/libexec/helper-scripts/onion-time-pre-script
+## Used by: /usr/libexec/helper-scripts/onion-time-pre-script
 
 output_cmd() {
    msg="$@"
