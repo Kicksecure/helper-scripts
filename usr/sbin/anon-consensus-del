@@ -17,11 +17,11 @@ if ! [ "$(id -u)" = 0 ]; then
    exit 1
 fi
 
-systemctl stop tor
+systemctl --no-pager stop tor
 
 rm -f /var/lib/tor/cached-certs
 rm -f /var/lib/tor/cached-microdesc-consensus
 rm -f /var/lib/tor/cached-microdescs
 rm -f /var/lib/tor/cached-microdescs.new
 
-systemctl restart tor
+systemctl --no-pager restart tor
