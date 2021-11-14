@@ -1,3 +1,69 @@
+commit 73e232e41e8b24a7cfa9db22ee23ad365a18bb05
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:51:56 2021 -0500
+
+    anondate-get: If Tor consensus time is later than system clock but minimum time later than Tor consensus time, show minimum time instead of no result.
+
+commit 6f50a72f670b250bfaa1f909f52b05e7aea7710e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:48:49 2021 -0500
+
+    output
+
+commit 253d2cc5dc129c075a603a4541e7d5b681e2a053
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:46:16 2021 -0500
+
+    comment
+
+commit 5724d746cfae8e50a9aef80710d3d4ee994f482e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:44:25 2021 -0500
+
+    output
+
+commit 9706332a9cb71103b194cce4a3df8c1a4d8d1901
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:37:47 2021 -0500
+
+    output
+
+commit e6c3970c342e76cc9182add66d357b4200301d64
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:36:12 2021 -0500
+
+    output
+
+commit ed0214e7c530ce3d55329f4f824c8b6dcc52e693
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:32:19 2021 -0500
+
+    output
+
+commit 15fb5ac1f70d81827dcaf695cc25c634b1d6fef7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:24:15 2021 -0500
+
+    output
+
+commit d6c7f1ad06a15019d31b911874b9f72f8679afcb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:20:06 2021 -0500
+
+    output
+
+commit 54d18f6b28efa2014df30b9bd5921a960afda82f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:17:46 2021 -0500
+
+    output
+
+commit 7905d76d3960a23c4ce4240faa3234ac4db2f725
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:06:05 2021 -0500
+
+    bumped changelog version
+
 commit 792e053f9cae404d2f68e4ae9358bce3f915c8c1
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 14 07:05:54 2021 -0500
