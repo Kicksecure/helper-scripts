@@ -95,8 +95,6 @@ minimum_time_check() {
    output_cmd "INFO: time_result later than minimum-unixtime-show, ok."
 }
 
-exit_code=1
-
 trap exit_handler EXIT
 
 who_ami="$(whoami)"
@@ -182,7 +180,7 @@ if time_result="$(anondate --show-middle-range)" ; then
       output_cmd "INFO: middle_range: '$time_result'"
       if minimum_time_check "$time_result" ; then
          echo "$time_result"
-         exit_code="0"
+         exit_code=0
          exit 0
       fi
    fi
