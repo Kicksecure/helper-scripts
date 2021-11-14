@@ -228,6 +228,7 @@ else
          exit 2
       else
          output_cmd "INFO: minimum-time-check determined Tor certificate lifetime to be obsolete, ok."
+         output_cmd "INFO: Do not show Tor certificate lifetime as result, ok."
          output_cmd "INFO: Showing minimum time instead as result..."
          output_cmd "INFO: minimum time: $minimum_unixtime_show_human_readable"
          echo "$minimum_unixtime_show_human_readable"
