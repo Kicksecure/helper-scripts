@@ -168,6 +168,7 @@ if time_result="$(anondate --show-middle-range)" ; then
       output_cmd "WARNING: Tor consensus time middle range result empty."
    elif anondate --current-time-in-valid-range ; then
       output_cmd "INFO: local system time is already within Tor consensus time valid range, ok. ($range_info)"
+      output_cmd "INFO: Tor consensus time middle_range: '$time_result'"
       if minimum_time_check "$time_result" ; then
          output_cmd "INFO: minimum-time-check determined Tor consensus time middle range to be valid (A), ok."
          ## Deliberately not doing 'echo "$time_result"' here.
@@ -178,15 +179,23 @@ if time_result="$(anondate --show-middle-range)" ; then
          ## Deliberately not 'exit' here.
          ## Tor consensus might be outdated.
          ## Permit script to flow through 'anondate --tor-cert-lifetime-valid' part.
+      else
+         output_cmd "INFO: minimum-time-check determined Tor consensus time middle range to be obsolete (A), ok."
       fi
+      output_cmd "INFO: Do not show Tor consensus time middle range as result, ok."
    else
       output_cmd "WARNING: local system time is NOT within Tor consensus time valid time range. ($range_info)"
-      output_cmd "INFO: middle_range: '$time_result'"
       if minimum_time_check "$time_result" ; then
          output_cmd "INFO: minimum-time-check determined Tor consensus time middle range to be valid (B), ok."
+         output_cmd "INFO: Show Tor consensus time middle range..."
+         output_cmd "INFO: Tor consensus time middle_range: '$time_result'"
          echo "$time_result"
          exit_code=0
          exit 0
+      else
+         output_cmd "INFO: Tor consensus time middle_range: '$time_result'"
+         output_cmd "INFO: minimum-time-check determined Tor consensus time middle range to be obsolete (B), ok."
+         output_cmd "INFO: Do not show Tor consensus time middle range as result, ok."
       fi
    fi
 else
