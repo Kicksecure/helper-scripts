@@ -62,10 +62,10 @@ detect_vm_type() {
 
 onion_time_script_status() {
    if [ -f /run/sdwdate/onion-time-script-after-boot ]; then
-      output_cmd "status: Subsequent run after boot."
+      output_cmd "Status: Subsequent run after boot."
       onion_time_script_status_boot=true
    else
-      output_cmd "status: First run after boot."
+      output_cmd "Status: First run after boot."
       onion_time_script_status_boot=false
       touch /run/sdwdate/onion-time-script-after-boot
    fi
@@ -255,7 +255,7 @@ connectivity_test() {
 
 exit_success_if_tor_circuit_already_established() {
    if [ "$tor_circuit_established" = "1" ]; then
-      output_cmd "Tor already reports circuit established."
+      output_cmd "Conclusion: Tor already reports circuit established."
       exit_code=0
       exit "$exit_code"
    else
@@ -263,7 +263,7 @@ exit_success_if_tor_circuit_already_established() {
       ## Example Tor log:
       ## Bootstrapped 100% (done): Done
       ## Our directory information is no longer up-to-date enough to build circuits: We're missing descriptors for 1/2 of our primary entry guards (total microdescriptors: 6967/6984). That's ok. We will try to fetch missing descriptors soon.
-      output_cmd "No Tor circuit established yet."
+      output_cmd "Conclusion: No Tor circuit established yet."
    fi
 }
 
