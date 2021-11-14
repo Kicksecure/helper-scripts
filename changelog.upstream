@@ -1,3 +1,31 @@
+commit c65c560cee7ba194b374a0f75370bd215d60a69d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 10:02:00 2021 -0500
+
+    `/usr/libexec/helper-scripts/terminal-wrapper`: add support for adding window title
+    
+    for `xfce4-terminal` emulator
+    
+    through `terminal_emulator_window_title` environment variable
+
+commit 01b1aced4588d2b7d34a95cc152483d2f110270a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 09:09:11 2021 -0500
+
+    output
+
+commit bddb1385544bb2998b371633cf30720505a1fe63
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 09:06:49 2021 -0500
+
+    output
+
+commit 49374f1cd5263c8674b8ef7f926ec6ef35d53ed9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:30:44 2021 -0500
+
+    bumped changelog version
+
 commit 5ac9deb9412dd7b9c3f6fb49f6aaef6fe515c9ba
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 14 08:30:32 2021 -0500
