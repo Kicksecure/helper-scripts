@@ -151,6 +151,7 @@ fi
 # if anondate --has-consensus ; then
 # output_cmd "INFO: has Tor consensus, ok."
 
+output_cmd "INFO: attempting to determine Tor consensus time middle range..."
 if time_result="$(anondate --show-middle-range)" ; then
    valid_after="$(anondate --show-valid-after)"
    ## example valid_after:
@@ -158,6 +159,8 @@ if time_result="$(anondate --show-middle-range)" ; then
    valid_until="$(anondate --show-valid-until)"
    ## example valid_until:
    ## 2021-01-21 18:00:00
+
+   output_cmd "INFO: Tor consensus time middle range could be determined, ok."
 
    range_info="valid_after: $valid_after | middle_range: $time_result | valid_until: $valid_until"
 
