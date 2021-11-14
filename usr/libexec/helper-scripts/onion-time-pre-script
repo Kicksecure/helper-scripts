@@ -66,7 +66,7 @@ onion_time_script_status() {
       output_cmd "Status: Subsequent run after boot."
       onion_time_script_status_boot=true
    else
-      output_cmd "Status: First run after boot."
+      output_cmd "Status: First run after boot. (Creating file '/run/sdwdate/onion-time-script-after-boot'.)"
       onion_time_script_status_boot=false
       touch /run/sdwdate/onion-time-script-after-boot
    fi
@@ -272,7 +272,7 @@ anondate_use() {
    ## https://gitlab.com/apparmor/apparmor/-/wikis/AppArmorStacking#seccomp-and-no_new_privs
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
    ## /usr/libexec/sdwdate/sdwdate-start-anondate-set-file-watcher
-   output_cmd "anondate_use: Running 'anondate-set' (by creating file /run/sdwdate/request_anondate-set)..."
+   output_cmd "anondate_use: Running 'anondate-set' (by creating file '/run/sdwdate/request_anondate-set')..."
    touch /run/sdwdate/request_anondate-set
 
    exit_code=2
