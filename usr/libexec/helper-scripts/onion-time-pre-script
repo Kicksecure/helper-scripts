@@ -60,15 +60,34 @@ detect_vm_type() {
    fi
 }
 
-onion_time_script_status() {
+anondate_folder() {
    output_cmd "user: $USER"
-   if [ -f /run/sdwdate/onion-time-script-after-boot ]; then
+
+   if [ "$(whoami)" = "sdwdate" ]; then
+      anondate_state_folder=/run/sdwdate
+   elif [ "$(id -u)" = "0" ]; then
+      anondate_state_folder=/run/anondate
+   else
+      output_cmd "ERROR: running under user '$USER' is not yet implemented. Run:
+sudo -u sdwdate $0"
+
+      anondate_state_folder=/run/anondate
+
+      exit_code=1
+      exit "$exit_code"
+   fi
+
+   output_cmd "anondate_state_folder: $anondate_state_folder"
+}
+
+onion_time_script_status() {
+   if [ -f "$anondate_state_folder/onion-time-script-after-boot" ]; then
       output_cmd "Status: Subsequent run after boot."
       onion_time_script_status_boot=true
    else
-      output_cmd "Status: First run after boot. (Creating file '/run/sdwdate/onion-time-script-after-boot'.)"
+      output_cmd "Status: First run after boot. (Creating file '$anondate_state_folder/onion-time-script-after-boot'.)"
       onion_time_script_status_boot=false
-      touch /run/sdwdate/onion-time-script-after-boot
+      touch "$anondate_state_folder/onion-time-script-after-boot"
    fi
 }
 
@@ -272,8 +291,8 @@ anondate_use() {
    ## https://gitlab.com/apparmor/apparmor/-/wikis/AppArmorStacking#seccomp-and-no_new_privs
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
    ## /usr/libexec/sdwdate/sdwdate-start-anondate-set-file-watcher
-   output_cmd "anondate_use: Running 'anondate-set' (by creating file '/run/sdwdate/request_anondate-set')..."
-   touch /run/sdwdate/request_anondate-set
+   output_cmd "anondate_use: Running 'anondate-set' (by creating file '$anondate_state_folder/request_anondate-set')..."
+   touch "$anondate_state_folder/request_anondate-set"
 
    exit_code=2
    exit "$exit_code"
@@ -281,6 +300,8 @@ anondate_use() {
 
 te_pe_tb_check() {
    output_cmd "### START: ### $0"
+
+   anondate_folder
 
    detect_vm_type
 
