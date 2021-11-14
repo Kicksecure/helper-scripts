@@ -299,6 +299,9 @@ anondate_use() {
 }
 
 te_pe_tb_check() {
+   ## For better look inside sdwdate log viewer.
+   echo ""
+
    output_cmd "### START: ### $0"
 
    anondate_folder
