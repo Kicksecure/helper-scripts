@@ -33,5 +33,6 @@
   /{,usr/}sbin/anondate-get rUx,
   /{,usr/}sbin/anondate-set r,
 
-  /var/lib/sdwdate/time-replay-protection-utc-unixtime r,
+  /var/lib/sdwdate/ r,
+  /var/lib/sdwdate/** r,
 }
