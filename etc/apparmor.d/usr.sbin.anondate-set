@@ -17,6 +17,9 @@
 
   /run/anondate/ rw,
   /run/anondate/** rw,
+  /run/sdwdate/ rw,
+  /run/sdwdate/** rw,
+
   /{,usr/}bin/cat mrix,
   /{,usr/}bin/cp mrix,
   /{,usr/}bin/rm mrix,
@@ -25,7 +28,7 @@
   /{,usr/}bin/systemd-cat mrix,
   /{,usr/}sbin/anondate-get rUx,
   /{,usr/}sbin/anondate-set r,
-  /var/lib/sdwdate/time-replay-protection-utc-unixtime r,
   /{,usr/}bin/whoami rix,
 
+  /var/lib/sdwdate/time-replay-protection-utc-unixtime r,
 }

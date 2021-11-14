@@ -20,10 +20,11 @@
   /{,usr/}minimum-unixtime-show mrix,
   /{,usr/}systemd-cat mrix,
   /{,usr/}timeout mrix,
-  /usr/libexec/helper-scripts/ r,
-  /usr/sbin/anondate rix,
-  /usr/sbin/anondate-get r,
   /{,usr/}bin/id rix,
   /{,usr/}bin/whoami rix,
 
+  /usr/sbin/anondate rix,
+  /usr/sbin/anondate-get r,
+
+  /usr/libexec/helper-scripts/ r,
 }
