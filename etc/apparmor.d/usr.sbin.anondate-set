@@ -27,9 +27,10 @@
   /{,usr/}bin/minimum-time-check mrix,
   /{,usr/}bin/minimum-unixtime-show mrix,
   /{,usr/}bin/systemd-cat mrix,
+  /{,usr/}bin/whoami rix,
+
   /{,usr/}sbin/anondate-get rUx,
   /{,usr/}sbin/anondate-set r,
-  /{,usr/}bin/whoami rix,
 
   /var/lib/sdwdate/time-replay-protection-utc-unixtime r,
 }
