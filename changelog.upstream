@@ -1,3 +1,75 @@
+commit 5ac9deb9412dd7b9c3f6fb49f6aaef6fe515c9ba
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:30:32 2021 -0500
+
+    output
+
+commit 7c7026491ecb7bdbccb828affccb8414844ebdf9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:28:30 2021 -0500
+
+    output
+
+commit 87f96554eb0c43d1dcb69738f75b07998c2f1424
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:28:08 2021 -0500
+
+    comment
+
+commit 9a84029dd01664bff20192c41ad11e525407e87d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:19:04 2021 -0500
+
+    apparmor
+
+commit 7c3e66b2ca724df499666883c1399990d65235dc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:16:36 2021 -0500
+
+    comment
+
+commit 2827a418e397dbaa64beb40ed91599016d49ce06
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:16:21 2021 -0500
+
+    apparmor
+
+commit e9a9ec16ec15921116b0dff718a9b599982497be
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:15:59 2021 -0500
+
+    apparmor
+
+commit ba3ff4930657ee406f801ca0846be685382b68e2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:14:54 2021 -0500
+
+    apparmor
+
+commit 9a569bd1de9e17e60c0c057d418bc2782c59411f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:13:41 2021 -0500
+
+    apparmor
+
+commit 65ba0bfaf3fdc6399e9de2c1867d8d16d9ed6a79
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:13:03 2021 -0500
+
+    apparmor
+
+commit 0771ceb70eed9b3ae96001772e47563336a6227d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 08:12:38 2021 -0500
+
+    apparmor
+
+commit 7a221679a84a1c9b33d62fda0702c823e79b5ea4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 14 07:52:52 2021 -0500
+
+    bumped changelog version
+
 commit 73e232e41e8b24a7cfa9db22ee23ad365a18bb05
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 14 07:51:56 2021 -0500
