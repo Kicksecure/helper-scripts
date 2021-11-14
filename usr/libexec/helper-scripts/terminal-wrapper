@@ -48,7 +48,15 @@ $0 was called by: $(ps --no-headers -o command $PPID)" || true
 fi
 
 if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then
-   [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold --execute"
+   if [ "$terminal_emulator_extra_args" = "" ]; then
+      unset terminal_emulator_extra_args
+      declare -a terminal_emulator_extra_args
+      if [ ! "$terminal_emulator_window_title" = "" ]; then
+         terminal_emulator_extra_args="--title=$terminal_emulator_window_title"
+      fi
+      terminal_emulator_extra_args+=("--hold")
+      terminal_emulator_extra_args+=("--execute")
+   fi
 fi
 
 if [ "$terminal_emulator_app" = "xterm" ]; then
@@ -70,4 +78,8 @@ else
    fi
 fi
 
-$terminal_emulator_app $terminal_emulator_extra_args $@
+if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then
+   $terminal_emulator_app "${terminal_emulator_extra_args[@]}" $@
+else
+   $terminal_emulator_app $terminal_emulator_extra_args $@
+fi
