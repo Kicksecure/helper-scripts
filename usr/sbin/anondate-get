@@ -113,8 +113,8 @@ fi
 
 output_cmd "### START: ### $0"
 
-output_cmd "INFO: who_ami: $who_ami"
-output_cmd "INFO: anondate_state_folder: $anondate_state_folder"
+output_cmd "INFO: who_ami: '$who_ami'"
+output_cmd "INFO: anondate_state_folder: '$anondate_state_folder'"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
 [ -n "$TZ" ] || export TZ=UTC
@@ -162,7 +162,7 @@ if time_result="$(anondate --show-middle-range)" ; then
 
    output_cmd "INFO: Tor consensus time middle range could be determined, ok."
 
-   range_info="valid_after: $valid_after | middle_range: $time_result | valid_until: $valid_until"
+   range_info="valid_after: '$valid_after' | middle_range: '$time_result' | valid_until: '$valid_until'"
 
    if [ "$time_result" = "" ]; then
       output_cmd "WARNING: Tor consensus time middle range result empty."
@@ -212,7 +212,7 @@ if anondate --tor-cert-lifetime-valid ; then
 else
    output_cmd "WARNING: Tor certificate lifetime invalid according to Tor log. This information might be outdated and not matter."
    if time_result="$(anondate --tor-cert-valid-after)" ; then
-      output_cmd "INFO: Tor certificate life date: $time_result"
+      output_cmd "INFO: Tor certificate life date: '$time_result'"
       time_result_unixtime="$(date --utc --date="$time_result" "+%s")"
       current_unixtime="$(date --utc "+%s")"
       if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
@@ -223,7 +223,7 @@ else
       if minimum_time_check "$time_result" ; then
          output_cmd "INFO: minimum-time-check determined Tor certificate lifetime to be valid, ok."
          output_cmd "INFO: Showing Tor certificate lifetime as result..."
-         output_cmd "INFO: Tor certificate lifetime: $time_result"
+         output_cmd "INFO: Tor certificate lifetime: '$time_result'"
          echo "$time_result"
          exit_code=2
          exit 2
@@ -240,7 +240,7 @@ fi
 output_cmd "INFO: Could not determine a time later than minimum time from either Tor consensus time or Tor certificate lifetime, ok."
 output_cmd "INFO: Showing minimum time instead as result..."
 ## anondate-set would not set the time backwards anyhow, therefore safe to show minimum time here.
-output_cmd "INFO: minimum time: $minimum_unixtime_show_human_readable"
+output_cmd "INFO: minimum time: '$minimum_unixtime_show_human_readable'"
 echo "$minimum_unixtime_show_human_readable"
 exit_code=0
 exit 0
