@@ -9,6 +9,11 @@
 ##
 ## Used by: /usr/libexec/helper-scripts/onion-time-pre-script
 
+output_init() {
+   rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
+   touch "${anondate_state_folder}/anondate-set-current-message.txt"
+}
+
 output_cmd() {
    msg="$@"
    if [ "$indent_style" = "true" ]; then
@@ -156,13 +161,12 @@ fi
 
 indent_style=true
 
+output_init
+
 output_cmd "### START: ### $0"
 
 true "INFO: who_ami: $who_ami"
 true "INFO: anondate_state_folder: $anondate_state_folder"
-
-rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
-touch "${anondate_state_folder}/anondate-set-current-message.txt"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
 [ -n "$TZ" ] || export TZ=UTC
