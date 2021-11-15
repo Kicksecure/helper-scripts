@@ -15,7 +15,7 @@
   #include <local/usr.sbin.anondate-get>
 
   ## TODO: rUx
-  /usr/bin/minimum-unixtime-show rUx,
+  /{,usr/}minimum-unixtime-show rUx,
 
   /usr/libexec/helper-scripts/ r,
 
