@@ -168,6 +168,10 @@ output_cmd "### START: ### $0"
 true "INFO: who_ami: $who_ami"
 true "INFO: anondate_state_folder: $anondate_state_folder"
 
+if ! command -v systemd-cat &>/dev/null ; then
+   output_cmd "WARNING: Program 'systemd-cat' is unavailable. Unable to write to systemd journal log."
+fi
+
 [ -n "$LC_TIME" ] || export LC_TIME=C
 [ -n "$TZ" ] || export TZ=UTC
 
