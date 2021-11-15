@@ -137,7 +137,8 @@ set_date() {
 
    output_cmd "INFO: Running the following command:"
    output_cmd "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result_human_readable\""
-   date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result_human_readable"
+   date_command_output="$(date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result_human_readable" 2>&1)"
+   output_cmd "INFO: date command output: '$date_command_output'"
 }
 
 who_ami="$(whoami)"
