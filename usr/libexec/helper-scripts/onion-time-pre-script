@@ -61,7 +61,7 @@ detect_vm_type() {
 }
 
 anondate_folder() {
-   output_cmd "user: $USER"
+   true "user: $USER"
 
    if [ "$USER" = "sdwdate" ]; then
       anondate_state_folder=/run/sdwdate
@@ -77,7 +77,7 @@ sudo -u sdwdate $0"
       exit "$exit_code"
    fi
 
-   output_cmd "anondate_state_folder: $anondate_state_folder"
+   true "anondate_state_folder: $anondate_state_folder"
 }
 
 onion_time_script_status() {
