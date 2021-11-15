@@ -1,4 +1,4 @@
-# Last Modified: Mon Nov  1 09:28:55 2021
+# Last Modified: Mon Nov 15 11:06:48 2021
 #include <tunables/global>
 
 ## Copyright (C) 2017 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
@@ -14,17 +14,21 @@
   #include <abstractions/tor-circuit-established-check>
   #include <local/usr.sbin.anondate-get>
 
+  ## TODO: rUx
+  /usr/bin/minimum-unixtime-show rUx,
+
+  /usr/libexec/helper-scripts/ r,
+
+  /usr/sbin/anondate rix,
+  /usr/sbin/anondate-get r,
+
   /{,usr/}bash ix,
+  /{,usr/}bin/id rix,
+  /{,usr/}bin/whoami rix,
   /{,usr/}cat mrix,
   /{,usr/}date mrix,
   /{,usr/}minimum-unixtime-show mrix,
   /{,usr/}systemd-cat mrix,
   /{,usr/}timeout mrix,
-  /{,usr/}bin/id rix,
-  /{,usr/}bin/whoami rix,
 
-  /usr/sbin/anondate rix,
-  /usr/sbin/anondate-get r,
-
-  /usr/libexec/helper-scripts/ r,
 }
