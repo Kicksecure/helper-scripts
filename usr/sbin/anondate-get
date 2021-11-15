@@ -113,8 +113,8 @@ fi
 
 output_cmd "### START: ### $0"
 
-output_cmd "INFO: who_ami: '$who_ami'"
-output_cmd "INFO: anondate_state_folder: '$anondate_state_folder'"
+true "INFO: who_ami: '$who_ami'"
+true "INFO: anondate_state_folder: '$anondate_state_folder'"
 
 [ -n "$LC_TIME" ] || export LC_TIME=C
 [ -n "$TZ" ] || export TZ=UTC

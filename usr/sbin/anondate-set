@@ -157,8 +157,8 @@ indent_style=true
 
 output_cmd "### START: ### $0"
 
-output_cmd "INFO: who_ami: $who_ami"
-output_cmd "INFO: anondate_state_folder: $anondate_state_folder"
+true "INFO: who_ami: $who_ami"
+true "INFO: anondate_state_folder: $anondate_state_folder"
 
 rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
 touch "${anondate_state_folder}/anondate-set-current-message.txt"
