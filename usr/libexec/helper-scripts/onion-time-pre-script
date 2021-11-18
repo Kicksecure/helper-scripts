@@ -288,6 +288,11 @@ exit_success_if_tor_circuit_already_established() {
 }
 
 anondate_use() {
+   if [ "$VM" = "Workstation" ]; then
+      output_cmd "anondate_use: Skipping 'anondate-set' since this is a workstation, ok."
+      return 0
+   fi
+
    ## https://gitlab.com/apparmor/apparmor/-/wikis/AppArmorStacking#seccomp-and-no_new_privs
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
    ## /usr/libexec/sdwdate/sdwdate-start-anondate-set-file-watcher
