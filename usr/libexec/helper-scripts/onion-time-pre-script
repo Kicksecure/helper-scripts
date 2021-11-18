@@ -351,7 +351,10 @@ te_pe_tb_check() {
    if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
       anondate_use
       ## Time incorrect by a lot. Indicate error.
-      ## Since anondate_use has it's own `exit`, no need to use `exit` here.
+      ## [1] Since anondate_use has it's own `exit`, no need to use `exit` here.
+      ## [2] Do not use `anondate-set` on Whonix-Workstation.
+      ##     Since sdwdate can establish onion connections irrespective of Whonix-Workstation system clock,
+      ##     as long as Whonix-Gateway Tor is functional.
       #exit_code=1
       #exit "$exit_code"
    fi
@@ -360,7 +363,8 @@ te_pe_tb_check() {
       anondate_use
       ## Time incorrect but not by giant amounts.
       ## Probably non-fatal issue. Indicate wait.
-      ## Since anondate_use has it's own `exit`, no need to use `exit` here.
+      ## [1]
+      ## [2]
       #exit_code=2
       #exit "$exit_code"
    fi
