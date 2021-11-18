@@ -1,3 +1,30 @@
+commit 6d4bfc59733e01599142f5101e97d9469dd73341
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 18 11:51:30 2021 -0500
+
+    comments
+
+commit b3fe042c8888f48905585cd660ce483413844153
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 18 11:49:47 2021 -0500
+
+    anondate
+
+commit 79ed8b3ceb1cd1e96a5e84c9006da756f0e69180
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 18 11:47:18 2021 -0500
+
+    `onion-time-pre-script`: Do not use `anondate-set` on Whonix-Workstation.
+    
+    Since sdwdate can establish onion connections irrespective of Whonix-Workstation system clock,
+    as long as Whonix-Gateway Tor is functional.
+
+commit eb8c4f92f90051cf44edea32815b174c7fb9bceb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 15 15:08:07 2021 -0500
+
+    bumped changelog version
+
 commit 01d2824e370ba959f3a064e37f3fa540596a856a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Nov 15 06:27:56 2021 -0500
