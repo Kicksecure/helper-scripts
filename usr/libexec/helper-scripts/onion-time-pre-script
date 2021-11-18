@@ -351,16 +351,18 @@ te_pe_tb_check() {
    if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
       anondate_use
       ## Time incorrect by a lot. Indicate error.
-      exit_code=1
-      exit "$exit_code"
+      ## Since anondate_use has it's own `exit`, no need to use `exit` here.
+      #exit_code=1
+      #exit "$exit_code"
    fi
 
    if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
       anondate_use
       ## Time incorrect but not by giant amounts.
       ## Probably non-fatal issue. Indicate wait.
-      exit_code=2
-      exit "$exit_code"
+      ## Since anondate_use has it's own `exit`, no need to use `exit` here.
+      #exit_code=2
+      #exit "$exit_code"
    fi
 
    exit_success_if_tor_circuit_already_established
