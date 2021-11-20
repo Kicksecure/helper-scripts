@@ -1,3 +1,15 @@
+commit d7d9e5323bf68925090b1965d4955185b77387d7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 19 19:15:06 2021 -0500
+
+    disable anondate apparmor profiles since not ready
+
+commit 4c7641bf99046784efa656f8925b12499adaa8ce
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 18 11:54:23 2021 -0500
+
+    bumped changelog version
+
 commit 6d4bfc59733e01599142f5101e97d9469dd73341
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 18 11:51:30 2021 -0500
