@@ -1,3 +1,15 @@
+commit 54e2888ccf378ae60127b26774407460041cb8e5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 9 03:26:39 2021 -0500
+
+    `/usr/libexec/helper-scripts/curl_exit_codes`: add newer curl exit codes
+
+commit 2080d693b0dcd01b1743d811d5609f07329959cb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 19 19:20:27 2021 -0500
+
+    bumped changelog version
+
 commit d7d9e5323bf68925090b1965d4955185b77387d7
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Nov 19 19:15:06 2021 -0500
