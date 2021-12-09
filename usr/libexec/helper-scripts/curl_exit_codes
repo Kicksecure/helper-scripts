@@ -82,6 +82,14 @@ curl_exit_codes() {
 [86] - [RTSP: mismatch of Session Identifiers]
 [87] - [unable to parse FTP file list]
 [88] - [FTP chunk callback reported error]
+[89] - [No connection available, the session will be queued]
+[90] - [SSL public key does not matched pinned public key]
+[91] - [Invalid SSL certificate status.]
+[92] - [Stream error in HTTP/2 framing layer.]
+[93] - [An API function was called from inside a callback.]
+[94] - [An authentication function returned an error.]
+[95] - [A problem was detected in the HTTP/3 layer. This is somewhat generic and can be one out of several problems, see the error message for details.]
+[96] - [QUIC connection error. This error may be caused by an SSL library error. QUIC is the protocol used for HTTP/3 transfers.]
 "
 
    if [ "$1" = "" ]; then
