@@ -18,7 +18,9 @@ if ! [ "$(id -u)" = 0 ]; then
 fi
 
 systemctl --no-pager stop tor
+systemctl --no-pager stop vanguards || true
 
 anon-consensus-del-files
 
+systemctl --no-pager restart vanguards || true
 systemctl --no-pager restart tor
