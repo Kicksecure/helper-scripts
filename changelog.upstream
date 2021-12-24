@@ -1,3 +1,15 @@
+commit a70612f9ca94a2b84697dc27792fdd0f7f74ad40
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 24 06:40:51 2021 -0500
+
+    anon-consensus-del: also restart vanguards
+
+commit 0d8bb31f3055097ac4526ab7583d89a9dd8fae9e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 9 03:38:21 2021 -0500
+
+    bumped changelog version
+
 commit 54e2888ccf378ae60127b26774407460041cb8e5
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Dec 9 03:26:39 2021 -0500
