@@ -3,7 +3,7 @@
 ## Copyright (C) 2020 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-if grep -q "libhardened_malloc_kicksecure.so" "/proc/$$/maps"; then
+if grep -q "libhardened_malloc-light.so" "/proc/$$/maps"; then
     echo "kicksecure"
     exit 0
 fi
