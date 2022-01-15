@@ -1,3 +1,15 @@
+commit 893974f9ee9ac69a9e55c37692818fd7d63b48b7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 15 12:33:45 2022 -0500
+
+    hardened-malloc-type-test: Hardened Malloc version 10 compatibility
+
+commit f0deff8fb6ee79d1f54b7d56d986ee6c267b47a5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 24 07:33:50 2021 -0500
+
+    bumped changelog version
+
 commit a70612f9ca94a2b84697dc27792fdd0f7f74ad40
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Dec 24 06:40:51 2021 -0500
