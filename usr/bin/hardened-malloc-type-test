@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 if grep -q "libhardened_malloc-light.so" "/proc/$$/maps"; then
-    echo "kicksecure"
+    echo "light"
     exit 0
 fi
 
