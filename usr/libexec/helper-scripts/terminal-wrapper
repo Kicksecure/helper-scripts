@@ -16,6 +16,7 @@ if [ -e "/etc/alternatives/x-terminal-emulator" ]; then
 fi
 
 supported_terminal_emulator_apps="
+   gnome-terminal
    xfce4-terminal
    xterm
    konsole
@@ -29,6 +30,8 @@ done
 
 if command -v xfce4-terminal >/dev/null 2>&1; then
    [ -n "$terminal_emulator_app" ] || terminal_emulator_app="xfce4-terminal"
+elif command -v gnome-terminal >/dev/null 2>&1; then
+   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="gnome-terminal"
 elif command -v xterm >/dev/null 2>&1; then
    [ -n "$terminal_emulator_app" ] || terminal_emulator_app="xterm"
 elif command -v konsole >/dev/null 2>&1; then
@@ -59,6 +62,22 @@ if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then
    fi
 fi
 
+if [ "$terminal_emulator_app" = "gnome-terminal" ]; then
+   if [ "$terminal_emulator_extra_args" = "" ]; then
+      unset terminal_emulator_extra_args
+      declare -a terminal_emulator_extra_args
+      if [ ! "$terminal_emulator_window_title" = "" ]; then
+         terminal_emulator_extra_args="--title"
+         terminal_emulator_extra_args+=("$terminal_emulator_window_title")
+      fi
+      terminal_emulator_extra_args+=("--maximize")
+      ## --full-screen is needed in Qubes.
+      terminal_emulator_extra_args+=("--full-screen")
+      terminal_emulator_extra_args+=("--wait")
+      terminal_emulator_extra_args+=("--")
+   fi
+fi
+
 if [ "$terminal_emulator_app" = "xterm" ]; then
    [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="-e"
 fi
@@ -79,6 +98,8 @@ else
 fi
 
 if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then
+   $terminal_emulator_app "${terminal_emulator_extra_args[@]}" $@
+elif [ "$terminal_emulator_app" = "gnome-terminal" ]; then
    $terminal_emulator_app "${terminal_emulator_extra_args[@]}" $@
 else
    $terminal_emulator_app $terminal_emulator_extra_args $@
