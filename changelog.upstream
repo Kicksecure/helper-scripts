@@ -1,3 +1,15 @@
+commit d3390d4c0889794204791329555615756ed4aa40
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Feb 7 13:00:00 2022 -0500
+
+    `/usr/libexec/helper-scripts/terminal-wrapper`: add support for `gnome-terminal`
+
+commit dba37f521f9e38b6332607b70b1be9ba68a5830d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 27 05:50:06 2022 -0500
+
+    bumped changelog version
+
 commit a5e293a77228de71f0e8947a684dcaacc91ba516
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 27 05:37:31 2022 -0500
