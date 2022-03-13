@@ -146,6 +146,8 @@ set_date() {
    output_cmd "INFO: date command output: '$date_command_output'"
 }
 
+true "START: $0"
+
 who_ami="$(whoami)"
 
 if [ "$who_ami" = "sdwdate" ]; then
