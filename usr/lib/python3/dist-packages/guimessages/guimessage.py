@@ -30,7 +30,7 @@ class gui_message(QtWidgets.QMessageBox):
         self.initUI()
 
     def initUI(self):
-        self.setWindowIcon(QtGui.QIcon("/usr/share/icons/anon-icon-pack/whonix.ico"))
+        self.setWindowIcon(QtGui.QIcon("/usr/share/icons/icon-pack-dist/whonix.ico"))
 
         self.setIcon(getattr(QtWidgets.QMessageBox, self.icon))
         self.setStandardButtons(getattr(QtWidgets.QMessageBox, self.button))
