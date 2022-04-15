@@ -9,7 +9,7 @@ if grep -q "libhardened_malloc-light.so" "/proc/$$/maps"; then
 fi
 
 if grep -q "libhardened_malloc.so" "/proc/$$/maps"; then
-    echo "original"
+    echo "default"
     exit 0
 fi
 
