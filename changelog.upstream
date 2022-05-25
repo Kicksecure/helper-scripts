@@ -1,3 +1,39 @@
+commit afc6efe0224c8142630068e7cad7e35450120641
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 20 15:27:06 2022 -0400
+
+    readme
+
+commit 5109ad6a2e54b65700e233d7d40792371ea5d697
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 20 14:46:34 2022 -0400
+
+    copyright
+
+commit 29bdc344c406cae700a2cad1a4a19a13042a4cab
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 15 14:27:19 2022 -0400
+
+    Hardened Malloc Original was renamed to Hardened Malloc Default
+
+commit 62c357c6bec2946961bd06849f92d745c4dfe36e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 10 12:40:11 2022 -0400
+
+    readme
+
+commit 70cc7a38c9351088d2d3e2f4e6420c02b97d64cf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Mar 22 09:39:29 2022 -0400
+
+    rename
+
+commit 67b191a64bc88ad2d690f5a4af121da8eb0ff063
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Mar 13 08:03:01 2022 -0400
+
+    bumped changelog version
+
 commit b95386650c534178d3958b93d2703ee9549f5ae1
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Mar 13 07:52:06 2022 -0400
