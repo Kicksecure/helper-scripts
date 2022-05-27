@@ -1,3 +1,15 @@
+commit 751efe32c7354594b07e46f165887f0cda75f1b3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 27 12:14:23 2022 -0400
+
+    rewrite usr/libexec/helper-scripts/repair_torrc.py in bash usr/libexec/helper-scripts/repair-torrc
+
+commit 2e23183fba7c82bfa86e4ab5a56b2d3a5f805a4c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 25 06:06:32 2022 -0400
+
+    bumped changelog version
+
 commit afc6efe0224c8142630068e7cad7e35450120641
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri May 20 15:27:06 2022 -0400
