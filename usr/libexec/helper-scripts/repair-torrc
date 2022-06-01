@@ -15,6 +15,15 @@
 set -x
 set -e
 
+if test -f /usr/share/anon-gw-base-files/gateway ; then
+   true "INFO: Whonix detected, ok."
+else
+   true "\
+WARNING: $0 is not yet implemented for non-Whonix, see:
+https://forums.whonix.org/t/tor-controller-gui-tor-control-panel/5444/94"
+   exit 0
+fi
+
 torrcd_path='/etc/torrc.d/95_whonix.conf'
 torrc_file_path='/usr/local/etc/torrc.d/40_tor_control_panel.conf'
 torrc_user_file_path='/usr/local/etc/torrc.d/50_user.conf'
