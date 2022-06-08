@@ -1,3 +1,31 @@
+commit e1e4d29633fa492aa18cd70c74238eefbf7dfdae
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 1 17:52:15 2022 -0400
+
+    skip `/usr/libexec/helper-scripts/repair-torrc` in non-Whonix
+
+commit 5f1724b9943619cfd1d973966a1978040179845f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 1 17:16:15 2022 -0400
+
+    fix `/usr/libexec/helper-scripts/repair-torrc` for non-Whonix
+    
+    Thanks to @TNT_BOM_BOM for the bug report!
+    
+    https://forums.whonix.org/t/tor-controller-gui-tor-control-panel/5444/90
+
+commit 7536f8317a9619447e5de574e8c6661c2c8c1029
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 1 16:41:41 2022 -0400
+
+    refactoring
+
+commit 666eccb57b100f0bee01834279a71a1b068dadcc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 27 12:35:06 2022 -0400
+
+    bumped changelog version
+
 commit 751efe32c7354594b07e46f165887f0cda75f1b3
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri May 27 12:14:23 2022 -0400
