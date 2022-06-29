@@ -1,0 +1,35 @@
+#!/bin/bash
+
+## Copyright (C) 2022 - 2022 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+grep_args="\
+   --exclude=changelog.upstream \
+   --exclude-dir=.git
+   --binary-files=without-match \
+   -l \
+   -P \
+   -n"
+
+one=$(LC_ALL=C grep $grep_args '[^\x00-\x7F]' "$@")
+
+two=$(LC_ALL=C grep $grep_args "[^[:ascii:]]" "$@")
+
+## https://access.redhat.com/security/vulnerabilities/RHSB-2021-007
+## https://lintian.debian.org/tags/unicode-trojan
+three=$(LC_ALL=C grep $grep_args $'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]' "$@")
+
+result="\
+$one
+$two
+$three"
+
+output_message=$(echo "$result" | sort --unique)
+
+echo "$output_message"
+
+if [ "$output_message" = "" ]; then
+   exit 1
+fi
+
+exit 0
