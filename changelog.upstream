@@ -1,3 +1,17 @@
+commit 87efc65c5373c61e6d0674eaf6335ed92b0ad82e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 29 02:22:40 2022 -0400
+
+    `grep-find-unicode-wrapper` - new helper-script to detect invisible potentially malicious unicode
+    
+    https://forums.whonix.org/t/detecting-malicious-unicode-in-source-code-and-pull-requests/13754
+
+commit 414f127a16cb4f6221197ea63412c8a2469b89de
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 8 10:39:50 2022 -0400
+
+    bumped changelog version
+
 commit e1e4d29633fa492aa18cd70c74238eefbf7dfdae
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 1 17:52:15 2022 -0400
