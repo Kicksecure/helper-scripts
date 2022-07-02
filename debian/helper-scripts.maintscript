@@ -1,0 +1,5 @@
+## Copyright (C) 2022 - 2022 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+rm_conffile /etc/apparmor.d/usr.sbin.anondate-get
+rm_conffile /etc/apparmor.d/usr.sbin.anondate-set
