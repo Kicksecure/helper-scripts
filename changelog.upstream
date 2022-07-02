@@ -1,3 +1,21 @@
+commit b55677dd34297a3b11ff98690816597fd20b6dd1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jul 2 16:09:32 2022 -0400
+
+    remove /etc/apparmor.d/usr.sbin.anondate-get / /etc/apparmor.d/usr.sbin.anondate-set
+    since not ready
+    and causing an error message
+    
+    https://forums.whonix.org/t/whonix-apparmor-profiles-development-discussion/108/731
+    
+    Thanks to @0x1f for the bug report!
+
+commit e7d9daa4aecf8a96c4264b276067fce3007e3a1c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 29 07:07:51 2022 -0400
+
+    bumped changelog version
+
 commit 87efc65c5373c61e6d0674eaf6335ed92b0ad82e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 29 02:22:40 2022 -0400
