@@ -41,7 +41,7 @@
 ##
 ##    export DEBDEBUG=1
 ##     export SKIP_SCRIPTS+=" security-misc.postinst "
-##     sudo -E dpkg -i /path/to/package.deb
+##     sudo --preserve-env dpkg -i /path/to/package.deb
 
 ## Colorful output: provides color function
 
