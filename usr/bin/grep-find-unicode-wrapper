@@ -26,10 +26,10 @@ $three"
 
 output_message=$(echo "$result" | sort --unique)
 
-echo "$output_message"
-
 if [ "$output_message" = "" ]; then
    exit 1
+else
+   echo "$output_message"
 fi
 
 exit 0
