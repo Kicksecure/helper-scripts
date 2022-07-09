@@ -9,18 +9,18 @@ set -e
 true "$0: start"
 
 file_name='/usr/sbin/update-initramfs'
-search='#!/bin/sh'
+ search='#!/bin/sh'
 replace='#!/bin/sh -x'
 
-if ! grep  --fixed-strings "$replace" "$file_name" ; then
+if ! grep --fixed-strings "$replace" "$file_name" ; then
    LANG=C str_replace "$search" "$replace" "$file_name"
 fi
 
-search='#!/bin/sh -e'
+ search='#!/bin/sh -e'
 replace='#!/bin/sh -ex'
 file_name="/etc/kernel/postinst.d/initramfs-tools"
 
-if ! grep  --fixed-strings "$replace" "$file_name" ; then
+if ! grep --fixed-strings "$replace" "$file_name" ; then
    LANG=C str_replace "$search" "$replace" "$file_name"
 fi
 
