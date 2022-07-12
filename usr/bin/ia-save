@@ -1,0 +1,15 @@
+#!/bin/bash
+
+## Copyright (C) 2022 - 2022 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+#set -x
+set -e
+
+curl_output=$(curl --silent --head "https://web.archive.org/save/$1")
+
+location=$(echo "$curl_output" | grep '^location:')
+
+link=$(echo "$location" | awk '{ print $2 }')
+
+echo "$link"
