@@ -1,3 +1,15 @@
+commit 24b4b1b61d9b3a65d8ac085ca4dcd8c12b7d593a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 12 19:15:15 2022 -0400
+
+    add tool to save website on web.archive.org `ia-save`
+
+commit 40a14d73b60aed5c1d9d01052f3269f3e16fe267
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 10 07:00:27 2022 -0400
+
+    bumped changelog version
+
 commit ae3faea562e8b07f80554216e6d25166621e6462
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Jul 9 19:15:04 2022 -0400
