@@ -1,0 +1,9 @@
+#!/bin/bash
+
+## Copyright (C) 2022 - 2022 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -x
+set -e
+
+sudo -u sdwdate onion-time-pre-script
