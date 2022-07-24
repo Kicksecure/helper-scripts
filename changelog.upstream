@@ -1,3 +1,15 @@
+commit 843dbfa056f2144b782d096fdd9e4fd1acaeeb2f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 24 05:09:17 2022 -0400
+
+    add onion-time-pre-script wrapper script
+
+commit a3d1813efbc1554fc1a80139a139d670b4bff97b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jul 13 08:28:12 2022 -0400
+
+    bumped changelog version
+
 commit 24b4b1b61d9b3a65d8ac085ca4dcd8c12b7d593a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Jul 12 19:15:15 2022 -0400
