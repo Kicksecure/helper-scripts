@@ -6,6 +6,11 @@
 #set -x
 set -e
 
+if [ "$1" = "" ]; then
+   echo "$0: ERROR: No link given!" >&2
+   exit 1
+fi
+
 curl_output=$(curl --silent --head "https://web.archive.org/save/$1")
 
 location=$(echo "$curl_output" | grep '^location:')
