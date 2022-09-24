@@ -13,8 +13,40 @@
 
 set -e
 
-minimum_unixtime="$(minimum-unixtime-show 2>/dev/null)"
+check_valid() {
+   expected_string_lenght=10
+   actual_string_length="${#1}"
+   if [ ! "$actual_string_length" = "$expected_string_lenght" ]; then
+      return 1
+   fi
+   if [[ ! "$1" != *[!0-9]* ]]; then
+      return 1
+   fi
+   return 0
+}
+
 unixtime_to_validate="$1"
+
+if [ "$unixtime_to_validate" = "" ]; then
+   echo "$0: ERROR: missing argument" >&2
+   exit 1
+fi
+
+if check_valid "$unixtime_to_validate" ; then
+   true ok
+else
+   echo "$0: ERROR: unixtime_to_validate '$unixtime_to_validate' is invalid." >&2
+   exit 1
+fi
+
+minimum_unixtime="$(minimum-unixtime-show 2>/dev/null)"
+
+if check_valid "$minimum_unixtime" ; then
+   true ok
+else
+   echo "$0: ERROR: minimum_unixtime '$minimum_unixtime' is invalid." >&2
+   exit 1
+fi
 
 if [ "$unixtime_to_validate" -ge "$minimum_unixtime" ]; then
    exit 0
