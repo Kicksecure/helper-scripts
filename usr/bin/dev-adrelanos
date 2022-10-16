@@ -1,0 +1,24 @@
+#!/bin/bash
+
+## Copyright (C) 2022 - 2022 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -x
+set -e
+
+true "$0: START"
+
+true "$0: INFO: This script is for developers-only."
+
+if [ "$1" = "" ]; then
+   true "$0: ERROR: No argument given!" >&2
+   exit 1
+fi
+
+setxkbmap de
+
+echo "
+%sudo   ALL=(ALL:ALL) NOPASSWD:ALL
+" | dsudo tee /etc/sudoers.d/adrelanos-dev-passwordless >/dev/null
+
+true "$0: END"
