@@ -9,7 +9,7 @@
 
 if [ -z "$PS1" ]; then
    true "If not running interactively, don't do anything."
-   return 0
+   return 0 2>/dev/null
    exit 0
 fi
 
@@ -18,14 +18,14 @@ var="$?"
 if [ "$var" = "0" ]; then
    true "running in a login shell, don't do anything."
    ## Login shells are greeted by /etc/motd.
-   return 0
+   return 0 2>/dev/null
    exit 0
 fi
 
 ## We run in a terminal emulator.
 
 if ! test -d /etc/update-motd.d ; then
-   return 0
+   return 0 2>/dev/null
    exit 0
 fi
 
