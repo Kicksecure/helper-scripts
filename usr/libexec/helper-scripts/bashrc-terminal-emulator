@@ -8,7 +8,7 @@
 ## executing this script.
 
 if [ -z "$PS1" ]; then
-   true "If not running interactively, don't do anything."
+   true "$0: INFO: If not running interactively, don't do anything."
    return 0 2>/dev/null
    exit 0
 fi
@@ -16,7 +16,7 @@ fi
 shopt -q login_shell
 var="$?"
 if [ "$var" = "0" ]; then
-   true "running in a login shell, don't do anything."
+   true "$0: INFO: running in a login shell, don't do anything."
    ## Login shells are greeted by /etc/motd.
    return 0 2>/dev/null
    exit 0
