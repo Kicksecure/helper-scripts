@@ -1,3 +1,43 @@
+commit 96a400d73af2c09d481c6096acc770f1234605ed
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 16 07:43:47 2022 -0400
+
+    support hushlogin - less output in terminal emulator
+    
+    https://forums.whonix.org/t/support-hushlogin-less-output-in-terminal-emulator/15827
+
+commit f40806f92697d54ac3af1f6782bc833136d36710
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 16 07:29:44 2022 -0400
+
+    output
+
+commit 7acc8397714c9c9588408d83d3f5159a1180966f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 16 07:28:30 2022 -0400
+
+    output
+
+commit 69ab4d48ac1146a539dd2224513a8d60a37be1ef
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 16 07:27:23 2022 -0400
+
+    output
+
+commit 888cdfb66fb02b0aa0d2e6b80a200c7d4c57ec5d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 16 07:26:33 2022 -0400
+
+    /usr/libexec/helper-scripts/bashrc-terminal-emulator: fix "return: can only `return' from a function or sourced script"
+    
+    when executed
+
+commit d54ff4136e39e81538e3291e80ace0ac56590137
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 24 09:22:13 2022 -0400
+
+    bumped changelog version
+
 commit 6244e2b95278568efeeb10d611ef2a0d9f8c30df
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Sep 24 08:56:23 2022 -0400
