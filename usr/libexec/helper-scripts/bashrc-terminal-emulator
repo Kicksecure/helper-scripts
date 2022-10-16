@@ -7,8 +7,10 @@
 ## Using both 'return 0' and 'exit 0' to support both, `source`ing as well as
 ## executing this script.
 
+true "$0: START"
+
 if [ -z "$PS1" ]; then
-   true "$0: INFO: If not running interactively, don't do anything."
+   true "$0: INFO: If not running interactively, don't do anything, ok."
    return 0 2>/dev/null
    exit 0
 fi
@@ -16,7 +18,7 @@ fi
 shopt -q login_shell
 var="$?"
 if [ "$var" = "0" ]; then
-   true "$0: INFO: running in a login shell, don't do anything."
+   true "$0: INFO: running in a login shell, don't do anything, ok."
    ## Login shells are greeted by /etc/motd.
    return 0 2>/dev/null
    exit 0
@@ -25,8 +27,11 @@ fi
 ## We run in a terminal emulator.
 
 if ! test -d /etc/update-motd.d ; then
+   true "$0: INFO: /etc/update-motd.d does not exist, ok."
    return 0 2>/dev/null
    exit 0
 fi
 
 run-parts /etc/update-motd.d || true
+
+true "$0: END"
