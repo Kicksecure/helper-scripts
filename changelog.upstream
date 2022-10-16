@@ -1,3 +1,15 @@
+commit 8b99653d114076e6b4dbcfc80dc3762e7e08409c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 16 09:48:06 2022 -0400
+
+    add developer usability helper script dev-adrelanos
+
+commit 83384ff3cc2677cdb554a3c6bfdf6dd1bde5bb87
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 16 07:50:59 2022 -0400
+
+    bumped changelog version
+
 commit 96a400d73af2c09d481c6096acc770f1234605ed
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 16 07:43:47 2022 -0400
