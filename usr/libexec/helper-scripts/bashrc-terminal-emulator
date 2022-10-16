@@ -32,6 +32,22 @@ if ! test -d /etc/update-motd.d ; then
    exit 0
 fi
 
+if test -f ~/.hushlogin ; then
+   true "$0: INFO: ~/.hushlogin exist, ok."
+   return 0 2>/dev/null
+   exit 0
+fi
+if test -f "/etc/hushlogin" ; then
+   true "$0: INFO: /etc/hushlogin exist, ok."
+   return 0 2>/dev/null
+   exit 0
+fi
+if test -f "/usr/local/etc/hushlogin" ; then
+   true "$0: INFO: /usr/local/etc/hushlogin exist, ok."
+   return 0 2>/dev/null
+   exit 0
+fi
+
 run-parts /etc/update-motd.d || true
 
 true "$0: END"
