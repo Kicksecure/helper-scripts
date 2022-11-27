@@ -21,4 +21,6 @@ echo "
 %sudo   ALL=(ALL:ALL) NOPASSWD:ALL
 " | dsudo tee /etc/sudoers.d/adrelanos-dev-passwordless >/dev/null
 
+sudo repository-dist --enable --repository developers
+
 true "$0: END"
