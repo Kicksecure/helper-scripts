@@ -35,7 +35,7 @@ if [ "$boot_image" = "" ]; then
    exit 1
 fi
 
-boot_image_without_boot_slash=$(echo "$kernel" | sed "s#boot/##")
+boot_image_without_boot_slash=$(echo "$boot_image" | sed "s#boot/##")
 
 if [ "$boot_image_without_boot_slash" = "" ]; then
    echo "$0: ERROR: boot_image_without_boot_slash detection failed (is empty)!" >&2
