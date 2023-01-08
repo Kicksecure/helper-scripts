@@ -1,0 +1,21 @@
+#!/bin/bash
+
+## Copyright (C) 2023 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## Copyright (C) 2023 - 2023 Friedrich Doku <friedrichdoku@gmail.com>
+## See the file COPYING for copying conditions.
+
+#set -x
+set -e
+
+kernel=$(kernel-file-detect)
+
+initrd=$(echo "$kernel" | sed "s#vmlinuz#initrd.img#")
+## example initrd:
+## /boot//initrd.img-5.10.0-20-amd64
+
+if ! test -r "$kernel"; then
+   echo "$0: ERROR: Kernel File '$kernel' not found or not readable!" >&2
+   exit 1
+fi
+
+echo "$initrd"
