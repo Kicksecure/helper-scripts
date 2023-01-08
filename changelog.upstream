@@ -1,3 +1,15 @@
+commit 350eec36e37cb463c97416924b325202e0539f6c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jan 8 07:15:10 2023 -0500
+
+    add initrd-file-detect / kernel-file-detect
+
+commit bc67fb68aee37bbfd57d707d456eef6d304d11c4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 27 07:32:25 2022 -0500
+
+    bumped changelog version
+
 commit 9fb9966c5e7a5698f8d245c470e45505406c7320
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 27 05:27:38 2022 -0500
