@@ -15,7 +15,7 @@
 # fi
 
 ## Error log:
-## - implement trap ERR if function errorhandlergeneral does not exist
+## - implement trap ERR if function exception_handler_general does not exist
 ## - implements a simple error handler if non exists
 ## - run silent by default
 ## - write xtrace to temporary log
@@ -244,13 +244,13 @@ fi
 colors
 
 ## {{ Set up error handler.
-if [ "$(type -t errorhandlergeneral)" = "function" ]; then
-   ## Function errorhandlergeneral exists (declared in
+if [ "$(type -t exception_handler_general)" = "function" ]; then
+   ## Function exception_handler_general exists (declared in
    ## help-steps/pre). Prefer to use the more feature rich version of the error
    ## handler.
-   trap "errorhandlergeneral" ERR
+   trap "exception_handler_general" ERR
 else
-   ## Function errorhandlergeneral does not exist.
+   ## Function exception_handler_general does not exist.
 
    ## Check if any trap is already declared.
    if [ "$(trap -p ERR)" = "" ]; then
