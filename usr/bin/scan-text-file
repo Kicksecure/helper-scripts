@@ -1,0 +1,39 @@
+#!/bin/bash
+## Copyright (C) 2022 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Search pattern for suspicious characters by negation of allowed characters
+SEARCH_PATTERN='[^[:ascii:]]|[\x{061C}\x{200E}\x{200F}\x{202A}\x{202B}\x{202C}\x{202D}\x{202E}\x{2066}\x{2067}\x{2068}\x{2069}]'
+
+found=0
+## Loop over input files
+while [ "$#" -gt 0 ]; do
+  current_file="$1"
+  contains_suspicious_characters=$(LC_ALL=C perl -nle "print \$ARGV if /$SEARCH_PATTERN/" "$current_file")
+  
+  echo "==================="
+  echo "File: $current_file"
+  
+  if [ -n "$contains_suspicious_characters" ]; then
+    found=1
+    echo "-- Warning : Suspicious characters were found"
+    ## Printing out suspicious characters in Unicode escape sequence \u... with their line and position
+    perl -C -ne "while (/$SEARCH_PATTERN/g) {
+      printf \"Line %d, Position %d: \\\u%04x\n\", \$., \$-[0] + 1, ord(\$&);
+    }" "$current_file"
+  else
+    echo "++ OK : No suspicous characters were found"
+  fi
+
+  ## Remove the processed filename from the list of arguments to satisfy while loop
+  shift
+done
+
+if [ $found -ne 0 ]; then
+  echo -e "-------------------\n-------------------"
+  echo "NOTE: For safety reasons these characters are shown in their Unicode escape sequence '\u...'. To inspect these characters search a 'Unicode character inspector' online and paste the Unicode escape sequence there"
+  exit 1
+fi
+
+exit 0
+
