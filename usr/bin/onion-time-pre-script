@@ -6,4 +6,4 @@
 set -x
 set -e
 
-sudo -u sdwdate onion-time-pre-script
+sudo -u sdwdate /usr/libexec/helper-scripts/onion-time-pre-script
