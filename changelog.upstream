@@ -1,3 +1,15 @@
+commit 67340f28ef724ce7cb0e95dc55d1251ef80a587e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 5 14:17:28 2023 +0000
+
+    fix /usr/bin/onion-time-pre-script usability wrapper
+
+commit e527a31044c75a243b3326644fd17ec358386a66
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 10 07:08:38 2023 -0500
+
+    bumped changelog version
+
 commit 8a7083182add00ac844049cf1bddf05083b4f88b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Jan 10 06:43:13 2023 -0500
