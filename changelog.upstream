@@ -1,3 +1,15 @@
+commit 9957453cd681bda0db9e786e508a536d65147ff6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 6 11:15:29 2023 +0000
+
+    tor-circuit-established-check apparmor add `/dev/tty rw,`
+
+commit cec3143362a743e03e0d559d7a7148a398211450
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 5 17:09:59 2023 +0000
+
+    bumped changelog version
+
 commit 67340f28ef724ce7cb0e95dc55d1251ef80a587e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri May 5 14:17:28 2023 +0000
