@@ -29,6 +29,8 @@
   @{PROC}/uptime r,
   @{PROC}/sys/kernel/osrelease r,
 
+  /dev/tty rw,
+
   /run/tor/control.authcookie r,
 
   ## Not needed. Works without.
