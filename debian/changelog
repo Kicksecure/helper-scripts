@@ -1,3 +1,9 @@
+helper-scripts (3:19.2-1) unstable; urgency=medium
+
+  * New upstream version (local package).
+
+ -- Patrick Schleizer <adrelanos@whonix.org>  Wed, 14 Jun 2023 09:56:28 +0000
+
 helper-scripts (3:19.1-1) unstable; urgency=medium
 
   * New upstream version (local package).
