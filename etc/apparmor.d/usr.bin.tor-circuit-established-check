@@ -1,12 +1,13 @@
-# Last Modified: Fri Sep 24 15:34:21 2021
-#include <tunables/global>
+# Last Modified: Fri Jun 16 11:24:23 2023
+include <tunables/global>
 
 ## Copyright (C) 2017 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 
 /usr/bin/tor-circuit-established-check flags=(attach_disconnected) {
-  #include <abstractions/tor-circuit-established-check>
-  #include <local/usr.bin.tor-circuit-established-check>
+  include <abstractions/consoles>
+  include <abstractions/tor-circuit-established-check>
+  include <local/usr.bin.tor-circuit-established-check>
 
 }
