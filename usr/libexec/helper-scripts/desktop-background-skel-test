@@ -8,7 +8,7 @@
 set -x
 set -e
 
-sudo systemctl stop gdm3
+sudo systemctl stop lightdm
 sudo killall xfconfd || true
 sleep 2
 
@@ -22,4 +22,4 @@ fi
 
 chown --verbose user:user /home/user/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
 
-sudo systemctl restart gdm3
+sudo systemctl restart lightdm
