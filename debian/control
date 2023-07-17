@@ -1,10 +1,10 @@
-## Copyright (C) 2012 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## Copyright (C) 2012 - 2023 ENCRYPTED SUPPORT LP <adrelanos@kicksecure.com>
 ## See the file COPYING for copying conditions.
 
 Source: helper-scripts
 Section: misc
 Priority: optional
-Maintainer: Patrick Schleizer <adrelanos@whonix.org>
+Maintainer: Patrick Schleizer <adrelanos@kicksecure.com>
 Build-Depends: debhelper (>= 13), debhelper-compat (= 13), dh-python, dh-apparmor
 Homepage: https://github.com/Kicksecure/helper-scripts
 Vcs-Browser: https://github.com/Kicksecure/helper-scripts
@@ -30,7 +30,7 @@ Description: Helper scripts useful for Linux Distributions
  Leak Test for Anonymity Distribution Workstations
  Integrated leak test.
  Needs to be manually run.
- See: https://www.kicksecure.com/wiki/Dev/Leak_Tests
+ See: https://www.whonix.org/wiki/Dev/Leak_Tests
  .
  Translatable GUI Messages
  Generic modules guimessage.py and translations.py.
