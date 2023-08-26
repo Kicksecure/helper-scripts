@@ -15,11 +15,12 @@ if [ "$1" = "" ]; then
    exit 1
 fi
 
-setxkbmap de || true
-
 echo "
 %sudo   ALL=(ALL:ALL) NOPASSWD:ALL
 " | dsudo tee /etc/sudoers.d/adrelanos-dev-passwordless >/dev/null
+
+setxkbmap de || true
+sudo loadkeys de || true
 
 sudo repository-dist --enable --repository developers
 
