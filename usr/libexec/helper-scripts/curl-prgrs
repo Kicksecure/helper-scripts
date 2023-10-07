@@ -320,7 +320,7 @@ unbuffered_sed \
         true
       else
         if [ "$CURL_OUT_FILE" = "" ]; then
-          echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&2
+          echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
           error_exit_code="57"
           echo "$error_exit_code" > "$statusfile"
           exit "$error_exit_code"
