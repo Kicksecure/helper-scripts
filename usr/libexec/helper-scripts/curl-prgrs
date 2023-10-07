@@ -166,8 +166,8 @@ shutdown() {
   processes_list="$curl_pid $subshell_pid $sed_pid"
   for processes_item in $processes_list ; do
     if kill -0 "$processes_item" 2>/dev/null ; then
-      ps -p "$processes_item" || true
-      kill -s sigkill "$processes_item" || true
+      #ps -p "$processes_item" || true
+      kill -s sigkill "$processes_item" &>/dev/null || true
     fi
   done
 
