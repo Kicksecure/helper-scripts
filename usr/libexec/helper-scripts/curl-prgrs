@@ -5,9 +5,14 @@
 # Description:
 # This script provides a custom progress bar for file downloads using curl.
 # It is designed to be a drop-in replacement for curl, accepting the same
-# command-line arguments and options. The script employs a temporary file
-# to capture trace information from curl, parsing this information to update
-# a progress bar displayed on the terminal.
+# command-line arguments and options.
+#
+# It can also prevent endless data attacks (as defined in the TUF threat model)
+# if environment variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is set.
+#
+# curl's --max-filesize option cannot stop endless data attacks. Quote curl man page:
+# "NOTE: The file size is not always known prior to download, and for such files this
+# option has no effect even if the file transfer ends up being larger than this given limit."
 #
 # Usage:
 # Use curl-prgrs in place of curl for downloading files:
