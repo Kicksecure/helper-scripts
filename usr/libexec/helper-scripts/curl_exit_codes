@@ -122,7 +122,7 @@ curl_exit_codes() {
    IFS="$OIFS"
 
    ## exit code not found.
-   echo "[$1] unknown curl exit code, please report this!"
+   echo "[$1] - [Unknown curl exit code, please report this!]"
    exit 0
 }
 
