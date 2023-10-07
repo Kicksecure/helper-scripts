@@ -203,8 +203,13 @@ mkfifo "$tracefile"
 
   curl_exit_code="$?"
 
-  echo "$curl_exit_code" | tee "$statusfile" >/dev/null
-  echo | tee -a "$tracefile" >/dev/null
+  ##echo "$curl_exit_code" | tee "$statusfile" >/dev/null
+  ## bug: 'tee' does not get terminated after sigterm.
+  #echo | tee -a "$tracefile" >/dev/null
+  ## Using shell redirection instead.
+  echo "$curl_exit_code" > "$statusfile"
+  echo >> "$tracefile"
+
   sync
 ) &
 
