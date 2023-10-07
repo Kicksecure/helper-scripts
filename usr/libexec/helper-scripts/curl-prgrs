@@ -1,17 +1,49 @@
 #!/usr/bin/env bash
 #
-# Wraps curl with a custom-drawn progress bar. Use it just like curl:
+# Script Name: curl-prgrs
 #
-#     $ curl-progress -O http://example.com/file.tar.gz
-#     $ curl-progress http://example.com/file.tar.gz > file.tar.gz
+# Description:
+# This script provides a custom progress bar for file downloads using curl.
+# It is designed to be a drop-in replacement for curl, accepting the same
+# command-line arguments and options. The script employs a temporary file
+# to capture trace information from curl, parsing this information to update
+# a progress bar displayed on the terminal.
 #
-# All arguments to the program are passed directly to curl. Define your
-# custom progress bar in the `print_progress` function.
+# Usage:
+# Use curl-prgrs in place of curl for downloading files:
+#     $ curl-prgrs -O http://example.com/file.tar.gz
+#     $ curl-prgrs http://example.com/file.tar.gz > file.tar.gz
 #
+# Features:
+# - Custom-drawn progress bar showing download progress.
+# - Error handling and cleanup for various termination scenarios.
+# - Checks for required dependencies before proceeding.
+# - Uses temporary files for capturing progress information and process communication.
+# - Supports custom configuration through environment variables.
+#
+# Environment Variables:
+# - TMPDIR: Path to the temporary directory.
+# - CURL: Path to the curl binary.
+#   Choices could be "curl" or "scurl" (secure curl). Default: "curl"
+# - CURL_PRGRS_MAX_FILE_SIZE_BYTES: Maximum allowed file size for downloads in bytes.
+#   default: unset
+# - CURL_OUT_FILE: Path to the output file for download.
+#   Required when using CURL_PRGRS_MAX_FILE_SIZE_BYTES.
+#   default: unset
+# - CURL_PRGRS_EXEC: Command to execute for updating the progress bar.
+#   default: unset
+#
+# Authors:
+# - Sam Stephenson <sstephenson@gmail.com>
+# - Patrick Schleizer <adrelanos@whonix.org>
+#
+# License:
 # (c) 2013 Sam Stephenson <sstephenson@gmail.com>
-# Released into the public domain 2013-01-21
+# Released into the public domain on 2013-01-21.
 # Source: https://gist.github.com/sstephenson/4587282
-# Small modification by Patrick Schleizer <adrelanos@whonix.org> under the same license
+#
+# Modifications:
+# - Modifications by Patrick Schleizer under the same license.
 
 # At a high level, we will show our own progress bar by forking curl off
 # into the background, passing a temporary file to the `--trace-ascii`
