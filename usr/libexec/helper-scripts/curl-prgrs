@@ -3,40 +3,36 @@
 # Script Name: curl-prgrs
 #
 # Description:
-# This script provides a custom progress bar for file downloads using curl.
-# It is designed to be a drop-in replacement for curl, accepting the same
-# command-line arguments and options.
+# The curl-prgrs script augments the functionality of curl by adding a custom progress bar
+# for file downloads, making it a convenient drop-in replacement for curl with the added
+# benefit of visual progress tracking. It accepts the same command-line arguments and options as curl.
 #
-# It can also prevent endless data attacks (as defined in the TUF threat model)
-# if environment variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is set.
-#
-# curl's --max-filesize option cannot stop endless data attacks. Quote curl man page:
+# Additionally, this script provides a mechanism to mitigate endless data attacks (as defined
+# in the TUF threat model) by setting the CURL_PRGRS_MAX_FILE_SIZE_BYTES environment variable.
+# Unlike curl's --max-filesize option, which does not have an effect when the file size is unknown prior to download,
+# this script ensures the file size restriction is enforced. The limitation of curl's --max-filesize is acknowledged in
+# the curl man page as follows:
 # "NOTE: The file size is not always known prior to download, and for such files this
 # option has no effect even if the file transfer ends up being larger than this given limit."
 #
 # Usage:
-# Use curl-prgrs in place of curl for downloading files:
+# Substitute curl with curl-prgrs for downloading files:
 #     $ curl-prgrs -O http://example.com/file.tar.gz
 #     $ curl-prgrs http://example.com/file.tar.gz > file.tar.gz
 #
 # Features:
-# - Custom-drawn progress bar showing download progress.
-# - Error handling and cleanup for various termination scenarios.
-# - Checks for required dependencies before proceeding.
-# - Uses temporary files for capturing progress information and process communication.
-# - Supports custom configuration through environment variables.
+# - Displays a custom-drawn progress bar to visualize download progress.
+# - Provides error handling and cleanup for various termination scenarios.
+# - Conducts preliminary checks for required dependencies before proceeding.
+# - Utilizes temporary files for capturing progress information and facilitating process communication.
+# - Allows custom configurations via environment variables.
 #
 # Environment Variables:
-# - TMPDIR: Path to the temporary directory.
-# - CURL: Path to the curl binary.
-#   Choices could be "curl" or "scurl" (secure curl). Default: "curl"
-# - CURL_PRGRS_MAX_FILE_SIZE_BYTES: Maximum allowed file size for downloads in bytes.
-#   default: unset
-# - CURL_OUT_FILE: Path to the output file for download.
-#   Required when using CURL_PRGRS_MAX_FILE_SIZE_BYTES.
-#   default: unset
-# - CURL_PRGRS_EXEC: Command to execute for updating the progress bar.
-#   default: unset
+# - TMPDIR: Specifies the path to the temporary directory.
+# - CURL: Defines the path to the curl binary. Acceptable values are "curl" or "scurl" (secure curl). Default: "curl"
+# - CURL_PRGRS_MAX_FILE_SIZE_BYTES: Sets the maximum allowed file size for downloads in bytes. Default: unset
+# - CURL_OUT_FILE: Specifies the path to the output file for download. Required when using CURL_PRGRS_MAX_FILE_SIZE_BYTES. Default: unset
+# - CURL_PRGRS_EXEC: Designates the command to execute for updating the progress bar. Default: unset
 #
 # Authors:
 # - Sam Stephenson <sstephenson@gmail.com>
@@ -48,12 +44,12 @@
 # Source: https://gist.github.com/sstephenson/4587282
 #
 # Modifications:
-# - Modifications by Patrick Schleizer under the same license.
-
-# At a high level, we will show our own progress bar by forking curl off
-# into the background, passing a temporary file to the `--trace-ascii`
-# option, filtering and parsing the trace output line by line, and then
-# drawing the progress bar to the screen when data is received.
+# - Subsequent modifications by Patrick Schleizer under the same license.
+#
+# Technical Overview:
+# The script initiates by forking curl into the background, directing a temporary file to the `--trace-ascii`
+# option. It filters and parses the trace output line-by-line to extract progress information, which is then
+# utilized to update and display the progress bar on the terminal as data is received.
 
 #set -x
 set -e
