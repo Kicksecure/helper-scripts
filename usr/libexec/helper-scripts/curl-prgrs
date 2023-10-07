@@ -342,4 +342,5 @@ subshell_pid="$!"
 
 wait_exit_code=0
 wait "$!" || { wait_exit_code=$? ; true; };
+true "$BASH_SOURCE INFO: END."
 exit "$wait_exit_code"
