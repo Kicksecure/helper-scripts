@@ -57,6 +57,9 @@ command -v mktemp >/dev/null
 
 : "${TMPDIR:=""}"
 : "${CURL:="curl"}"
+: "${CURL_PRGRS_MAX_FILE_SIZE_BYTES:=""}"
+: "${CURL_OUT_FILE:=""}"
+: "${CURL_PRGRS_EXEC:=""}"
 
 # Locate the path to the temporary directory.
 if [ "$TMPDIR" = "" ]; then
