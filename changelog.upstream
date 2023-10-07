@@ -1,3 +1,183 @@
+commit 880e1c460dd0430cf9b4e84f9c8fe8c707a8688a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 04:06:27 2023 -0400
+
+    fix
+
+commit 40323d5e725403ffe9dca3803d1de480340d2ed9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 03:40:28 2023 -0400
+
+    output
+
+commit 105538d8bd13c1bed6e565100a6591062d552867
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 03:39:03 2023 -0400
+
+    fix
+
+commit ffba794b91b812889079e03b374eae460a2ceb14
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 03:38:39 2023 -0400
+
+    debugging
+
+commit 18d7458704c379f07c0916569e9cc0552d25d0f8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 03:36:10 2023 -0400
+
+    improve curl-prgrs
+
+commit 7cfa626412e1fa9dee19e5de480ad660246e05c6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 03:32:37 2023 -0400
+
+    improve curl-scripts
+
+commit 12736d85676648de0e93d97272f1b9be319718eb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 02:13:49 2023 -0400
+
+    comments
+
+commit 5af43ece454359c792fd7cbfd747be8a439976d7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 02:10:26 2023 -0400
+
+    comments
+
+commit aa91ef901f822b7eac40c1c80bbe57afd5157fa5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 02:06:48 2023 -0400
+
+    comments
+
+commit 04361147ce3c494bc277d5e56ff9df7d35af0d69
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 01:52:12 2023 -0400
+
+    improve curl-scripts
+
+commit 5ecdd35a9e1a62edfb6e314dab2cdac78b49d822
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 01:49:51 2023 -0400
+
+    output
+
+commit b0079d53844d8fdb9377af363dcbbe51a5779df9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 01:46:49 2023 -0400
+
+    output
+
+commit aa4a543287efa9efb6dff989efa6b757b54fc990
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 01:44:40 2023 -0400
+
+    improve curl-scripts
+
+commit 74c9ba090cd1e34fc791ad8bc2e6950d598e2557
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 01:40:01 2023 -0400
+
+    output
+
+commit 0c9492e311b886192207a5dac4f181c1a9bbd684
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 01:39:11 2023 -0400
+
+    improve curl-scripts
+
+commit a008e74de8731e3b23eaaece072bbec608bb59b4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 01:22:50 2023 -0400
+
+    fix
+
+commit a2122c011024b069231fc81f49958575036bf7cf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 01:08:47 2023 -0400
+
+    output
+
+commit dc07056c9503959cea184950a818ad0c4756f97b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:58:37 2023 -0400
+
+    fix
+
+commit 029c2e3f9a032b0375beceeb68973f6cc3bfdedf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:54:22 2023 -0400
+
+    fix
+
+commit f1e8bc9363f3d01d234b709266f94080c97107ca
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:53:31 2023 -0400
+
+    fix
+
+commit 3af55b7c127a1c3fb92ba10e8c29c0978ec0dfee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:50:45 2023 -0400
+
+    fix
+
+commit 98e851ea4eda926b1b88074bbe1e04e2824c361f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:46:26 2023 -0400
+
+    minor
+
+commit 24fc6e1cf485c655c1d4c8eec02d2071eb7dc329
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:45:46 2023 -0400
+
+    improve curl-scripts
+
+commit 53876cc83dabe7fe9a67eafc6c495bfe3d1c7d27
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:43:21 2023 -0400
+
+    improve curl-scripts
+
+commit 5fd378d0731f968f13a25af8def6c6d79ab3fcfa
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:26:30 2023 -0400
+
+    improve curl-scripts handling of temporary files
+
+commit 79a0f9fa34e6d12e776d8452249c4e03811e5465
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:18:41 2023 -0400
+
+    minor
+
+commit bfc19944f61b40346a8bde11d619549e26581675
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:17:53 2023 -0400
+
+    improve curl-scripts error handling
+
+commit ab3dadd99ebacaa1ca6e49155bdcdc32f56d6f71
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:14:42 2023 -0400
+
+    fix
+
+commit 2b1f971d66b97c2e33d80f4c3ecf4a7e8081d57c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 7 00:13:39 2023 -0400
+
+    improve error handling of curl-scripts
+
+commit 9fa4c9a5325785edd8dc7922e71bb20024175351
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 29 16:07:41 2023 -0400
+
+    bumped changelog version
+
 commit 0d36e593c5d9cb7d74750ecf5f2313613d946eb2
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Aug 29 16:01:39 2023 -0400
