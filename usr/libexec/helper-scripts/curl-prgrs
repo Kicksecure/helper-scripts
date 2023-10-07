@@ -23,15 +23,6 @@ set -e
 set -o nounset
 set -o pipefail
 
-error_handler() {
-   local exit_code="$?"
-   local last_err="$BASH_COMMAND"
-   echo "$BASH_SOURCE: ERROR: '$BASH_COMMAND' exit code '$exit_code'." >&4
-   exit 125
-}
-
-trap "error_handler" ERR
-
 isnum() {
     local num="$1"
     [[ $num =~ ^-?[0-9]+$ ]] && return 0 || return 1
@@ -83,6 +74,15 @@ rm -f "$tracefile" "$statusfile"
 # Define our `shutdown` function, which will be responsible for cleaning
 # up when the program terminates, either normally or abnormally.
 shutdown() {
+  local exit_code="$?"
+  local signal="$1"
+  local last_err="$BASH_COMMAND"
+  if [ "$signal" = "err" ]; then
+    echo "$BASH_SOURCE: ERROR: '$BASH_COMMAND' exit code '$exit_code'." >&4
+  else
+    echo "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
+  fi
+
   trap - SIGHUP SIGINT SIGTERM ERR EXIT
 
   # If we wrote an exit status to the temporary file, read it. Otherwise,
@@ -115,8 +115,6 @@ shutdown() {
   #stat="$(cat "$statusfile")"
   #echo "$stat" >&4
 
-  # Bug? Sometimes the statusfile gets deleted too early.
-  # Remove our temporary files if they exist.
   if [ "$temp_dir_auto_generated" = "true" ]; then
     rm -r -f "$TMP"
   fi
@@ -139,17 +137,14 @@ shutdown() {
 }
 
 # Register our `shutdown` function to be invoked when the process dies.
-trap "shutdown" SIGINT SIGTERM ERR EXIT
+trap "shutdown SIGINT" SIGINT
+trap "shutdown SIGTERM" SIGTERM
+trap "shutdown err" ERR
+trap "shutdown EXIT" EXIT
+trap "shutdown SIGHUP" SIGHUP
 
 # Create our temporary progress file as a FIFO.
 mkfifo "$tracefile"
-
-signal_sighup() {
-   echo "$BASH_SOURCE INFO: Signal sighup received. Exiting." >&4
-   shutdown
-}
-
-trap "signal_sighup" SIGHUP
 
 # Our program begins here. Fork off a background subshell to run curl and
 # record its exit status. We will pass our temporary progress FIFO to
@@ -176,8 +171,6 @@ curl_pid="$!"
 # FIFO into chunks. However, we want to process the progress updates as
 # soon as they are received.
 unbuffered_sed() {
-  trap "signal_sighup" SIGHUP
-
   # GNU sed supports a `-u` option for unbuffered reads.
   sed -nu "$@" &
   wait "$!"
@@ -188,8 +181,6 @@ unbuffered_sed() {
 # takes two arguments: the number of bytes read so far, and the total
 # number of bytes expected.
 print_progress() {
-  trap "signal_sighup" SIGHUP
-
   local bytes="$1"
   local length="$2"
 
@@ -257,8 +248,6 @@ unbuffered_sed \
 
 {
 
-  trap "signal_sighup" SIGHUP
-
   length=0
   bytes=0
 
@@ -289,13 +278,11 @@ unbuffered_sed \
           echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&2
           error_exit_code="57"
           echo "$error_exit_code" > "$statusfile"
-          shutdown
           exit "$error_exit_code"
         fi
         if [ "$bytes" -gt "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" ]; then
           error_exit_code="81"
           echo "$error_exit_code" > "$statusfile"
-          shutdown
           exit "$error_exit_code"
         fi
       fi
