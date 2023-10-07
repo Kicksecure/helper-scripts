@@ -19,7 +19,21 @@
 # drawing the progress bar to the screen when data is received.
 
 # Tell bash to abort if any command exits with a non-zero status code.
-#set -e
+set -e
+
+error_handler_pre() {
+   local exit_code="$?"
+   local last_err="$BASH_COMMAND"
+   echo "$BASH_SOURCE ERROR: '$BASH_COMMAND' exit code '$exit_code'." >&4
+   exit 125
+}
+
+trap "error_handler" ERR
+
+isnum() {
+    local num=$1
+    [[ $num =~ ^-?[0-9]+$ ]] && return 0 || return 1
+}
 
 # We want to print the progress bar to stderr, but only if stderr is a
 # terminal. To avoid a conditional every time we print something, we can
@@ -59,11 +73,16 @@ shutdown() {
   sync
 
   if [ -f "$statusfile" ]; then
-    true "got status file"
+    true "$BASH_SOURCE: INFO got status file"
     local status="$(cat "$statusfile")"
+    if ! isnum "$num"; then
+      true "$0: status is not a number! status: '$status'"
+      local status="126"
+    fi
+
   else
-    true "no status file"
-    local status="1"
+    true "$BASH_SOURCE ERROR: no status file"
+    local status="127"
   fi
 
   # If we are exiting normally, jump back to the beginning of the line
@@ -107,7 +126,7 @@ if [ "$CURL" = "" ]; then
 fi
 
 signal_sighup() {
-   echo "INFO $BASH_SOURCE: SIGHUP received! Exiting." >&4
+   echo "$BASH_SOURCE INFO: SIGHUP received! Exiting." >&4
    shutdown
 }
 

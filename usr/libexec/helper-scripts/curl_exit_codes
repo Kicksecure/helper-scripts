@@ -50,7 +50,7 @@ curl_exit_codes() {
 [54] - [Cannot set SSL crypto engine as default.]
 [55] - [Failed sending network data.]
 [56] - [Failure in receiving network data.]
-[57] - [curl-scripts curl-prgs (not curl!) reports: Variable CURL_OUT_FILE is empty.]
+[57] - [helper-scripts curl-prgs (not curl!) reports: Variable CURL_OUT_FILE is empty.]
 [58] - [Problem with the local certificate.]
 [59] - [Couldn't use specified SSL cipher.]
 [60] - [Peer certificate cannot be authenticated with known CA certificates.] - Is your clock much too slow or fast by chance?
@@ -74,7 +74,7 @@ curl_exit_codes() {
 [78] - [The resource referenced in the URL does not exist.]
 [79] - [An unspecified error occurred during the SSH session.]
 [80] - [Failed to shut down the SSL connection.]
-[81] - [curl-scripts curl-prgs (not curl!) reports: Endless data attack triggered.]
+[81] - [helper-scripts curl-prgs (not curl!) reports: Endless data attack triggered.]
 [82] - [Could not load CRL file, missing or wrong format (added in 7.19.0).]
 [83] - [Issuer check failed (added in 7.19.0).]
 [84] - [The FTP PRET command failed]
@@ -90,6 +90,9 @@ curl_exit_codes() {
 [94] - [An authentication function returned an error.]
 [95] - [A problem was detected in the HTTP/3 layer. This is somewhat generic and can be one out of several problems, see the error message for details.]
 [96] - [QUIC connection error. This error may be caused by an SSL library error. QUIC is the protocol used for HTTP/3 transfers.]
+[125] - [helper-scripts curl-prgs (not curl!) reports: error_handler triggered.]
+[126] - [helper-scripts curl-prgs (not curl!) reports: statusfile did not contain a number.]
+[127] - [helper-scripts curl-prgs (not curl!) reports: statusfile does not exist.]
 "
 
    if [ "$1" = "" ]; then
