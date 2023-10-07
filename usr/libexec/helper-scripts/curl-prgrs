@@ -79,7 +79,7 @@ shutdown() {
   local last_err="$BASH_COMMAND"
   if [ "$signal" = "err" ]; then
     echo "$BASH_SOURCE ERROR: Signal $signal received. Exiting." >&4
-    echo "$BASH_SOURCE: ERROR: '$BASH_COMMAND' exit code '$exit_code'." >&4
+    echo "$BASH_SOURCE: ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
     error_exit_code=110
   else
     echo "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
