@@ -79,7 +79,7 @@ shutdown() {
   sync
 
   if [ -f "$statusfile" ]; then
-    true "$BASH_SOURCE: INFO got status file"
+    true "$BASH_SOURCE: INFO: got status file"
     local status="$(cat "$statusfile")"
     if ! isnum "$num"; then
       true "$0: status is not a number! status: '$status'"
