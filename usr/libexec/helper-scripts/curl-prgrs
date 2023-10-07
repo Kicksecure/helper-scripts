@@ -83,6 +83,8 @@ rm -f "$tracefile" "$statusfile"
 # Define our `shutdown` function, which will be responsible for cleaning
 # up when the program terminates, either normally or abnormally.
 shutdown() {
+  trap - SIGHUP SIGINT SIGTERM ERR EXIT
+
   # If we wrote an exit status to the temporary file, read it. Otherwise,
   # we reached this trap function abnormally; assume a non-zero status.
 
@@ -127,12 +129,12 @@ shutdown() {
     kill -9 "$curl_pid" 2>/dev/null || true
   fi
 
-  # Unregister our trap and exit with the given status code.
-  trap - SIGINT SIGTERM ERR EXIT
   if [ -n "${error_exit_code-}" ]; then
+     true "INFO: exit with error_exit_code $error_exit_code"
      exit "$error_exit_code"
   fi
 
+  true "INFO: exit with status $status"
   exit "$status"
 }
 
