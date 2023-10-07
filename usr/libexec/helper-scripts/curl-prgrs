@@ -21,7 +21,7 @@
 # Tell bash to abort if any command exits with a non-zero status code.
 set -e
 
-error_handler_pre() {
+error_handler() {
    local exit_code="$?"
    local last_err="$BASH_COMMAND"
    echo "$BASH_SOURCE ERROR: '$BASH_COMMAND' exit code '$exit_code'." >&4
