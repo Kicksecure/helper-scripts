@@ -18,8 +18,10 @@
 # option, filtering and parsing the trace output line by line, and then
 # drawing the progress bar to the screen when data is received.
 
-# Tell bash to abort if any command exits with a non-zero status code.
+#set -x
 set -e
+set -o nounset
+set -o pipefail
 
 error_handler() {
    local exit_code="$?"
@@ -31,7 +33,7 @@ error_handler() {
 trap "error_handler" ERR
 
 isnum() {
-    local num=$1
+    local num="$1"
     [[ $num =~ ^-?[0-9]+$ ]] && return 0 || return 1
 }
 
@@ -53,8 +55,11 @@ command -v curl >/dev/null
 command -v rm >/dev/null
 command -v mktemp >/dev/null
 
+: "${TMPDIR:=""}"
+: "${CURL:="curl"}"
+
 # Locate the path to the temporary directory.
-if [ -z "$TMPDIR" ]; then
+if [ "$TMPDIR" = "" ]; then
   temp_dir_auto_generated=true
   TMP="$(mktemp --directory)"
 else
@@ -80,17 +85,19 @@ shutdown() {
 
   sync
 
+  local status
+
   if [ -f "$statusfile" ]; then
     true "$BASH_SOURCE: INFO: got status file"
-    local status="$(cat "$statusfile")"
-    if ! isnum "$num"; then
+    status="$(cat "$statusfile")"
+    if ! isnum "$status"; then
       true "$0: status is not a number! status: '$status'"
-      local status="126"
+      status="126"
     fi
 
   else
     true "$BASH_SOURCE ERROR: no status file"
-    local status="127"
+    status="127"
   fi
 
   # If we are exiting normally, jump back to the beginning of the line
@@ -114,15 +121,17 @@ shutdown() {
   # Kill the curl background process if it is still running.
   kill %+ 2>/dev/null || true
 
-  kill -9 "$curl_pid" 2>/dev/null || true
+  if [ -n "${curl_pid-}" ]; then
+    kill -9 "$curl_pid" 2>/dev/null || true
+  fi
 
   # Unregister our trap and exit with the given status code.
   trap - SIGINT SIGTERM ERR EXIT
-  if [ ! "$error_exit_code" = "" ]; then
+  if [ -n "${error_exit_code-}" ]; then
      exit "$error_exit_code"
-  else
-     exit "$status"
   fi
+
+  exit "$status"
 }
 
 # Register our `shutdown` function to be invoked when the process dies.
@@ -130,10 +139,6 @@ trap "shutdown" SIGINT SIGTERM ERR EXIT
 
 # Create our temporary progress file as a FIFO.
 mkfifo "$tracefile"
-
-if [ "$CURL" = "" ]; then
-  CURL="curl"
-fi
 
 signal_sighup() {
    echo "$BASH_SOURCE INFO: SIGHUP received! Exiting." >&4
@@ -190,7 +195,8 @@ print_progress() {
 
   # Calculate the progress percentage and the size of the filled and
   # unfilled portions of the progress bar.
-  local percent=$(( $bytes * 100 / $length ))
+  local percent
+  percent=$(( $bytes * 100 / $length ))
 
   if [ "$TERM" = "" ]; then
     true
@@ -203,9 +209,12 @@ print_progress() {
     if [ "$columns" = "" ]; then
       columns="$(tput -Tdumb cols 2>/dev/null)"
     fi
-    local width=$(( $columns - 10 ))
-    local on=$(( $bytes * $width / $length ))
-    local off=$(( $width - $on ))
+    local width
+    width=$(( $columns - 10 ))
+    local on
+    on=$(( $bytes * $width / $length ))
+    local off
+    off=$(( $width - $on ))
 
     # Using ANSI escape sequences, first move the cursor to the beginning
     # of the line, and then write the percentage. Switch to inverted text
