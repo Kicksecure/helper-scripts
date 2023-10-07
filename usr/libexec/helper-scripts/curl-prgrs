@@ -297,4 +297,6 @@ unbuffered_sed \
 
 } &
 
-wait "$!"
+wait_exit_code=0
+wait "$!" || { wait_exit_code=$? ; true; };
+exit "$wait_exit_code"
