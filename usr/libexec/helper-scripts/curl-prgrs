@@ -51,21 +51,23 @@ command -v sed >/dev/null
 command -v mkfifo >/dev/null
 command -v curl >/dev/null
 command -v rm >/dev/null
+command -v mktemp >/dev/null
 
 # Locate the path to the temporary directory.
 if [ -z "$TMPDIR" ]; then
-  TMP="/tmp"
+  temp_dir_auto_generated=true
+  TMP="$(mktemp --directory)"
 else
-  TMP="${TMPDIR%/}"
+  temp_dir_auto_generated=false
+  TMP="$TMPDIR"
 fi
 
 # Compute names for our temporary files by joining the current date and
 # time with the current process ID. We will need two temporary files: one
 # for reading progress information from curl, and another for sending the
 # exit status of curl from the forked child process back to the parent.
-basename="${TMP}/$(date "+%Y%m%d%H%M%S").$$"
-tracefile="${basename}.trace"
-statusfile="${basename}.status"
+tracefile="${TMP}/trace"
+statusfile="${TMP}/status"
 
 # Remove the temporary files if they somehow already exist.
 rm -f "$tracefile" "$statusfile"
@@ -104,7 +106,9 @@ shutdown() {
 
   # Bug? Sometimes the statusfile gets deleted too early.
   # Remove our temporary files if they exist.
-  #rm -f "$tracefile" "$statusfile"
+  if [ "$temp_dir_auto_generated" = "true" ]; then
+    rm -r -f "$TMP"
+  fi
 
   # Bug?
   # Kill the curl background process if it is still running.
