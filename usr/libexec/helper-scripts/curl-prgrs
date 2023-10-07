@@ -137,11 +137,11 @@ shutdown() {
 }
 
 # Register our `shutdown` function to be invoked when the process dies.
-trap "shutdown SIGINT" SIGINT
-trap "shutdown SIGTERM" SIGTERM
+trap "shutdown sigint" SIGINT
+trap "shutdown sigterm" SIGTERM
 trap "shutdown err" ERR
-trap "shutdown EXIT" EXIT
-trap "shutdown SIGHUP" SIGHUP
+trap "shutdown exit" EXIT
+trap "shutdown sighup" SIGHUP
 
 # Create our temporary progress file as a FIFO.
 mkfifo "$tracefile"
