@@ -97,7 +97,6 @@ shutdown() {
       true "$0: status is not a number! status: '$status'"
       status="126"
     fi
-
   else
     true "$BASH_SOURCE ERROR: no status file"
     status="127"
