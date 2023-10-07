@@ -26,7 +26,7 @@ set -o pipefail
 error_handler() {
    local exit_code="$?"
    local last_err="$BASH_COMMAND"
-   echo "$BASH_SOURCE ERROR: '$BASH_COMMAND' exit code '$exit_code'." >&4
+   echo "$BASH_SOURCE: ERROR: '$BASH_COMMAND' exit code '$exit_code'." >&4
    exit 125
 }
 
@@ -143,7 +143,7 @@ trap "shutdown" SIGINT SIGTERM ERR EXIT
 mkfifo "$tracefile"
 
 signal_sighup() {
-   echo "$BASH_SOURCE INFO: SIGHUP received! Exiting." >&4
+   echo "$BASH_SOURCE INFO: Signal sighup received. Exiting." >&4
    shutdown
 }
 
