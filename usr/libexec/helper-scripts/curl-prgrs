@@ -79,6 +79,7 @@ shutdown() {
   local last_err="$BASH_COMMAND"
   if [ "$signal" = "err" ]; then
     echo "$BASH_SOURCE: ERROR: '$BASH_COMMAND' exit code '$exit_code'." >&4
+    error_exit_code=110
   else
     echo "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
   fi
@@ -97,11 +98,13 @@ shutdown() {
     status="$(cat "$statusfile")"
     if ! isnum "$status"; then
       true "$0: status is not a number! status: '$status'"
-      status="126"
+      status="111"
+      error_exit_code="111"
     fi
   else
     true "$BASH_SOURCE ERROR: no status file"
-    status="127"
+    status="112"
+    error_exit_code="112"
   fi
 
   # If we are exiting normally, jump back to the beginning of the line

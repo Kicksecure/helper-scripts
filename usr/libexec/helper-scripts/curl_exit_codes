@@ -90,9 +90,9 @@ curl_exit_codes() {
 [94] - [An authentication function returned an error.]
 [95] - [A problem was detected in the HTTP/3 layer. This is somewhat generic and can be one out of several problems, see the error message for details.]
 [96] - [QUIC connection error. This error may be caused by an SSL library error. QUIC is the protocol used for HTTP/3 transfers.]
-[125] - [helper-scripts curl-prgs (not curl!) reports: error_handler triggered.]
-[126] - [helper-scripts curl-prgs (not curl!) reports: statusfile did not contain a number.]
-[127] - [helper-scripts curl-prgs (not curl!) reports: statusfile does not exist.]
+[110] - [helper-scripts curl-prgs (not curl!) reports: error_handler triggered.]
+[111] - [helper-scripts curl-prgs (not curl!) reports: statusfile did not contain a number.]
+[112] - [helper-scripts curl-prgs (not curl!) reports: statusfile does not exist.]
 "
 
    if [ "$1" = "" ]; then
