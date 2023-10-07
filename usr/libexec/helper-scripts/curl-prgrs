@@ -46,6 +46,12 @@ else
   exec 4>/dev/null
 fi
 
+command -v tput >/dev/null
+command -v sed >/dev/null
+command -v mkfifo >/dev/null
+command -v curl >/dev/null
+command -v rm >/dev/null
+
 # Locate the path to the temporary directory.
 if [ -z "$TMPDIR" ]; then
   TMP="/tmp"
