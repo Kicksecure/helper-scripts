@@ -156,13 +156,20 @@ shutdown() {
     rm -r -f "$TMP"
   fi
 
-  # Bug?
-  # Kill the curl background process if it is still running.
-  kill %+ 2>/dev/null || true
+  true curl_pid
+  : "${curl_pid:=""}"
+  true subshell_pid
+  : "${subshell_pid:=""}"
+  true sed_pid
+  : "${sed_pid:=""}"
 
-  if [ -n "${curl_pid-}" ]; then
-    kill -9 "$curl_pid" 2>/dev/null || true
-  fi
+  processes_list="$curl_pid $subshell_pid $sed_pid"
+  for processes_item in $processes_list ; do
+    if kill -0 "$processes_item" 2>/dev/null ; then
+      ps -p "$processes_item" || true
+      kill -s sigkill "$processes_item" || true
+    fi
+  done
 
   if [ -n "${error_exit_code-}" ]; then
      true "INFO: exit with error_exit_code $error_exit_code"
@@ -196,8 +203,8 @@ mkfifo "$tracefile"
 
   curl_exit_code="$?"
 
-  echo "$curl_exit_code" > "$statusfile"
-  echo >> "$tracefile"
+  echo "$curl_exit_code" | tee "$statusfile" >/dev/null
+  echo | tee -a "$tracefile" >/dev/null
   sync
 ) &
 
@@ -210,7 +217,8 @@ curl_pid="$!"
 unbuffered_sed() {
   # GNU sed supports a `-u` option for unbuffered reads.
   sed -nu "$@" &
-  wait "$!"
+  sed_pid="$!"
+  wait "$sed_pid"
 }
 
 
@@ -329,6 +337,8 @@ unbuffered_sed \
   done
 
 } &
+
+subshell_pid="$!"
 
 wait_exit_code=0
 wait "$!" || { wait_exit_code=$? ; true; };
