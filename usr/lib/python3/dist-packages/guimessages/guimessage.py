@@ -5,7 +5,10 @@
 ## See the file COPYING for copying conditions.
 
 import sys
+import signal
+
 import yaml
+
 from PyQt5 import QtGui, QtWidgets
 from guimessages import translations
 
@@ -41,9 +44,6 @@ class gui_message(QtWidgets.QMessageBox):
         self.exec_()
 
 def main():
-    import sys
-
-    import signal
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     app = QtWidgets.QApplication(sys.argv)
