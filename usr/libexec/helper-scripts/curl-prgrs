@@ -114,6 +114,8 @@ shutdown() {
     echo "$BASH_SOURCE ERROR: Signal $signal received. Exiting." >&4
     echo "$BASH_SOURCE: ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
     error_exit_code=110
+  elif [ "$signal" = "exit" ]; then
+    true "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
   else
     echo "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
   fi
