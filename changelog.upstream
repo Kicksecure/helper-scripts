@@ -1,3 +1,15 @@
+commit 7022afc78863727fcfcb63c3d802f13a30a45e25
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 9 08:33:15 2023 -0400
+
+    improve curl-prgrs
+
+commit 306e9e8da347d2956db43669ebf3b20a44f51707
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 9 00:33:46 2023 -0400
+
+    bumped changelog version
+
 commit d6c0ead45ee9c6f67fb32b1d3953f5bfb441aa95
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Oct 9 00:30:38 2023 -0400
