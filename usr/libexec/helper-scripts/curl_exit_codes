@@ -111,6 +111,7 @@ curl_exit_codes() {
       number="${line:0:4}"
       number="${number//[/""}"
       number="${number//]/""}"
+      number="${number// /""}"
       true "number: $number | line: $line"
       if [ "$number" = "$1" ]; then
          ## exit code found.
