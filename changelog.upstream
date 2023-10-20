@@ -1,3 +1,15 @@
+commit 7a99fd2c6c13493409817cdba275916363bb291d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 20 09:08:46 2023 -0400
+
+    fix curl_exit_codes
+
+commit 8cda0a1bb244fa7282d7dd73bcf3299759128775
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 13 02:21:15 2023 -0400
+
+    bumped changelog version
+
 commit ad516011077992d73497a7073f748c114e4fe1d0
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 13 02:21:06 2023 -0400
