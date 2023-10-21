@@ -71,14 +71,14 @@ check_tor_bootstrap_helper_run_helper_script() {
    check_bootstrap_helper_script_exit_code="0"
 
    check_bootstrap_helper_script_output=$( \
-      $check_bootstrap_run_as \
-         timeout \
-         --kill-after="$check_tor_bootstrap_helper_kill_after" \
-         "$check_tor_bootstrap_helper_timeout_after" \
-         $check_bootstrap_helper_script \
-         2>&1 \
-         ) \
-         || { check_bootstrap_helper_script_exit_code="$?" ; true; };
+      timeout \
+      --kill-after="$check_tor_bootstrap_helper_kill_after" \
+      "$check_tor_bootstrap_helper_timeout_after" \
+         $check_bootstrap_run_as \
+            $check_bootstrap_helper_script \
+            2>&1 \
+            ) \
+            || { check_bootstrap_helper_script_exit_code="$?" ; true; };
 }
 
 check_tor_bootstrap_helper() {
