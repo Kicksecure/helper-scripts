@@ -1,4 +1,4 @@
-# Last Modified: Fri Jun 16 11:39:29 2023
+# Last Modified: Sat Oct 21 12:52:00 2023
 include <tunables/global>
 
 ## Copyright (C) 2017 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
@@ -14,5 +14,6 @@ include <tunables/global>
 
   owner /proc/*/cmdline r,
   owner /proc/*/environ r,
+  owner /{usr/,}lib{,32,64}/** rw,
 
 }
