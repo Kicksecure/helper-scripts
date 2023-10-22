@@ -62,6 +62,36 @@
 ## bash script fragment
 
 colors() {
+   alt=""
+   ealt=""
+   hide=""
+   show=""
+   save=""
+   load=""
+   bold=""
+   stout=""
+   estout=""
+   under=""
+   eunder=""
+   reset=""
+   blink=""
+   italic=""
+   eitalic=""
+   red=""
+   green=""
+   yellow=""
+   blue=""
+   magenta=""
+   cyan=""
+   white=""
+   default=""
+   eed=""
+   eel=""
+   ebl=""
+   ewl=""
+   draw=""
+   back=""
+
    [[ -v TERM ]] || TERM=""
    if [ "$TERM" = "" ]; then
       return 0
