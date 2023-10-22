@@ -62,6 +62,7 @@
 ## bash script fragment
 
 colors() {
+   [[ -v TERM ]] || TERM=""
    if [ "$TERM" = "" ]; then
       return 0
    fi
@@ -114,6 +115,7 @@ source_config_folder() {
    ## example:
    ## DPKG_MAINTSCRIPT_PACKAGE=security-misc
 
+   [[ -v DPKG_MAINTSCRIPT_PACKAGE ]] || DPKG_MAINTSCRIPT_PACKAGE=""
    if [ "$DPKG_MAINTSCRIPT_PACKAGE" = "" ]; then
       pre_bsh_settings_folder="${own_filename}_pre.d"
    else
@@ -150,6 +152,7 @@ source_config_folder() {
 }
 
 check_scripts_to_skip() {
+   [[ -v SKIP_SCRIPTS ]] || SKIP_SCRIPTS=""
    local skip_script
    for skip_script in $SKIP_SCRIPTS; do
       if [ "$skip_script" = "$own_filename" ]; then
@@ -161,6 +164,7 @@ check_scripts_to_skip() {
 }
 
 disable_echo() {
+   [[ -v disabled_echo ]] || disabled_echo=""
    if [ "$disabled_echo" = "true" ]; then
       return 0
    fi
@@ -170,6 +174,7 @@ disable_echo() {
 }
 
 enable_echo() {
+   [[ -v disabled_echo ]] || disabled_echo=""
    if [ "$disabled_echo" = "true" ]; then
       exec 1>&5
       exec 2>&6
@@ -178,11 +183,13 @@ enable_echo() {
 }
 
 force_output() {
+   [[ -v disabled_echo ]] || disabled_echo=""
    if [ "$disabled_echo" = "true" ]; then
       redisable_echo="true"
       enable_echo
    fi
    echo "$@"
+   [[ -v redisable_echo ]] || redisable_echo=""
    if [ "$redisable_echo" = "true" ]; then
       disable_echo
    fi
@@ -192,11 +199,13 @@ error_handler_pre() {
    local exit_code="$?"
    local last_err="$BASH_COMMAND"
 
+   [[ -v DEBDEBUG ]] || DEBDEBUG=""
    if [ ! "$DEBDEBUG" = "1" ]; then
       local output
       output="$(cat "$TEMP_FILE_PRE_BSH")"
    fi
 
+   [[ -v output ]] || output=""
    if [ "$output" = "" ]; then
       output="## See above."
    fi
@@ -233,10 +242,12 @@ if test -o xtrace ; then
    DEBDEBUG="1"
 fi
 
+[[ -v DEBDEBUG ]] || DEBDEBUG=""
 if [ "$DEBDEBUG" = "1" ]; then
    set -x
 fi
 
+[[ -v disable_echo ]] || disable_echo=""
 if [ "$disable_echo" = "true" ]; then
    disable_echo
 fi
