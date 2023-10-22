@@ -237,13 +237,13 @@ error_handler_pre() {
 
    [[ -v DEBDEBUG ]] || DEBDEBUG=""
    if [ ! "$DEBDEBUG" = "1" ]; then
-      local output
+      local error_message
       output="$(cat "$TEMP_FILE_PRE_BSH")"
    fi
 
-   [[ -v output ]] || output=""
-   if [ "$output" = "" ]; then
-      output="## See above."
+   [[ -v error_message ]] || error_message=""
+   if [ "$error_message" = "" ]; then
+      error_message="## See above."
    fi
 
    force_output "
@@ -251,7 +251,7 @@ error_handler_pre() {
 ## ${red}${bold}BEGIN ERROR in $0 detected!${reset}
 ##
 ## ${under}ERROR LOG${reset}:
-$output
+$error_message
 ##
 ## ${under}BASH_COMMAND${reset}: $BASH_COMMAND
 ## ${under}EXIT_CODE${reset}: $exit_code
