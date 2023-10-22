@@ -238,7 +238,7 @@ error_handler_pre() {
    [[ -v DEBDEBUG ]] || DEBDEBUG=""
    if [ ! "$DEBDEBUG" = "1" ]; then
       local error_message
-      output="$(cat "$TEMP_FILE_PRE_BSH")"
+      error_message="$(cat "$TEMP_FILE_PRE_BSH")"
    fi
 
    [[ -v error_message ]] || error_message=""
