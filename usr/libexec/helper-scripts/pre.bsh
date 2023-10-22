@@ -93,12 +93,13 @@ colors() {
    back=""
 
    if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}"; then
-      true "$0: INFO: A color disabling type environment variable is set."
+      true "$0: INFO: A color disabling type environment variable is set. Not using colors."
       return 0
    fi
 
    [[ -v TERM ]] || TERM=""
    if [ "$TERM" = "" ]; then
+      true "$0: INFO: TERM unset. Not using colors."
       return 0
    fi
 
