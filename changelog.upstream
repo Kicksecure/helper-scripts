@@ -1,3 +1,51 @@
+commit 760106765d7d9e1f5d077da13f31cb7548046294
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 22 06:24:09 2023 -0400
+
+    pre.bsh: avoid duplicate messages
+
+commit 01204f4276eb42b35f5f402be8152422139413a5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 22 06:18:37 2023 -0400
+
+    fix
+
+commit f554516543ca9b4472edeeb16cdc360f6f342272
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 22 06:17:38 2023 -0400
+
+    refactoring
+
+commit e3a2e39f877883cf0ad0f68f38274ae468a7e74c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 22 06:14:15 2023 -0400
+
+    output
+
+commit 83753aacf5beea15af7a65d54245f6e6ed6947ca
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 22 06:13:13 2023 -0400
+
+    pre.bsh: support nocolor type environment variables
+
+commit ace1c5eb932456d78b343e2e0f894e2583b69256
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 22 06:10:34 2023 -0400
+
+    pre.bsh add compatibility with nounset
+
+commit 238f828f2b5fda3195bf3700c8c34b60de9aa9bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 22 05:59:26 2023 -0400
+
+    pre.bsh towards nounset compatibility
+
+commit 6eab78628fb49bcb70b9798d6f9bc603f6625c18
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 21 12:54:12 2023 -0400
+
+    bumped changelog version
+
 commit 3a7fe7dac89f65ab1df7246e22d8c34ef7e1b1ca
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Oct 21 12:53:24 2023 -0400
