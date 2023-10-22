@@ -92,6 +92,11 @@ colors() {
    draw=""
    back=""
 
+   if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}"; then
+      true "$0: INFO: A color disabling type environment variable is set."
+      return 0
+   fi
+
    [[ -v TERM ]] || TERM=""
    if [ "$TERM" = "" ]; then
       return 0
