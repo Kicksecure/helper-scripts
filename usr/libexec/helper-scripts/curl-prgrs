@@ -195,14 +195,14 @@ mkfifo "$tracefile"
 
 # Our program begins here. Fork off a background subshell to run curl and
 # record its exit status. We will pass our temporary progress FIFO to
-# curl's `--trace-ascii` option, along with the `-s` option, and then any
+# curl's `--trace-ascii` option, along with the `--silent` option, and then any
 # arguments passed to the program itself. Once curl terminates, write its
 # exit status to the appropriate temporary file. Then write a single line
 # to the FIFO so our loop below won't wait forever in cases where curl
 # doesn't write any progress information (like when it's invoked with
 # the `--help` or `--version` flag.)
 ( set +e
-  $CURL --trace-ascii "$tracefile" -s "$@"
+  $CURL --trace-ascii "$tracefile" --silent "$@"
 
   curl_exit_code="$?"
 
