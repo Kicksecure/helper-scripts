@@ -219,6 +219,9 @@ mkfifo "$tracefile"
 
 curl_pid="$!"
 
+is_number() {
+    [[ $1 =~ ^-?[0-9]+$ ]]
+}
 
 # By default, the operating system will buffer reads from the progress
 # FIFO into chunks. However, we want to process the progress updates as
@@ -321,6 +324,10 @@ unbuffered_sed \
     # first response.
     if [ "$tag" = "0000: content-length:" ]; then
       length="${line[2]}"
+      if ! is_number "$length" ; then
+        echo "$0 ERROR: lenght variable is not a number!" >&2
+        continue
+      fi
       bytes=0
 
     # Otherwise, if the first two words are `<= recv`, extract the number
@@ -328,6 +335,10 @@ unbuffered_sed \
     # then invoke `print_progress`.
     elif [ "$tag" = "<= recv" ]; then
       size="${line[3]}"
+      if ! is_number "$size" ; then
+        echo "$0 ERROR: size variable is not a number!" >&2
+        continue
+      fi
       bytes=$(( $bytes + $size ))
 
       if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
