@@ -85,6 +85,7 @@ command -v mktemp >/dev/null
 : "${CURL_OUT_FILE:=""}"
 : "${CURL_PRGRS_EXEC:=""}"
 percent_last=""
+counter_progress_delay="10"
 
 # Locate the path to the temporary directory.
 if [ "$TMPDIR" = "" ]; then
@@ -307,6 +308,11 @@ unbuffered_sed \
   # Read each line of filtered trace output into an array of space-
   # separated words.
   while IFS=" " read -a line; do
+    ## line can be empty is unbuffered_sed fails
+    if [[ ${#line[@]} -lt 2 ]]; then
+        echo "$0 ERROR: line array is less than 2." >&2
+        continue
+    fi
     tag="${line[0]} ${line[1]}"
 
     # If the first two words are `0000: content-length:`, extract and
@@ -340,7 +346,11 @@ unbuffered_sed \
         fi
       fi
 
+      #counter_progress_delay=$((counter_progress_delay + 1))
+      #if [ "$counter_progress_delay" -ge 10 ]; then
+        #counter_progress_delay=0
       print_progress "$bytes" "$length"
+      #fi
     fi
   done
 
