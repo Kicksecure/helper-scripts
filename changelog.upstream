@@ -1,3 +1,27 @@
+commit bb1a1667dcc94b85cba64e2dcb5d7ba707c1a46f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 25 20:49:18 2023 -0400
+
+    improve error handling
+
+commit 44b70c6a14e78f7361cb4d1f455e04e542961a1e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 25 20:14:29 2023 -0400
+
+    curl-prgrs: improve error handling
+
+commit 95fa8d58209a9b35e18126260463c3771d676fc4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 25 19:32:30 2023 -0400
+
+    refactoring
+
+commit 76e2ac5b1a66db21f394eb42af0346a56c9d9f67
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 22 07:05:45 2023 -0400
+
+    bumped changelog version
+
 commit 760106765d7d9e1f5d077da13f31cb7548046294
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 22 06:24:09 2023 -0400
