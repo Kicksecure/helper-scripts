@@ -1,0 +1,27 @@
+lsmod-deterministic(8) -- Shows lsmod, sorted, deterministic
+=============================================
+
+<!--
+# Copyright (C) 2023 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+
+lsmod-deterministic
+
+## DESCRIPTION
+
+Runs lsmod, shows module names only, deterministic output.
+
+## RETURN VALUES
+
+Same as `lsmod`.
+
+## EXAMPLE
+
+`lsmod-deterministic`
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).

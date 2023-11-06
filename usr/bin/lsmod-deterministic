@@ -1,0 +1,9 @@
+#!/bin/bash
+
+## Copyright (C) 2023 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -e
+set -o pipefail
+
+lsmod | tail -n +2 | cut -d ' ' -f 1 | sort
