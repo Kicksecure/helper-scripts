@@ -1,3 +1,23 @@
+commit 08e0aea0ac3429d650bbf627fc153cb8d4bf4a97
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 5 20:33:44 2023 -0500
+
+    re-generate man pages (generated using "genmkfile manpages")
+
+commit d6fa9f2a314764764c8270a54d6a93cbdbc942c9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 5 20:33:18 2023 -0500
+
+    add `lsmod-deterministic`
+    
+    part of https://github.com/Kicksecure/security-misc/issues/159
+
+commit 0ee6d40b06df723d26313e96f64d9b7c8b437aea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 26 11:55:44 2023 -0400
+
+    bumped changelog version
+
 commit bb1a1667dcc94b85cba64e2dcb5d7ba707c1a46f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Oct 25 20:49:18 2023 -0400
