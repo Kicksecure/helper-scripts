@@ -313,7 +313,7 @@ curl_download() {
 curl_prgrs_content_length=$(curl_download --head --write-out '%header{Content-Length}\n' "$@")
 
 if ! is_number "$curl_prgrs_content_length" ; then
-  curl_exit
+  curl_exit 116
 fi
 
 curl_download "$@" &
