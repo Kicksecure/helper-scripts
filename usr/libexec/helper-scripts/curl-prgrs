@@ -87,6 +87,11 @@ command -v mktemp >/dev/null
 percent_last=""
 counter_progress_delay="10"
 
+if [ "$CURL_OUT_FILE" = "" ]; then
+  echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
+  exit "57"
+fi
+
 # Locate the path to the temporary directory.
 if [ "$TMPDIR" = "" ]; then
   temp_dir_auto_generated=true
@@ -344,12 +349,6 @@ unbuffered_sed \
       if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
         true
       else
-        if [ "$CURL_OUT_FILE" = "" ]; then
-          echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
-          error_exit_code="57"
-          echo "$error_exit_code" > "$statusfile"
-          exit "$error_exit_code"
-        fi
         if [ "$bytes" -gt "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" ]; then
           error_exit_code="81"
           echo "$error_exit_code" > "$statusfile"
