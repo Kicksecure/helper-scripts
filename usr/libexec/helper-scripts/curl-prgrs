@@ -217,6 +217,8 @@ print_progress() {
 
   if [ "$TERM" = "" ]; then
     true
+  elif [ "$percent_last" = "$percent" ]; then
+    true
   else
     # Get the width of the terminal and reserve space for the percentage.
     ## Added '-Tdumb' in case above 'if [ "$TERM" = "" ]; then' does not match
@@ -242,10 +244,6 @@ print_progress() {
   fi
 
   if [ "$CURL_PRGRS_EXEC" = "" ]; then
-    return 0
-  fi
-
-  if [ "$percent_last" = "$percent" ]; then
     return 0
   fi
 
