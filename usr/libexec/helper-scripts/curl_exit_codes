@@ -93,6 +93,9 @@ curl_exit_codes() {
 [110] - [helper-scripts curl-prgs (not curl!) reports: error_handler triggered.]
 [111] - [helper-scripts curl-prgs (not curl!) reports: statusfile did not contain a number.]
 [112] - [helper-scripts curl-prgs (not curl!) reports: statusfile does not exist.]
+[113] - [helper-scripts curl-prgs (not curl!) reports: stat did not output a number.]
+[114] - [helper-scripts curl-prgs (not curl!) reports: actual file size bigger than server reported file size.]
+[115] - [helper-scripts curl-prgs (not curl!) reports: actual file size smaller than server reported file size.]
 "
 
    if [ "$1" = "" ]; then

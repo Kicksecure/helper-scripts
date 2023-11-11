@@ -56,9 +56,8 @@ set -e
 set -o nounset
 set -o pipefail
 
-isnum() {
-    local num="$1"
-    [[ $num =~ ^-?[0-9]+$ ]] && return 0 || return 1
+is_number() {
+    [[ $1 =~ ^-?[0-9]+$ ]]
 }
 
 # We want to print the progress bar to stderr, but only if stderr is a
@@ -79,8 +78,10 @@ command -v curl >/dev/null
 command -v rm >/dev/null
 command -v mktemp >/dev/null
 
+: "${TERM:=""}"
 : "${TMPDIR:=""}"
 : "${CURL:="curl"}"
+: "${CURL_DOWNLOAD_FILE_SIZE_BYTES:=""}"
 : "${CURL_PRGRS_MAX_FILE_SIZE_BYTES:=""}"
 : "${CURL_OUT_FILE:=""}"
 : "${CURL_PRGRS_EXEC:=""}"
@@ -91,6 +92,12 @@ if [ "$CURL_OUT_FILE" = "" ]; then
   echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
   exit "57"
 fi
+if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
+  echo "$BASH_SOURCE ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
+  exit "57"
+fi
+
+is_number "$CURL_PRGRS_MAX_FILE_SIZE_BYTES"
 
 # Locate the path to the temporary directory.
 if [ "$TMPDIR" = "" ]; then
@@ -105,11 +112,7 @@ fi
 # time with the current process ID. We will need two temporary files: one
 # for reading progress information from curl, and another for sending the
 # exit status of curl from the forked child process back to the parent.
-tracefile="${TMP}/trace"
 statusfile="${TMP}/status"
-
-# Remove the temporary files if they somehow already exist.
-rm -f "$tracefile" "$statusfile"
 
 # Define our `shutdown` function, which will be responsible for cleaning
 # up when the program terminates, either normally or abnormally.
@@ -139,7 +142,7 @@ shutdown() {
   if [ -f "$statusfile" ]; then
     true "$BASH_SOURCE: INFO: got status file"
     status="$(cat "$statusfile")"
-    if ! isnum "$status"; then
+    if ! is_number "$status"; then
       true "$0: status is not a number! status: '$status'"
       status="111"
       error_exit_code="111"
@@ -167,12 +170,8 @@ shutdown() {
 
   true curl_pid
   : "${curl_pid:=""}"
-  true subshell_pid
-  : "${subshell_pid:=""}"
-  true sed_pid
-  : "${sed_pid:=""}"
 
-  processes_list="$curl_pid $subshell_pid $sed_pid"
+  processes_list="$curl_pid"
   for processes_item in $processes_list ; do
     if kill -0 "$processes_item" 2>/dev/null ; then
       #ps -p "$processes_item" || true
@@ -196,64 +195,25 @@ trap "shutdown err" ERR
 trap "shutdown exit" EXIT
 trap "shutdown sighup" SIGHUP
 
-# Create our temporary progress file as a FIFO.
-mkfifo "$tracefile"
-
-# Our program begins here. Fork off a background subshell to run curl and
-# record its exit status. We will pass our temporary progress FIFO to
-# curl's `--trace-ascii` option, along with the `--silent` option, and then any
-# arguments passed to the program itself. Once curl terminates, write its
-# exit status to the appropriate temporary file. Then write a single line
-# to the FIFO so our loop below won't wait forever in cases where curl
-# doesn't write any progress information (like when it's invoked with
-# the `--help` or `--version` flag.)
-( set +e
-  $CURL --trace-ascii "$tracefile" --silent "$@"
-
-  curl_exit_code="$?"
-
-  ##echo "$curl_exit_code" | tee "$statusfile" >/dev/null
-  ## bug: 'tee' does not get terminated after sigterm.
-  #echo | tee -a "$tracefile" >/dev/null
-  ## Using shell redirection instead.
-  echo "$curl_exit_code" > "$statusfile"
-  echo >> "$tracefile"
-
-  sync
-) &
-
-curl_pid="$!"
-
-is_number() {
-    [[ $1 =~ ^-?[0-9]+$ ]]
-}
-
-# By default, the operating system will buffer reads from the progress
-# FIFO into chunks. However, we want to process the progress updates as
-# soon as they are received.
-unbuffered_sed() {
-  # GNU sed supports a `-u` option for unbuffered reads.
-  sed -nu "$@" &
-  sed_pid="$!"
-  wait "$sed_pid"
-}
-
-
 # The `print_progress` function draws our progress bar to the screen. It
 # takes two arguments: the number of bytes read so far, and the total
 # number of bytes expected.
 print_progress() {
   local bytes="$1"
-  local length="$2"
+  local length="$CURL_DOWNLOAD_FILE_SIZE_BYTES"
 
   # If we are expecting less than 8 KB of data, don't bother drawing a
   # progress bar. (This helps avoid a flicker when following redirects.)
-  [ "$length" -gt 8192 ] || return 0
+  #[ "$length" -gt 8192 ] || return 0
 
   # Calculate the progress percentage and the size of the filled and
   # unfilled portions of the progress bar.
   local percent
   percent=$(( $bytes * 100 / $length ))
+
+  if [ "$percent" -ge "100" ]; then
+    percent=100
+  fi
 
   if [ "$TERM" = "" ]; then
     true
@@ -282,91 +242,78 @@ print_progress() {
   fi
 
   if [ "$CURL_PRGRS_EXEC" = "" ]; then
-    true
-  else
-    if [ "$percent_last" = "$percent" ]; then
-      true
-    else
-      percent_last="$percent"
-      #echo "$BASH_SOURCE CURL_PRGRS_EXEC: $CURL_PRGRS_EXEC" >&4
-      eval $CURL_PRGRS_EXEC >&4
-    fi
+    return 0
+  fi
+
+  if [ "$percent_last" = "$percent" ]; then
+    return 0
+  fi
+
+  percent_last="$percent"
+  #echo "$BASH_SOURCE CURL_PRGRS_EXEC: $CURL_PRGRS_EXEC" >&4
+  eval $CURL_PRGRS_EXEC >&4
+}
+
+curl_exit() {
+  curl_exit_code="$1"
+  true "write $curl_exit_code to $statusfile"
+  echo "$curl_exit_code" > "$statusfile"
+  if [ "$curl_exit_code" = "0" ]; then
+    return 0
+  fi
+  if ! kill -0 "$curl_pid" 2>/dev/null; then
+    kill -s SIGKILL "$curl_pid" &>/dev/null || true
   fi
 }
 
+curl_download() {
+  $CURL --no-progress-meter "$@" &
+  curl_pid=$!
 
-# The progress bar loop begins here. Our unbuffered `sed` will filter
-# progress information from the trace output in the temporary FIFO line
-# by line until curl terminates and closes the pipe. The progress
-# information is normalized and passed to a loop that parses it, keeps
-# track of the number of bytes received, and invokes the `print_progress`
-# function accordingly. When the FIFO is closed, the loop terminates and
-# bash invokes our `shutdown` exit trap.
-unbuffered_sed \
-  -e 'y/ACDEGHLNORTV/acdeghlnortv/' \
-  -e '/^0000: content-length:/p' \
-  -e '/^<= recv data/p' \
-  "$tracefile" |
+  while true ; do
+    if [ -f "$CURL_OUT_FILE" ]; then
+      bytes=$(stat -c%s "$CURL_OUT_FILE")
 
-{
-
-  length=0
-  bytes=0
-
-  # Read each line of filtered trace output into an array of space-
-  # separated words.
-  while IFS=" " read -a line; do
-    ## line can be empty is unbuffered_sed fails
-    if [[ ${#line[@]} -lt 2 ]]; then
-        echo "$0 ERROR: line array is less than 2." >&2
-        continue
-    fi
-    tag="${line[0]} ${line[1]}"
-
-    # If the first two words are `0000: content-length:`, extract and
-    # record the expected length. We must also set the bytes-received
-    # counter to zero in case we followed a redirect and this is not the
-    # first response.
-    if [ "$tag" = "0000: content-length:" ]; then
-      length="${line[2]}"
-      if ! is_number "$length" ; then
-        echo "$0 ERROR: lenght variable is not a number!" >&2
-        continue
+      if ! is_number "$bytes" ; then
+        curl_exit 113
       fi
-      bytes=0
 
-    # Otherwise, if the first two words are `<= recv`, extract the number
-    # of bytes read and increment the bytes-received counter accordingly,
-    # then invoke `print_progress`.
-    elif [ "$tag" = "<= recv" ]; then
-      size="${line[3]}"
-      if ! is_number "$size" ; then
-        echo "$0 ERROR: size variable is not a number!" >&2
-        continue
+      if [ "$bytes" -gt "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" ]; then
+        curl_exit 81
       fi
-      bytes=$(( $bytes + $size ))
 
-      if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
-        true
-      else
-        if [ "$bytes" -gt "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" ]; then
-          error_exit_code="81"
-          echo "$error_exit_code" > "$statusfile"
-          exit "$error_exit_code"
+      if [ ! "$CURL_DOWNLOAD_FILE_SIZE_BYTES" = "" ]; then
+        if [ "$bytes" -ge "$CURL_DOWNLOAD_FILE_SIZE_BYTES" ]; then
+
+          curl_exit 114
         fi
       fi
 
-      #counter_progress_delay=$((counter_progress_delay + 1))
-      #if [ "$counter_progress_delay" -ge 10 ]; then
-        #counter_progress_delay=0
-      print_progress "$bytes" "$length"
-      #fi
+      if [ ! "$CURL_DOWNLOAD_FILE_SIZE_BYTES" = "" ]; then
+        print_progress "$bytes"
+      fi
     fi
+
+    if ! kill -0 "$curl_pid" 2>/dev/null; then
+        break
+    fi
+
+    sleep 1
   done
 
-} &
+  if [ ! "$CURL_DOWNLOAD_FILE_SIZE_BYTES" = "" ]; then
+    if [ "$bytes" -le "$CURL_DOWNLOAD_FILE_SIZE_BYTES" ]; then
+      curl_exit 115
+    fi
+  fi
 
-subshell_pid="$!"
+  curl_exit_code=0
+  wait "$curl_pid" || { curl_exit_code=$? ; true; };
+  curl_exit "$curl_exit_code"
+}
+
+CURL_DOWNLOAD_FILE_SIZE_BYTES=$(curl_download --head --write-out '%header{Content-Length}\n' "$@")
+curl_download "$@" &
 
 wait_exit_code=0
 wait "$!" &>/dev/null || { wait_exit_code=$? ; true; };
