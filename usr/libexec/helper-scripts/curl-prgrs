@@ -81,7 +81,6 @@ command -v mktemp >/dev/null
 : "${TERM:=""}"
 : "${TMPDIR:=""}"
 : "${CURL:="curl"}"
-: "${CURL_DOWNLOAD_FILE_SIZE_BYTES:=""}"
 : "${CURL_PRGRS_MAX_FILE_SIZE_BYTES:=""}"
 : "${CURL_OUT_FILE:=""}"
 : "${CURL_PRGRS_EXEC:=""}"
