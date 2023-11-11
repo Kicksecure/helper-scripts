@@ -197,6 +197,42 @@ trap "shutdown err" ERR
 trap "shutdown exit" EXIT
 trap "shutdown sighup" SIGHUP
 
+print_progress_bar() {
+    local bytes=$1     # The number of bytes downloaded so far
+    local length=$2    # The total size of the download
+
+    # Ensure that length is not zero to avoid division by zero
+    if [ "$length" -eq 0 ]; then
+        length=1
+    fi
+
+    # Calculate the progress percentage, ensuring it's between 0 and 100
+    local percent=$(( bytes * 100 / length ))
+    percent=$(( percent < 0 ? 0 : (percent > 100 ? 100 : percent) ))
+
+    # Get the terminal_width of the terminal and reserve space for the percentage.
+    ## Added '-Tdumb' in case above 'if [ "$TERM" = "" ]; then' does not match
+    ## due to unknown bug.
+    ## Added '2>/dev/null' to avoid log spam
+    ## 'tput: No value for $TERM and no -T specified' because of above.
+    local columns=$(tput -Tdumb cols 2>/dev/null || echo 80)  # Fallback to 80 if tput fails
+    local reserved_space=10
+    local terminal_width=$(( columns - reserved_space ))
+    local max_bar_width=$((terminal_width - reserved_space))
+
+    # Calculate the filled and unfilled portions of the progress bar
+    local on=$(( percent * terminal_width / 100 ))
+    local off=$(( terminal_width - on ))
+
+    # Ensure on and off values do not exceed max_bar_width and are not negative
+    on=$(( on > max_bar_width ? max_bar_width : (on < 0 ? 0 : on) ))
+    off=$(( off > max_bar_width ? max_bar_width : (off < 0 ? 0 : off) ))
+
+    # Print the progress bar
+    printf "\x1B[0G %-6s\x1B[7m%*s\x1B[0m%*s\x1B[1D" \
+      "${percent}%" "$on" "" "$off" "" >&4
+}
+
 # The `print_progress` function draws our progress bar to the screen. It
 # takes two arguments: the number of bytes read so far, and the total
 # number of bytes expected.
@@ -222,31 +258,7 @@ print_progress() {
   elif [ "$percent_last" = "$percent" ]; then
     true "percentage number unchanged. Not re-drawing progress bar to avoid flicker."
   else
-    # Get the width of the terminal and reserve space for the percentage.
-    ## Added '-Tdumb' in case above 'if [ "$TERM" = "" ]; then' does not match
-    ## due to unknown bug.
-    ## Added '2>/dev/null' to avoid log spam
-    ## 'tput: No value for $TERM and no -T specified' because of above.
-    : "${columns:="$(tput -Tdumb cols 2>/dev/null)"}"
-    local width
-    width=$(( $columns - 10 ))
-    local on
-    on=$(( $bytes * $width / $length ))
-    local off
-    off=$(( $width - $on ))
-
-    if [ "$on" -gt "$width" ]; then
-      on="$width"
-    fi
-
-    # Using ANSI escape sequences, first move the cursor to the beginning
-    # of the line, and then write the percentage. Switch to inverted text
-    # mode and print spaces to represent the filled part of the progress
-    # bar, then reset and print spaces for the remainder of the region.
-    # Finally, move the cursor back one character so it rests at the end of
-    # the progress bar.
-    printf "\x1B[0G %-6s\x1B[7m%*s\x1B[0m%*s\x1B[1D" \
-      "${percent}%" "$on" "" "$off" "" >&4
+    print_progress_bar "$bytes" "$length"
   fi
 
   percent_last="$percent"
@@ -347,4 +359,4 @@ initialize_variables
 # main "$@"
 
 ## Debugging.
-print_progress "$1" "$2"
+print_progress_bar "$1" "$2"
