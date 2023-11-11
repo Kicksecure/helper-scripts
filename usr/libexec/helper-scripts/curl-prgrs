@@ -355,8 +355,8 @@ main() {
 
 initialize_terminal
 initialize_variables
-# check_variables
-# main "$@"
+check_variables
+main "$@"
 
 ## Debugging.
-print_progress_bar "$1" "$2"
+#print_progress_bar "$1" "$2"
