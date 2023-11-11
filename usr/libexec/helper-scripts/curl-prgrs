@@ -30,9 +30,9 @@
 # Environment Variables:
 # - TMPDIR: Specifies the path to the temporary directory.
 # - CURL: Defines the path to the curl binary. Acceptable values are "curl" or "scurl" (secure curl). Default: "curl"
-# - CURL_PRGRS_MAX_FILE_SIZE_BYTES: Sets the maximum allowed file size for downloads in bytes. Default: unset
-# - CURL_OUT_FILE: Specifies the path to the output file for download. Required when using CURL_PRGRS_MAX_FILE_SIZE_BYTES. Default: unset
-# - CURL_PRGRS_EXEC: Designates the command to execute for updating the progress bar. Default: unset
+# - CURL_PRGRS_MAX_FILE_SIZE_BYTES: Sets the maximum allowed file size for downloads in bytes. Mandatory.
+# - CURL_OUT_FILE: Specifies the path to the output file for download. Mandatory.
+# - CURL_PRGRS_EXEC: Designates the command to execute for updating the progress bar. Optional.
 #
 # Authors:
 # - Sam Stephenson <sstephenson@gmail.com>
@@ -45,11 +45,6 @@
 #
 # Modifications:
 # - Subsequent modifications by Patrick Schleizer under the same license.
-#
-# Technical Overview:
-# The script initiates by forking curl into the background, directing a temporary file to the `--trace-ascii`
-# option. It filters and parses the trace output line-by-line to extract progress information, which is then
-# utilized to update and display the progress bar on the terminal as data is received.
 
 #set -x
 set -e
@@ -60,57 +55,66 @@ is_number() {
     [[ $1 =~ ^-?[0-9]+$ ]]
 }
 
-# We want to print the progress bar to stderr, but only if stderr is a
-# terminal. To avoid a conditional every time we print something, we can
-# instead print everything to file descriptor 4, and then point that file
-# descriptor to the right place: stderr if it's a TTY, or /dev/null
-# otherwise.
-if [ -t 2 ]; then
-  exec 4>&2
-else
-  exec 4>/dev/null
-fi
+initialize_terminal() {
+  # We want to print the progress bar to stderr, but only if stderr is a
+  # terminal. To avoid a conditional every time we print something, we can
+  # instead print everything to file descriptor 4, and then point that file
+  # descriptor to the right place: stderr if it's a TTY, or /dev/null
+  # otherwise.
+  if [ -t 2 ]; then
+    exec 4>&2
+  else
+    exec 4>/dev/null
+  fi
+}
 
-command -v tput >/dev/null
-command -v sed >/dev/null
-command -v mkfifo >/dev/null
-command -v curl >/dev/null
-command -v rm >/dev/null
-command -v mktemp >/dev/null
+initialize_variables() {
+  command -v tput >/dev/null
+  command -v sed >/dev/null
+  command -v mkfifo >/dev/null
+  command -v curl >/dev/null
+  command -v rm >/dev/null
+  command -v mktemp >/dev/null
 
-: "${TERM:=""}"
-: "${TMPDIR:=""}"
-: "${CURL:="curl"}"
-: "${CURL_PRGRS_MAX_FILE_SIZE_BYTES:=""}"
-: "${CURL_OUT_FILE:=""}"
-: "${CURL_PRGRS_EXEC:=""}"
-percent_last=""
+  : "${TERM:=""}"
+  : "${TMPDIR:=""}"
+  : "${CURL:="curl"}"
+  : "${CURL_PRGRS_MAX_FILE_SIZE_BYTES:=""}"
+  : "${CURL_OUT_FILE:=""}"
+  : "${CURL_PRGRS_EXEC:=""}"
+  percent_last=""
 
-if [ "$CURL_OUT_FILE" = "" ]; then
-  echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
-  exit "57"
-fi
-if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
-  echo "$BASH_SOURCE ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
-  exit "57"
-fi
+  # Locate the path to the temporary directory.
+  if [ "$TMPDIR" = "" ]; then
+    temp_dir_auto_generated=true
+    TMP="$(mktemp --directory)"
+  else
+    temp_dir_auto_generated=false
+    TMP="$TMPDIR"
+  fi
 
-is_number "$CURL_PRGRS_MAX_FILE_SIZE_BYTES"
+  # Compute names for our temporary files by joining the current date and
+  # time with the current process ID. We will need two temporary files: one
+  # for reading progress information from curl, and another for sending the
+  # exit status of curl from the forked child process back to the parent.
+  statusfile="${TMP}/status"
 
-# Locate the path to the temporary directory.
-if [ "$TMPDIR" = "" ]; then
-  temp_dir_auto_generated=true
-  TMP="$(mktemp --directory)"
-else
-  temp_dir_auto_generated=false
-  TMP="$TMPDIR"
-fi
+  expected_header_size=8000
+  maximum_http_header_size=32000
+}
 
-# Compute names for our temporary files by joining the current date and
-# time with the current process ID. We will need two temporary files: one
-# for reading progress information from curl, and another for sending the
-# exit status of curl from the forked child process back to the parent.
-statusfile="${TMP}/status"
+check_variables() {
+  if [ "$CURL_OUT_FILE" = "" ]; then
+    echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
+    exit "57"
+  fi
+  if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
+    echo "$BASH_SOURCE ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
+    exit "57"
+  fi
+
+  is_number "$CURL_PRGRS_MAX_FILE_SIZE_BYTES"
+}
 
 # Define our `shutdown` function, which will be responsible for cleaning
 # up when the program terminates, either normally or abnormally.
@@ -198,7 +202,7 @@ trap "shutdown sighup" SIGHUP
 # number of bytes expected.
 print_progress() {
   local bytes="$1"
-  local length="$curl_prgrs_content_length"
+  local length="$2"
 
   # If we are expecting less than 8 KB of data, don't bother drawing a
   # progress bar. (This helps avoid a flicker when following redirects.)
@@ -230,6 +234,10 @@ print_progress() {
     on=$(( $bytes * $width / $length ))
     local off
     off=$(( $width - $on ))
+
+    if [ "$on" -gt "$width" ]; then
+      on="$width"
+    fi
 
     # Using ANSI escape sequences, first move the cursor to the beginning
     # of the line, and then write the percentage. Switch to inverted text
@@ -280,26 +288,23 @@ curl_download() {
         curl_exit 81
       fi
 
-      if [ ! "$curl_prgrs_content_length" = "" ]; then
-        if [ "$bytes" -ge "$curl_prgrs_content_length" ]; then
-
-          curl_exit 114
-        fi
+      if [ "$bytes" -ge "$curl_prgrs_content_length" ]; then
+        curl_exit 114
       fi
 
-      if [ ! "$curl_prgrs_content_length" = "" ]; then
-        print_progress "$bytes"
-      fi
+      print_progress "$bytes" "$curl_prgrs_content_length"
     fi
 
     if ! kill -0 "$curl_pid" 2>/dev/null; then
-        break
+      break
     fi
 
     sleep 1
   done
 
-  if [ ! "$curl_prgrs_content_length" = "" ]; then
+  ## curl already terminated.
+
+  if is_number "$bytes" ; then
     if [ "$bytes" -le "$curl_prgrs_content_length" ]; then
       curl_exit 115
     fi
@@ -310,15 +315,36 @@ curl_download() {
   curl_exit "$curl_exit_code"
 }
 
-curl_prgrs_content_length=$(curl_prgrs_content_length="" curl_download --head --write-out '%header{Content-Length}\n' "$@")
+main() {
+  ## Determine curl_prgrs_content_length.
+  ## While we don't know the expected size of the header,
+  ## curl_prgrs_content_length and
+  ## CURL_PRGRS_MAX_FILE_SIZE_BYTES are set to reasonable values.
+  curl_prgrs_content_length=$( \
+    curl_prgrs_content_length="$expected_header_size" \
+    CURL_PRGRS_MAX_FILE_SIZE_BYTES="$maximum_http_header_size" \
+      curl_download \
+      --head \
+      --write-out '%header{Content-Length}\n' \
+      "$@"
+  )
 
-if ! is_number "$curl_prgrs_content_length" ; then
-  curl_exit 116
-fi
+  if ! is_number "$curl_prgrs_content_length" ; then
+    curl_exit 116
+  fi
 
-curl_download "$@" &
+  curl_download "$@" &
 
-wait_exit_code=0
-wait "$!" &>/dev/null || { wait_exit_code=$? ; true; };
-true "$BASH_SOURCE INFO: END."
-exit "$wait_exit_code"
+  wait_exit_code=0
+  wait "$!" &>/dev/null || { wait_exit_code=$? ; true; };
+  true "$BASH_SOURCE INFO: END."
+  exit "$wait_exit_code"
+}
+
+initialize_terminal
+initialize_variables
+# check_variables
+# main "$@"
+
+## Debugging.
+print_progress "$1" "$2"
