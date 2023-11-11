@@ -85,7 +85,6 @@ command -v mktemp >/dev/null
 : "${CURL_OUT_FILE:=""}"
 : "${CURL_PRGRS_EXEC:=""}"
 percent_last=""
-counter_progress_delay="10"
 
 if [ "$CURL_OUT_FILE" = "" ]; then
   echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
@@ -312,6 +311,11 @@ curl_download() {
 }
 
 curl_prgrs_content_length=$(curl_download --head --write-out '%header{Content-Length}\n' "$@")
+
+if ! is_number "$curl_prgrs_content_length" ; then
+  curl_exit
+fi
+
 curl_download "$@" &
 
 wait_exit_code=0

@@ -96,6 +96,7 @@ curl_exit_codes() {
 [113] - [helper-scripts curl-prgs (not curl!) reports: stat did not output a number.]
 [114] - [helper-scripts curl-prgs (not curl!) reports: actual file size bigger than server reported file size.]
 [115] - [helper-scripts curl-prgs (not curl!) reports: actual file size smaller than server reported file size.]
+[116] - [helper-scripts curl-prgs (not curl!) reports: Content-Length header could not be determined.]
 "
 
    if [ "$1" = "" ]; then
