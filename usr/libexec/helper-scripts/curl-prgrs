@@ -199,7 +199,7 @@ trap "shutdown sighup" SIGHUP
 # number of bytes expected.
 print_progress() {
   local bytes="$1"
-  local length="$CURL_DOWNLOAD_FILE_SIZE_BYTES"
+  local length="$curl_prgrs_already_downloaded_file_size"
 
   # If we are expecting less than 8 KB of data, don't bother drawing a
   # progress bar. (This helps avoid a flicker when following redirects.)
@@ -281,14 +281,14 @@ curl_download() {
         curl_exit 81
       fi
 
-      if [ ! "$CURL_DOWNLOAD_FILE_SIZE_BYTES" = "" ]; then
-        if [ "$bytes" -ge "$CURL_DOWNLOAD_FILE_SIZE_BYTES" ]; then
+      if [ ! "$curl_prgrs_already_downloaded_file_size" = "" ]; then
+        if [ "$bytes" -ge "$curl_prgrs_already_downloaded_file_size" ]; then
 
           curl_exit 114
         fi
       fi
 
-      if [ ! "$CURL_DOWNLOAD_FILE_SIZE_BYTES" = "" ]; then
+      if [ ! "$curl_prgrs_already_downloaded_file_size" = "" ]; then
         print_progress "$bytes"
       fi
     fi
@@ -300,8 +300,8 @@ curl_download() {
     sleep 1
   done
 
-  if [ ! "$CURL_DOWNLOAD_FILE_SIZE_BYTES" = "" ]; then
-    if [ "$bytes" -le "$CURL_DOWNLOAD_FILE_SIZE_BYTES" ]; then
+  if [ ! "$curl_prgrs_already_downloaded_file_size" = "" ]; then
+    if [ "$bytes" -le "$curl_prgrs_already_downloaded_file_size" ]; then
       curl_exit 115
     fi
   fi
@@ -311,7 +311,7 @@ curl_download() {
   curl_exit "$curl_exit_code"
 }
 
-CURL_DOWNLOAD_FILE_SIZE_BYTES=$(curl_download --head --write-out '%header{Content-Length}\n' "$@")
+curl_prgrs_already_downloaded_file_size=$(curl_download --head --write-out '%header{Content-Length}\n' "$@")
 curl_download "$@" &
 
 wait_exit_code=0
