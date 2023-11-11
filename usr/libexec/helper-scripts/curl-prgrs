@@ -243,12 +243,13 @@ print_progress() {
       "${percent}%" "$on" "" "$off" "" >&4
   fi
 
+  percent_last="$percent"
+
   if [ "$CURL_PRGRS_EXEC" = "" ]; then
     true "CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
     return 0
   fi
 
-  percent_last="$percent"
   #echo "$BASH_SOURCE CURL_PRGRS_EXEC: $CURL_PRGRS_EXEC" >&4
   eval $CURL_PRGRS_EXEC >&4
 }
