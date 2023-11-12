@@ -288,7 +288,43 @@ curl_download() {
   curl_exit "$curl_exit_code"
 }
 
+remove_argument_for_header_request() {
+    local args=()
+    local skip_next=false
+
+    for arg in "$@"; do
+        if [ "$skip_next" = true ]; then
+            skip_next=false
+            continue
+        fi
+
+        if [ "$arg" = "--continue-at" ]; then
+            skip_next=true
+            continue
+        fi
+
+        if [ "$arg" = "-C" ]; then
+            skip_next=true
+            continue
+        fi
+
+        if [ "$arg" = "--output" ]; then
+            skip_next=true
+            continue
+        fi
+
+        args+=("$arg")
+    done
+
+    echo "${args[@]}"
+}
+
 main() {
+  local header_arguments header_file
+
+  header_arguments=($(remove_argument_for_header_request "$@"))
+  header_file="$temporary_directory/header"
+
   ## Determine curl_prgrs_content_length.
   ## While we don't know the expected size of the header,
   ## curl_prgrs_content_length and
@@ -296,7 +332,10 @@ main() {
   ##
   ## CURL_PRGRS_EXEC="" to avoid a progress bar for the header download.
   ## That would confuse zenity.
-  curl_prgrs_content_length=$(curl_prgrs_content_length="$expected_header_size" CURL_PRGRS_MAX_FILE_SIZE_BYTES="$maximum_http_header_size" CURL_PRGRS_EXEC="" curl_download --head --write-out '%header{Content-Length}' "$@")
+  ##
+  ## CURL_OUT_FILE and
+  ## --output "$header_file" to avoid overwriting files when using "--continue-at -".
+  curl_prgrs_content_length=$(curl_prgrs_content_length="$expected_header_size" CURL_PRGRS_MAX_FILE_SIZE_BYTES="$maximum_http_header_size" CURL_PRGRS_EXEC="" CURL_OUT_FILE="$header_file" curl_download --head --write-out '%header{Content-Length}' "${header_arguments[@]}" --output "$header_file")
 
   if ! is_number "$curl_prgrs_content_length" ; then
     curl_exit 116
