@@ -73,8 +73,6 @@ initialize_terminal() {
 
 initialize_variables() {
   command -v tput >/dev/null
-  command -v sed >/dev/null
-  command -v mkfifo >/dev/null
   command -v curl >/dev/null
   command -v rm >/dev/null
   command -v mktemp >/dev/null
