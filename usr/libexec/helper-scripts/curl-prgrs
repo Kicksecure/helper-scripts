@@ -28,7 +28,6 @@
 # - Allows custom configurations via environment variables.
 #
 # Environment Variables:
-# - TMPDIR: Specifies the path to the temporary directory.
 # - CURL: Defines the path to the curl binary. Acceptable values are "curl" or "scurl" (secure curl). Default: "curl"
 # - CURL_PRGRS_MAX_FILE_SIZE_BYTES: Sets the maximum allowed file size for downloads in bytes. Mandatory.
 # - CURL_OUT_FILE: Specifies the path to the output file for download. Mandatory.
@@ -81,7 +80,6 @@ initialize_variables() {
   command -v mktemp >/dev/null
 
   : "${TERM:=""}"
-  : "${TMPDIR:=""}"
   : "${CURL:="curl"}"
   : "${CURL_PRGRS_MAX_FILE_SIZE_BYTES:=""}"
   : "${CURL_OUT_FILE:=""}"
@@ -89,20 +87,14 @@ initialize_variables() {
   : "${curl_prgrs_print_progress:="yes"}"
   percent_last=""
 
-  # Locate the path to the temporary directory.
-  if [ "$TMPDIR" = "" ]; then
-    temp_dir_auto_generated=true
-    TMP="$(mktemp --directory)"
-  else
-    temp_dir_auto_generated=false
-    TMP="$TMPDIR"
-  fi
+  temp_dir_auto_generated=true
+  temporary_directory="$(mktemp --directory)"
 
   # Compute names for our temporary files by joining the current date and
   # time with the current process ID. We will need two temporary files: one
   # for reading progress information from curl, and another for sending the
   # exit status of curl from the forked child process back to the parent.
-  statusfile="${TMP}/status"
+  statusfile="${temporary_directory}/status"
 
   expected_header_size=8000
   maximum_http_header_size=32000
@@ -172,7 +164,7 @@ shutdown() {
   #echo "$stat" >&4
 
   if [ "$temp_dir_auto_generated" = "true" ]; then
-    rm -r -f "$TMP"
+    rm -r -f "$temporary_directory"
   fi
 
   true curl_pid
