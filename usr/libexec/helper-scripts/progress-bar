@@ -17,6 +17,8 @@ else
 fi
 
 draw_progress_bar() {
+    local percent_done bar_width filled_chars empty_chars bar spaces
+
     percent_done="${1:-0}"  # Default to 0 if no argument is given
     bar_width=50            # Width of the progress bar
 
@@ -41,7 +43,7 @@ draw_progress_bar() {
 main() {
   # Example usage
   for i in {0..100}; do
-    draw_progress_bar $i
+    draw_progress_bar "$i"
     sleep 0.1  # Simulating work
   done
 }

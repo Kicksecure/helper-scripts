@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Modified for Whonix, see COPYING for copying conditions.
+## See the file COPYING for copying conditions.
 
 curl_exit_codes() {
    local codes="

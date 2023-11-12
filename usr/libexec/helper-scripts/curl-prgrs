@@ -32,7 +32,8 @@
 # - CURL: Defines the path to the curl binary. Acceptable values are "curl" or "scurl" (secure curl). Default: "curl"
 # - CURL_PRGRS_MAX_FILE_SIZE_BYTES: Sets the maximum allowed file size for downloads in bytes. Mandatory.
 # - CURL_OUT_FILE: Specifies the path to the output file for download. Mandatory.
-# - CURL_PRGRS_EXEC: Designates the command to execute for updating the progress bar. Optional.
+# - CURL_PRGRS_EXEC: Designates the command to execute for updating the progress bar.
+#   Last argument will be the number in percent. Optional.
 #
 # Authors:
 # - Sam Stephenson <sstephenson@gmail.com>
@@ -50,6 +51,9 @@
 set -e
 set -o nounset
 set -o pipefail
+
+## provides: draw_progress_bar
+source /usr/libexec/helper-scripts/progress-bar
 
 is_number() {
     [[ $1 =~ ^-?[0-9]+$ ]]
@@ -82,6 +86,7 @@ initialize_variables() {
   : "${CURL_PRGRS_MAX_FILE_SIZE_BYTES:=""}"
   : "${CURL_OUT_FILE:=""}"
   : "${CURL_PRGRS_EXEC:=""}"
+  : "${curl_prgrs_print_progress:="yes"}"
   percent_last=""
 
   # Locate the path to the temporary directory.
@@ -197,42 +202,6 @@ trap "shutdown err" ERR
 trap "shutdown exit" EXIT
 trap "shutdown sighup" SIGHUP
 
-print_progress_bar() {
-    local bytes=$1     # The number of bytes downloaded so far
-    local length=$2    # The total size of the download
-
-    # Ensure that length is not zero to avoid division by zero
-    if [ "$length" -eq 0 ]; then
-        length=1
-    fi
-
-    # Calculate the progress percentage, ensuring it's between 0 and 100
-    local percent=$(( bytes * 100 / length ))
-    percent=$(( percent < 0 ? 0 : (percent > 100 ? 100 : percent) ))
-
-    # Get the terminal_width of the terminal and reserve space for the percentage.
-    ## Added '-Tdumb' in case above 'if [ "$TERM" = "" ]; then' does not match
-    ## due to unknown bug.
-    ## Added '2>/dev/null' to avoid log spam
-    ## 'tput: No value for $TERM and no -T specified' because of above.
-    local columns=$(tput -Tdumb cols 2>/dev/null || echo 80)  # Fallback to 80 if tput fails
-    local reserved_space=10
-    local terminal_width=$(( columns - reserved_space ))
-    local max_bar_width=$((terminal_width - reserved_space))
-
-    # Calculate the filled and unfilled portions of the progress bar
-    local on=$(( percent * terminal_width / 100 ))
-    local off=$(( terminal_width - on ))
-
-    # Ensure on and off values do not exceed max_bar_width and are not negative
-    on=$(( on > max_bar_width ? max_bar_width : (on < 0 ? 0 : on) ))
-    off=$(( off > max_bar_width ? max_bar_width : (off < 0 ? 0 : off) ))
-
-    # Print the progress bar
-    printf "\x1B[0G %-6s\x1B[7m%*s\x1B[0m%*s\x1B[1D" \
-      "${percent}%" "$on" "" "$off" "" >&4
-}
-
 # The `print_progress` function draws our progress bar to the screen. It
 # takes two arguments: the number of bytes read so far, and the total
 # number of bytes expected.
@@ -247,6 +216,8 @@ print_progress() {
   # Calculate the progress percentage and the size of the filled and
   # unfilled portions of the progress bar.
   local percent
+  true "bytes: '$bytes'"
+  true "length: '$length'"
   percent=$(( $bytes * 100 / $length ))
 
   if [ "$percent" -ge "100" ]; then
@@ -258,18 +229,16 @@ print_progress() {
   elif [ "$percent_last" = "$percent" ]; then
     true "percentage number unchanged. Not re-drawing progress bar to avoid flicker."
   else
-    print_progress_bar "$bytes" "$length"
+    draw_progress_bar "$percent"
+    if [ "$CURL_PRGRS_EXEC" = "" ]; then
+      true "CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
+      return 0
+    else
+      $CURL_PRGRS_EXEC "$percent" >&4
+    fi
   fi
 
   percent_last="$percent"
-
-  if [ "$CURL_PRGRS_EXEC" = "" ]; then
-    true "CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
-    return 0
-  fi
-
-  #echo "$BASH_SOURCE CURL_PRGRS_EXEC: $CURL_PRGRS_EXEC" >&4
-  eval $CURL_PRGRS_EXEC >&4
 }
 
 curl_exit() {
@@ -279,8 +248,11 @@ curl_exit() {
   if [ "$curl_exit_code" = "0" ]; then
     return 0
   fi
-  if ! kill -0 "$curl_pid" 2>/dev/null; then
-    kill -s SIGKILL "$curl_pid" &>/dev/null || true
+  : "${curl_pid:=""}"
+  if [ "$curl_pid" = "" ]; then
+    if ! kill -0 "$curl_pid" 2>/dev/null; then
+      kill -s SIGKILL "$curl_pid" &>/dev/null || true
+    fi
   fi
 }
 
@@ -304,7 +276,9 @@ curl_download() {
         curl_exit 114
       fi
 
-      print_progress "$bytes" "$curl_prgrs_content_length"
+      if [ "$curl_prgrs_print_progress" = "yes" ]; then
+        print_progress "$bytes" "$curl_prgrs_content_length" >&4
+      fi
     fi
 
     if ! kill -0 "$curl_pid" 2>/dev/null; then
@@ -332,14 +306,10 @@ main() {
   ## While we don't know the expected size of the header,
   ## curl_prgrs_content_length and
   ## CURL_PRGRS_MAX_FILE_SIZE_BYTES are set to reasonable values.
-  curl_prgrs_content_length=$( \
-    curl_prgrs_content_length="$expected_header_size" \
-    CURL_PRGRS_MAX_FILE_SIZE_BYTES="$maximum_http_header_size" \
-      curl_download \
-      --head \
-      --write-out '%header{Content-Length}\n' \
-      "$@"
-  )
+  ##
+  ## CURL_PRGRS_EXEC="" to avoid a progress bar for the header download.
+  ## That would confuse zenity.
+  curl_prgrs_content_length=$(curl_prgrs_content_length="$expected_header_size" CURL_PRGRS_MAX_FILE_SIZE_BYTES="$maximum_http_header_size" CURL_PRGRS_EXEC="" curl_download --head --write-out '%header{Content-Length}' "$@")
 
   if ! is_number "$curl_prgrs_content_length" ; then
     curl_exit 116
