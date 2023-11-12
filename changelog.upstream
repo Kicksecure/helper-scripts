@@ -1,3 +1,131 @@
+commit 85d3b51713deec11c147cace8f61b229f6d6ab02
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 21:10:01 2023 -0500
+
+    refactoring
+
+commit 14bf47b202b7b5cdd12b049e63c444d72596ead3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 21:05:58 2023 -0500
+
+    fixed `--resume`
+
+commit 23d37e0bb3cd2bc293438bca744e3c370bec5be4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 20:35:11 2023 -0500
+
+    don't draw progress bar if terminal is not connected
+
+commit 7d9e831e3e0dadfb9fa72b62e0750766067c1de9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 20:22:56 2023 -0500
+
+    avoid unicode
+
+commit a3921a6e1fc9e2eec9b07dc96c7eff34e46ec3c3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 20:18:52 2023 -0500
+
+    cleanup
+
+commit 8d516fca6dc5909912cfd69f9c550c141fd72be1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 20:15:17 2023 -0500
+
+    deprecate TMPDIR feature of curl-prgrs
+    
+    to avoid conflicts with libpam-tmpdir
+
+commit 9016204991b710a23c9b8e74b7775a4f424a07b2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 20:11:27 2023 -0500
+
+    improve curl-prgrs
+
+commit 9df91ed6472cfd193abc85ff5f1236c160cfca5d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 18:59:45 2023 -0500
+
+    add /usr/libexec/helper-scripts/progress-bar
+
+commit 4379ab10084f75adc2f08410cd64a2005eab61c7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 18:39:40 2023 -0500
+
+    fix
+
+commit 90999e9b40c200b65e43e7c54bc6300cc13ff841
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 18:38:59 2023 -0500
+
+    improve curl-prgrs
+
+commit 181c3c0fd08c7d39624b0e153d5d081918848170
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 18:24:20 2023 -0500
+
+    improve curl-prgrs
+
+commit eefd2dfd3446ac65e2f47ec526623a9866126eac
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 17:53:23 2023 -0500
+
+    fix
+
+commit 989219bed2b95573222bb076ec1b2a760be55137
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 17:50:56 2023 -0500
+
+    fix
+
+commit 9b030ffd29dffedfec929ebbc4541efe4ca189f4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 17:50:14 2023 -0500
+
+    improve curl-prgrs
+
+commit fb567095ca16552d7f01341e26773b612b726efc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 17:45:19 2023 -0500
+
+    refactoring
+
+commit a0a342f84d224f1997e309d14f72212cc8e13d78
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 17:43:56 2023 -0500
+
+    refactoring
+
+commit 2ed027a88fa56d53c02c19f4b17c5a853f9e4315
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 17:42:13 2023 -0500
+
+    fix
+
+commit dd61c54e0ef229a67a7441b47d3102f5a6331e70
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 17:40:41 2023 -0500
+
+    fix
+
+commit b02610f677ba66dba246e0debd3001ccd15702d5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 17:38:10 2023 -0500
+
+    debugging
+
+commit a56ed69e3578141ebc366843d531f75ebe879b4f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 17:36:16 2023 -0500
+
+    avoid curl-prgrs flicker
+
+commit f98cf7bce43879799be5061b86e5e6d76386562e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 20:15:54 2023 +0000
+
+    bumped changelog version
+
 commit 3ae40b96873ff3a87fb0cdf9b95185bc8839e40b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Nov 11 14:43:08 2023 -0500
