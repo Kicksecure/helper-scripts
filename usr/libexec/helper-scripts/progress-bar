@@ -33,7 +33,7 @@ draw_progress_bar() {
     empty_chars=$((bar_width - filled_chars))
 
     # Build the bar string
-    bar=$(printf '%0.s█' $(seq 1 $filled_chars))
+    bar=$(printf '%0.s#' $(seq 1 $filled_chars))
     spaces=$(printf '%0.s ' $(seq 1 $empty_chars))
 
     # Print the progress bar
