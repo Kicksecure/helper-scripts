@@ -77,7 +77,6 @@ initialize_variables() {
   command -v rm >/dev/null
   command -v mktemp >/dev/null
 
-  : "${TERM:=""}"
   : "${CURL:="curl"}"
   : "${CURL_PRGRS_MAX_FILE_SIZE_BYTES:=""}"
   : "${CURL_OUT_FILE:=""}"
@@ -214,9 +213,7 @@ print_progress() {
     percent=100
   fi
 
-  if [ "$TERM" = "" ]; then
-    true "TERM is empty. Not drawing progress bar."
-  elif [ "$percent_last" = "$percent" ]; then
+  if [ "$percent_last" = "$percent" ]; then
     true "percentage number unchanged. Not re-drawing progress bar to avoid flicker."
   else
     draw_progress_bar "$percent"

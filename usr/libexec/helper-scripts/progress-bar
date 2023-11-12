@@ -17,27 +17,37 @@ else
 fi
 
 draw_progress_bar() {
-    local percent_done bar_width filled_chars empty_chars bar spaces
+  if ! test -t 1; then
+    true "Output is not being sent to the terminal because terminal is not connected to stdout."
+    return 0
+  fi
+  : "${TERM:=""}"
+  if [ "$TERM" = "" ]; then
+    true "TERM is empty. Not drawing progress bar."
+    return 0
+  fi
 
-    percent_done="${1:-0}"  # Default to 0 if no argument is given
-    bar_width=50            # Width of the progress bar
+  local percent_done bar_width filled_chars empty_chars bar spaces
 
-    # Validate input
-    if ! [[ "$percent_done" =~ ^[0-9]+$ ]] || [ "$percent_done" -gt 100 ] || [ "$percent_done" -lt 0 ]; then
-        echo "Error: Invalid percentage value '$percent_done'. Must be a number between 0 and 100." >&2
-        exit 1
-    fi
+  percent_done="${1:-0}"  # Default to 0 if no argument is given
+  bar_width=50            # Width of the progress bar
 
-    # Calculate how many characters will be filled in the bar
-    filled_chars=$((percent_done * bar_width / 100))
-    empty_chars=$((bar_width - filled_chars))
+  # Validate input
+  if ! [[ "$percent_done" =~ ^[0-9]+$ ]] || [ "$percent_done" -gt 100 ] || [ "$percent_done" -lt 0 ]; then
+      echo "Error: Invalid percentage value '$percent_done'. Must be a number between 0 and 100." >&2
+      exit 1
+  fi
 
-    # Build the bar string
-    bar=$(printf '%0.s#' $(seq 1 $filled_chars))
-    spaces=$(printf '%0.s ' $(seq 1 $empty_chars))
+  # Calculate how many characters will be filled in the bar
+  filled_chars=$((percent_done * bar_width / 100))
+  empty_chars=$((bar_width - filled_chars))
 
-    # Print the progress bar
-    printf "\r[%-50s] %3s%%" "$bar$spaces" "$percent_done"
+  # Build the bar string
+  bar=$(printf '%0.s#' $(seq 1 $filled_chars))
+  spaces=$(printf '%0.s ' $(seq 1 $empty_chars))
+
+  # Print the progress bar
+  printf "\r[%-50s] %3s%%" "$bar$spaces" "$percent_done"
 }
 
 main() {
