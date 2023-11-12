@@ -335,7 +335,17 @@ main() {
   ##
   ## CURL_OUT_FILE and
   ## --output "$header_file" to avoid overwriting files when using "--continue-at -".
-  curl_prgrs_content_length=$(curl_prgrs_content_length="$expected_header_size" CURL_PRGRS_MAX_FILE_SIZE_BYTES="$maximum_http_header_size" CURL_PRGRS_EXEC="" CURL_OUT_FILE="$header_file" curl_download --head --write-out '%header{Content-Length}' "${header_arguments[@]}" --output "$header_file")
+  curl_prgrs_content_length=$( \
+    curl_prgrs_content_length="$expected_header_size" \
+    CURL_PRGRS_MAX_FILE_SIZE_BYTES="$maximum_http_header_size" \
+    CURL_PRGRS_EXEC="" \
+    CURL_OUT_FILE="$header_file" \
+      curl_download \
+        --head \
+        --write-out '%header{Content-Length}' \
+        "${header_arguments[@]}" \
+        --output "$header_file"
+  )
 
   if ! is_number "$curl_prgrs_content_length" ; then
     curl_exit 116
