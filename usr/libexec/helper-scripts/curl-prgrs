@@ -108,6 +108,8 @@ check_variables() {
   fi
 
   is_number "$CURL_PRGRS_MAX_FILE_SIZE_BYTES"
+  is_number "$expected_header_size"
+  is_number "$maximum_http_header_size"
 }
 
 # Define our `shutdown` function, which will be responsible for cleaning
