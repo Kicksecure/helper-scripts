@@ -97,6 +97,7 @@ curl_exit_codes() {
 [114] - [helper-scripts curl-prgs (not curl!) reports: actual file size bigger than server reported file size.]
 [115] - [helper-scripts curl-prgs (not curl!) reports: actual file size smaller than server reported file size.]
 [116] - [helper-scripts curl-prgs (not curl!) reports: Content-Length header could not be determined.]
+[143] - [helper-scripts curl-prgs (not curl!) reports: signal sigterm received.]
 "
 
    if [ "$1" = "" ]; then
