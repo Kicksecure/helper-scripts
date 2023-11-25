@@ -1,3 +1,21 @@
+commit ef070a4c8e5fd3057c2f8b515ee04c852d032644
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 25 00:44:55 2023 -0500
+
+    explain exit code 143
+
+commit a5f40237731460abc5a31c09b9d5912fcdd8fd6f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 25 00:42:39 2023 -0500
+
+    sanity tests
+
+commit b70691bbd1897b3d91f68dc12c2b896cb8354822
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 25 04:39:58 2023 +0000
+
+    bumped changelog version
+
 commit e5cd3d3e2e17bfeeaee41c8e0e6805139eb71edd
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Nov 24 23:28:48 2023 -0500
