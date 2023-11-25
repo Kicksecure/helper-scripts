@@ -1,3 +1,29 @@
+commit e5cd3d3e2e17bfeeaee41c8e0e6805139eb71edd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 24 23:28:48 2023 -0500
+
+    refactoring
+
+commit a115b9e85f0addd95cab69a475c82515cbe7b49d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 24 23:27:41 2023 -0500
+
+    local
+
+commit 014de357373b09c5f3174e01970822d9015a352a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 24 23:25:55 2023 -0500
+
+    fix initialization of bytes variable
+    
+    in case no file was created by curl and curl already exited
+
+commit 5b874100884516fd3df0ed6298fcbb8cc95d1000
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 12 02:23:29 2023 +0000
+
+    bumped changelog version
+
 commit 85d3b51713deec11c147cace8f61b229f6d6ab02
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Nov 11 21:10:01 2023 -0500
