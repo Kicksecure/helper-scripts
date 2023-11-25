@@ -244,6 +244,8 @@ curl_exit() {
 }
 
 curl_download() {
+  local bytes
+
   $CURL --no-progress-meter "$@" &
   curl_pid=$!
 
