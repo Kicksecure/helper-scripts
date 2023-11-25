@@ -244,29 +244,29 @@ curl_exit() {
 }
 
 curl_download() {
-  local bytes
+  local size_file_downloaded_bytes
 
   $CURL --no-progress-meter "$@" &
   curl_pid=$!
 
   while true ; do
     if [ -f "$CURL_OUT_FILE" ]; then
-      bytes=$(stat -c%s "$CURL_OUT_FILE")
+      size_file_downloaded_bytes=$(stat -c%s "$CURL_OUT_FILE")
 
-      if ! is_number "$bytes" ; then
+      if ! is_number "$size_file_downloaded_bytes" ; then
         curl_exit 113
       fi
 
-      if [ "$bytes" -gt "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" ]; then
+      if [ "$size_file_downloaded_bytes" -gt "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" ]; then
         curl_exit 81
       fi
 
-      if [ "$bytes" -ge "$curl_prgrs_content_length" ]; then
+      if [ "$size_file_downloaded_bytes" -ge "$curl_prgrs_content_length" ]; then
         curl_exit 114
       fi
 
       if [ "$curl_prgrs_print_progress" = "yes" ]; then
-        print_progress "$bytes" "$curl_prgrs_content_length" >&4
+        print_progress "$size_file_downloaded_bytes" "$curl_prgrs_content_length" >&4
       fi
     fi
 
@@ -279,9 +279,9 @@ curl_download() {
 
   ## curl already terminated.
 
-  : "${bytes:=""}"
-  if is_number "$bytes" ; then
-    if [ "$bytes" -le "$curl_prgrs_content_length" ]; then
+  : "${size_file_downloaded_bytes:=""}"
+  if is_number "$size_file_downloaded_bytes" ; then
+    if [ "$size_file_downloaded_bytes" -le "$curl_prgrs_content_length" ]; then
       curl_exit 115
     fi
   fi
