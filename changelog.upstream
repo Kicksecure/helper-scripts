@@ -1,3 +1,17 @@
+commit 2f3035e49810d231d7e03d0a84229bc9e94718eb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 30 11:38:35 2023 -0500
+
+    allow tor_enabled_check to be executed
+    
+    and output true / false depending on Tor status
+
+commit b6be7eb1a4e9eb4f7d5ab0111be23dfc3e5bbc34
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 25 05:48:11 2023 +0000
+
+    bumped changelog version
+
 commit ef070a4c8e5fd3057c2f8b515ee04c852d032644
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Nov 25 00:44:55 2023 -0500
