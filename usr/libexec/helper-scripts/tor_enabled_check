@@ -7,8 +7,8 @@ check_tor_enabled_do() {
    ## Fallback.
    TOR_ENABLED="0"
 
-   ## Skip this test, if not running on Whonix-Gateway.
-   if [ ! -e "/usr/share/anon-gw-base-files/gateway" ]; then
+   ## Skip this test, if not running on Whonix-Workstation.
+   if [ -e "/usr/share/anon-ws-base-files/workstation" ]; then
       TOR_ENABLED="1"
       return 0
    fi
@@ -59,3 +59,27 @@ check_tor_enabled_do() {
       unset line
    done
 }
+
+: "${BASH_SOURCE:=""}"
+
+if [ "${BASH_SOURCE}" = "${0}" ]; then
+  ## Script was executed.
+  tor_enabled_check_was_sourced="false"
+elif [ "${BASH_SOURCE}" = "$(command -v "${0}")" ]; then
+  ## Script was executed probably with 'bash -x'.
+  tor_enabled_check_was_sourced="false"
+else
+  ## Script was sourced.
+  ## This is useful for other programs / scripts to be able to `source` the
+  ## functions of this script for code re-use. dist-installer-gui will do this.
+  tor_enabled_check_was_sourced="true"
+fi
+
+if [ "$tor_enabled_check_was_sourced" = "false" ]; then
+   check_tor_enabled_do
+   if [ "$TOR_ENABLED" = "1" ]; then
+      echo "true"
+   else
+      echo "false"
+   fi
+fi
