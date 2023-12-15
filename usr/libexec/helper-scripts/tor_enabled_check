@@ -5,13 +5,7 @@
 
 check_tor_enabled_do() {
    ## Fallback.
-   TOR_ENABLED="0"
-
-   ## Skip this test, if not running on Whonix-Workstation.
-   if [ -e "/usr/share/anon-ws-base-files/workstation" ]; then
-      TOR_ENABLED="1"
-      return 0
-   fi
+   TOR_ENABLED="1"
 
    ## Skip this test, if running in Qubes TemplateVM.
    if test -f /run/qubes/this-is-templatevm ; then
