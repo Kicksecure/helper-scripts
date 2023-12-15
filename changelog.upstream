@@ -1,3 +1,19 @@
+commit bdfe697b26143dd540488282e41e21639ba1084c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 15 15:47:32 2023 -0500
+
+    tor_enabled_check: assume Tor is enabled by default
+    
+    actually check it was disabled in Tor config
+    
+    unify behavior on on all platforms
+
+commit 28e5cd342ca6664fb337068dd35f7269042e2447
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 30 17:55:43 2023 +0000
+
+    bumped changelog version
+
 commit 2f3035e49810d231d7e03d0a84229bc9e94718eb
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 30 11:38:35 2023 -0500
