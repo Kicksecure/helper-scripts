@@ -1,3 +1,35 @@
+commit 3405fb05fc1d8bf82f06d02a2200de543f201ba1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 22 09:10:16 2023 -0500
+
+    output
+
+commit e46345cfdacfe7ce688e973640d69776c050ab3e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 22 08:14:47 2023 -0500
+
+    remove unicode
+
+commit ef908ebcdeaae1a73a479dbe587581e444ddb0f6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 22 06:52:51 2023 -0500
+
+    at least 6 GB swap size if 2 GB RAM or less
+
+commit 94f8466e74038a8607553365cf0c18fc497a58e0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 22 06:44:27 2023 -0500
+
+    add calculate-swap-size
+    
+    https://forums.whonix.org/t/swap-swap-file-whonix-gateway-freezing-during-apt-get-dist-upgrade-encrypted-swap-file-creator/8317
+
+commit 6f92b797797bc54357259aa56354d09b06317416
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 15 20:48:40 2023 +0000
+
+    bumped changelog version
+
 commit bdfe697b26143dd540488282e41e21639ba1084c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Dec 15 15:47:32 2023 -0500
