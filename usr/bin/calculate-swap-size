@@ -28,7 +28,7 @@ calculate_swap_size() {
     else
       #swap_size=$((2 * ram_in_mb))
       #echo "RAM <= 2GB without hibernation: Swap size is 2 times the RAM"
-      echo "RAM <= 2GB with hibernation: Swap size is at least 6 GB"
+      echo "RAM <= 2GB without hibernation: Swap size is at least 6 GB"
       swap_size=6144
     fi
   elif (( ram_in_gb > 2 && ram_in_gb <= 8 )); then
