@@ -21,11 +21,15 @@ calculate_swap_size() {
 
   if (( ram_in_gb <= 2 )); then
     if [[ "$hibernation" == "yes" ]]; then
-      swap_size=$((3 * ram_in_mb))
-      echo "RAM ≤ 2GB with hibernation: Swap size is 3 times the RAM"
+      #swap_size=$((3 * ram_in_mb))
+      #echo "RAM ≤ 2GB with hibernation: Swap size is 3 times the RAM"
+      echo "RAM ≤ 2GB with hibernation: Swap size is at least 6 GB"
+      swap_size=6144
     else
-      swap_size=$((2 * ram_in_mb))
-      echo "RAM ≤ 2GB without hibernation: Swap size is 2 times the RAM"
+      #swap_size=$((2 * ram_in_mb))
+      #echo "RAM ≤ 2GB without hibernation: Swap size is 2 times the RAM"
+      echo "RAM ≤ 2GB with hibernation: Swap size is at least 6 GB"
+      swap_size=6144
     fi
   elif (( ram_in_gb > 2 && ram_in_gb <= 8 )); then
     if [[ "$hibernation" == "yes" ]]; then
@@ -71,8 +75,8 @@ test_calculate_failed() {
 test_calculate_swap_size() {
   # Test 1: RAM ≤ 2GB without hibernation
   calculate_swap_size 2048 no
-  echo "Test 1: Expected 4096, Got $CALCULATED_SWAP_SIZE"
-  (( CALCULATED_SWAP_SIZE == 4096 )) || test_calculate_failed 1
+  echo "Test 1: Expected 6144, Got $CALCULATED_SWAP_SIZE"
+  (( CALCULATED_SWAP_SIZE == 6144 )) || test_calculate_failed 1
 
   # Test 2: RAM ≤ 2GB with hibernation
   calculate_swap_size 2048 yes
@@ -121,6 +125,9 @@ test_calculate_swap_size() {
 }
 
 test_calculate_swap_size >/dev/null
+## For testing:
+## Comment out above and use:
+#test_calculate_swap_size
 
 if [[ $# -ne 2 ]] || [[ $# -ge 3 ]] ; then
     echo "Usage: $0 [RAM in MB] [Hibernation (yes/no)]" >&2
