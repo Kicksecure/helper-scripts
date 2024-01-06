@@ -35,7 +35,7 @@ if [ "$boot_image" = "" ]; then
    exit 1
 fi
 
-boot_image_without_boot_slash=$(echo "$boot_image" | sed "s#boot/##")
+boot_image_without_boot_slash=$(echo "$boot_image" | sed "s#/boot/##")
 
 if [ "$boot_image_without_boot_slash" = "" ]; then
    echo "$0: ERROR: boot_image_without_boot_slash detection failed (is empty)!" >&2
@@ -48,11 +48,11 @@ elif test -r "/$boot_image_without_boot_slash" ; then
    kernel="/$boot_image_without_boot_slash"
 fi
 ## example kernel:
-## /boot//vmlinuz-5.10.0-20-amd64
+## /boot/vmlinuz-5.10.0-20-amd64
 
 initrd=$(echo "$kernel" | sed "s#vmlinuz#initrd.img#")
 ## example initrd:
-## /boot//initrd.img-5.10.0-20-amd64
+## /boot/initrd.img-5.10.0-20-amd64
 
 if ! test -r "$kernel"; then
    echo "$0: ERROR: Kernel File '$kernel' not found or not readable!" >&2
