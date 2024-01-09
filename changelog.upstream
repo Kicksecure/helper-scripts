@@ -1,3 +1,15 @@
+commit 59895db11f537b66768b5cb6bf79d8fd4eaaaf61
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 6 09:23:38 2024 -0500
+
+    fix double slash
+
+commit bad36e4ad7bc205a6d108f95a6ed99f4dd049b3b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 22 16:31:36 2023 +0000
+
+    bumped changelog version
+
 commit 3405fb05fc1d8bf82f06d02a2200de543f201ba1
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Dec 22 09:10:16 2023 -0500
