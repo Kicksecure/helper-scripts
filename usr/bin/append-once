@@ -3,6 +3,9 @@
 ## Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## Usage:
+## append-once 'line to append' /path/to/file
+
 set -e
 set -o errtrace
 set -o pipefail
