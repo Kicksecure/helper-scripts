@@ -1,3 +1,30 @@
+commit 76f7c0247b5fc5df90de3e35ddcb068f71d26d51
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 2 07:10:32 2024 -0500
+
+    Added Directory Check to str_replace Script
+    
+    - Implemented a validation step to check if the specified file is actually a directory.
+    - The script now exits with an appropriate error message if the user mistakenly provides a directory path instead of a file.
+    - Ensured that the file operations are only performed on valid files, enhancing the script's robustness and error handling.
+
+commit 8d79b650d6d2a1576b8da2b5bdd91f9f233e7362
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 2 07:08:31 2024 -0500
+
+    Fixed Uninitialized Value Bug in str_replace Script
+    
+    - Resolved an issue where $contents remained uninitialized when no input was provided via STDIN.
+    - Added a check to ensure $contents is defined before proceeding with the search and replace operation.
+    - The script now outputs an error message and exits gracefully if no input data is received, preventing the uninitialized value error.
+    - Ensured consistent script behavior for both file and STDIN inputs.
+
+commit 5700e150c4eba6f09892338ad1070e31cac4328b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 25 13:58:30 2024 +0000
+
+    bumped changelog version
+
 commit 031bf060e5f901a39adc8a12d9c1fa7513ce637a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 25 06:58:21 2024 -0500
