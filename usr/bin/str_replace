@@ -18,6 +18,12 @@ my $fh;
 
 if (defined $ARGV[2]) {
     $file = $ARGV[2];
+
+    # Check if the file is actually a folder
+    if (-d $file) {
+        die "Error: '$file' is a directory, not a file";
+    }
+
     open($fh, '<', $file) or die "Cannot open the file '$file'";
     {
         local $/;
