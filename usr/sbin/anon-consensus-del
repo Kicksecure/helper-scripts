@@ -18,9 +18,11 @@ if ! [ "$(id -u)" = 0 ]; then
 fi
 
 systemctl --no-pager stop tor
-systemctl --no-pager stop vanguards || true
+systemctl --no-pager stop vanguards &>/dev/null || true
 
 anon-consensus-del-files
 
-systemctl --no-pager restart vanguards || true
+if systemctl is-enabled vanguards &>/dev/null ; then
+   systemctl --no-pager restart vanguards || true
+fi
 systemctl --no-pager restart tor
