@@ -1,3 +1,15 @@
+commit 4cae6abcf687cda4894a7d4aed286b753995c7fd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Feb 17 07:13:41 2024 -0500
+
+    improve vanguards integration
+
+commit 6c61699af7e742df5e06e5450806a205821480ff
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 2 12:35:00 2024 +0000
+
+    bumped changelog version
+
 commit 76f7c0247b5fc5df90de3e35ddcb068f71d26d51
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Feb 2 07:10:32 2024 -0500
