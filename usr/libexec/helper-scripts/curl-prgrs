@@ -258,6 +258,12 @@ curl_download() {
       if ! is_number "$size_file_downloaded_bytes" ; then
         curl_exit 113
       fi
+      ## Additional validation.
+      ## Already validated earlier, but:
+      ## /usr/libexec/helper-scripts/curl-prgrs: line 266: [: : integer expression expected
+      if ! is_number "$curl_prgrs_content_length" ; then
+        curl_exit 116
+      fi
 
       if [ "$size_file_downloaded_bytes" -gt "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" ]; then
         curl_exit 81
