@@ -1,3 +1,69 @@
+commit 890405b66e17f6653375ecb4432477a8be44d1d6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 05:15:04 2024 -0400
+
+    fix
+
+commit c6068cfd3be827fdb95b58eb51e6f27d14d85a61
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 04:59:30 2024 -0400
+
+    debugging
+
+commit 2689f36d9dd03129e35ebeaf2fb2cbb316d80cf5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 04:51:34 2024 -0400
+
+    output
+
+commit 0427ba04bc750a0ab1e77d1f17e5372f20faab9d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 04:34:35 2024 -0400
+
+    output
+
+commit abdec0bca57463f4b5003479997e55503a89ec87
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 04:31:46 2024 -0400
+
+    fix
+
+commit e6aee72bb2dc443bf72dc420cd4a03bcfa03b24b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 04:27:29 2024 -0400
+
+    additional validation of variables
+
+commit eb895bdee1ac51fd18522f22a30f10dc5e4a72c2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 04:22:01 2024 -0400
+
+    refactoring
+
+commit f7d06ad0fe78b373bfceb030948e63f3bf77fe6f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 04:20:44 2024 -0400
+
+    disallow negative numbers
+
+commit b38011c20cc26f10b1200354856b6a97f4a8360e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 04:19:47 2024 -0400
+
+    comments
+
+commit 7dfd149aa77b0be661a32ee498bd77305f7532a2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 04:04:07 2024 -0400
+
+    additional validation of variable curl_prgrs_content_length
+
+commit 6cf295022025d660c73936f102c9b519d3049b79
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Feb 17 12:25:57 2024 +0000
+
+    bumped changelog version
+
 commit 4cae6abcf687cda4894a7d4aed286b753995c7fd
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Feb 17 07:13:41 2024 -0500
