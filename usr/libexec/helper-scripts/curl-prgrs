@@ -63,8 +63,9 @@ source /usr/libexec/helper-scripts/progress-bar
 ## empty input
 ## space only
 ## scientific notation such as 1.23e10
+## negative numbers such as -1
 is_number() {
-    [[ $1 =~ ^-?[0-9]+$ ]]
+    [[ $1 =~ ^[0-9]+$ ]]
 }
 
 initialize_terminal() {
