@@ -64,7 +64,7 @@ source /usr/libexec/helper-scripts/progress-bar
 ## space only
 ## scientific notation such as 1.23e10
 ## negative numbers such as -1
-is_number() {
+is_whole_number() {
     [[ $1 =~ ^[0-9]+$ ]]
 }
 
@@ -117,9 +117,9 @@ check_variables() {
     exit "57"
   fi
 
-  is_number "$CURL_PRGRS_MAX_FILE_SIZE_BYTES"
-  is_number "$expected_header_size"
-  is_number "$maximum_http_header_size"
+  is_whole_number "$CURL_PRGRS_MAX_FILE_SIZE_BYTES"
+  is_whole_number "$expected_header_size"
+  is_whole_number "$maximum_http_header_size"
 }
 
 # Define our `shutdown` function, which will be responsible for cleaning
@@ -150,7 +150,7 @@ shutdown() {
   if [ -f "$statusfile" ]; then
     true "$BASH_SOURCE: INFO: got status file"
     status="$(cat "$statusfile")"
-    if ! is_number "$status"; then
+    if ! is_whole_number "$status"; then
       true "$0: status is not a number! status: '$status'"
       status="111"
       error_exit_code="111"
@@ -265,13 +265,13 @@ curl_download() {
     if [ -f "$CURL_OUT_FILE" ]; then
       size_file_downloaded_bytes=$(stat -c%s "$CURL_OUT_FILE")
 
-      if ! is_number "$size_file_downloaded_bytes" ; then
+      if ! is_whole_number "$size_file_downloaded_bytes" ; then
         curl_exit 113
       fi
       ## Additional validation.
       ## Already validated earlier, but:
       ## /usr/libexec/helper-scripts/curl-prgrs: line 266: [: : integer expression expected
-      if ! is_number "$curl_prgrs_content_length" ; then
+      if ! is_whole_number "$curl_prgrs_content_length" ; then
         curl_exit 116
       fi
 
@@ -298,7 +298,7 @@ curl_download() {
   ## curl already terminated.
 
   : "${size_file_downloaded_bytes:=""}"
-  if is_number "$size_file_downloaded_bytes" ; then
+  if is_whole_number "$size_file_downloaded_bytes" ; then
     if [ "$size_file_downloaded_bytes" -le "$curl_prgrs_content_length" ]; then
       curl_exit 115
     fi
@@ -368,7 +368,7 @@ main() {
         --output "$header_file"
   )
 
-  if ! is_number "$curl_prgrs_content_length" ; then
+  if ! is_whole_number "$curl_prgrs_content_length" ; then
     curl_exit 116
   fi
 
