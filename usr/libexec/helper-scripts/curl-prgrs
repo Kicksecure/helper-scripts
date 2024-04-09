@@ -241,10 +241,10 @@ print_progress() {
   else
     draw_progress_bar "$percent"
     if [ "$CURL_PRGRS_EXEC" = "" ]; then
-      echo "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
+      true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
     else
       true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is set. Executing CURL_PRGRS_EXEC..."
-      echo "$BASH_SOURCE INFO: $CURL_PRGRS_EXEC '$percent'"
+      true "$BASH_SOURCE INFO: $CURL_PRGRS_EXEC '$percent'"
       $CURL_PRGRS_EXEC "$percent" >&4
       true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC success."
     fi
@@ -297,6 +297,8 @@ curl_download() {
       fi
 
       if [ "$curl_prgrs_print_progress" = "yes" ]; then
+        ## Need to echo to stderr to avoid confusing the stdout output of this command.
+        #echo "$BASH_SOURCE INFO: print_progress '$size_file_downloaded_bytes' '$curl_prgrs_content_length'" >&2
         print_progress "$size_file_downloaded_bytes" "$curl_prgrs_content_length" >&4
       fi
     fi
@@ -359,7 +361,7 @@ main() {
   header_arguments=($(remove_argument_for_header_request "$@"))
   header_file="$temporary_directory/header"
 
-  echo "$BASH_SOURCE INFO: Download header..."
+  true "$BASH_SOURCE INFO: Download header..."
 
   ## Determine curl_prgrs_content_length.
   ## While we don't know the expected size of the header,
@@ -383,19 +385,22 @@ main() {
         --output "$header_file"
   )
 
-  echo "$BASH_SOURCE INFO: Header downloaded done."
+  ## Reset from previews invocation of curl_download, which calls print_progress.
+  percent_last=""
+
+  true "$BASH_SOURCE INFO: Header downloaded done."
 
   if ! is_whole_number "$curl_prgrs_content_length" ; then
     curl_exit 116
   fi
 
-  echo "$BASH_SOURCE INFO: Download file..."
+  true "$BASH_SOURCE INFO: Download file..."
 
   ## Launching into the background required.
   ## If attempting to refactor this, make sure signal sigterm stops downloads.
   curl_download "$@" &
 
-  echo "$BASH_SOURCE INFO: File download done."
+  true "$BASH_SOURCE INFO: File download done."
 
   wait_exit_code=0
   wait "$!" &>/dev/null || { wait_exit_code=$? ; true; };
