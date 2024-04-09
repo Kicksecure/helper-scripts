@@ -242,7 +242,6 @@ print_progress() {
     draw_progress_bar "$percent"
     if [ "$CURL_PRGRS_EXEC" = "" ]; then
       true "CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
-      return 0
     else
       $CURL_PRGRS_EXEC "$percent" >&4
     fi
