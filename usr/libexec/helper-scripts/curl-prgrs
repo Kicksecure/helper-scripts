@@ -130,7 +130,7 @@ shutdown() {
   local last_err="$BASH_COMMAND"
   if [ "$signal" = "err" ]; then
     echo "$BASH_SOURCE ERROR: Signal $signal received. Exiting." >&4
-    echo "$BASH_SOURCE: ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
+    echo "$BASH_SOURCE ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
     error_exit_code=110
   elif [ "$signal" = "exit" ]; then
     true "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
@@ -148,10 +148,10 @@ shutdown() {
   local status
 
   if [ -f "$statusfile" ]; then
-    true "$BASH_SOURCE: INFO: got status file"
+    true "$BASH_SOURCE INFO: got status file"
     status="$(cat "$statusfile")"
     if ! is_whole_number "$status"; then
-      true "$0: status is not a number! status: '$status'"
+      true "$BASH_SOURCE ERROR: status is not a number! status: '$status'"
       status="111"
       error_exit_code="111"
     fi
@@ -188,11 +188,11 @@ shutdown() {
   done
 
   if [ -n "${error_exit_code-}" ]; then
-     true "INFO: exit with error_exit_code $error_exit_code"
+     true "$BASH_SOURCE INFO: exit with error_exit_code $error_exit_code"
      exit "$error_exit_code"
   fi
 
-  true "INFO: exit with status $status"
+  true "$BASH_SOURCE INFO: exit with status $status"
   exit "$status"
 }
 
@@ -224,8 +224,8 @@ print_progress() {
   # Calculate the progress percentage and the size of the filled and
   # unfilled portions of the progress bar.
   local percent
-  true "bytes: '$bytes'"
-  true "length: '$length'"
+  true "$BASH_SOURCE INFO: bytes: '$bytes'"
+  true "$BASH_SOURCE INFO: length: '$length'"
   percent=$(( $bytes * 100 / $length ))
 
   if ! is_whole_number "$percent" ; then
@@ -237,11 +237,11 @@ print_progress() {
   fi
 
   if [ "$percent_last" = "$percent" ]; then
-    true "percentage number unchanged. Not re-drawing progress bar to avoid flicker."
+    true "$BASH_SOURCE INFO: percentage number unchanged. Not re-drawing progress bar to avoid flicker."
   else
     draw_progress_bar "$percent"
     if [ "$CURL_PRGRS_EXEC" = "" ]; then
-      true "CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
+      true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
     else
       $CURL_PRGRS_EXEC "$percent" >&4
     fi
@@ -252,7 +252,7 @@ print_progress() {
 
 curl_exit() {
   curl_exit_code="$1"
-  true "write $curl_exit_code to $statusfile"
+  true "$BASH_SOURCE INFO: write $curl_exit_code to $statusfile"
   echo "$curl_exit_code" > "$statusfile"
   if [ "$curl_exit_code" = "0" ]; then
     return 0
