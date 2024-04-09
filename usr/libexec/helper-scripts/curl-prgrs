@@ -210,6 +210,13 @@ print_progress() {
   local bytes="$1"
   local length="$2"
 
+  if ! is_whole_number "$bytes" ; then
+    curl_exit 113
+  fi
+  if ! is_whole_number "$length" ; then
+    curl_exit 113
+  fi
+
   # If we are expecting less than 8 KB of data, don't bother drawing a
   # progress bar. (This helps avoid a flicker when following redirects.)
   #[ "$length" -gt 8192 ] || return 0
@@ -220,6 +227,10 @@ print_progress() {
   true "bytes: '$bytes'"
   true "length: '$length'"
   percent=$(( $bytes * 100 / $length ))
+
+  if ! is_whole_number "$percent" ; then
+    curl_exit 113
+  fi
 
   if [ "$percent" -ge "100" ]; then
     percent=100
