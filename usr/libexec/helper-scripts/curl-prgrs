@@ -241,9 +241,10 @@ print_progress() {
   else
     draw_progress_bar "$percent"
     if [ "$CURL_PRGRS_EXEC" = "" ]; then
-      true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
+      echo "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
     else
       true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is set. Executing CURL_PRGRS_EXEC..."
+      echo "$BASH_SOURCE INFO: $CURL_PRGRS_EXEC '$percent'"
       $CURL_PRGRS_EXEC "$percent" >&4
       true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC success."
     fi
@@ -358,6 +359,8 @@ main() {
   header_arguments=($(remove_argument_for_header_request "$@"))
   header_file="$temporary_directory/header"
 
+  echo "$BASH_SOURCE INFO: Download header..."
+
   ## Determine curl_prgrs_content_length.
   ## While we don't know the expected size of the header,
   ## curl_prgrs_content_length and
@@ -380,13 +383,19 @@ main() {
         --output "$header_file"
   )
 
+  echo "$BASH_SOURCE INFO: Header downloaded done."
+
   if ! is_whole_number "$curl_prgrs_content_length" ; then
     curl_exit 116
   fi
 
+  echo "$BASH_SOURCE INFO: Download file..."
+
   ## Launching into the background required.
   ## If attempting to refactor this, make sure signal sigterm stops downloads.
   curl_download "$@" &
+
+  echo "$BASH_SOURCE INFO: File download done."
 
   wait_exit_code=0
   wait "$!" &>/dev/null || { wait_exit_code=$? ; true; };
