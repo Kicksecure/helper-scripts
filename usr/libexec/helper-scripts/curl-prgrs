@@ -243,7 +243,9 @@ print_progress() {
     if [ "$CURL_PRGRS_EXEC" = "" ]; then
       true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
     else
+      true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is set. Executing CURL_PRGRS_EXEC..."
       $CURL_PRGRS_EXEC "$percent" >&4
+      true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC success."
     fi
   fi
 
