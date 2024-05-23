@@ -1,10 +1,14 @@
 source /usr/libexec/helper-scripts/get_colors.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
 
 ## Wrapper that supports su, sudo, doas
 root_cmd(){
   test -z "${1:-}" && die 1 "${underline}root_cmd function:${nounderline} Failed to pass arguments to root_cmd."
+  if test -z "${sucmd:-}"; then
+    get_su_cmd
+  fi
   : "${root_cmd_loglevel:=null}"
-  case "${sucmd:-su}" in
+  case "${sucmd}" in
     su)
       ## Thanks to Congelli501 for su to not mess with quotes.
       ## https://stackoverflow.com/a/32966744/2605155

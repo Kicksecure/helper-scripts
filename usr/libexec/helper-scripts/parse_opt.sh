@@ -1,3 +1,39 @@
+source /usr/libexec/helper-scripts/ip_syntax.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
+## ------------------- ##
+## Usage of parse_opt.sh
+##
+##  usage(){
+##    echo "Usage: ${0##*/} [OPTIONS]
+##    -o, --opt-wo-arg       option without argument
+##    -w, --opt-with-arg     option with argument
+##    "
+##    exit "${1}"
+##  }
+##
+##  opt_wo_arg=""
+##  opt_with_arg=""
+##
+##  while true; do
+##    begin_optparse "${1:-}" "${2:-}" || break
+##    case "${opt}" in
+##      o|opt-wo-arg) opt_wo_arg=1;;
+##      w|opt-with-arg) get_arg; opt_with_arg="${arg}";;
+##      h|help) usage 0;;
+##      "") break;;
+##      *) die 2 "Invalid option: '${opt_orig}'"
+##    esac
+##    shift "${shift_n:-1}"
+##  done
+##
+##  range_arg opt_with_arg "${opt_with_arg}" p1 p2
+##
+##  log info "opt_wo_arg=$opt_wo_arg"
+##  log info "opt_with_arg=$opt_with_arg"
+## ------------------- ##
+
+
 ## Begin parsing options.
 ## function should be called before the case statement to assign the options
 ## to a temporary variable

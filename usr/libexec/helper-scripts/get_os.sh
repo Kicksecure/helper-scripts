@@ -1,5 +1,7 @@
+## TODO: how to handle installer specific code?
 
 source /usr/libexec/helper-scripts/log_run_die.sh
+source /usr/libexec/helper-scripts/ip_syntax.sh
 
 ## Get host os and other necessary information.
 get_os(){
@@ -11,27 +13,27 @@ get_os(){
   distro=""
   distro_version=""
   debian_testing_or_unstable_detected=""
-  case ${os} in
+  case "${os}" in
     Linux*)
       if has lsb_release; then
-        distro=$(lsb_release --short --description || lsb_release -sd)
-        distro_version=$(lsb_release --short --release || lsb_release -sr)
+        distro="$(lsb_release --short --description || lsb_release -sd)"
+        distro_version="$(lsb_release --short --release || lsb_release -sr)"
       elif test -f /etc/os-release; then
         while IFS='=' read -r key val; do
           case "${key}" in
-            (PRETTY_NAME) distro=${val}
+            (PRETTY_NAME) distro="${val}"
               ;;
-            (VERSION_ID) distro_version=${val}
+            (VERSION_ID) distro_version="${val}"
               ;;
           esac
         done < /etc/os-release
       else
-        has crux && distro=$(crux)
+        has crux && distro="$(crux)"
         has guix && distro='Guix System'
       fi
-      distro=${distro##[\"\']}
-      distro=${distro%%[\"\']}
-      case ${PATH} in (*/bedrock/cross/*) distro='Bedrock Linux' ;; esac
+      distro="${distro##[\"\']}"
+      distro="${distro%%[\"\']}"
+      case "${PATH}" in (*/bedrock/cross/*) distro='Bedrock Linux' ;; esac
       if [ "${WSLENV:-}" ]; then
         distro="${distro}${WSLENV+ on Windows 10 [WSL2]}"
       elif [ -z "${kernel%%*-Microsoft}" ]; then
@@ -55,10 +57,10 @@ get_os(){
   distro_derivative_version="(No derivative detected.)"
   if test -f /usr/share/kicksecure/marker; then
     distro_derivative_name_pretty="Kicksecure"
-    distro_derivative_version=$(cat /etc/kicksecure_version)
+    distro_derivative_version="$(cat /etc/kicksecure_version)"
   elif test -f /usr/share/whonix/marker; then
     distro_derivative_name_pretty="Whonix"
-    distro_derivative_version=$(cat /etc/whonix_version)
+    distro_derivative_version="$(cat /etc/whonix_version)"
   fi
 
   log notice "Architecture detected: '${arch}'"
@@ -157,13 +159,10 @@ get_distro() {
     die 1 "Distribution Extended Check: Oracle repository does not work with Kali"
   fi
 
-  if [ ! "${fedora_derivative_detected:-}" = "1" ]; then
-    return 0
-  fi
-  if ! test "${ci-}" = "1"; then
-    return 0
-  fi
-  if [ ! "${onion-}" = "1" ]; then
+  if test ! "${fedora_derivative_detected:-}" = "1" ||
+    test ! "${ci-}" = "1" ||
+    test ! "${onion-}" = "1"
+  then
     return 0
   fi
 

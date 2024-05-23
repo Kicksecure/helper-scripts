@@ -1,9 +1,9 @@
 source /usr/libexec/helper-scripts/get_colors.sh
-source /usr/libexec/helper-scripts/root_cmd.sh
 
 ## Logging mechanism with easy customization of message format as well as
 ## standardization on how the messages are delivered.
 ## usage: log [info|notice|warn|error] "X occurred."
+## Variable to define outside: log_level
 log(){
   ## Avoid clogging output if log() is working alright.
   if test "${xtrace:-}" = "1"; then
@@ -35,6 +35,7 @@ log(){
       log_color="${green}"
       ;;
     null)
+      log_color=""
       true
       ;;
     *)
@@ -43,7 +44,7 @@ log(){
   esac
   ## uniform log format
   log_color="${bold}${log_color}"
-  log_full="${me}: [${log_color}${log_type_up}${nocolor}]: ${log_content}"
+  log_full="${0##*/}: [${log_color}${log_type_up}${nocolor}]: ${log_content}"
   ## error logs are the minimum and should always be printed, even if
   ## failing to assign a correct log type
   ## send bugs and error to stdout and stderr
@@ -63,6 +64,7 @@ log(){
   esac
   ## reverse importance order is required, excluding 'error'
   all_log_levels="warn notice info debug null"
+  # shellcheck disable=SC2154
   if echo " ${all_log_levels} " | grep -o ".* ${log_level} " \
     | grep -q " ${log_type}"
   then
@@ -80,7 +82,7 @@ log(){
     esac
   fi
 
-  if test "${xtrace}" = "1"; then
+  if test "${xtrace:-}" = "1"; then
     set -o xtrace
   fi
 }
@@ -135,7 +137,8 @@ log_run(){
 
 
 ## Useful to get runtime mid run to log easily
-## Define time at startup using the variable start_time.
+## Variable to define outside: start_time
+# shellcheck disable=SC2154
 get_elapsed_time(){
   printf '%s\n' "$(($(date +%s) - start_time))"
 }

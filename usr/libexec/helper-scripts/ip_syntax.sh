@@ -1,4 +1,5 @@
 source /usr/libexec/helper-scripts/get_colors.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
 
 ## Check if variable is integer
 is_integer(){
@@ -15,9 +16,11 @@ is_addr_port(){
   addr="${addr_port%%:*}"
 
   ## Support only IPv4 x.x.x.x:y
+  # shellcheck disable=SC2154
   if [ "$(echo "${addr_port}" | tr -cd "." | wc -c)" != 3 ] ||
     [ "$(echo "${addr_port}" | tr -cd ":" | wc -c)" != 1 ] ||
-    [ "${port}" = "${addr}" ]; then
+    [ "${port}" = "${addr}" ]
+  then
     die 2 "${underline}is_addr_port test:${nounderline} Invalid address:port assignment: ${addr_port}"
   fi
 

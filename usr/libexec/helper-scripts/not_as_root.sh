@@ -1,5 +1,6 @@
 
 source /usr/libexec/helper-scripts/get_colors.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
 
 ## Block running as root.
 not_as_root(){
