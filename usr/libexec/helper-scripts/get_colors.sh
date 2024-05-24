@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 ## colors
 # shellcheck disable=SC2034

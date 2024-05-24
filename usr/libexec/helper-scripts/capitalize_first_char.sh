@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 ## Capitalize only the first char of a string.
 capitalize_first_char(){

@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 ## TODO: how to handle installer specific code?
 

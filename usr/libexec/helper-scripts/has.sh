@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 ## This is just a simple wrapper around 'command -v' to avoid
 ## spamming '>/dev/null' throughout this function. This also guards

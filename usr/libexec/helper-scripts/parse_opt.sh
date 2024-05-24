@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 source /usr/libexec/helper-scripts/ip_syntax.sh
 source /usr/libexec/helper-scripts/log_run_die.sh
