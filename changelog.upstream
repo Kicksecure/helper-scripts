@@ -1,3 +1,28 @@
+commit 87537be4d88d9dbe960b9b34e022040d881aa675
+Merge: ef00e36 c93028b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 24 13:58:07 2024 -0400
+
+    Merge remote-tracking branch 'grass/master'
+
+commit c93028b6121d6a8b318a4b89d672f3b6cc407de6
+Author: grass <grass@danwin1210.de>
+Date:   Thu May 23 09:16:22 2024 +0000
+
+    Fixes installer functions for other scripts
+
+commit 4dfb7bff767a16af288731bb9ed7e94fb63a4ab1
+Author: grass <grass@danwin1210.de>
+Date:   Tue May 21 15:09:08 2024 +0000
+
+    Import functions from dist-installer-cli
+
+commit ef00e3603c48d43570413f23f526b4b4222b4b26
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 9 09:16:27 2024 +0000
+
+    bumped changelog version
+
 commit 890405b66e17f6653375ecb4432477a8be44d1d6
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Apr 9 05:15:04 2024 -0400
