@@ -1,3 +1,5 @@
+#/bin/bash
+
 ## colors
 # shellcheck disable=SC2034
 get_colors(){

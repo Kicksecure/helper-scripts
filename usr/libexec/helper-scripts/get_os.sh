@@ -1,3 +1,5 @@
+#/bin/bash
+
 ## TODO: how to handle installer specific code?
 
 source /usr/libexec/helper-scripts/log_run_die.sh

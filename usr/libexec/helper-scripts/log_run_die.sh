@@ -1,3 +1,5 @@
+#/bin/bash
+
 source /usr/libexec/helper-scripts/get_colors.sh
 
 ## Logging mechanism with easy customization of message format as well as
