@@ -1,3 +1,21 @@
+commit ba4d004cca02c008afdc61afec63794415eecc36
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 24 14:37:27 2024 -0400
+
+    fix
+
+commit 1f7b3e3e686a08897fa8ba9d6fe0f07d1920b5f0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 24 14:33:42 2024 -0400
+
+    add shebang to fix lintian warning
+
+commit 99685ff037f2d5c1b078974097c2d853f5d9887f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 24 18:25:10 2024 +0000
+
+    bumped changelog version
+
 commit 87537be4d88d9dbe960b9b34e022040d881aa675
 Merge: ef00e36 c93028b
 Author: Patrick Schleizer <adrelanos@whonix.org>
