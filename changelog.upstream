@@ -1,3 +1,45 @@
+commit b9d084a5622220536e5235a62a71dc8da40d6b97
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 18:09:53 2024 -0400
+
+    comment
+
+commit c84d7a2b3fe7337cc579695932cf03caf926d056
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 17:54:03 2024 -0400
+
+    fix
+
+commit af4acff7c3cb7675d557a832f8c5c0900ec402a9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 17:53:21 2024 -0400
+
+    refactoring
+
+commit 020ffab10f86996f71677a4cbe003102a8eb06ef
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 17:52:05 2024 -0400
+
+    append-once: check if file is readable / writeable
+
+commit 9f673a8b53a65008f39380372d0b0f38ff143093
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 17:45:53 2024 -0400
+
+    append-once: fix handling with multiple lines of text
+
+commit bb7480d13d219b22c4bcd488076bb0a7c76e15d4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 17:40:02 2024 -0400
+
+    improve append-once
+
+commit 1d4a1640324339ffcc9fdef4fc9ca5bf487e7356
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 24 18:39:34 2024 +0000
+
+    bumped changelog version
+
 commit ba4d004cca02c008afdc61afec63794415eecc36
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri May 24 14:37:27 2024 -0400
