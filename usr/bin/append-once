@@ -6,13 +6,16 @@
 ## Usage:
 ## append-once 'line to append' /path/to/file
 
+#set -x
 set -e
 set -o errtrace
 set -o pipefail
 set -o nounset
 
+true "$0: INFO: START"
+
 error_handler() {
-  echo "$0: ERROR: An error occurred" >&1
+  echo "$0: ERROR: An error occurred" >&2
   exit 1
 }
 
@@ -23,19 +26,19 @@ append_once() {
   local file="$2"
 
   if ! test -f "$file" ; then
-    true "INFO: File does not exist yet $file"
+    true "INFO: File does not exist yet: $file"
   elif grep --fixed-strings --quiet --line-regexp "$line" "$file" ; then
-    true "INFO: Line already exists in $file"
+    true "INFO: Line already exists in: $file"
     return 0
   fi
 
-  true "INFO: Appending line to $file"
-  echo "$line" | tee -a "$file" >/dev/null
+  true "INFO: Appending line to: $file"
+  echo "$line" | tee --append "$file" >/dev/null
 }
 
 # Main execution
 if [ $# -ne 2 ]; then
-  echo "Usage: $0 'line to append' /path/to/file"
+  echo "Usage: $0 'line to append' /path/to/file" >&2
   exit 1
 fi
 
@@ -43,3 +46,5 @@ line_to_append="$1"
 file_path="$2"
 
 append_once "$line_to_append" "$file_path"
+
+true "$0: INFO: END"
