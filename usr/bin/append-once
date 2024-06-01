@@ -25,26 +25,26 @@ append_once() {
   local line="$1"
   local file="$2"
 
-  if ! test -f "$file" ; then
-    true "INFO: File does not exist yet: $file"
+  if ! test -f "$file_name" ; then
+    true "INFO: File does not exist yet: $file_name"
   else
-    if ! test -r "$file" ; then
-      echo "$0: ERROR: File '$file' not readable!" >&2
+    if ! test -r "$file_name" ; then
+      echo "$0: ERROR: File '$file_name' not readable!" >&2
       exit 1
     fi
-    if grep --fixed-strings --quiet --line-regexp -- "$line" "$file" ; then
-      true "INFO: Line already exists in: $file"
+    if grep --fixed-strings --quiet --line-regexp -- "$line" "$file_name" ; then
+      true "INFO: Line already exists in: $file_name"
       return 0
     fi
   fi
 
-  if ! test -w "$file" ; then
-    echo "$0: ERROR: File '$file' not writeable!" >&2
+  if ! test -w "$file_name" ; then
+    echo "$0: ERROR: File '$file_name' not writeable!" >&2
     exit 1
   fi
 
-  true "INFO: Appending line to: $file"
-  echo "$line" | tee --append "$file" >/dev/null
+  true "INFO: Appending line to: $file_name"
+  echo "$line" | tee --append "$file_name" >/dev/null
 }
 
 # Main execution
