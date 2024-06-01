@@ -27,7 +27,7 @@ append_once() {
 
   if ! test -f "$file" ; then
     true "INFO: File does not exist yet: $file"
-  elif grep --fixed-strings --quiet --line-regexp "$line" "$file" ; then
+  elif grep --fixed-strings --quiet --line-regexp -- "$line" "$file" ; then
     true "INFO: Line already exists in: $file"
     return 0
   fi
