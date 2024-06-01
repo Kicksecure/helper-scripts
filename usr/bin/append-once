@@ -23,7 +23,7 @@ trap error_handler ERR
 
 append_once() {
   local line="$1"
-  local file="$2"
+  local file_name="$2"
 
   if ! test -f "$file_name" ; then
     true "INFO: File does not exist yet: $file_name"
