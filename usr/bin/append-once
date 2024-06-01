@@ -6,6 +6,8 @@
 ## Usage:
 ## append-once 'line to append' /path/to/file
 
+## TODO: Does not support multi-line (with empty lines) yet.
+
 #set -x
 set -e
 set -o errtrace
