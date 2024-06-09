@@ -1,3 +1,26 @@
+commit 9521c286e836b46cbc45be73ed956d96f5ebe63e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 9 08:48:05 2024 -0400
+
+    `grep-find-unicode-wrapper`: move distribution specific exclusions to `dm-check-unicode`
+    
+    these were:
+    --exclude=changelog.upstream
+    --exclude-dir=.git
+    --binary-files=without-match
+
+commit 9c6f2ae4237068dd1d11f7ad83273bf827cdafc4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 9 08:46:47 2024 -0400
+
+    use long grep options
+
+commit 7c3ad20cad42ab83fbac4b0f9400bac3d5988aee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 22:11:28 2024 +0000
+
+    bumped changelog version
+
 commit b9d084a5622220536e5235a62a71dc8da40d6b97
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Jun 1 18:09:53 2024 -0400
