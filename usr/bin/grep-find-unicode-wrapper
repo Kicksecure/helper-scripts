@@ -4,9 +4,6 @@
 ## See the file COPYING for copying conditions.
 
 grep_args="\
-   --exclude=changelog.upstream \
-   --exclude-dir=.git
-   --binary-files=without-match \
    --files-with-matches \
    --perl-regexp \
    --line-number"
