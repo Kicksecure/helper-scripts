@@ -7,9 +7,9 @@ grep_args="\
    --exclude=changelog.upstream \
    --exclude-dir=.git
    --binary-files=without-match \
-   -l \
-   -P \
-   -n"
+   --files-with-matches \
+   --perl-regexp \
+   --line-number"
 
 one=$(LC_ALL=C grep $grep_args '[^\x00-\x7F]' "$@")
 
