@@ -54,8 +54,8 @@ append_once() {
   fi
 
   true "INFO: Appending line to: $file_name"
-  ## Use `tee` for nicer xtrace and better error handling.
-  echo "$line" | tee --append "$file_name" >/dev/null
+  ## Use `sponge`, because it is atomic, for nicer xtrace and better error handling.
+  echo "$line" | sponge -a "$file_name"
 }
 
 # Main execution
