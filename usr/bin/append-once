@@ -29,6 +29,11 @@ append_once() {
 
   if ! test -f "$file_name" ; then
     true "INFO: File does not exist yet: $file_name"
+    dir_name="${file_name%/*}"
+    if ! test -w "$dir_name" ; then
+      echo "$0: ERROR: Folder '$dir_name' (where file '$file_name' should be created) is not writeable!" >&2
+      exit 1
+    fi
   else
     if ! test -r "$file_name" ; then
       echo "$0: ERROR: File '$file_name' not readable!" >&2
@@ -38,11 +43,10 @@ append_once() {
       true "INFO: Line already exists in: $file_name"
       return 0
     fi
-  fi
-
-  if ! test -w "$file_name" ; then
-    echo "$0: ERROR: File '$file_name' not writeable!" >&2
-    exit 1
+    if ! test -w "$file_name" ; then
+      echo "$0: ERROR: File '$file_name' not writeable!" >&2
+      exit 1
+    fi
   fi
 
   true "INFO: Appending line to: $file_name"
