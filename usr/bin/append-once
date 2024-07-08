@@ -33,7 +33,7 @@ append_once() {
     ## Pure bash would be preferred over external `dirname` command. (Simplifies mandatory access control.)
     ## But pure bash does not handle cases where simply a file name is given without a directory.
     #dir_name="${file_name%/*}"
-    dir_name="$(dirname "$file_name")"
+    dir_name="$(dirname -- "$file_name")"
     if ! test -w "$dir_name" ; then
       echo "$0: ERROR: Folder '$dir_name' (where file '$file_name' should be created) is not writeable!" >&2
       exit 1
