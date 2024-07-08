@@ -29,6 +29,7 @@ append_once() {
 
   if ! test -f "$file_name" ; then
     true "INFO: File does not exist yet: $file_name"
+    local dir_name
     dir_name="${file_name%/*}"
     if ! test -w "$dir_name" ; then
       echo "$0: ERROR: Folder '$dir_name' (where file '$file_name' should be created) is not writeable!" >&2
