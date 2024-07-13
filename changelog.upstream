@@ -1,3 +1,57 @@
+commit 7b2a53c51a4fecf98d53e168264a19ccbee4528e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jul 8 13:23:19 2024 -0400
+
+    use `dirname` with end of options
+
+commit d560b2ab911646d1a0776d153309145d289a0579
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jul 8 11:02:45 2024 -0400
+
+    append-once: add `--` to `sponge` to avoid parsing file name as parameter
+
+commit 9223621f13560d640802cb7dbf37341db6285c05
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jul 8 10:58:34 2024 -0400
+
+    append-once: make atomic
+
+commit 7909a734b0027182ae659fa9452701ebfcc0b49a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jul 8 10:43:25 2024 -0400
+
+    append-once: fix cases where file name does not contain a directory
+
+commit eeb5b3780423e580562bcce488ffe9691cde6523
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jul 8 10:40:20 2024 -0400
+
+    comments
+
+commit 72c69305c6d6fcde65098e92d3eed333c3e8277a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jul 8 10:38:36 2024 -0400
+
+    comment
+
+commit 3fbb87a8682e8b9ea3491666b0d4e72f01194c78
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jul 8 10:36:06 2024 -0400
+
+    local
+
+commit 7d36e008d531369f2ee6c8d9f1f9cc99ff52ca5c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jul 8 10:33:48 2024 -0400
+
+    fix append-once
+
+commit d01bf9627377e754522bdc27c5f52a3de478444d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 9 13:39:37 2024 +0000
+
+    bumped changelog version
+
 commit 9521c286e836b46cbc45be73ed956d96f5ebe63e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jun 9 08:48:05 2024 -0400
