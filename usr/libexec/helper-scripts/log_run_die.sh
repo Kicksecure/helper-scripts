@@ -9,8 +9,14 @@ source /usr/libexec/helper-scripts/get_colors.sh
 log(){
   ## Avoid clogging output if log() is working alright.
   if test "${xtrace:-}" = "1"; then
-    true "Removing xtrace for log() function."
     set +o xtrace
+  else
+    case "${-}" in
+      *x*)
+        xtrace=1
+        set +o xtrace
+        ;;
+    esac
   fi
   log_type="${1:-notice}"
   ## capitalize log level
