@@ -1,3 +1,45 @@
+commit d6f482f31463c0b266670949635e4c6e982fc9e4
+Merge: cee99de f983a7f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 26 11:20:44 2024 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit f983a7f66db2cedf4737e4101628cb6c1414caa6
+Merge: 695d17f 961a253
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 26 11:19:23 2024 -0400
+
+    Merge pull request #8 from ben-grande/log-trace
+    
+    Do not be verbose on the log helper
+
+commit cee99de055061202ea07c1f08d8365bf94bff608
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 26 10:41:08 2024 -0400
+
+    comment
+
+commit 695d17f1b7699c77f54c1af0f1356a178a1d8cec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 26 10:27:07 2024 -0400
+
+    add /usr/libexec/helper-scripts/safe_echo.sh
+    
+    https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md#echo--printf
+
+commit 961a2539276092aa43725ce66eaad53573e64aa0
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Jul 23 19:20:21 2024 +0200
+
+    Do not be verbose on the log helper
+
+commit b3384dac2f1b3884fcd518d3871089045d2ed03f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jul 13 15:13:09 2024 +0000
+
+    bumped changelog version
+
 commit 1344247103d38f3ce4b4dc6459e318c194e40160
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Jul 13 11:12:36 2024 -0400
