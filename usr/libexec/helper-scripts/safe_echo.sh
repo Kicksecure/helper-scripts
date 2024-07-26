@@ -4,6 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 ## https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md#echo--printf
+## https://unix.stackexchange.com/questions/65803/why-is-printf-better-than-echo
 
 safe_echo_type_of_printf="$(type -t printf)"
 
