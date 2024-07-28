@@ -1,3 +1,23 @@
+commit 30275902644077d2c353256e2b1888ec29a9cee8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 28 14:12:13 2024 -0400
+
+    dev-adrelanos
+
+commit a228eb6122bac4ad2b97e447833a081a45aa2239
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 28 14:05:12 2024 -0400
+
+    append-once /path/to/file 'line to append'
+    
+    API change
+
+commit 8bea23b8d42a91e26309aa5ef2a4cc7dacae88b0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 26 15:39:47 2024 +0000
+
+    bumped changelog version
+
 commit d6f482f31463c0b266670949635e4c6e982fc9e4
 Merge: cee99de f983a7f
 Author: Patrick Schleizer <adrelanos@whonix.org>
