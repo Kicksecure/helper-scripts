@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 ## Usage:
-## append-once 'line to append' /path/to/file
+## append-once /path/to/file 'line to append'
 
 ## TODO: Does not support multi-line (with empty lines) yet.
 
@@ -24,8 +24,8 @@ error_handler() {
 trap error_handler ERR
 
 append_once() {
-  local line="$1"
-  local file_name="$2"
+  local file_name="$1"
+  local line="$2"
 
   if ! test -f "$file_name" ; then
     true "INFO: File does not exist yet: $file_name"
@@ -60,13 +60,13 @@ append_once() {
 
 # Main execution
 if [ $# -ne 2 ]; then
-  echo "Usage: $0 'line to append' /path/to/file" >&2
+  echo "Usage: $0 /path/to/file 'line to append'" >&2
   exit 1
 fi
 
-line_to_append="$1"
-file_path="$2"
+file_path="$1"
+line_to_append="$2"
 
-append_once "$line_to_append" "$file_path"
+append_once "$file_path" "$line_to_append"
 
 true "$0: INFO: END"
