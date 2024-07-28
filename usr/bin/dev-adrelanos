@@ -15,20 +15,21 @@ if [ "$1" = "" ]; then
    exit 1
 fi
 
-dsudo append-once "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" /etc/sudoers.d/adrelanos-dev-passwordless
+dsudo append-once /etc/sudoers.d/adrelanos-dev-passwordless "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
 
 setxkbmap de || true
 sudo loadkeys de || true
 
-append-once "setxkbmap de" /home/user/.bashrc
-append-once "setxkbmap de" /home/user/.zshrc
+append-once /home/user/.bashrc "setxkbmap de"
+append-once /home/user/.zshrc "setxkbmap de"
 
 dsudo mkdir --parents /etc/lightdm/lightdm.conf.d
 
-echo "[SeatDefaults]
+dsudo append-once /etc/lightdm/lightdm.conf.d/user-autologin.conf "\
+[SeatDefaults]
 user-session=xfce
-autologin-user=user" |
-   dsudo tee /etc/lightdm/lightdm.conf.d/user-autologin.conf
+autologin-user=user
+"
 
 sudo repository-dist --enable --repository developers
 
