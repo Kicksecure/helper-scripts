@@ -1,3 +1,35 @@
+commit 039ca2eb1a58ae8f8b8380e183f940e0a17c06c6
+Merge: c357dd7 eab8d6c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 6 07:16:05 2024 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit eab8d6cf326add12c94ced9fb565f186de5e6bb0
+Merge: c357dd7 c335250
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 6 07:12:00 2024 -0400
+
+    Merge pull request #9 from ben-grande/safe-log
+    
+    Safely print logs
+
+commit c335250827042d5428f8244918c392917a0f23fa
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Aug 6 11:32:41 2024 +0200
+
+    Safely print logs
+    
+    Although the format specified '%' was being escaped be strict on
+    expanding only what we can control such as the log type and color while
+    the script name and message can be untrusted and printed as a string.
+
+commit c357dd7fe3f1d14e78708da37b3a052b3ee8605a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 28 20:49:04 2024 +0000
+
+    bumped changelog version
+
 commit 30275902644077d2c353256e2b1888ec29a9cee8
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jul 28 14:12:13 2024 -0400
