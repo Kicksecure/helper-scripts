@@ -20,11 +20,8 @@ log(){
   fi
   log_type="${1:-notice}"
   ## capitalize log level
-  log_type_up="$(echo "${log_type}" | tr "[:lower:]" "[:upper:]")"
+  log_type_up="$(printf '%s' "${log_type}" | tr "[:lower:]" "[:upper:]")"
   shift 1
-  ## escape printf reserved char '%'
-  # shellcheck disable=SC2001
-  log_content="$(echo "${*}" | sed "s/%/%%/g")"
   ## set formatting based on log level
   case "${log_type}" in
     bug)
@@ -52,18 +49,19 @@ log(){
   esac
   ## uniform log format
   log_color="${bold}${log_color}"
-  log_full="${0##*/}: [${log_color}${log_type_up}${nocolor}]: ${log_content}"
+  log_source_script="${0##*/}: "
+  log_level_colorized="[${log_color}${log_type_up}${nocolor}]: "
+  log_content="${*}"
   ## error logs are the minimum and should always be printed, even if
   ## failing to assign a correct log type
   ## send bugs and error to stdout and stderr
   case "${log_type}" in
     bug)
-      #printf %s"${log_full:+$log_full }Please report this bug.\n" 1>&2
-      printf %s"${log_full}" 1>&2
+      printf '%s%b%s\n' "${log_source_script}" "${log_level_colorized}" "${log_content}" >&2
       return 0
       ;;
     error)
-      printf %s"${log_full}\n" 1>&2
+      printf '%s%b%s\n' "${log_source_script}" "${log_level_colorized}" "${log_content}" >&2
       return 0
       ;;
     null)
@@ -73,19 +71,19 @@ log(){
   ## reverse importance order is required, excluding 'error'
   all_log_levels="warn notice info debug null"
   # shellcheck disable=SC2154
-  if echo " ${all_log_levels} " | grep -o ".* ${log_level} " \
+  if printf '%s' " ${all_log_levels} " | grep -o ".* ${log_level} " \
     | grep -q " ${log_type}"
   then
     case "${log_type}" in
       warn)
         ## send warning to stdout and stderr
-        printf %s"${log_full}\n" 1>&2
+        printf '%s%b%s\n' "${log_source_script}" "${log_level_colorized}" "${log_content}" >&2
         ;;
       null)
         true
         ;;
       *)
-        printf %s"${log_full}\n"
+        printf '%s%b%s\n' "${log_source_script}" "${log_level_colorized}" "${log_content}" >&2
         ;;
     esac
   fi
@@ -124,7 +122,7 @@ log_run(){
   level="${1}"
   shift
   ## Extra spaces appearing when breaking log_run on multiple lines.
-  command_without_extrarenous_spaces="$(echo "${@}" | tr -s " ")"
+  command_without_extrarenous_spaces="$(printf '%s' "${@}" | tr -s " ")"
   if test "${dry_run:-}" = "1"; then
     log "${level}" "Skipping command: $ ${command_without_extrarenous_spaces}"
     return 0
