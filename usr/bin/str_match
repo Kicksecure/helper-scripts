@@ -1,0 +1,52 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+my $numarg = $#ARGV + 1;
+if ($numarg < 1) {
+    print "Usage: LANG=C str_match Search File\nOr: STDIN LANG=C str_replace Search\n";
+    exit 1;
+}
+
+my $find = $ARGV[0];
+my $file;
+my $contents;
+my $fh;
+
+if (defined $ARGV[1]) {
+    $file = $ARGV[1];
+
+    # Check if the file is actually a folder
+    if (-d $file) {
+        die "Error: '$file' is a directory, not a file";
+    }
+
+    open($fh, '<', $file) or die "Cannot open the file '$file'";
+    {
+        local $/;
+        $contents = <$fh>;
+    }
+    close($fh);
+} else {
+    {
+        local $/;
+        $contents = <STDIN>;
+    }
+}
+
+# Check if $contents is defined
+unless (defined $contents) {
+    print "Error: No input provided.\n";
+    exit 1;
+}
+
+my $pos = index($contents, $find);
+if ($pos == -1) {
+  print "No matches found.\n";
+  exit 1;
+} else {
+  print "Match found at offset $pos.\n";
+}
+
+exit 0;
