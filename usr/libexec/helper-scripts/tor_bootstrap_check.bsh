@@ -12,6 +12,11 @@ check_tor_bootstrap_helper_variables() {
             qubesdb_read_qubes_gateway_result="$(qubesdb-read /qubes-gateway 2>/dev/null)" || { gateway_ip_error="qubesdb_read_failed" ; qubesdb_read_qubes_gateway_result="127.0.0.1" ; };
             GATEWAY_IP="$qubesdb_read_qubes_gateway_result"
          fi
+         if [ "$GATEWAY_IP6" = "" ]; then
+            gateway_ip_error=""
+            qubesdb_read_qubes_gateway_result="$(qubesdb-read /qubes-gateway6 2>/dev/null)" || { gateway_ip_error="qubesdb_read_failed" ; qubesdb_read_qubes_gateway_result="::1" ; };
+            GATEWAY_IP6="$qubesdb_read_qubes_gateway_result"
+         fi
          if [ "$gateway_control_port" = "" ]; then
             gateway_control_port="9051"
          fi
@@ -43,6 +48,10 @@ check_tor_bootstrap_helper_variables() {
          ## PROXY_IP="10.152.152.10"
          GATEWAY_IP="10.152.152.10"
       fi
+      if [ "$GATEWAY_IP6" = "" ]; then
+         ## IP HARDCODED. See above comment
+         GATEWAY_IP6="fd19:c33d:88bc::10"
+      fi
       if [ "$gateway_control_port" = "" ]; then
          gateway_control_port="9051"
       fi
@@ -52,6 +61,9 @@ check_tor_bootstrap_helper_variables() {
       if [ "$GATEWAY_IP" = "" ]; then
          GATEWAY_IP="127.0.0.1"
       fi
+      if [ "$GATEWAY_IP6" = "" ]; then
+         GATEWAY_IP6="::1"
+      fi
    fi
 
    if [ "$gateway_control_port" = "" ]; then
@@ -59,6 +71,9 @@ check_tor_bootstrap_helper_variables() {
    fi
    if [ "$GATEWAY_IP" = "" ]; then
       GATEWAY_IP="127.0.0.1"
+   fi
+   if [ "$GATEWAY_IP6" = "" ]; then
+      GATEWAY_IP6="::1"
    fi
 }
 
