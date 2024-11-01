@@ -43,7 +43,7 @@ append_once() {
       echo "$0: ERROR: File '$file_name' not readable!" >&2
       exit 1
     fi
-    if grep --fixed-strings --quiet --line-regexp -- "$line" "$file_name" ; then
+    if str_match "$line" "$file_name" 2>/dev/null ; then
       true "INFO: Line already exists in: $file_name"
       return 0
     fi
