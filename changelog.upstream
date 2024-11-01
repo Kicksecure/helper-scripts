@@ -1,3 +1,31 @@
+commit c60f871891b9baa92df3dbf3452de4b5ef29ab23
+Merge: 450a6d2 d104a32
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 1 11:15:54 2024 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit d104a324092afa8695c3eebe1999537e9566ed83
+Merge: 450a6d2 93bbe20
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 1 11:14:54 2024 -0400
+
+    Merge pull request #11 from ArrayBolt3/arraybolt3/append-once-fix
+    
+    Make append-once work even with multi-line strings
+
+commit 93bbe2081ab5d140a3353f6f8a383d088b2b4581
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Oct 30 17:02:39 2024 -0500
+
+    Make append-once work even with multi-line strings
+
+commit 450a6d291c8539018dd021412e2da8901ff70a60
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 12 04:56:18 2024 +0000
+
+    bumped changelog version
+
 commit a6f80f096c2e47e8eca81d7c662c2cb4ec20f806
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 11 06:01:53 2024 -0400
