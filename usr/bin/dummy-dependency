@@ -19,9 +19,14 @@ show_usage() {
    exit 1
 }
 
+## TODO: trap exit
+#safe-rm -r -f "${temp_dir}"
+
 dummy_dependency() {
    local machine_arch equivs_file deb_file dpkg_query_info installed_version \
       equivs_content equivs_build_log
+
+   ## TODO: root check
 
    # Validate package name, see
    # https://www.debian.org/doc/debian-policy/ch-controlfields.html#source
@@ -30,17 +35,23 @@ dummy_dependency() {
       exit 1
    fi
 
+   ## TODO: check if ${TMPDIR} is unset
+
+   ## ${TMPDIR} is an already existing environment variable.
+   TMPDIR_OLD="${TMPDIR}"
+
+   TMPDIR_NEW="$(mktemp --directory)"
+
+   ## equivs-build uses ${TMPDIR} for builds
+   TMPDIR="$TMPDIR_NEW"
+   export TMPDIR
+
    machine_arch="$(dpkg --print-architecture)"
-   ## ${TMP} is an already existing environment variable.
-   equivs_file="${TMP}/${package_to_replace}.equivs"
-   deb_file="${TMP}/${package_to_replace}_99_all.deb"
-   if [ -f "${deb_file}" ] \
-      || [ -f "${TMP}/${package_to_replace}_99_${machine_arch}.buildinfo" ] \
-      || [ -f "${TMP}/${package_to_replace}_99_${machine_arch}.changes" ] \
-      || [ -f "${equivs_file}" ]; then
-      echo "FATAL ERROR: Conflicting package found in ${TMP}, please remove first" >&2
-      exit 1
-   fi
+   temp_dir="${TMPDIR}/dummy-dependency-equivs"
+   mkdir --parents "${temp_dir}"
+   equivs_file="${temp_dir}/${package_to_replace}.equivs"
+   ## equivs-build uses ${TMPDIR} for builds
+   deb_file="${TMPDIR_NEW}/${package_to_replace}_99_all.deb"
 
    if [ "${install_dummy_package}" = 'y' ]; then
 
@@ -56,7 +67,7 @@ dummy_dependency() {
       fi
    fi
 
-   echo "Creating dummy replacement for ${package_to_replace}" >&2
+   echo "Creating dummy replacement for ${package_to_replace}"
 
    equivs_content="Package: ${package_to_replace}
 Version: 99:99
@@ -77,13 +88,14 @@ Description: dummy ${package_to_replace} package
 
    if [ "${install_dummy_package}" = 'y' ]; then
       echo 'Dummy package created. Installing...' >&2
-      if ! sudo apt-get -qq install "${deb_file}" ; then
+      test -r "${deb_file}"
+      if ! apt-get -qq install "${deb_file}" ; then
          echo 'FATAL ERROR: apt-get install command failed!' >&2
          exit 1
       fi
-      echo 'Dummy package installed.' >&2
+      echo 'Dummy package installed.'
    else
-      echo "Dummy package created. You can find it at '${deb_file}'." >&2
+      echo "Dummy package created. You can find it at '${deb_file}'."
    fi
 }
 
