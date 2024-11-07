@@ -19,14 +19,26 @@ show_usage() {
    exit 1
 }
 
-## TODO: trap exit
-#safe-rm -r -f "${temp_dir}"
+cleanup() {
+   if [ -n "${temp_dir:-}" ] && [ -d "$temp_dir" ]; then
+      safe-rm -r -f "${temp_dir}"
+   fi
+}
+
+root_check() {
+   if [ "$EUID" -ne 0 ]; then
+      echo "FATAL ERROR: This script must be run as root." >&2
+      exit 1
+   fi
+}
+
+trap cleanup EXIT
+
+root_check
 
 dummy_dependency() {
    local machine_arch equivs_file deb_file dpkg_query_info installed_version \
       equivs_content equivs_build_log
-
-   ## TODO: root check
 
    # Validate package name, see
    # https://www.debian.org/doc/debian-policy/ch-controlfields.html#source
@@ -35,7 +47,10 @@ dummy_dependency() {
       exit 1
    fi
 
-   ## TODO: check if ${TMPDIR} is unset
+   if [ -z "${TMPDIR:-}" ]; then
+      echo 'FATAL ERROR: TMPDIR is unset.' >&2
+      exit 1
+   fi
 
    ## ${TMPDIR} is an already existing environment variable.
    TMPDIR_OLD="${TMPDIR}"
