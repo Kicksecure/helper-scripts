@@ -38,7 +38,7 @@ dummy_dependency() {
       || [ -f "${TMP}/${package_to_replace}_99_${machine_arch}.changes" ] \
       || [ -f "${equivs_file}" ]; then
       echo "FATAL ERROR: Conflicting package found in ${TMP}, please remove first" >&2
-      exit
+      exit 1
    fi
 
    if [ "${install_dummy_package}" = 'y' ]; then
