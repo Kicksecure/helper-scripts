@@ -15,7 +15,7 @@ Rules-Requires-Root: no
 Package: helper-scripts
 Architecture: all
 Depends: sudo, python3, python3-stem, python3-scapy, python3-yaml,
- bubblewrap, moreutils, ${misc:Depends}
+ bubblewrap, moreutils, equivs, ${misc:Depends}
 Replaces: anon-shared-helper-scripts, curl-scripts, anon-ws-leaktest,
  python-guimessages, python3-guimessages
 Description: Helper scripts useful for Linux Distributions
@@ -40,3 +40,6 @@ Description: Helper scripts useful for Linux Distributions
  Provides the ld-system-preload-disable wrapper to disable /etc/ld.so.preload
  per application via bubblewrap. Useful if hardened_malloc is being globally
  preloaded and needs to be disabled for some applications.
+ .
+ Provides the dummy-dependency script for quickly creating and installing
+ dummy packages for working around package dependencies.
