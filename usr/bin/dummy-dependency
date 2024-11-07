@@ -20,7 +20,7 @@ show_usage() {
 }
 
 cleanup() {
-   if [ -n "${temp_dir:-}" ] && [ -d "$temp_dir" ]; then
+   if [ -n "${temp_dir:-}" ] && [ -d "${temp_dir}" ]; then
       safe-rm -r -f "${temp_dir}"
    fi
 }
