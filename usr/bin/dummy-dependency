@@ -1,0 +1,108 @@
+#!/bin/bash
+
+## Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Usage:
+## dummy-dependency [-i] 'package to replace'
+
+#set -x
+set -e
+set -o errtrace
+set -o pipefail
+set -o nounset
+
+true "$0: INFO: START"
+
+show_usage() {
+   echo "Usage: $0 [-i] 'package to replace'" >&2
+   exit 1
+}
+
+dummy_dependency() {
+   local machine_arch equivs_file deb_file dpkg_query_info installed_version \
+      equivs_content equivs_build_log
+
+   # Validate package name, see
+   # https://www.debian.org/doc/debian-policy/ch-controlfields.html#source
+   if ! grep -q '^[a-z0-9]\+[a-z0-9+-.]\+$' <<< "${package_to_replace}" ; then
+      echo 'FATAL ERROR: Package name is invalid, check for typos' >&2
+      exit 1
+   fi
+
+   machine_arch="$(dpkg --print-architecture)"
+   equivs_file="${TMP}/${package_to_replace}.equivs"
+   deb_file="${TMP}/${package_to_replace}_99_all.deb"
+   if [ -f "${deb_file}" ] \
+      || [ -f "${TMP}/${package_to_replace}_99_${machine_arch}.buildinfo" ] \
+      || [ -f "${TMP}/${package_to_replace}_99_${machine_arch}.changes" ] \
+      || [ -f "${equivs_file}" ]; then
+      echo "FATAL ERROR: Conflicting package found in ${TMP}, please remove first" >&2
+      exit
+   fi
+
+   if [ "${install_dummy_package}" = 'y' ]; then
+      
+      ## If dpkg-query exits zero, the package is already installed, in which
+      ## case we check to see if its version number looks like a dummy
+      ## dependency package.
+      if dpkg_query_info="$(dpkg-query -W "${package_to_replace}" 2>/dev/null)" ; then
+         installed_version="$(cut -f2 <<< "${dpkg_query_info}")"
+         if [ "${installed_version}" = '99:99' ]; then
+            echo "${package_to_replace} is already installed and appears to be a dummy dependency package." >&2
+            exit 1
+         fi
+      fi
+   fi
+
+   echo "Creating dummy replacement for ${package_to_replace}" >&2
+
+   equivs_content="Package: ${package_to_replace}
+Version: 99:99
+Maintainer: dummy-dependency script <dummy-dependency@dummy-dependency.invalid>
+Architecture: all
+Description: dummy ${package_to_replace} package
+ A dummy package with a version number so high that the real
+ ${package_to_replace} package will never reach it."
+
+   echo "${equivs_content}" > "${equivs_file}"
+
+   if ! equivs_build_log="$(equivs-build "${equivs_file}" 2>&1)" ; then
+      echo 'FATAL ERROR: equivs-build command failed!' >&2
+      echo 'Logs:' >&2
+      echo "${equivs_build_log}" >&2
+      exit 1
+   fi
+
+   if [ "${install_dummy_package}" = 'y' ]; then
+      echo 'Dummy package created. Installing...' >&2
+      if ! sudo apt-get -qq install "${deb_file}" ; then
+         echo 'FATAL ERROR: apt-get install command failed!' >&2
+         exit 1
+      fi
+      echo 'Dummy package installed.' >&2
+   else
+      echo "Dummy package created. You can find it at '${deb_file}'." >&2
+   fi
+}
+
+# Main execution
+if [ "$#" -lt '1' ]; then
+   show_usage
+fi
+
+install_dummy_package='n'
+package_to_replace=''
+
+if [ "$1" = '-i' ]; then
+   install_dummy_package='y'
+   shift
+   if [ "$#" -lt '1' ]; then
+      show_usage
+   fi
+fi
+package_to_replace="$1"
+
+dummy_dependency
+
+true "$0: INFO: END"
