@@ -68,16 +68,13 @@ dummy_dependency() {
    ## equivs-build uses ${TMPDIR} for builds
    deb_file="${TMPDIR_NEW}/${package_to_replace}_99_all.deb"
 
-   if [ "${install_dummy_package}" = 'y' ]; then
-
-      ## If dpkg-query exits zero, the package is already installed, in which
-      ## case we check to see if its version number looks like a dummy
-      ## dependency package.
-      if installed_version="$(dpkg-query -W --showformat='${Version}\n' "${package_to_replace}" 2>/dev/null)" ; then
-         if [ "${installed_version}" = '99:99' ]; then
-            echo "${package_to_replace} is already installed and appears to be a dummy dependency package." >&2
-            exit 1
-         fi
+   ## If dpkg-query exits zero, the package is already installed, in which
+   ## case we check to see if its version number looks like a dummy
+   ## dependency package.
+   if installed_version="$(dpkg-query -W --showformat='${Version}\n' "${package_to_replace}" 2>/dev/null)" ; then
+      if [ "${installed_version}" = '99:99' ]; then
+         echo "${package_to_replace} is already installed and appears to be a dummy dependency package." >&2
+         exit 1
       fi
    fi
 
@@ -103,17 +100,13 @@ Description: dummy ${package_to_replace} package
    ## Reset to previously set TMPDIR.
    TMPDIR="$TMPDIR_OLD"
 
-   if [ "${install_dummy_package}" = 'y' ]; then
-      echo 'Dummy package created. Installing...' >&2
-      test -r "${deb_file}"
-      if ! apt-get -qq install "${deb_file}" ; then
-         echo 'FATAL ERROR: apt-get install command failed!' >&2
-         exit 1
-      fi
-      echo 'Dummy package installed.'
-   else
-      echo "Dummy package created. You can find it at '${deb_file}'."
+   echo 'Dummy package created. Installing...'
+   test -r "${deb_file}"
+   if ! apt-get -qq install "${deb_file}" ; then
+      echo 'FATAL ERROR: apt-get install command failed!' >&2
+      exit 1
    fi
+   echo 'Dummy package installed.'
 }
 
 # Main execution
@@ -121,16 +114,8 @@ if [ "$#" -lt '1' ]; then
    show_usage
 fi
 
-install_dummy_package='n'
 package_to_replace=''
 
-if [ "$1" = '-i' ]; then
-   install_dummy_package='y'
-   shift
-   if [ "$#" -lt '1' ]; then
-      show_usage
-   fi
-fi
 package_to_replace="$1"
 
 dummy_dependency
