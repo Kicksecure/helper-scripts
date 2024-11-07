@@ -73,8 +73,7 @@ dummy_dependency() {
       ## If dpkg-query exits zero, the package is already installed, in which
       ## case we check to see if its version number looks like a dummy
       ## dependency package.
-      if dpkg_query_info="$(dpkg-query -W "${package_to_replace}" 2>/dev/null)" ; then
-         installed_version="$(cut -f2 <<< "${dpkg_query_info}")"
+      if installed_version="$(dpkg-query -W --showformat='${Version}\n' "${package_to_replace}" 2>/dev/null)" ; then
          if [ "${installed_version}" = '99:99' ]; then
             echo "${package_to_replace} is already installed and appears to be a dummy dependency package." >&2
             exit 1
