@@ -86,6 +86,9 @@ Description: dummy ${package_to_replace} package
       exit 1
    fi
 
+   ## Reset to previously set TMPDIR.
+   TMPDIR="$TMPDIR_OLD"
+
    if [ "${install_dummy_package}" = 'y' ]; then
       echo 'Dummy package created. Installing...' >&2
       test -r "${deb_file}"
