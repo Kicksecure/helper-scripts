@@ -65,8 +65,7 @@ Description: dummy ${package_to_replace} package
  A dummy package with a version number so high that the real
  ${package_to_replace} package will never reach it."
 
-   safe-rm -f "${equivs_file}"
-   append-once "${equivs_file}" "${equivs_content}"
+   echo "${equivs_content}" | sponge -- "${equivs_file}"
 
    if ! equivs_build_log="$(equivs-build "${equivs_file}" 2>&1)" ; then
       echo 'FATAL ERROR: equivs-build command failed!' >&2
