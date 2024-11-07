@@ -42,7 +42,7 @@ dummy_dependency() {
    fi
 
    if [ "${install_dummy_package}" = 'y' ]; then
-      
+
       ## If dpkg-query exits zero, the package is already installed, in which
       ## case we check to see if its version number looks like a dummy
       ## dependency package.
@@ -65,7 +65,8 @@ Description: dummy ${package_to_replace} package
  A dummy package with a version number so high that the real
  ${package_to_replace} package will never reach it."
 
-   echo "${equivs_content}" > "${equivs_file}"
+   safe-rm -f "${equivs_file}"
+   append-once "${equivs_file}" "${equivs_content}"
 
    if ! equivs_build_log="$(equivs-build "${equivs_file}" 2>&1)" ; then
       echo 'FATAL ERROR: equivs-build command failed!' >&2
