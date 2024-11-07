@@ -31,6 +31,7 @@ dummy_dependency() {
    fi
 
    machine_arch="$(dpkg --print-architecture)"
+   ## ${TMP} is an already existing environment variable.
    equivs_file="${TMP}/${package_to_replace}.equivs"
    deb_file="${TMP}/${package_to_replace}_99_all.deb"
    if [ -f "${deb_file}" ] \
