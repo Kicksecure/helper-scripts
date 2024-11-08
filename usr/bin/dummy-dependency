@@ -42,7 +42,7 @@ dummy_dependency() {
 
    # Validate package name, see
    # https://www.debian.org/doc/debian-policy/ch-controlfields.html#source
-   if ! grep --quiet '^[a-z0-9]\+[a-z0-9+-.]\+$' <<< "${package_to_replace}" ; then
+   if ! grep --quiet '^[a-z0-9]\+[a-z0-9+-.]\+$' -- <<< "${package_to_replace}" ; then
       echo 'FATAL ERROR: Package name is invalid, check for typos' >&2
       exit 1
    fi
@@ -79,7 +79,7 @@ Description: dummy ${package_to_replace} package
 
    echo "${equivs_content}" | sponge -- "${equivs_file}"
 
-   if ! equivs_build_log="$(equivs-build "${equivs_file}" 2>&1)" ; then
+   if ! equivs_build_log="$(equivs-build -- "${equivs_file}" 2>&1)" ; then
       echo 'FATAL ERROR: equivs-build command failed!' >&2
       echo 'Logs:' >&2
       echo "${equivs_build_log}" >&2
@@ -90,9 +90,9 @@ Description: dummy ${package_to_replace} package
    TMPDIR="${TMPDIR_OLD}"
 
    echo 'Dummy package created. Installing...'
-   echo "apt-get install ${deb_file}"
+   echo "apt-get install -- ${deb_file}"
    test -r "${deb_file}"
-   if ! apt-get install "${deb_file}" ; then
+   if ! apt-get install -- "${deb_file}" ; then
       echo 'FATAL ERROR: apt-get install command failed!' >&2
       exit 1
    fi
