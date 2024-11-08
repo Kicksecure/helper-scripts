@@ -74,8 +74,8 @@ Breaks: ${package_to_replace}
 Replaces: ${package_to_replace}
 Provides: ${package_to_replace}
 Architecture: all
-Description: dummy ${package_to_replace} package
- A blank package that replaces ${package_to_replace}."
+Description: dummy-package for '${package_to_replace}'
+ A metapackage that replaces '${package_to_replace}'."
 
    echo "${equivs_content}" | sponge -- "${equivs_file}"
 
@@ -90,8 +90,12 @@ Description: dummy ${package_to_replace} package
    TMPDIR="${TMPDIR_OLD}"
 
    echo 'Dummy package created. Installing...'
-   echo "apt-get install -- ${deb_file}"
+
    test -r "${deb_file}"
+
+   #lintian --pedantic --info --display-info "${deb_file}"
+
+   echo "apt-get install -- ${deb_file}"
    if ! apt-get install -- "${deb_file}" ; then
       echo 'FATAL ERROR: apt-get install command failed!' >&2
       exit 1
