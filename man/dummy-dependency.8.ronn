@@ -1,0 +1,30 @@
+dummy-dependency(8) -- Creates Dummy Replacement Packages
+=============================================
+
+<!--
+# Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+
+dummy-dependency [-y|--yes] 'package-name'
+
+## DESCRIPTION
+
+Creates a dummy replacement package for the specified Debian package.
+This can be used to satisfy dependencies without actually installing the original package.
+
+## RETURN VALUES
+
+* `0` Dummy package successfully created and installed.
+* `1` Error occurred during the creation or installation of the dummy package.
+
+## EXAMPLES
+`sudo dummy-dependency firefox-esr`
+
+`sudo dummy-dependency --yes electrum`
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).
