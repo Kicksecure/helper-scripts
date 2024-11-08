@@ -103,6 +103,7 @@ Description: dummy-package for '${package_to_replace}'
 
    cleanup
    trap '' EXIT
+   true "$0: INFO: END"
    exit 0
 }
 
@@ -117,5 +118,3 @@ TMPDIR_NEW=''
 package_to_replace="${1:-}"
 
 dummy_dependency
-
-true "$0: INFO: END"
