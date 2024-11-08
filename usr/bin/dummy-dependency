@@ -15,9 +15,22 @@ set -o nounset
 true "$0: INFO: START"
 
 show_usage() {
-   echo "Usage: $0 'package to replace'" >&2
+   echo "Usage: $0 [-y|--yes] 'package to replace'" >&2
    exit 1
 }
+
+yes_option=""
+if [ "$#" -gt 1 ]; then
+   case "$1" in
+      -y|--yes)
+         yes_option="--yes"
+         shift
+         ;;
+      *)
+         show_usage
+         ;;
+   esac
+fi
 
 cleanup() {
    if [ -n "${TMPDIR_NEW:-}" ] && [ -d "${TMPDIR_NEW}" ]; then
@@ -95,7 +108,7 @@ Description: dummy-package for '${package_to_replace}'
    #lintian --pedantic --info --display-info "${deb_file}"
 
    echo "apt-get install -- ${deb_file}"
-   if ! apt-get install -- "${deb_file}" ; then
+   if ! apt-get $yes_option install -- "${deb_file}" ; then
       echo 'FATAL ERROR: apt-get install command failed!' >&2
       exit 1
    fi
