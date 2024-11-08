@@ -35,8 +35,7 @@ root_check() {
 trap cleanup EXIT
 
 dummy_dependency() {
-   local machine_arch equivs_file deb_file dpkg_query_info installed_version \
-      equivs_content equivs_build_log
+   local equivs_file deb_file equivs_content equivs_build_log
 
    root_check
 
