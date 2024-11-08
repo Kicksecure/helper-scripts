@@ -1,4 +1,4 @@
-watch(8) -- Watch AppArmor DENIED and ALLOWED Log Messages
+apparmor-watch(8) -- Watch AppArmor DENIED and ALLOWED Log Messages
 =============================================
 
 <!--
@@ -8,14 +8,15 @@ watch(8) -- Watch AppArmor DENIED and ALLOWED Log Messages
 
 ## SYNOPSIS
 
-watch
+`apparmor-watch`
 
 ## DESCRIPTION
 
-Watches for AppArmor DENIED and ALLOWED log messages.
+Watches for AppArmor `DENIED` and `ALLOWED` log messages.
 
 ## EXAMPLE
-`sudo watch`
+
+`sudo apparmor-watch`
 
 ## AUTHOR
 

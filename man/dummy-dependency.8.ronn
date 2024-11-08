@@ -8,7 +8,7 @@ dummy-dependency(8) -- Creates Dummy Replacement Packages
 
 ## SYNOPSIS
 
-dummy-dependency [-y|--yes] 'package-name'
+`dummy-dependency -y|--yes 'package-name'`
 
 ## DESCRIPTION
 
@@ -21,6 +21,7 @@ This can be used to satisfy dependencies without actually installing the origina
 * `1` Error occurred during the creation or installation of the dummy package.
 
 ## EXAMPLES
+
 `sudo dummy-dependency firefox-esr`
 
 `sudo dummy-dependency --yes electrum`

@@ -10,7 +10,7 @@ anon-consensus-delete(8) -- Tor consensus deletion
 `anon-consensus-delete`
 
 ## DESCRIPTION
-anon-consensus-delete is a user-friendly wrapper that deletes all Tor consensus files.
+`anon-consensus-delete` is a user-friendly wrapper that deletes all Tor consensus files.
 
 ## AUTHOR
 This man page has been written by Patrick Schleizer (adrelanos@whonix.org)
