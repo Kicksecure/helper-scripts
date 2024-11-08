@@ -80,7 +80,7 @@ Description: dummy-package for '${package_to_replace}'
    echo "${equivs_content}" | sponge -- "${equivs_file}"
 
    if ! equivs_build_log="$(equivs-build -- "${equivs_file}" 2>&1)" ; then
-      echo 'FATAL ERROR: equivs-build command failed!' >&2
+      echo "FATAL ERROR: 'equivs-build -- \"${equivs_file}\"' command failed!" >&2
       echo 'Logs:' >&2
       echo "${equivs_build_log}" >&2
       exit 1
