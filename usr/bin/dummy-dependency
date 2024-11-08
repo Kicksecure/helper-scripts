@@ -107,7 +107,7 @@ Description: dummy-package for '${package_to_replace}'
 
    #lintian --pedantic --info --display-info "${deb_file}"
 
-   echo "apt-get install -- ${deb_file}"
+   echo "apt-get $yes_option install -- ${deb_file}"
    if ! apt-get $yes_option install -- "${deb_file}" ; then
       echo 'FATAL ERROR: apt-get install command failed!' >&2
       exit 1
