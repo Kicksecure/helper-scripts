@@ -1,3 +1,124 @@
+commit bab50165ef6cc40b7dbb6621487b68dd2433d4ef
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:58:31 2024 -0500
+
+    genmkfile manpages
+
+commit 22ca45ce424705a7d1025c2b8d5643b71cb08de4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:58:02 2024 -0500
+
+    man
+
+commit cd7b24ed863c27dd491fdee9645cd2b6f0c2f066
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:47:43 2024 -0500
+
+    genmkfile manpages
+
+commit bbe03361f7a5aa207ce85210d3088254725916a4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:47:22 2024 -0500
+
+    add dummy-dependency man page
+
+commit 073d43a41e5dc3364372bf7fbb4d07ad18baefe3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:44:12 2024 -0500
+
+    output
+
+commit 998252ba10979d9ce55cb94450c06b34dda36062
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:43:31 2024 -0500
+
+    output
+
+commit 65fe4b3c0d8f780048a43025ebe6751efd86d06d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:42:34 2024 -0500
+
+    improve dummy-dependency
+
+commit fb85c89be135708fb97190925b4b953d7dec5b64
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:35:02 2024 -0500
+
+    output
+
+commit a6aad9204ef58c816330c5b1861b6dae33bdb3e6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:32:26 2024 -0500
+
+    shellcheck
+
+commit b974359bfc1fe77a7519de31bb005e7781e68ca0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:30:56 2024 -0500
+
+    cleanup
+
+commit f3a42c8bbe9c10937982af17143b1aee3e724044
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:30:08 2024 -0500
+
+    improve dummy-dependency
+
+commit 29dc67f19aeb45b7be94bc9198fcaa66c344965e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:27:42 2024 -0500
+
+    improve dummy-dependency
+
+commit 320851002642d1c846332b559039f643acd28542
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:19:18 2024 -0500
+
+    use end-of-options
+
+commit dbf43507df8ba5c302ff610b3fd1b64c13483c99
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:17:08 2024 -0500
+
+    show what is happening
+
+commit 53219e1362af257ae0cd23d090f61b5c9df4adb8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:16:06 2024 -0500
+
+    long option names
+
+commit 0339c2dba85079b4285be79c07a6c98e76cc6d75
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:15:18 2024 -0500
+
+    long option names
+
+commit 9456facb925325f8b0ab80337af29ecf62dc0b3d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:14:54 2024 -0500
+
+    improve dummy-dependency
+
+commit 93c6b9fb34c0ac40fe337812481a01240f629848
+Merge: fb7f724 102fc20
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 8 05:11:52 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/dummy-dep-generator'
+
+commit 102fc20daaea75b5ed0bd0deaab6754be2835d99
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Nov 7 19:16:01 2024 -0600
+
+    More dummy-dependency enhancements, use Breaks/Replaces/Conflicts for cleaner package replacement
+
+commit fb7f7242695496723f7824eb9b73756a68692a08
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 7 17:27:43 2024 +0000
+
+    bumped changelog version
+
 commit a4377e214cd304c6e90fb64eebac6e0a0a61523e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 7 12:16:03 2024 -0500
