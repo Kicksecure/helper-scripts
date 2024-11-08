@@ -90,8 +90,9 @@ Description: dummy ${package_to_replace} package
    TMPDIR="${TMPDIR_OLD}"
 
    echo 'Dummy package created. Installing...'
+   echo "apt-get install ${deb_file}"
    test -r "${deb_file}"
-   if ! apt-get --quiet --quiet install "${deb_file}" ; then
+   if ! apt-get install "${deb_file}" ; then
       echo 'FATAL ERROR: apt-get install command failed!' >&2
       exit 1
    fi
