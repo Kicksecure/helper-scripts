@@ -91,7 +91,7 @@ Description: dummy ${package_to_replace} package
 
    echo 'Dummy package created. Installing...'
    test -r "${deb_file}"
-   if ! apt-get -qq install "${deb_file}" ; then
+   if ! apt-get --quiet --quiet install "${deb_file}" ; then
       echo 'FATAL ERROR: apt-get install command failed!' >&2
       exit 1
    fi
