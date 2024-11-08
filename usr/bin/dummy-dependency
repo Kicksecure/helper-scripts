@@ -64,7 +64,7 @@ dummy_dependency() {
    ## equivs-build uses ${TMPDIR} for builds
    deb_file="${TMPDIR_NEW}/dummy-${package_to_replace}_99_all.deb"
 
-   echo "Creating dummy replacement for ${package_to_replace}"
+   echo "Creating dummy replacement for '${package_to_replace}'..."
 
    equivs_content="Package: dummy-${package_to_replace}
 Version: 99:99
