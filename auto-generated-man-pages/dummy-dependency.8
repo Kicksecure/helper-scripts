@@ -1,0 +1,24 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "DUMMY\-DEPENDENCY" "8" "January 2020" "helper-scripts" "helper-scripts Manual"
+.SH "NAME"
+\fBdummy\-dependency\fR \- Creates Dummy Replacement Packages
+.SH "SYNOPSIS"
+.TS
+allbox;
+dummy\-dependency [\-y	\-\-yes] 'package\-name'
+.TE
+.SH "DESCRIPTION"
+Creates a dummy replacement package for the specified Debian package\. This can be used to satisfy dependencies without actually installing the original package\.
+.SH "RETURN VALUES"
+.IP "\[ci]" 4
+\fB0\fR Dummy package successfully created and installed\.
+.IP "\[ci]" 4
+\fB1\fR Error occurred during the creation or installation of the dummy package\.
+.IP "" 0
+.SH "EXAMPLES"
+\fBsudo dummy\-dependency firefox\-esr\fR
+.P
+\fBsudo dummy\-dependency \-\-yes electrum\fR
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
