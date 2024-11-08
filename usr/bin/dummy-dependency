@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 ## Usage:
-## dummy-dependency [-i] 'package to replace'
+## dummy-dependency 'package to replace'
 
 #set -x
 set -e
@@ -15,18 +15,18 @@ set -o nounset
 true "$0: INFO: START"
 
 show_usage() {
-   echo "Usage: $0 [-i] 'package to replace'" >&2
+   echo "Usage: $0 'package to replace'" >&2
    exit 1
 }
 
 cleanup() {
-   if [ -n "${temp_dir:-}" ] && [ -d "${temp_dir}" ]; then
-      safe-rm -r -f "${temp_dir}"
+   if [ -n "${TMPDIR_NEW:-}" ] && [ -d "${TMPDIR_NEW}" ]; then
+      safe-rm -r -f "${TMPDIR_NEW}"
    fi
 }
 
 root_check() {
-   if [ "$EUID" -ne 0 ]; then
+   if [ "$(id -u)" -ne 0 ]; then
       echo "FATAL ERROR: This script must be run as root." >&2
       exit 1
    fi
@@ -34,11 +34,11 @@ root_check() {
 
 trap cleanup EXIT
 
-root_check
-
 dummy_dependency() {
    local machine_arch equivs_file deb_file dpkg_query_info installed_version \
       equivs_content equivs_build_log
+
+   root_check
 
    # Validate package name, see
    # https://www.debian.org/doc/debian-policy/ch-controlfields.html#source
@@ -58,36 +58,24 @@ dummy_dependency() {
    TMPDIR_NEW="$(mktemp --directory)"
 
    ## equivs-build uses ${TMPDIR} for builds
-   TMPDIR="$TMPDIR_NEW"
+   TMPDIR="${TMPDIR_NEW}"
    export TMPDIR
 
-   machine_arch="$(dpkg --print-architecture)"
-   temp_dir="${TMPDIR}/dummy-dependency-equivs"
-   mkdir --parents "${temp_dir}"
-   equivs_file="${temp_dir}/${package_to_replace}.equivs"
+   equivs_file="${TMPDIR_NEW}/${package_to_replace}.equivs"
    ## equivs-build uses ${TMPDIR} for builds
-   deb_file="${TMPDIR_NEW}/${package_to_replace}_99_all.deb"
-
-   ## If dpkg-query exits zero, the package is already installed, in which
-   ## case we check to see if its version number looks like a dummy
-   ## dependency package.
-   ## Disabled in favor of idempotent, simplicity, easier debugging.
-   #if installed_version="$(dpkg-query -W --showformat='${Version}\n' "${package_to_replace}" 2>/dev/null)" ; then
-      #if [ "${installed_version}" = '99:99' ]; then
-         #echo "${package_to_replace} is already installed and appears to be a dummy dependency package." >&2
-         #exit 1
-      #fi
-   #fi
+   deb_file="${TMPDIR_NEW}/dummy-${package_to_replace}_99_all.deb"
 
    echo "Creating dummy replacement for ${package_to_replace}"
 
-   equivs_content="Package: ${package_to_replace}
+   equivs_content="Package: dummy-${package_to_replace}
 Version: 99:99
 Maintainer: dummy-dependency script <dummy-dependency@dummy-dependency.invalid>
+Breaks: ${package_to_replace}
+Replaces: ${package_to_replace}
+Provides: ${package_to_replace}
 Architecture: all
 Description: dummy ${package_to_replace} package
- A dummy package with a version number so high that the real
- ${package_to_replace} package will never reach it."
+ A blank package that replaces ${package_to_replace}."
 
    echo "${equivs_content}" | sponge -- "${equivs_file}"
 
@@ -108,16 +96,21 @@ Description: dummy ${package_to_replace} package
       exit 1
    fi
    echo 'Dummy package installed.'
+
+   cleanup
+   trap '' EXIT
+   exit 0
 }
 
-# Main execution
+## Main execution
 if [ "$#" -lt '1' ]; then
    show_usage
 fi
 
-package_to_replace=''
-
-package_to_replace="$1"
+## Declare global variables
+TMPDIR_OLD=''
+TMPDIR_NEW=''
+package_to_replace="${1:-}"
 
 dummy_dependency
 
