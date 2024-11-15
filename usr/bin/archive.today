@@ -1,0 +1,418 @@
+#!/usr/bin/python3 -u
+
+## Copyright (C) 2012 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+from html.parser import HTMLParser
+import argparse
+import requests
+import sys
+import time
+
+# Finds the first result from an archive find operation, and stores it in
+# self.latest_archive_url.
+class ArchiveFindExtractor(HTMLParser):
+    latest_archive_url = None
+    state = None
+
+    def handle_starttag(self, tag, attrs):
+        if self.state is None:
+            if tag == "div":
+                for attr in attrs:
+                    if attr[0] == "id" and attr[1] == "row0":
+                        self.state = "found_row0"
+                        break
+                if self.state != "found_row0":
+                    return
+            else:
+                return
+        elif self.state == "found_row0":
+            if tag == "div":
+                for attr in attrs:
+                    if attr[0] == "class" and attr[1] == "TEXT-BLOCK":
+                        self.state = "found_text_block"
+                        break
+                if self.state != "fount_text_block":
+                    return
+            else:
+                return
+        elif self.state == "found_text_block":
+            if tag == "a":
+                for attr in attrs:
+                    if attr[0] == "href":
+                        self.latest_archive_url = attr[1]
+                        self.state = None
+                        break
+            else:
+                return
+
+# Finds a submit ID from archive.today's home page, and stores it in
+# self.submit_id.
+class ArchiveSubmitIdExtractor(HTMLParser):
+    submit_id = None
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "input":
+            found_submit_id = False
+            for attr in attrs:
+                if attr[0] == "name" and attr[1] == "submitid":
+                    found_submit_id = True
+                    continue
+                elif found_submit_id == True and attr[0] == "value":
+                    self.submit_id = attr[1]
+                else:
+                    continue
+
+# Prints a message to stdout unless running in quiet mode.
+def print_noisy(msg):
+    if args.quiet:
+        return
+    print(msg, file=sys.stderr)
+
+# Finds the specified page from the specified archive.today mirror and CAPTCHA
+# cookie. Can use Tor if requested. Returns 0 on success, 1 on transient
+# failure (i.e. mirror is down), 2 on serious failure (no page found or
+# CAPTCHA hit).
+def find_archive(hostname, page_url, captcha_cookie, use_tor):
+    parser = ArchiveFindExtractor()
+
+    find_headers = {
+        "User-Agent": user_agent,
+        "Referer": "https://" + hostname,
+        "Host": hostname
+    }
+    if captcha_cookie is not None:
+        find_headers["Cookie"] = "cf_clearance=" + captcha_cookie
+    if use_tor:
+        req_url = "http://" + hostname + "/" + page_url
+        try:
+            req = requests.get(req_url, headers = find_headers, proxies = tor_proxies)
+        except:
+            return 1
+    else:
+        req_url = "https://" + hostname + "/" + page_url
+        try:
+            req = requests.get(req_url, headers=find_headers)
+        except:
+            return 1
+
+    if req.status_code == 200:
+        parser.feed(req.content.decode())
+        if parser.latest_archive_url is not None:
+            print(parser.latest_archive_url)
+            return 0
+        else:
+            print_noisy("No archive found.")
+            return 2
+
+    status_code_top_digit = int(req.status_code / 100)
+    if status_code_top_digit == 1 or status_code_top_digit == 4 or status_code_top_digit == 5:
+        print_noisy("ERROR: Could not search archive, CAPTCHA most likely hit.")
+        return 2
+
+    return 1
+
+# Archives the specified page into the specified archive.today mirror,
+# using an optional captcha cookie and "force" mode. Can use Tor if requested.
+# Returns 0 on success, 1 on transient failure (i.e. mirror is down), 2 on
+# serious failure (unable to archive, or CAPTCHA page hit)
+def archive_page(archive_hostname, page_url, captcha_cookie, force, use_tor):
+    # Archiving a webpage is a lot trickier than finding an already
+    # archived webpage.
+    #
+    # * First, you need to find a submit ID that is baked into the home
+    #   page. This needs to be re-sent to the server, along with the
+    #   actual archival request.
+    # * Next, you send a POST request specifying the URL you wish to
+    #   archive. This requests consists of the submit ID requested
+    #   earlier, and the URL you wish to archive. (Note: There also
+    #   appears to be a field called "anyway" you can set here, I don't
+    #   rightly know what it does.)
+    # * Finally, you parse the response. Depending on what the server is
+    #   doing, you might get any one of the following:
+    #   * A CAPTCHA page, meaning you probably didn't set the CAPTCHA
+    #     cookie when calling this (the program warns you if you try this)
+    #   * A HTTP response with a "Refresh" header - this is returned when
+    #     archive.today is in the process of archiving the requested page.
+    #     In this instance, the proper response is to wait until archival
+    #     is complete, periodically checking to see if completion has
+    #     occurred yet.
+    #   * A page with a "location" header, from which you can extract a
+    #     URL. Not entirely sure when this is returned.
+    #   * The final URL of the archived page. This is returned after
+    #     archival is complete.
+
+    parser = ArchiveSubmitIdExtractor()
+    if use_tor:
+        try:
+            req = requests.get("http://" + archive_hostname, headers = init_headers, proxies = tor_proxies)
+        except:
+            return 1
+    else:
+        try:
+            req = requests.get("https://" + archive_hostname, headers = init_headers)
+        except:
+            return 1
+
+    if req.status_code == 200:
+        parser.feed(req.content.decode())
+        if parser.submit_id is None:
+            return 2
+
+    archive_data = {
+        "submitid": parser.submit_id,
+        "url": page_url
+    }
+    archive_headers = {
+        "User-Agent": user_agent,
+        "Host": archive_hostname
+    }
+    if captcha_cookie is not None:
+        archive_headers["Cookie"] = "cf_clearance=" + captcha_cookie
+    if force:
+        archive_headers["anyway"] = "1"
+
+    if use_tor:
+        archive_headers["Referer"] = "http://" + archive_hostname
+        archive_headers["Origin"] = "http://" + archive_hostname
+        req_url = "http://" + archive_hostname + "/submit/"
+        try:
+            req = requests.post(req_url, data = archive_data, headers = archive_headers, proxies = tor_proxies)
+        except:
+            return 1
+    else:
+        archive_headers["Referer"] = "https://" + archive_hostname
+        archive_headers["Origin"] = "https://" + archive_hostname
+        req_url = "https://" + archive_hostname + "/submit/"
+        try:
+            req = requests.post(req_url, data = archive_data, headers = archive_headers)
+        except:
+            return 1
+
+    # If the archival requests comes back with an error status code that is
+    # *not* likely to be the result of a CAPTCHA page, return a transient
+    # failure.
+    if any(x == req.status_code for x in[404, 408, 410, 500, 502, 503, 504]):
+        return 1
+
+    status_code_top_digit = int(req.status_code / 100)
+    if status_code_top_digit == 1 or status_code_top_digit == 4 or status_code_top_digit == 5:
+        print_noisy("ERROR: Could not archive URL, CAPTCHA most likely hit.")
+        return 2
+
+    # If a Refresh header is found, the loading screen has been
+    # returned. The Refresh header has two semicolon-separated fields:
+    #
+    # * Field 0: Number of seconds before next refresh
+    # * Field 1: URL of refresh page, formatted as `url=https://...`
+    #   (optional)
+    #
+    # Field 1 is only returned the first time the Refresh header is
+    # sent. Repeatedly refresh the refresh URL, waiting between each
+    # refresh the requested number of seconds.
+    refresh_delay = 0
+    refresh_url = None
+    while True:
+        refresh_header = req.headers.get("Refresh")
+        if refresh_header is not None and len(refresh_header) > 0:
+            parsed_header = refresh_header.split(";url=")
+            if len(parsed_header) >= 1:
+                if parsed_header[0].isnumeric():
+                    refresh_delay = int(parsed_header[0])
+            if len(parsed_header) >= 2:
+                refresh_url = parsed_header[1]
+                print_noisy(refresh_url)
+            time.sleep(refresh_delay)
+            print_noisy(".")
+            if use_tor:
+                try:
+                    req = requests.get(refresh_url, headers = archive_headers, proxies = tor_proxies)
+                except:
+                    return 1
+            else:
+                try:
+                    req = requests.get(refresh_url, headers = archive_headers)
+                except:
+                    return 1
+        else:
+            break
+
+    location_header = req.headers.get("location")
+    if location_header is not None and len(location_header) > 2:
+        result_url_parts = location_header.split("/")
+        if len(result_url_parts) >= 3:
+            location_hostname = result_url_parts[2]
+            if location_hostname.startswith("archive"):
+                print(location_header)
+                return 0
+            else:
+                print_noisy("ERROR: Location header appears invalid.")
+                return 2
+        else:
+            print_noisy("ERROR: Something went very wrong while trying to parse a location header.")
+            return 2
+
+    final_url = req.url
+    if final_url is not None and len(final_url) > 0 and not "/submit/" in final_url:
+        print(final_url)
+        return 0
+
+    print_noisy("ERROR: Could not archive URL.")
+    return 2
+
+def main():
+    # Determine the ideal host using the archive.today URL, this redirects
+    # to one of the archive mirrors.
+
+    if not args.tor:
+        req = requests.get("https://archive.today", headers = init_headers)
+        if req.status_code == 200:
+            result_url_parts = req.url.split("/")
+            if len(result_url_parts) >= 3:
+                true_hostname = result_url_parts[2]
+            else:
+                print_noisy("ERROR: Something went very wrong while trying to find an ideal archive.today mirror.")
+                exit(1)
+
+            if true_hostname in hostname_list:
+                hostname_list.remove(true_hostname)
+            hostname_list.insert(0, true_hostname)
+    else:
+        hostname_list.clear()
+        hostname_list.append(onion_service)
+        tor_proxies["http"] = "socks5h://" + tor_ip + ":" + str(tor_port)
+        tor_proxies["https"] = "socks5h://" + tor_ip + ":" + str(tor_port)
+
+    if args.find:
+        # Try all known mirrors in sequence, starting with the best one and
+        # then moving down the remaining ones in alphabetical order.
+        for hostname_item in hostname_list:
+            return_code = find_archive(hostname_item, args.url, args.captcha_cookie, args.tor)
+            if return_code == 0:
+                exit()
+            elif return_code == 1:
+                continue
+            else:
+                exit(1)
+
+        # Fallthrough in the event no hostname works
+        print_noisy("ERROR: Could not get a valid response from any archive.today domain!")
+        exit(1)
+
+    else: # args.archive
+        for hostname_item in hostname_list:
+            return_code = archive_page(hostname_item, args.url, args.captcha_cookie, args.force, args.tor)
+            if return_code == 0:
+                exit()
+            elif return_code == 1:
+                continue
+            else:
+                exit (1)
+
+        # Fallthrough in the event no hostname works
+        print_noisy("ERROR: Could not get a valid response from any archive.today domain!")
+        exit(1)
+
+user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+hostname_list = [
+    "archive.fo",
+    "archive.is",
+    "archive.li",
+    "archive.md",
+    "archive.ph",
+    "archive.vn"
+]
+onion_service = "archiveiya74codqgiixo33q62qlrqtkgmcitqx5u2oeqnmn5bpcbiyd.onion"
+tor_ip = "127.0.0.1"
+tor_port = 9050
+tor_proxies = {}
+init_headers = {
+    "User-Agent": user_agent
+}
+
+argument_parser = argparse.ArgumentParser(prog = "archive.today",
+                                          description = "A CLI frontend for archive.today.",
+                                          epilog = "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to distribute it under certain conditions; run `python3 py-archive-today.py --license` for details.")
+argument_parser.add_argument("-f",
+                             "--find",
+                             action = "store_true",
+                             help = "Search for the specified URL.")
+argument_parser.add_argument("-a",
+                             "--archive",
+                             action = "store_true",
+                             help = "Archive the specified URL.")
+argument_parser.add_argument("--force",
+                             action = "store_true",
+                             help = "Try to force archival of the page. Only valid with the --archive option.")
+argument_parser.add_argument("-q",
+                             "--quiet",
+                             action = "store_true",
+                             help = "Gets rid of verbose status output.")
+argument_parser.add_argument("--captcha-cookie",
+                             action = "store",
+                             help = "The cf_clearance cookie to use for avoiding a CAPTCHA block.")
+argument_parser.add_argument("--tor",
+                             action = "store_true",
+                             help = "Access archive.today via its Tor hidden service.")
+argument_parser.add_argument("--tor-ip",
+                              action = "store",
+                              help = "The IP address of the Tor proxy server. Defaults to 127.0.0.1.")
+argument_parser.add_argument("--tor-port",
+                             action = "store",
+                             help = "The port of the Tor proxy server. Defaults to 9050.")
+argument_parser.add_argument("--version",
+                             action = "store_true",
+                             help = "Displays version info.")
+argument_parser.add_argument("--license",
+                             action = "store_true",
+                             help = "Displays license info.")
+argument_parser.add_argument("-u",
+                             "--url",
+                             action = "store",
+                             help = "The URL to find or archive.")
+
+args = argument_parser.parse_args()
+
+if args.version:
+    print("0.1")
+    exit()
+elif args.license:
+    print("""This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public License along with
+this program. If not, see <https://www.gnu.org/licenses/>.""")
+    exit()
+elif args.find and args.archive:
+    print_noisy("ERROR: --find and --archive are mutually exclusive.")
+    exit(1)
+elif args.force and not args.archive:
+    print_noisy("ERROR: --force is only valid with --archive.")
+    exit(1)
+elif args.url is None:
+    print_noisy("ERROR: No URL provided.")
+    exit(1)
+
+if args.tor_ip is not None:
+    tor_ip = args.tor_ip
+
+if args.tor_port is not None:
+    if args.tor_port.isnumeric():
+        tor_port = int(args.tor_port)
+    else:
+        print_noisy("ERROR: --tor-port requires a numeric argument.")
+        exit(1)
+
+if args.archive and args.captcha_cookie is None:
+    print_noisy("WARNING: You are trying to archive a webpage without a CAPTCHA cookie. This probably won't work.")
+elif args.find and args.tor and args.captcha_cookie is None:
+    print_noisy("WARNING: You are trying to search the archive over Tor without a CAPTCHA cookie. This probably won't work.")
+
+main()
