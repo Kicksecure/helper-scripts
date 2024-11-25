@@ -3,6 +3,13 @@
 ## Copyright (C) 2012 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+[[ -z "${TMP:-}" ]] && error "TMP is unset"
+
 kill -s sigterm "$(cat "$TMP/security-misc-apt-get-update-pid")"
 
 exit 0
