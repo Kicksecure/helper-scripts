@@ -3,6 +3,6 @@
 ## Copyright (C) 2012 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-kill -s sigterm "$(cat /tmp/security-misc-apt-get-update-pid)"
+kill -s sigterm "$(cat "$TMP/security-misc-apt-get-update-pid")"
 
 exit 0
