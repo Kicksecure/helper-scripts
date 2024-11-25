@@ -1,52 +1,54 @@
-#!/usr/bin/perl -w
+#!/usr/bin/python3 -u
 
-use strict;
-use warnings;
+from pathlib import Path
+import sys
 
-my $numarg = $#ARGV + 1;
-if ($numarg < 1) {
-    print "Usage: LANG=C str_match Search File\nOr: STDIN LANG=C str_replace Search\n";
-    exit 1;
-}
+#print "No matches found.\n";
+#print "Match found at offset $pos.\n";
 
-my $find = $ARGV[0];
-my $file;
-my $contents;
-my $fh;
+def print_usage():
+    print("Usage: str_match Search File")
+    print("Or: STDIN str_match Search")
 
-if (defined $ARGV[1]) {
-    $file = $ARGV[1];
+def main():
+    source_fh = None
 
-    # Check if the file is actually a folder
-    if (-d $file) {
-        die "Error: '$file' is a directory, not a file";
-    }
+    if source_file is not None and Path(source_file).is_dir():
+        print("Error: '{0}' is a directory, not a file".format(source_file))
+        exit(1)
 
-    open($fh, '<', $file) or die "Cannot open the file '$file'";
-    {
-        local $/;
-        $contents = <$fh>;
-    }
-    close($fh);
-} else {
-    {
-        local $/;
-        $contents = <STDIN>;
-    }
-}
+    if source_file is not None:
+        try:
+            source_fh = open(source_file, "r")
+        except:
+            print("Cannot open the file '{0}'".format(source_file))
+            exit(1)
 
-# Check if $contents is defined
-unless (defined $contents) {
-    print "Error: No input provided.\n";
-    exit 1;
-}
+    else:
+        source_fh = sys.stdin
 
-my $pos = index($contents, $find);
-if ($pos == -1) {
-  print "No matches found.\n";
-  exit 1;
-} else {
-  print "Match found at offset $pos.\n";
-}
+    input_data = source_fh.read()
+    if input_data == "":
+        print("Error: No input provided.")
+        exit(1)
 
-exit 0;
+    if search_str in input_data:
+        print("Match found.")
+        exit(0)
+    else:
+        print("No matches found.")
+        exit(1)
+
+if len(sys.argv) < 2:
+    print_usage()
+    exit(1)
+
+search_str = sys.argv[1]
+source_file = None
+if len(sys.argv) == 3:
+    source_file = sys.argv[2]
+elif len(sys.argv) > 4:
+    print_usage()
+    exit(1)
+
+main()

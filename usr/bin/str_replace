@@ -1,67 +1,49 @@
-#!/usr/bin/perl -w
+#!/usr/bin/python3 -u
 
-use strict;
-use warnings;
+from pathlib import Path
+import sys
 
-my $numarg = $#ARGV + 1;
-if ($numarg < 2) {
-    print "Usage: LANG=C str_replace Search Replace File\nOr: STDIN LANG=C str_replace Search Replace\n";
-    exit 1;
-}
+def print_usage():
+    print("Usage: str_replace Search Replace File")
+    print("Or: STDIN str_replace Search Replace")
 
-my $find = $ARGV[0];
-my $replace = $ARGV[1];
-my $file;
-my $contents;
-my $found = 0;
-my $fh;
+def main():
+    source_fh = None
 
-if (defined $ARGV[2]) {
-    $file = $ARGV[2];
+    if source_file is not None and Path(source_file).is_dir():
+        print("Error: '{0}' is a directory, not a file".format(source_file))
+        exit(1)
 
-    # Check if the file is actually a folder
-    if (-d $file) {
-        die "Error: '$file' is a directory, not a file";
-    }
+    if source_file is not None:
+        try:
+            source_fh = open(source_file, "r+")
+        except:
+            print("Cannot open the file '{0}'".format(source_file))
+            exit(1)
+    else:
+        source_fh = sys.stdin
 
-    open($fh, '<', $file) or die "Cannot open the file '$file'";
-    {
-        local $/;
-        $contents = <$fh>;
-    }
-    close($fh);
-} else {
-    {
-        local $/;
-        $contents = <STDIN>;
-    }
-}
+    file_data = source_fh.read()
+    file_data = file_data.replace(search_str, replace_str)
 
-# Check if $contents is defined
-unless (defined $contents) {
-    print "Error: No input provided.\n";
-    exit 1;
-}
+    if source_file is not None:
+        source_fh.seek(0)
+        source_fh.write(file_data)
+        source_fh.close()
+    else:
+        sys.stdout.write(file_data)
 
-my $pos = index($contents, $find);
-while ($pos > -1) {
-    if (substr($contents, $pos, length($find), $replace)) {
-        $found = $found + 1;
-    }
-    $pos = index($contents, $find, $pos + length($replace));
-}
+if len(sys.argv) < 3:
+    print_usage()
+    exit(1)
 
-if (!defined $ARGV[2]) {
-    print $contents;
-    exit;
-}
+search_str = sys.argv[1]
+replace_str = sys.argv[2]
+source_file = None
+if len(sys.argv) == 4:
+    source_file = sys.argv[3]
+elif len(sys.argv) > 4:
+    print_usage()
+    exit(1)
 
-if ($found == 0) {
-    print "Nothing replaced\n";
-} else {
-    print "$found occurrences of '$find' have been replaced with '$replace'\n";
-}
-
-open($fh, '>', $file);
-print $fh $contents;
-close $fh;
+main()
