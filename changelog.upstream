@@ -1,3 +1,47 @@
+commit a93e748982dc527b545b8b9ca9902ffca587ce0f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 25 15:51:20 2024 -0500
+
+    strict shell options
+
+commit c80d706950926f94afd45e10b4c70cbd222dc6d3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 25 15:49:20 2024 -0500
+
+    use TMP
+
+commit 62ce62dc85bc9b7d300ff63f2e16b4f3ca617b3e
+Merge: c6ae8d7 948b4fe
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 25 15:31:28 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/sudoers'
+
+commit c6ae8d7d5928eb4051e33a14a0d9a0f002401e35
+Merge: 8b5fbcf 9ae3b82
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 25 15:28:52 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/perl-to-python'
+
+commit 9ae3b8238bec01e6410b1fd60b2daf76a8f47552
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Nov 24 19:49:56 2024 -0600
+
+    Rewrite str_replace and str_match in Python
+
+commit 948b4feaa17c97906e1c0465f6e84f468630078a
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Nov 21 20:07:59 2024 -0600
+
+    Terminate apt-get-update securely in apt-get-update-kill-helper
+
+commit 8b5fbcf13b8eb428ae39994bccacc06394341135
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 17 16:06:12 2024 +0000
+
+    bumped changelog version
+
 commit fd3b74d432b7b3fb5a9c1762fa2208c74546616e
 Merge: 38e8cde 21fba8a
 Author: Patrick Schleizer <adrelanos@whonix.org>
