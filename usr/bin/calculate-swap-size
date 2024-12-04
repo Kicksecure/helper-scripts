@@ -6,13 +6,16 @@ set -o nounset
 
 calculate_swap_size() {
   local ram_in_mb=$1
-  local hibernation=$2
+  local disk_in_mb=$2
+  local hibernation=$3
   local swap_size=0
   local sqrt_ram_gb
   local sqrt_ram_mb
+  local disk_max_swap=0
 
   echo "Calculating swap size..."
   echo "RAM in MB: $ram_in_mb"
+  echo "Disk size in MB: $disk_in_mb"
   echo "Hibernation considered: $hibernation"
 
   # Convert MB to GB for comparison
@@ -60,6 +63,12 @@ calculate_swap_size() {
       swap_size=$(( ram_in_mb / 5 ))
       echo "RAM > 64GB without Hibernation: Swap size is 20% of the RAM"
     fi
+  fi
+
+  disk_max_swap=$(( disk_in_mb / 10 ))
+  if (( disk_max_swap < swap_size )); then
+    swap_size=$disk_max_swap
+    echo "Capping swap size at $swap_size (10% of total disk space)"
   fi
 
   echo "Calculated Swap Size in MB: $swap_size"
@@ -128,17 +137,18 @@ test_calculate_swap_size() {
 ## Uncomment the following line:
 #test_calculate_swap_size
 
-if [[ $# -ne 2 ]] || [[ $# -ge 3 ]] ; then
-    echo "Usage: $0 [RAM in MB] [Hibernation (yes/no)]" >&2
+if [[ $# -ne 3 ]] || [[ $# -ge 4 ]] ; then
+    echo "Usage: $0 [RAM in MB] [Disk size in MB] [Hibernation (yes/no)]" >&2
     exit 1
 fi
 
 RAM_IN_MB="$1"
-HIBERNATION="$2"
+DISK_IN_MB="$2"
+HIBERNATION="$3"
 
-if [[ ! $RAM_IN_MB =~ ^[0-9]+$ ]] || { [[ $HIBERNATION != "yes" ]] && [[ $HIBERNATION != "no" ]]; }; then
-  echo "Invalid input. Please provide the RAM size in MB and specify hibernation as 'yes' or 'no'." >&2
+if [[ ! $RAM_IN_MB =~ ^[0-9]+$ ]] || [[ ! $DISK_IN_MB =~ ^[0-9]+$ ]] || { [[ $HIBERNATION != "yes" ]] && [[ $HIBERNATION != "no" ]]; }; then
+  echo "Invalid input. Please provide the RAM and disk size in MB and specify hibernation as 'yes' or 'no'." >&2
   exit 1
 fi
 
-calculate_swap_size "$RAM_IN_MB" "$HIBERNATION"
+calculate_swap_size "$RAM_IN_MB" "$DISK_IN_MB" "$HIBERNATION"
