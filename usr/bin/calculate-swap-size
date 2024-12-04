@@ -124,9 +124,8 @@ test_calculate_swap_size() {
   (( CALCULATED_SWAP_SIZE == 142336 )) || test_calculate_failed 10
 }
 
-test_calculate_swap_size >/dev/null
 ## For testing:
-## Comment out above and use:
+## Uncomment the following line:
 #test_calculate_swap_size
 
 if [[ $# -ne 2 ]] || [[ $# -ge 3 ]] ; then
