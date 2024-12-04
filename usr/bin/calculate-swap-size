@@ -82,55 +82,61 @@ test_calculate_failed() {
 }
 
 test_calculate_swap_size() {
+  # The first ten tests all have a 4 TB disk specified to avoid running into caps
   # Test 1: RAM <= 2GB without hibernation
-  calculate_swap_size 2048 no
-  echo "Test 1: Expected 6144, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 2048 4194304 no
+  echo "Test 1: 2 GB RAM without hibernation: Expected 6144, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 6144 )) || test_calculate_failed 1
 
   # Test 2: RAM <= 2GB with hibernation
-  calculate_swap_size 2048 yes
-  echo "Test 2: Expected 6144, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 2048 4194304 yes
+  echo "Test 2: 2 GB RAM with hibernation: Expected 6144, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 6144 )) || test_calculate_failed 2
 
   # Test 3: RAM > 2GB and <= 8GB without hibernation
-  calculate_swap_size 4096 no
-  echo "Test 3: Expected 4096, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 4096 4194304 no
+  echo "Test 3: 4 GB RAM without hibernation: Expected 4096, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 4096 )) || test_calculate_failed 3
 
   # Test 4: RAM > 2GB and <= 8GB with hibernation
-  calculate_swap_size 4096 yes
-  echo "Test 4: Expected 8192, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 4096 4194304 yes
+  echo "Test 4: 4 GB RAM with hibernation: Expected 8192, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 8192 )) || test_calculate_failed 4
 
   # Test 5: RAM > 8GB and <= 64GB without hibernation
-  calculate_swap_size 16384 no
-  echo "Test 5: Expected 3276, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 16384 4194304 no
+  echo "Test 5: 16 GB RAM without hibernation: Expected 3276, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 3276 )) || test_calculate_failed 5
 
   # Test 6: RAM > 8GB and <= 64GB with hibernation
-  calculate_swap_size 16384 yes
-  echo "Test 6: Expected 24576, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 16384 4194304 yes
+  echo "Test 6: 16 GB RAM with hibernation: Expected 24576, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 24576 )) || test_calculate_failed 6
 
   # Test 7: RAM > 64GB without hibernation
-  calculate_swap_size 65536 no
-  echo "Test 7: Expected 13107, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 65536 4194304 no
+  echo "Test 7: 64 GB RAM without hibernation: Expected 13107, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 13107 )) || test_calculate_failed 7
 
   # Test 8: RAM > 64GB with hibernation
-  calculate_swap_size 65536 yes
-  echo "Test 8: Expected 98304, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 65536 4194304 yes
+  echo "Test 8: 64 GB RAM with hibernation: Expected 98304, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 98304 )) || test_calculate_failed 8
 
   # Test for 128GB RAM without hibernation
-  calculate_swap_size 131072 no
-  echo "Test for 128GB RAM without hibernation: Expected 26214, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 131072 4194304 no
+  echo "Test 9: 128GB RAM without hibernation: Expected 26214, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 26214 )) || test_calculate_failed 9
 
   # Test for 128GB RAM with hibernation
-  calculate_swap_size 131072 yes
-  echo "Test for 128GB RAM with hibernation: Expected 142336, Got $CALCULATED_SWAP_SIZE"
+  calculate_swap_size 131072 4194304 yes
+  echo "Test 10: 128GB RAM with hibernation: Expected 142336, Got $CALCULATED_SWAP_SIZE"
   (( CALCULATED_SWAP_SIZE == 142336 )) || test_calculate_failed 10
+
+  # Test for 16GB RAM with hibernation and a small disk
+  calculate_swap_size 16384 65536 yes
+  echo "Test 11: 16GB RAM with hibernation but only 64 GB disk: Expected 6553, Got $CALCULATED_SWAP_SIZE"
+  (( CALCULATED_SWAP_SIZE == 6553 )) || test_calculate_failed 11
 }
 
 ## For testing:
