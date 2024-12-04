@@ -1,3 +1,40 @@
+commit 7d374ab36a8c423f5b0e327b0518b5468037524c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 4 02:59:19 2024 -0500
+
+    copyright
+
+commit 9c07a7bb0bd9c7cc653e9701f22c87a5b7edc165
+Merge: 2ff0453 595a424
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 4 02:58:45 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/heuristics'
+
+commit 595a4244a85ec151663f7ee36e9ccb26f6a88623
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Dec 4 00:18:53 2024 -0600
+
+    calculate-swap-size: Update test suite for new API, improve test logs
+
+commit 4f72089ec898351a7e99c9097fb315050bc1b01e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 3 23:34:03 2024 -0600
+
+    calculate-swap-size: cap swap size at 10% of disk size
+
+commit 4535e25afb35ef52af6737f370a1160ef8193c47
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 3 23:25:01 2024 -0600
+
+    calculate-swap-size: avoid running unit tests on every call
+
+commit 2ff0453130a8c8b5dccfe7d432919dc84429db25
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 25 21:06:35 2024 +0000
+
+    bumped changelog version
+
 commit a93e748982dc527b545b8b9ca9902ffca587ce0f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Nov 25 15:51:20 2024 -0500
