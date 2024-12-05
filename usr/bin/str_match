@@ -10,45 +10,48 @@ def print_usage():
     print("Usage: str_match Search File")
     print("Or: STDIN str_match Search")
 
-def main():
-    source_fh = None
-
+def main(search_str, source_file=None):
     if source_file is not None and Path(source_file).is_dir():
         print("Error: '{0}' is a directory, not a file".format(source_file))
-        exit(1)
+        sys.exit(1)
 
-    if source_file is not None:
-        try:
-            source_fh = open(source_file, "r")
-        except:
-            print("Cannot open the file '{0}'".format(source_file))
-            exit(1)
+    try:
+        if source_file is not None:
+            with open(source_file, "r") as source_fh:
+                input_data = source_fh.read()
+        else:
+            input_data = sys.stdin.read()
 
-    else:
-        source_fh = sys.stdin
+        if not input_data:
+            print("Error: No input provided.")
+            sys.exit(1)
 
-    input_data = source_fh.read()
-    if input_data == "":
-        print("Error: No input provided.")
-        exit(1)
+        if search_str in input_data:
+            print("Match found.")
+            sys.exit(0)
+        else:
+            print("No matches found.")
+            sys.exit(1)
 
-    if search_str in input_data:
-        print("Match found.")
-        exit(0)
-    else:
-        print("No matches found.")
-        exit(1)
+    except FileNotFoundError:
+        print(f"Cannot open the file '{source_file}'")
+        sys.exit(1)
 
-if len(sys.argv) < 2:
-    print_usage()
-    exit(1)
+    except IOError as e:
+        print(f"Error reading the file: {e}")
+        sys.exit(1)
 
-search_str = sys.argv[1]
-source_file = None
-if len(sys.argv) == 3:
-    source_file = sys.argv[2]
-elif len(sys.argv) > 4:
-    print_usage()
-    exit(1)
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print_usage()
+        sys.exit(1)
 
-main()
+    search_str = sys.argv[1]
+    source_file = None
+    if len(sys.argv) == 3:
+        source_file = sys.argv[2]
+    elif len(sys.argv) > 3:
+        print_usage()
+        sys.exit(1)
+
+main(search_str, source_file)
