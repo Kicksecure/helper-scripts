@@ -15,7 +15,7 @@ if [ "$1" = "" ]; then
    exit 1
 fi
 
-dsudo append-once /etc/sudoers.d/adrelanos-dev-passwordless "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
+dsudo passwordless-root
 
 setxkbmap de || true
 sudo loadkeys de || true
@@ -32,5 +32,7 @@ autologin-user=user
 "
 
 sudo repository-dist --enable --repository developers
+
+systemcheck --verbose --leak-tests --gui --cli
 
 true "$0: END"
