@@ -7,43 +7,46 @@ def print_usage():
     print("Usage: str_replace Search Replace File")
     print("Or: STDIN str_replace Search Replace")
 
-def main():
+def main(search_str, replace_str, source_file=None):
     source_fh = None
 
     if source_file is not None and Path(source_file).is_dir():
         print("Error: '{0}' is a directory, not a file".format(source_file))
-        exit(1)
+        sys.exit(1)
 
-    if source_file is not None:
-        try:
-            source_fh = open(source_file, "r+")
-        except:
-            print("Cannot open the file '{0}'".format(source_file))
-            exit(1)
-    else:
-        source_fh = sys.stdin
+    try:
+        if source_file is not None:
+            source_fh = open(source_file, "r")
+        else:
+            source_fh = sys.stdin
 
-    file_data = source_fh.read()
-    file_data = file_data.replace(search_str, replace_str)
+        file_data = source_fh.read()
+        file_data = file_data.replace(search_str, replace_str)
 
-    if source_file is not None:
-        source_fh.seek(0)
-        source_fh.write(file_data)
-        source_fh.close()
-    else:
-        sys.stdout.write(file_data)
+        if source_file is not None:
+            source_fh.close()
 
-if len(sys.argv) < 3:
-    print_usage()
-    exit(1)
+            with open(source_file, "w") as source_fh:
+                source_fh.write(file_data)
+        else:
+            sys.stdout.write(file_data)
 
-search_str = sys.argv[1]
-replace_str = sys.argv[2]
-source_file = None
-if len(sys.argv) == 4:
-    source_file = sys.argv[3]
-elif len(sys.argv) > 4:
-    print_usage()
-    exit(1)
+    except IOError as e:
+        print("Error: {0}".format(e))
+        sys.exit(1)
 
-main()
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print_usage()
+        sys.exit(1)
+
+    search_str = sys.argv[1]
+    replace_str = sys.argv[2]
+    source_file = None
+    if len(sys.argv) == 4:
+        source_file = sys.argv[3]
+    elif len(sys.argv) > 4:
+        print_usage()
+        sys.exit(1)
+
+main(search_str, replace_str, source_file)
