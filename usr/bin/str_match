@@ -3,6 +3,10 @@
 from pathlib import Path
 import sys
 
+# Allow terminating with Ctrl+C even when reading a file
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 #print "No matches found.\n";
 #print "Match found at offset $pos.\n";
 

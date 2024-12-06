@@ -3,6 +3,10 @@
 from pathlib import Path
 import sys
 
+# Allow terminating with Ctrl+C even when reading a file
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 def print_usage():
     print("Usage: str_replace Search Replace File")
     print("Or: STDIN str_replace Search Replace")
@@ -16,7 +20,7 @@ def main(search_str, replace_str, source_file=None):
 
     try:
         if source_file is not None:
-            source_fh = open(source_file, "r")
+            source_fh = open(source_file, "r+")
         else:
             source_fh = sys.stdin
 
@@ -24,10 +28,10 @@ def main(search_str, replace_str, source_file=None):
         file_data = file_data.replace(search_str, replace_str)
 
         if source_file is not None:
+            source_fh.seek(0)
+            source_fh.truncate()
+            source_fh.write(file_data)
             source_fh.close()
-
-            with open(source_file, "w") as source_fh:
-                source_fh.write(file_data)
         else:
             sys.stdout.write(file_data)
 
