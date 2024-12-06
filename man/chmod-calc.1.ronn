@@ -1,0 +1,63 @@
+chmod-calc(1) -- Comprehensive File and Directory Inspection Tool
+=================================================================
+
+<!--
+# Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+
+`chmod-calc <file_path>`
+
+## DESCRIPTION
+
+`chmod-calc` is a comprehensive file and directory inspection tool that consolidates various Linux command functionalities into a single utility. It displays detailed information about a file or directory, including:
+
+- Basic permissions (Owner, Group, Public)
+- Octal representation of permissions
+- File type (Regular File, Directory, Symlink, Hardlink, etc.)
+- Owner and group information
+- Access Control Lists (ACLs) status
+- Extended attributes (xattr) status
+- Linux capabilities (getcap)
+- Immutable attribute (chattr +i)
+- File size and link count
+- Special attributes (SUID, SGID, Sticky Bit)
+- Hidden file detection
+
+## RETURN VALUES
+* `0` Successfully retrieved and displayed file information.
+* `1` File not found or an error occurred.
+
+## EXAMPLE
+
+`chmod-calc ./example_file`
+
+```
+Permissions for: ./example_file
+Type: Regular File
+Owner: user   Group: user
+Octal Permissions: 644
+File Size: 123 bytes
+Link Count: 1
+Hidden File: No
+ACLs: none
+Extended Attributes: none
+Capabilities: None
+Immutable (chattr +i): No
+
+Category   Read   Write   Execute
+Owner      Yes    Yes     No
+Group      Yes    No      No
+Public     Yes    No      No
+
+Special Attributes:
+SUID: Not Set
+SGID: Not Set
+Sticky Bit: Not Set
+```
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).

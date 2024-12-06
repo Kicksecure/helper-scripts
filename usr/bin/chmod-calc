@@ -1,0 +1,182 @@
+#!/usr/bin/python3 -u
+
+## Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+"""
+chmod-calc
+
+A comprehensive file and directory inspection tool that displays:
+- Basic permissions (Owner, Group, Public)
+- Octal representation of permissions
+- File type (Regular File, Directory, Symlink, Hardlink, etc.)
+- Owner and group information
+- Access Control Lists (ACLs) status
+- Extended attributes (xattr) status
+- Linux capabilities (getcap)
+- Immutable attribute (chattr +i)
+- File size and link count
+- Special attributes (SUID, SGID, Sticky Bit)
+- Hidden file detection
+
+Combines the functionality of various Linux commands (ls, stat, getfacl, getfattr, getcap, lsattr) into a single, user-friendly script for detailed file inspection.
+
+Usage:
+    chmod-calc <file_path>
+"""
+
+import os
+import stat
+import argparse
+import pwd
+import grp
+import subprocess
+
+def get_permission_bits(mode, mask):
+    """Extract permission bits for read, write, execute."""
+    return {
+        "Read": "Yes" if mode & mask[0] else "No",
+        "Write": "Yes" if mode & mask[1] else "No",
+        "Execute": "Yes" if mode & mask[2] else "No",
+    }
+
+def check_special_bits(mode):
+    """Check special bits (SUID, SGID, Sticky Bit)."""
+    return {
+        "SUID": "Set" if mode & stat.S_ISUID else "Not Set",
+        "SGID": "Set" if mode & stat.S_ISGID else "Not Set",
+        "Sticky Bit": "Set" if mode & stat.S_ISVTX else "Not Set",
+    }
+
+def calculate_octal(mode):
+    """Calculate octal permissions."""
+    owner = ((mode & stat.S_IRWXU) >> 6)
+    group = ((mode & stat.S_IRWXG) >> 3)
+    public = (mode & stat.S_IRWXO)
+    return f"{owner}{group}{public}"
+
+def detect_file_type(file_path):
+    """Detect if the path is a folder, file, symlink, or hardlink."""
+    if os.path.islink(file_path):
+        return "Symlink"
+    elif os.path.isdir(file_path):
+        return "Directory"
+    elif os.path.isfile(file_path):
+        if os.stat(file_path).st_nlink > 1:
+            return "Hardlink"
+        return "Regular File"
+    else:
+        return "Other"
+
+def has_acl(file_path):
+    """Check if the file has Access Control Lists (ACLs)."""
+    try:
+        result = subprocess.run(["getfacl", file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        lines = result.stdout.splitlines()
+        # Look for additional ACL entries beyond default (user::, group::, other::)
+        default_acl = {"user::", "group::", "other::"}
+        for line in lines:
+            if any(line.startswith(entry) for entry in default_acl):
+                continue
+            if ":" in line and not line.startswith("#"):
+                return "yes"
+        return "none"
+    except FileNotFoundError:
+        return "none"
+
+def has_xattr(file_path):
+    """Check if the file has extended attributes (xattr)."""
+    try:
+        result = subprocess.run(["getfattr", "-d", file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return "yes" if result.returncode == 0 and len(result.stdout.splitlines()) > 1 else "none"
+    except FileNotFoundError:
+        return "none"
+
+def get_capabilities(file_path):
+    """Check if the file has Linux capabilities."""
+    try:
+        result = subprocess.run(["getcap", file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return result.stdout.strip() if result.stdout else "None"
+    except FileNotFoundError:
+        return "None"
+
+def has_immutable(file_path):
+    """Check if the file has the immutable bit set (chattr +i)."""
+    try:
+        result = subprocess.run(["lsattr", file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return "Yes" if "-i-" in result.stdout else "No"
+    except FileNotFoundError:
+        return "No"
+
+def display_permissions(file_path):
+    """Display file permissions, type, and attributes."""
+    try:
+        file_stats = os.lstat(file_path)
+
+        # Detect file type
+        file_type = detect_file_type(file_path)
+
+        # Extract owner and group
+        owner = pwd.getpwuid(file_stats.st_uid).pw_name
+        group = grp.getgrgid(file_stats.st_gid).gr_name
+
+        # Extract permissions for Owner, Group, Public
+        permissions = {
+            "Owner": get_permission_bits(file_stats.st_mode, (stat.S_IRUSR, stat.S_IWUSR, stat.S_IXUSR)),
+            "Group": get_permission_bits(file_stats.st_mode, (stat.S_IRGRP, stat.S_IWGRP, stat.S_IXGRP)),
+            "Public": get_permission_bits(file_stats.st_mode, (stat.S_IROTH, stat.S_IWOTH, stat.S_IXOTH)),
+        }
+
+        # Extract special bits
+        special_bits = check_special_bits(file_stats.st_mode)
+
+        # Calculate octal permissions
+        octal_perms = calculate_octal(file_stats.st_mode)
+
+        # Check additional attributes
+        acl_status = has_acl(file_path)
+        xattr_status = has_xattr(file_path)
+        capabilities = get_capabilities(file_path)
+        immutable_status = has_immutable(file_path)
+
+        # File size and link count
+        file_size = file_stats.st_size
+        link_count = file_stats.st_nlink
+
+        # Check if file is hidden
+        is_hidden = "Yes" if os.path.basename(file_path).startswith(".") else "No"
+
+        # Display the results
+        print(f"Permissions for: {file_path}")
+        print(f"Type: {file_type}")
+        print(f"Owner: {owner}")
+        print(f"Group: {group}")
+        print(f"Octal Permissions: {octal_perms}")
+        print(f"File Size: {file_size} bytes")
+        print(f"Link Count: {link_count}")
+        print(f"Hidden File: {is_hidden}")
+        print(f"ACLs: {acl_status}")
+        print(f"Extended Attributes: {xattr_status}")
+        print(f"Capabilities: {capabilities}")
+        print(f"Immutable (chattr +i): {immutable_status}\n")
+        print(f"{'Category':<10} {'Read':<6} {'Write':<6} {'Execute':<8}")
+        for category, perms in permissions.items():
+            print(f"{category:<10} {perms['Read']:<6} {perms['Write']:<6} {perms['Execute']:<8}")
+        print("\nSpecial Attributes:")
+        for bit, status in special_bits.items():
+            print(f"{bit}: {status}")
+
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+    except PermissionError:
+        print(f"Error: Permission denied to access '{file_path}'.")
+
+def main():
+    parser = argparse.ArgumentParser(description="chmod calculator to display permissions, type, and attributes of a file.")
+    parser.add_argument("file", help="Path to the file to analyze.")
+    args = parser.parse_args()
+
+    display_permissions(args.file)
+
+if __name__ == "__main__":
+    main()
