@@ -16,10 +16,10 @@ pkg_installed() {
    error_state=$(echo "$dpkg_query_output" | awk '{print $3}')
 
    if [ "$requested_action" = 'install' ]; then
-      true "grub-live $0: INFO: $package_name is installed, ok."
+      true "$0: INFO: $package_name is installed, ok."
       return 0
    fi
 
-   true "grub-live $0: INFO: $package_name is not installed, ok."
+   true "$0: INFO: $package_name is not installed, ok."
    return 1
 }
