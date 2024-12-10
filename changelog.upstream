@@ -1,3 +1,21 @@
+commit f546670ddd11c60a377c8ebc6bb648d8233b518d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 8 07:03:35 2024 -0500
+
+    output
+
+commit 1a8171afb393652d8ecdaeb4cbe7aa4f229e0b39
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Dec 7 04:53:08 2024 -0500
+
+    add package_installed_check.bsh
+
+commit ce4ef9d114c6ba6948a783ff0e310cd31d62d4e2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 10:59:42 2024 +0000
+
+    bumped changelog version
+
 commit 0a6f74f0401f0d36a957cfaffd2376a77d82e4d3
 Merge: d4751cc 6ce9c8b
 Author: Patrick Schleizer <adrelanos@whonix.org>
