@@ -8,7 +8,7 @@ dummy-dependency(8) -- Creates Dummy Replacement Packages
 
 ## SYNOPSIS
 
-`dummy-dependency -y|--yes 'package-name'`
+`dummy-dependency --remove|--purge -y|--yes 'package-name'`
 
 ## DESCRIPTION
 
@@ -25,6 +25,8 @@ This can be used to satisfy dependencies without actually installing the origina
 `sudo dummy-dependency firefox-esr`
 
 `sudo dummy-dependency --yes electrum`
+
+`sudo dummy-dependency --purge --yes user-sysmaint-split`
 
 ## AUTHOR
 
