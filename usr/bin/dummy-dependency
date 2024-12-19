@@ -103,7 +103,7 @@ Description: dummy-package for '${package_to_replace}'
 
    if [ "${remove_option}" = '--purge' ]; then
       echo 'Purging old package configuration files...'
-      apt-get $yes_option purge -- "${package_to_replace}"
+      echo "apt-get $yes_option purge -- ${package_to_replace}"
    fi
 
    cleanup
