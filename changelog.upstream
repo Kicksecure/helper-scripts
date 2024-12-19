@@ -1,3 +1,28 @@
+commit 7d58c4dc94258c93d912a7b05b8580f21558c500
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 00:53:05 2024 -0500
+
+    output
+
+commit 24549daa3321b354923c102a85546efeef0bd92d
+Merge: 43221d4 782696b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 00:51:05 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/dummy-dependency-purge'
+
+commit 782696bded93eeb570d1ac1f1fe0d070339a0bef
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Dec 15 00:08:07 2024 -0600
+
+    Enhance argument parsing, add configuration purge option to dummy-dependency
+
+commit 43221d46af7363c4384c684d8aff3ed841dd1cf1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 10 19:16:16 2024 +0000
+
+    bumped changelog version
+
 commit f546670ddd11c60a377c8ebc6bb648d8233b518d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Dec 8 07:03:35 2024 -0500
