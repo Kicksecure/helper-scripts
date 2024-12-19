@@ -4,7 +4,7 @@
 .SH "NAME"
 \fBdummy\-dependency\fR \- Creates Dummy Replacement Packages
 .SH "SYNOPSIS"
-\fBdummy\-dependency \-y|\-\-yes 'package\-name'\fR
+\fBdummy\-dependency \-\-remove|\-\-purge \-y|\-\-yes 'package\-name'\fR
 .SH "DESCRIPTION"
 Creates a dummy replacement package for the specified Debian package\. This can be used to satisfy dependencies without actually installing the original package\.
 .SH "RETURN VALUES"
@@ -17,5 +17,7 @@ Creates a dummy replacement package for the specified Debian package\. This can 
 \fBsudo dummy\-dependency firefox\-esr\fR
 .P
 \fBsudo dummy\-dependency \-\-yes electrum\fR
+.P
+\fBsudo dummy\-dependency \-\-purge \-\-yes user\-sysmaint\-split\fR
 .SH "AUTHOR"
 This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
