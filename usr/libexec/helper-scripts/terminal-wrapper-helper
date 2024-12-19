@@ -1,0 +1,7 @@
+#!/bin/bash
+
+## Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+"$@"
+sleep infinity

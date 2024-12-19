@@ -6,6 +6,8 @@
 #set -x
 set -e
 
+terminal_wrapper_helper='/usr/libexec/helper-scripts/terminal-wrapper-helper'
+
 if [ -e "/etc/alternatives/x-terminal-emulator" ]; then
    ## Lets see where for example /etc/alternatives/aptitude links to.
    if readlink_result="$(readlink "/etc/alternatives/x-terminal-emulator")" ; then
@@ -59,6 +61,7 @@ if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then
       fi
       terminal_emulator_extra_args+=("--hold")
       terminal_emulator_extra_args+=("--execute")
+      terminal_emulator_extra_args+=("${terminal_wrapper_helper}")
    fi
 fi
 
@@ -75,17 +78,18 @@ if [ "$terminal_emulator_app" = "gnome-terminal" ]; then
       terminal_emulator_extra_args+=("--full-screen")
       terminal_emulator_extra_args+=("--wait")
       terminal_emulator_extra_args+=("--")
+      terminal_emulator_extra_args+=("${terminal_wrapper_helper}")
    fi
 fi
 
 if [ "$terminal_emulator_app" = "xterm" ]; then
-   [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="-e"
+   [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="-e ${terminal_wrapper_helper}"
 fi
 
 if command -v qubesdb-read >/dev/null 2>&1; then
    ## Qubes.
    if [ "$terminal_emulator_app" = "konsole" ]; then
-      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e"
+      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e ${terminal_wrapper_helper}"
    fi
 else
    ## Non-Qubes.
@@ -93,7 +97,7 @@ else
       ## Do not use '--fullscreen' since this starts the window without window
       ## controls (no window close button) which is confusing.
       ## '-e' needs to be the last paramater.
-      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e"
+      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e ${terminal_wrapper_helper}"
    fi
 fi
 
