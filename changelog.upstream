@@ -1,3 +1,54 @@
+commit 968a94ba7d1b437f52e15982b662d83a5308884e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 04:42:39 2024 -0500
+
+    fix apt-get-update for non-English locale
+    
+    https://forums.kicksecure.com/t/systemcheck-reports-warning-debian-package-update-check-result-apt-get-reports-that-packages-can-be-updated-but-system-is-already-fully-upgraded/785
+
+commit 207b0adaf94401d5d9d32b697c37c70439c38588
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 04:18:03 2024 -0500
+
+    genmkfile manpages
+
+commit 5899ea4de084cf0a658c4445d574f278761671ab
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 04:17:48 2024 -0500
+
+    man page
+
+commit 3065f7306eda2ce9ab0fd10c622826e7964dceb3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 02:48:04 2024 -0500
+
+    output
+
+commit d71b97813e4ac61675a4a3f588bcbd6f277770b1
+Merge: 69aaac8 a6cb6af
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 02:45:54 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/terminal-wrapper'
+
+commit 69aaac869c4f22334d0a76a286d91dfa608cf64f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 02:23:55 2024 -0500
+
+    output
+
+commit a6cb6af4cef3cfd92dd11317f594545cd450d640
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Dec 19 01:19:59 2024 -0600
+
+    Avoid weird banners in xfce4-terminal when using terminal-wrapper
+
+commit 4b658e48175851555d568efc2a698a9f23f659fb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 06:57:18 2024 +0000
+
+    bumped changelog version
+
 commit 7d58c4dc94258c93d912a7b05b8580f21558c500
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Dec 19 00:53:05 2024 -0500
