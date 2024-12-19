@@ -19,19 +19,6 @@ show_usage() {
    exit 1
 }
 
-yes_option=""
-if [ "$#" -gt 1 ]; then
-   case "$1" in
-      -y|--yes)
-         yes_option="--yes"
-         shift
-         ;;
-      *)
-         show_usage
-         ;;
-   esac
-fi
-
 cleanup() {
    if [ -n "${TMPDIR_NEW:-}" ] && [ -d "${TMPDIR_NEW}" ]; then
       safe-rm -r -f "${TMPDIR_NEW}"
@@ -114,20 +101,42 @@ Description: dummy-package for '${package_to_replace}'
    fi
    echo 'Dummy package installed.'
 
+   if [ "${remove_option}" = '--purge' ]; then
+      echo 'Purging old package configuration files...'
+      apt-get $yes_option purge -- "${package_to_replace}"
+   fi
+
    cleanup
    trap '' EXIT
    true "$0: INFO: END"
    exit 0
 }
 
-## Main execution
-if [ "$#" -lt '1' ]; then
-   show_usage
-fi
-
 ## Declare global variables
 TMPDIR_OLD=''
 TMPDIR_NEW=''
-package_to_replace="${1:-}"
+package_to_replace=""
+yes_option=""
+remove_option="--remove"
+
+## Main execution
+while [ "$#" -gt 0 ]; do
+   case "$1" in
+      -y|--yes)
+         yes_option="--yes"
+         shift
+         ;;
+      --remove|--purge)
+         remove_option="$1"
+         shift
+         ;;
+      *)
+         package_to_replace="$1"
+         shift
+         ;;
+   esac
+done
+
+[ -z "${package_to_replace}" ] && show_usage
 
 dummy_dependency
