@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 ## Usage:
-## dummy-dependency [-y|--yes] 'package-name'
+## dummy-dependency [--remove|--purge] [-y|--yes] 'package-name'
 
 #set -x
 set -e
@@ -15,7 +15,7 @@ set -o nounset
 true "$0: INFO: START"
 
 show_usage() {
-   echo "Usage: $0 [-y|--yes] 'package-name'" >&2
+   echo "Usage: $0 [--remove|--purge] [-y|--yes] 'package-name'" >&2
    exit 1
 }
 
