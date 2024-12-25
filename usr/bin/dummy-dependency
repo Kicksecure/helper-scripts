@@ -46,9 +46,15 @@ dummy_dependency() {
       exit 1
    fi
 
-   if [ -z "${TMPDIR:-}" ]; then
-      echo 'FATAL ERROR: TMPDIR is unset.' >&2
-      exit 1
+   ## Not actually needed, mktemp can function perfectly well without TMPDIR
+   # if [ -z "${TMPDIR:-}" ]; then
+   #    echo 'FATAL ERROR: TMPDIR is unset.' >&2
+   #    exit 1
+   # fi
+
+   ## Ensure $TMPDIR is set
+   if [ ! -v TMPDIR ]; then
+      TMPDIR=''
    fi
 
    ## ${TMPDIR} is an already existing environment variable.
