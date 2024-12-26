@@ -1,3 +1,22 @@
+commit 883e76ae09323c4051ecd99018332747d29eebbb
+Merge: b0b0eea 8deeb4e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 25 22:13:23 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/sysmaint'
+
+commit 8deeb4ea72262ebe69dbac2848622287f6b6e096
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 24 21:19:56 2024 -0600
+
+    Fix dummy-dependency handling of empty TMPDIR variable
+
+commit b0b0eeafca63d0e72de651b5bbbf46fe78b5d95f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 19 09:43:01 2024 +0000
+
+    bumped changelog version
+
 commit 968a94ba7d1b437f52e15982b662d83a5308884e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Dec 19 04:42:39 2024 -0500
