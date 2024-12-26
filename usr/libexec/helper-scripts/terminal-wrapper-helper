@@ -3,6 +3,11 @@
 ## Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-echo "$@"
+if ! [ "$TERMINAL_WRAPPER_NO_COMMAND_ECHO" = 'true' ]; then
+   echo "$@"
+fi
 "$@"
+if ! [ "$TERMINAL_WRAPPER_NO_FINISH_MSG" = 'true' ]; then
+   echo 'Command exited. You may close this window safely.'
+fi
 sleep infinity
