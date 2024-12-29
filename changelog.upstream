@@ -1,3 +1,22 @@
+commit e136da9ef36bb140f1c050c011a5818ba1ef7289
+Merge: 825eabc 515a294
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 26 06:28:33 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/sysmaint'
+
+commit 515a2947ec6b5a24cd6061de47f799ccc60fe20e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Dec 26 00:35:33 2024 -0600
+
+    Allow finer control of terminal-wrapper output
+
+commit 825eabcaa0e877fbb5aa3f1265f6f314c7f4aaf3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 26 04:11:17 2024 +0000
+
+    bumped changelog version
+
 commit 883e76ae09323c4051ecd99018332747d29eebbb
 Merge: b0b0eea 8deeb4e
 Author: Patrick Schleizer <adrelanos@whonix.org>
