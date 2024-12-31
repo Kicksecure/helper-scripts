@@ -1,3 +1,21 @@
+commit f979cc5a98452deed4764c6dff6b0065884e75c3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 31 13:26:17 2024 -0500
+
+    copyright
+
+commit 097d4b59cd622a4c29ff08dc58928b6c74a5ad69
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 31 12:18:10 2024 -0500
+
+    str_replace: improved error handling file is not UTF-8
+
+commit 3dd94349daffb7ccfb849007e265927dce6d1b4b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 29 12:43:35 2024 +0000
+
+    bumped changelog version
+
 commit e136da9ef36bb140f1c050c011a5818ba1ef7289
 Merge: 825eabc 515a294
 Author: Patrick Schleizer <adrelanos@whonix.org>
