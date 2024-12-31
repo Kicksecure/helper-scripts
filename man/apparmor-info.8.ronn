@@ -2,7 +2,7 @@ apparmor-info(8) -- Shows AppArmor DENIED Log Messages
 =============================================
 
 <!--
-# Copyright (C) 2020 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+# Copyright (C) 2020 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 # See the file COPYING for copying conditions.
 -->
 

@@ -2,7 +2,7 @@ apparmor-watch(8) -- Watch AppArmor DENIED and ALLOWED Log Messages
 =============================================
 
 <!--
-# Copyright (C) 2020 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+# Copyright (C) 2020 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 # See the file COPYING for copying conditions.
 -->
 

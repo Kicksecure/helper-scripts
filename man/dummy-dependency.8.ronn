@@ -2,7 +2,7 @@ dummy-dependency(8) -- Creates Dummy Replacement Packages
 =============================================
 
 <!--
-# Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+# Copyright (C) 2024 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 # See the file COPYING for copying conditions.
 -->
 
