@@ -15,7 +15,7 @@ def main(search_str, replace_str, source_file=None):
     source_fh = None
 
     if source_file is not None and Path(source_file).is_dir():
-        print("Error: '{0}' is a directory, not a file".format(source_file))
+        print("ERROR: '{0}' is a directory, not a file".format(source_file))
         sys.exit(1)
 
     try:
@@ -36,7 +36,11 @@ def main(search_str, replace_str, source_file=None):
             sys.stdout.write(file_data)
 
     except IOError as e:
-        print("Error: {0}".format(e))
+        print("ERROR: {0}".format(e))
+        sys.exit(1)
+
+    except UnicodeDecodeError:
+        print(f"ERROR: File '{source_file}' is not valid UTF-8.")
         sys.exit(1)
 
 if __name__ == "__main__":
