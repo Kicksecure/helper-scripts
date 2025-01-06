@@ -1,0 +1,22 @@
+#!/usr/bin/python3 -u
+
+import os
+import stat
+
+stat_list=[ '/bin', '/boot', '/etc', '/home', '/lib', '/lib64', '/media', '/mnt', '/opt', '/root', '/sbin', '/srv', '/tmp', '/usr', '/var', '/initrd.img', '/vmlinuz' ]
+
+output_file='/root/statall'
+idx=0
+with open(output_file, "w") as f:
+    while idx < len(stat_list):
+        item = stat_list[idx]
+        try:
+            statrslt = os.stat(item)
+            print("{} |-| {} |-| {} |-| {}".format(item, statrslt[stat.ST_UID], statrslt[stat.ST_GID], stat.filemode(statrslt[stat.ST_MODE])), file=f)
+            if os.path.isdir(item) and not os.path.islink(item):
+                subitems=os.listdir(item)
+                for subitem in subitems:
+                    stat_list.append(item + '/' + subitem)
+        except:
+            pass
+        idx += 1
