@@ -22,6 +22,9 @@ Provides the ld-system-preload-disable wrapper to disable /etc/ld.so.preload
 per application via bubblewrap. Useful if hardened_malloc is being globally
 preloaded and needs to be disabled for some applications.
 
+Provides the dummy-dependency script for quickly creating and installing
+dummy packages for working around package dependencies.
+
 ## How to install `helper-scripts` using apt-get ##
 
 1\. Download the APT Signing Key.
