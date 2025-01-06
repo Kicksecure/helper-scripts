@@ -1,3 +1,35 @@
+commit 2d42dd67b66b92c0cdb99672210dea01524fd34b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 6 07:54:14 2025 -0500
+
+    simplificaiton
+
+commit 4d41bfdefd7fc933bc7bd39ee6ce98457dd5d69e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 6 07:45:49 2025 -0500
+
+    log errors
+
+commit 1cbf99e69d52e5962582130f37776b253d104990
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 6 07:38:15 2025 -0500
+
+    write to stdout
+
+commit 5764a2cb3ce7b4b37050798d890646df0bf999f2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 6 07:36:08 2025 -0500
+
+    initial import from
+    
+    https://github.com/Kicksecure/security-misc/pull/293
+
+commit 2a5aa2d5aac7ff6493d863b90231b3aa992ad837
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 31 18:34:18 2024 +0000
+
+    bumped changelog version
+
 commit f979cc5a98452deed4764c6dff6b0065884e75c3
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Dec 31 13:26:17 2024 -0500
