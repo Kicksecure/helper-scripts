@@ -9,7 +9,7 @@ import sys
 logging.basicConfig(
     stream=sys.stderr,
     level=logging.ERROR,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    format='%(message)s'
 )
 
 stat_list = [
