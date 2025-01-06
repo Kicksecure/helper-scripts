@@ -2,6 +2,15 @@
 
 import os
 import stat
+import logging
+import sys
+
+# Configure logging to output to stderr
+logging.basicConfig(
+    stream=sys.stderr,
+    level=logging.ERROR,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 stat_list = [
     '/bin', '/boot', '/etc', '/home', '/lib', '/lib64', '/media',
@@ -24,6 +33,6 @@ while idx < len(stat_list):
             subitems = os.listdir(item)
             for subitem in subitems:
                 stat_list.append(item + '/' + subitem)
-    except:
-        pass
+    except Exception as e:
+        logging.error("Error processing item %s: %s", item, e)
     idx += 1
