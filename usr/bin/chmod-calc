@@ -18,6 +18,8 @@ A comprehensive file and directory inspection tool that displays:
 - File size and link count
 - Special attributes (SUID, SGID, Sticky Bit)
 - Hidden file detection
+- Parent folder symlink detection
+- Symlink resolution
 
 Combines the functionality of various Linux commands (ls, stat, getfacl, getfattr, getcap, lsattr) into a single, user-friendly script for detailed file inspection.
 
@@ -92,6 +94,38 @@ def has_xattr(file_path):
     except FileNotFoundError:
         return "none"
 
+def resolve_symlink(file_path):
+    """Resolve the target of a symlink."""
+    try:
+        if os.path.islink(file_path):
+            target = os.readlink(file_path)
+            real_target = os.path.realpath(file_path)
+            return (
+                f"yes, points to: '{target}'\n"
+                f"Real Path: '{real_target}'"
+            )
+        return "No"
+    except OSError as e:
+        return f"Error resolving symlink: {e}"
+
+def detect_underlying_symlink_folder(file_path):
+    """Check if the file resides in a symlinked folder and resolve it."""
+    parent_path = os.path.dirname(file_path)
+    parts = parent_path.split(os.sep)
+    current_path = os.sep
+    for part in parts:
+        if not part:
+            continue
+        current_path = os.path.join(current_path, part)
+        if os.path.islink(current_path):
+            real_path = os.path.realpath(current_path) 
+            return (
+                f"Yes\n"
+                f"Parent Folder Symlink Path: '{current_path}'\n"
+                f"Parent Folder Real Path: '{real_path}'"
+            )
+    return "No"
+
 def get_capabilities(file_path):
     """Check if the file has Linux capabilities."""
     try:
@@ -146,8 +180,12 @@ def display_permissions(file_path):
         # Check if file is hidden
         is_hidden = "Yes" if os.path.basename(file_path).startswith(".") else "No"
 
+        # Check symlink details
+        symlink_info = resolve_symlink(file_path)
+        parent_symlink_info = detect_underlying_symlink_folder(file_path)
+
         # Display the results
-        print(f"Permissions for: {file_path}")
+        print(f"Permissions for: '{file_path}'")
         print(f"Type: {file_type}")
         print(f"Owner: {owner}")
         print(f"Group: {group}")
@@ -159,6 +197,8 @@ def display_permissions(file_path):
         print(f"Extended Attributes: {xattr_status}")
         print(f"Capabilities: {capabilities}")
         print(f"Immutable (chattr +i): {immutable_status}\n")
+        print(f"Symlink: {symlink_info}\n")
+        print(f"Parent Folder Symlink: {parent_symlink_info}\n")
         print(f"{'Category':<10} {'Read':<6} {'Write':<6} {'Execute':<8}")
         for category, perms in permissions.items():
             print(f"{category:<10} {perms['Read']:<6} {perms['Write']:<6} {perms['Execute']:<8}")
