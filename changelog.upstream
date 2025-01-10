@@ -1,3 +1,15 @@
+commit 94185d5b6aa1c16d313a4ef6395afa0b37353e9d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 9 09:28:49 2025 -0500
+
+    chmod-calc: add parent folder symlink detection and symlink resolution features
+
+commit 338e5cd342b3e0f7574d8c3af9a199dc4d235a91
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 6 13:12:58 2025 +0000
+
+    bumped changelog version
+
 commit ee459b1eda6c8998ca67fc8e18fc7cb348f6fce8
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Jan 6 08:11:01 2025 -0500
