@@ -5,6 +5,8 @@ source /usr/libexec/helper-scripts/log_run_die.sh
 
 ## Wrapper that supports su, sudo, doas
 root_cmd(){
+  local cmdarr
+
   test -z "${1:-}" && die 1 "${underline}root_cmd function:${nounderline} Failed to pass arguments to root_cmd."
   if test -z "${sucmd:-}"; then
     get_su_cmd
@@ -19,7 +21,15 @@ root_cmd(){
       log_run "$root_cmd_loglevel" su root -s "${cmd}" -- "${@}"
       ;;
     sudo)
-      log_run "$root_cmd_loglevel" sudo -- "${@}"
+      cmdarr=( 'log_run' "$root_cmd_loglevel" 'sudo' )
+      if [ -n "$ROOT_CMD_TARGET_USER" ]; then
+        cmdarr+=( '-u' "$ROOT_CMD_TARGET_USER" );
+      fi
+      if [ -n "$ROOT_CMD_TARGET_DIR" ]; then
+        cmdarr+=( '-D' "$ROOT_CMD_TARGET_DIR" );
+      fi
+      cmdarr+=( '--' "${@}" )
+      "${cmdarr[@]}"
       ;;
     doas)
       log_run "$root_cmd_loglevel" doas -u root -- "${@}"
@@ -32,6 +42,8 @@ root_cmd(){
 
 
 get_su_cmd(){
+  export ROOT_CMD_TARGET_USER=''
+  export ROOT_CMD_TARGET_DIR=''
   while true; do
     has sudo && sucmd=sudo && break
     has doas && sucmd=doas && break
