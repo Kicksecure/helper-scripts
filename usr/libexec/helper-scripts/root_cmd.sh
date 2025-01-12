@@ -42,6 +42,8 @@ root_cmd(){
 
 
 get_su_cmd(){
+  export ROOT_CMD_TARGET_USER=''
+  export ROOT_CMD_TARGET_DIR=''
   while true; do
     has sudo && sucmd=sudo && break
     has doas && sucmd=doas && break
