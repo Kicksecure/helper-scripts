@@ -50,7 +50,7 @@ get_os(){
     *) distro="${os} ${kernel}";;
   esac
 
-  ## Debian testing /etc/os-release does not contain VERSION_ID.
+  ## Debian 'testing' /etc/os-release does not contain VERSION_ID.
   if echo "${distro}" | grep --quiet "/sid" ; then
     debian_testing_or_unstable_detected=1
   fi
@@ -71,21 +71,21 @@ get_os(){
   log notice "Distribution/Derivative version detected: '${distro_version}' / '${distro_derivative_version}'"
 
   if [ "$debian_testing_or_unstable_detected" = "1" ]; then
-    log notice "Debian testing or unstable detection: 'success'"
+    log notice "Debian 'testing' or 'unstable' detection: 'success'"
     if test "${oracle_repo}" = "1"; then
-      log error "You are attempting to use '--oracle-repo' on Debian testing. This is impossible."
+      log error "You are attempting to use '--oracle-repo' on Debian 'testing' or 'unstable'. This is impossible."
       if test "${ci}" = "1"; then
-        die 0 "${underline}Distribution Test Result:${nounderline} Oracle doesn't provide a Debian testing or unstable repository. Skipped on CI to avoid breaking the CI testing."
+        die 0 "${underline}Distribution Test Result:${nounderline} Oracle doesn't provide a Debian 'testing' or 'unstable' repository. Skipped on CI to avoid breaking the CI 'testing' or 'unstable'."
       else
-        die 101 "${underline}Distribution Test Result:${nounderline} Oracle doesn't provide a Debian testing or unstable repository."
+        die 101 "${underline}Distribution Test Result:${nounderline} Oracle doesn't provide a Debian 'testing' or 'unstable' repository."
       fi
     fi
-    log info "Not attempting to use '--oracle-repo' on Debian testing, good."
-    ## In Debian testing distro_version was previously observed as 'n/a' or empty, because
+    log info "Not attempting to use '--oracle-repo' on Debian 'testing' or 'unstable', good."
+    ## In Debian 'testing' distro_version was previously observed as 'n/a' or empty, because
     ## Debian testing /etc/os-release does not contain VERSION_ID.
     return 0
   fi
-  log info "Debian testing or unstable detection: 'not detected'"
+  log info "Debian 'testing' or 'unstable' detection: 'not detected'"
 
   ## This at last so the user can hopefully post his system info from the
   ## logs before the error below.
