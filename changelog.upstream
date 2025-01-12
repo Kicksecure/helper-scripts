@@ -1,3 +1,40 @@
+commit 039a65058b11f25279314e816079e4478eacce93
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jan 12 09:47:41 2025 -0500
+
+    output
+
+commit ec930ae08850c696f3e1153fe5de7dc625a1564b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jan 12 08:51:33 2025 -0500
+
+    use long options
+
+commit 2ccdb992921a47348426db7005a5ad1ea0db4997
+Merge: 6a39165 eea78f4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jan 12 08:49:23 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/root-cmd-improve'
+
+commit eea78f44559d23098dd5f6cd0a899969bb20affb
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Jan 11 21:37:26 2025 -0600
+
+    Fix environment variable handling in root_cmd.sh
+
+commit 3a1ef51f8a0e1495368905dad1eb52ae3823ea06
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jan 10 17:06:08 2025 -0600
+
+    Added sudo command customization options to root_cmd.sh
+
+commit 6a391652606e64598d13d897f3cf5b02fda25c50
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 10 15:33:56 2025 +0000
+
+    bumped changelog version
+
 commit 94185d5b6aa1c16d313a4ef6395afa0b37353e9d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 9 09:28:49 2025 -0500
