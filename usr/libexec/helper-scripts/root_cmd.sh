@@ -23,10 +23,10 @@ root_cmd(){
     sudo)
       cmdarr=( 'log_run' "$root_cmd_loglevel" 'sudo' )
       if [ -n "$ROOT_CMD_TARGET_USER" ]; then
-        cmdarr+=( '-u' "$ROOT_CMD_TARGET_USER" );
+        cmdarr+=( '--user' "$ROOT_CMD_TARGET_USER" );
       fi
       if [ -n "$ROOT_CMD_TARGET_DIR" ]; then
-        cmdarr+=( '-D' "$ROOT_CMD_TARGET_DIR" );
+        cmdarr+=( '--chdir' "$ROOT_CMD_TARGET_DIR" );
       fi
       cmdarr+=( '--' "${@}" )
       "${cmdarr[@]}"
