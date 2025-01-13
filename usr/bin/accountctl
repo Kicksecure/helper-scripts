@@ -1,0 +1,83 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -eu
+
+source /usr/libexec/helper-scripts/accountctl.sh
+
+usage(){
+  printf '%s\n' "Usage: ${0##*/} [USER|GROUP] CMD [ARGS]
+
+User state commands:
+  lock-pass                 Lock password by prefixing it with '!'
+  unlock-pass               Unlock password by removing the prefix '!'
+  disable-pass              Disable password with '*'
+  enable-pass               Enable password removing '*'
+
+User print commands:
+  get-pass                  Print password
+  get-clean-pass [PREFIX]   Print password without prefix, default: '!*'
+
+User query commands:
+  is-user                   Check if user exists or error out
+  is-pass-empty             Check if password is empty or error out
+  is-pass-locked            Check if password is locked or error out
+  is-pass-disabled          Check if password is disabled or error out
+
+Group query commands:
+  is-group                  Check if group exists or error out
+
+User and Group print commands:
+  get-entry DB FIELD        Print field per database
+    passwd
+      [pass|uid|gid|comment|home|shell]
+    shadow
+      [pass|last-pass-change|min-pass-age|
+       max-pass-age|warn-pass-period|
+       lock-pass-period|expiration-date]
+    group
+      [pass|gid|members]
+    gshadow
+      [pass|admins|members]
+
+Examples:
+  ${0##*/} user is-user
+  ${0##*/} user get-clean-pass '\!\*'
+  ${0##*/} user get-entry passwd shell
+  ${0##*/} _ssh is-group
+  ${0##*/} _ssh get-entry group members" >&2
+
+  exit "${1:-1}"
+}
+
+main(){
+  local user cmd symbol db field
+  user="${1-}"
+  cmd="${2-}"
+
+  case "${cmd}" in
+    lock-pass|unlock-pass|disable-pass|enable-pass|get-pass| \
+    is-user|is-pass-empty|is-pass-locked|is-pass-disabled|is-group)
+      ;;
+    get-clean-pass) symbol="${3-}";;
+    get-entry) db="${3-}"; field="${4-}";;
+    -h|--?help|help) usage 0;;
+    *) usage 1;;
+  esac
+  cmd="${cmd//-/_}"
+
+  if test -z "${user}"; then
+    usage 1
+  fi
+
+  case "${cmd}" in
+    get_clean_pass) "${cmd}" "${user}" "${symbol}";;
+    get_entry) "${cmd}" "${user}" "${db}" "${field}";;
+    *) "${cmd}" "${user}";;
+  esac
+}
+
+main "${@}"
