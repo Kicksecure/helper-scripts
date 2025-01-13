@@ -12,4 +12,5 @@ check_tor_bootstrap_helper_variables
 
 echo "\
 GATEWAY_IP=\"$GATEWAY_IP\"
+GATEWAY_IP6=\"$GATEWAY_IP6\"
 gateway_control_port=\"$gateway_control_port\""
