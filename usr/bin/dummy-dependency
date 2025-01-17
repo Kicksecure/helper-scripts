@@ -35,7 +35,7 @@ root_check() {
 trap cleanup EXIT
 
 dummy_dependency() {
-   local equivs_file deb_file equivs_content equivs_build_log
+   local equivs_file deb_file_original deb_file_copy equivs_content equivs_build_log
 
    root_check
 
@@ -68,7 +68,8 @@ dummy_dependency() {
 
    equivs_file="${TMPDIR_NEW}/${package_to_replace}.equivs"
    ## equivs-build uses ${TMPDIR} for builds
-   deb_file="${TMPDIR_NEW}/dummy-${package_to_replace}_99_all.deb"
+   deb_file_original="${TMPDIR_NEW}/dummy-${package_to_replace}_99_all.deb"
+   deb_file_copy="/var/lib/dummy-dependency/dummy-${package_to_replace}_99_all.deb"
 
    echo "Creating dummy replacement for '${package_to_replace}'..."
 
@@ -96,12 +97,17 @@ Description: dummy-package for '${package_to_replace}'
 
    echo 'Dummy package created. Installing...'
 
-   test -r "${deb_file}"
+   test -r "${deb_file_original}"
 
-   #lintian --pedantic --info --display-info "${deb_file}"
+   mkdir --parents /var/lib/dummy-dependency
+   ## Avoid APT warning:
+   ## N: Download is performed unsandboxed as root as file '/tmp/user/0/tmp.8O7ET4e1Bx/dummy-user-sysmaint-split_99_all.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
+   cp "${deb_file_original}" "${deb_file_copy}"
 
-   echo "apt-get $yes_option install -- ${deb_file}"
-   if ! apt-get $yes_option install -- "${deb_file}" ; then
+   #lintian --pedantic --info --display-info "${deb_file_copy}"
+
+   echo "apt-get $yes_option install -- ${deb_file_copy}"
+   if ! apt-get $yes_option install -- "${deb_file_copy}" ; then
       echo 'FATAL ERROR: apt-get install command failed!' >&2
       exit 1
    fi
