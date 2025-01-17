@@ -1,3 +1,26 @@
+commit 57df25176df90d6ddc6202f35772e3e3403f0b86
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 17 09:27:13 2025 -0500
+
+    `dummy-dependency`: add `--cached` option
+
+commit ce493cf059b77923320b1f333a20c694fd447c2e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 17 08:52:46 2025 -0500
+
+    `dummy-dependency`: avoid APT warning
+    
+    > N: Download is performed unsandboxed as root as file '/tmp/user/0/tmp.8O7ET4e1Bx/dummy-user-sysmaint-split_99_all.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
+    
+    store dummy-dependency created `.deb`s in folder `/var/lib/dummy-dependency` instead,
+    so these are readable by user `_apt`.
+
+commit 9251825cccc1f051c2b5aa424c901eeebc64a963
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jan 12 14:57:18 2025 +0000
+
+    bumped changelog version
+
 commit 039a65058b11f25279314e816079e4478eacce93
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jan 12 09:47:41 2025 -0500
