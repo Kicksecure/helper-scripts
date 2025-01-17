@@ -39,6 +39,37 @@ dummy_dependency() {
 
    root_check
 
+   create_dummy_dependency() {
+      equivs_content="Package: dummy-${package_to_replace}
+Version: 99:99
+Maintainer: dummy-dependency script <dummy-dependency@dummy-dependency.invalid>
+Breaks: ${package_to_replace}
+Replaces: ${package_to_replace}
+Provides: ${package_to_replace}
+Architecture: all
+Description: dummy-package for '${package_to_replace}'
+ A metapackage that replaces '${package_to_replace}'."
+
+      echo "${equivs_content}" | sponge -- "${equivs_file}"
+
+      if ! equivs_build_log="$(equivs-build -- "${equivs_file}" 2>&1)" ; then
+         echo "FATAL ERROR: 'equivs-build -- \"${equivs_file}\"' command failed!" >&2
+         echo 'Logs:' >&2
+         echo "${equivs_build_log}" >&2
+         exit 1
+      fi
+
+      ## Sanity test.
+      test -r "${deb_file_original}"
+
+      mkdir --parents /var/lib/dummy-dependency
+      ## Avoid APT warning:
+      ## N: Download is performed unsandboxed as root as file '/tmp/user/0/tmp.8O7ET4e1Bx/dummy-user-sysmaint-split_99_all.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
+      cp --verbose "${deb_file_original}" "${deb_file_copy}"
+
+      echo 'Dummy package created.'
+   }
+
    # Validate package name, see
    # https://www.debian.org/doc/debian-policy/ch-controlfields.html#source
    if ! grep --quiet '^[a-z0-9]\+[a-z0-9+-.]\+$' -- <<< "${package_to_replace}" ; then
@@ -71,38 +102,26 @@ dummy_dependency() {
    deb_file_original="${TMPDIR_NEW}/dummy-${package_to_replace}_99_all.deb"
    deb_file_copy="/var/lib/dummy-dependency/dummy-${package_to_replace}_99_all.deb"
 
-   echo "Creating dummy replacement for '${package_to_replace}'..."
-
-   equivs_content="Package: dummy-${package_to_replace}
-Version: 99:99
-Maintainer: dummy-dependency script <dummy-dependency@dummy-dependency.invalid>
-Breaks: ${package_to_replace}
-Replaces: ${package_to_replace}
-Provides: ${package_to_replace}
-Architecture: all
-Description: dummy-package for '${package_to_replace}'
- A metapackage that replaces '${package_to_replace}'."
-
-   echo "${equivs_content}" | sponge -- "${equivs_file}"
-
-   if ! equivs_build_log="$(equivs-build -- "${equivs_file}" 2>&1)" ; then
-      echo "FATAL ERROR: 'equivs-build -- \"${equivs_file}\"' command failed!" >&2
-      echo 'Logs:' >&2
-      echo "${equivs_build_log}" >&2
-      exit 1
+   if [ "${cached_option}" = "true" ]; then
+      echo "'--cached' option detected: yes"
+      if test -e "${deb_file_copy}" ; then
+         echo "Using already existing cached dummy replacement package for '${package_to_replace}'..."
+      else
+         echo "Cached dummy replacement package for '${package_to_replace}' does not exist yet, creating..."
+         create_dummy_dependency
+      fi
+   else
+      echo "Creating dummy replacement package for '${package_to_replace}'..."
+      create_dummy_dependency
    fi
 
    ## Reset to previously set TMPDIR.
    TMPDIR="${TMPDIR_OLD}"
 
-   echo 'Dummy package created. Installing...'
+   ## Sanity test.
+   test -r "${deb_file_copy}"
 
-   test -r "${deb_file_original}"
-
-   mkdir --parents /var/lib/dummy-dependency
-   ## Avoid APT warning:
-   ## N: Download is performed unsandboxed as root as file '/tmp/user/0/tmp.8O7ET4e1Bx/dummy-user-sysmaint-split_99_all.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
-   cp "${deb_file_original}" "${deb_file_copy}"
+   echo 'Installing dummy package...'
 
    #lintian --pedantic --info --display-info "${deb_file_copy}"
 
@@ -130,6 +149,7 @@ TMPDIR_NEW=''
 package_to_replace=""
 yes_option=""
 remove_option="--remove"
+cached_option=""
 
 ## Main execution
 while [ "$#" -gt 0 ]; do
@@ -140,6 +160,10 @@ while [ "$#" -gt 0 ]; do
          ;;
       --remove|--purge)
          remove_option="$1"
+         shift
+         ;;
+      --cached)
+         cached_option="true"
          shift
          ;;
       *)
