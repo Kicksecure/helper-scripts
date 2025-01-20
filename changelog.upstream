@@ -1,3 +1,22 @@
+commit a45e18771e2e0dbfcd85d50505d8989965d1fd5b
+Merge: 4a23994 1e240b3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 20 03:32:05 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/dummy-dependency-qubes'
+
+commit 1e240b3f17d843ff9ccfbe2b4c356fbcb7f88dfc
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jan 19 20:30:05 2025 -0600
+
+    Make dummy-dependency caching work reliably on Qubes OS
+
+commit 4a2399478f4415c13cd618a7cf0c5d0c2a059e94
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 17 14:30:51 2025 +0000
+
+    bumped changelog version
+
 commit 57df25176df90d6ddc6202f35772e3e3403f0b86
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 17 09:27:13 2025 -0500
