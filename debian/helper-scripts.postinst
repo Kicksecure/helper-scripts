@@ -31,6 +31,10 @@ if [ -d /run/systemd/system ] ; then
 	systemd-tmpfiles --create /usr/lib/tmpfiles.d/$DPKG_MAINTSCRIPT_PACKAGE.conf >/dev/null || true
 fi
 
+## Make sure dummy-dependency's cache directory exists so that Qubes bind-dirs
+## works right
+mkdir --parents /var/lib/dummy-dependency
+
 true "INFO: debhelper beginning here."
 
 #DEBHELPER#
