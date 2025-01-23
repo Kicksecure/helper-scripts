@@ -55,13 +55,10 @@ log(){
   ## error logs are the minimum and should always be printed, even if
   ## failing to assign a correct log type
   ## send bugs and error to stdout and stderr
+  log_full="${log_source_script}${log_level_colorized}${log_content}"$'\n'
   case "${log_type}" in
-    bug)
-      printf '%s%b%s\n' "${log_source_script}" "${log_level_colorized}" "${log_content}" >&2
-      return 0
-      ;;
-    error)
-      printf '%s%b%s\n' "${log_source_script}" "${log_level_colorized}" "${log_content}" >&2
+    bug|error)
+      stprint "${log_full}" >&2
       return 0
       ;;
     null)
@@ -75,15 +72,11 @@ log(){
     | grep -q " ${log_type}"
   then
     case "${log_type}" in
-      warn)
-        ## send warning to stdout and stderr
-        printf '%s%b%s\n' "${log_source_script}" "${log_level_colorized}" "${log_content}" >&2
-        ;;
       null)
         true
         ;;
       *)
-        printf '%s%b%s\n' "${log_source_script}" "${log_level_colorized}" "${log_content}" >&2
+        stprint "${log_full}" >&2
         ;;
     esac
   fi

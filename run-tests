@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+git_toplevel="$(git rev-parse --show-toplevel)"
+pyrc="${git_toplevel}/pyproject.toml"
+cd "${git_toplevel}/usr/lib/python3/dist-packages/stprint/"
+python3 -m pytest -o 'python_files=*.py' "${@}"
+# shellcheck disable=SC2046
+pylint --rcfile="${pyrc}" $(find . -type f -name "*.py")
+mypy --config-file="${pyrc}" .
+black --config="${pyrc}" --color --diff --check .

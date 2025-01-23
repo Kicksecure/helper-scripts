@@ -1,0 +1,28 @@
+---
+name: Lint scripts
+on:
+  push:
+    paths:
+      - usr/lib/python3/dist-packages/stprint/
+      - .github/workflows/lint.yml
+      - run-tests
+  pull_request:
+    paths:
+      - usr/lib/python3/dist-packages/stprint/
+      - .github/workflows/lint.yml
+      - run-tests
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install linters
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update --error-on=any
+          sudo apt-get dist-upgrade
+          sudo apt-get install python3-pytest pylint mypy black
+      - name: Run linters
+        working-directory: usr/lib/python3/dist-packages/stprint/
+        run: ../../../../../run-tests
