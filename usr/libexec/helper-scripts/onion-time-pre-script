@@ -13,12 +13,12 @@ set -e errtrace
 
 output_cmd() {
    msg="$@"
-   echo "__ $msg"
+   printf '%s\n' "__ $msg"
 }
 
 error_handler() {
    exit_code="$?"
-   echo "\
+   printf '%s\n' "\
 BASH_COMMAND: $BASH_COMMAND
 exit_code: $exit_code"
 }
@@ -190,7 +190,7 @@ tor_bootstrap_check() {
       output_cmd "Tor reports: $tor_bootstrap_status"
       output_cmd "Tor circuit: $tor_circuit_established_word"
 
-      if echo "$tor_bootstrap_status" | grep -q "REASON=TIMEOUT" ; then
+      if printf '%s' "$tor_bootstrap_status" | grep -q "REASON=TIMEOUT" ; then
          output_cmd "Tor reports: REASON=TIMEOUT"
       fi
    fi
@@ -305,7 +305,7 @@ anondate_use() {
 
 te_pe_tb_check() {
    ## For better look inside sdwdate log viewer.
-   echo ""
+   printf '\n'
 
    output_cmd "### START: ### $0"
 

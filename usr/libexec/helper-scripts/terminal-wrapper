@@ -49,7 +49,7 @@ PPID: $PPID
 $0 was called by: $(ps --no-headers -o command $PPID)" || true
    kdialog --sorry "$error_message" >/dev/null 2>&1 || true
    zenity --error --text "$error_message" >/dev/null 2>&1 || true
-   echo "$error_message" >&2
+   printf '%s\n' "$error_message" >&2
 fi
 
 if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then

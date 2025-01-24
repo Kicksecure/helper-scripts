@@ -19,7 +19,7 @@ if [ "$DEBDEBUG" = "1" ]; then
 fi
 
 ## Remove /usr/lib/torsocks/libtorsocks.so from LD_PRELOAD.
-LD_PRELOAD="$(echo "$LD_PRELOAD" | sed 's/\/usr\/lib\/torsocks\/libtorsocks.so//g')"
+LD_PRELOAD="$(printf '%s' "$LD_PRELOAD" | sed 's|/usr/lib/torsocks/libtorsocks.so||g')"
 
 if [ "$DEBDEBUG" = "1" ]; then
    true "exit code: $?"
