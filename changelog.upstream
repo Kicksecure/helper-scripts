@@ -1,3 +1,40 @@
+commit e59a4daeb62a0946c348c3a83fa2f318c6c6f749
+Merge: f012e1a 170cb24
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 29 07:27:09 2025 -0500
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 170cb24b0387a7d59412ef463c511eb1d8225ed4
+Merge: 08cb583 854a719
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 29 07:07:22 2025 -0500
+
+    Merge pull request #13 from ben-grande/pass-state
+    
+    Add library to manage account state
+
+commit f012e1a29e5e1f47a73ff24c109621b6467abbef
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 28 13:56:01 2025 -0500
+
+    output
+
+commit 854a7191432fbe2ab9c211122b2d96e69cd1e148
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Jan 13 17:06:41 2025 +0100
+
+    Add utility and library to manage accounts
+    
+    Query account state, check password state and query any entry from
+    supported databases.
+
+commit 08cb583e8a55add318cb658d65079cbed261ec3f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 23 16:20:54 2025 +0000
+
+    bumped changelog version
+
 commit 02e73a75ef0ec048c1210ac12363c367067f5a29
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 23 11:10:29 2025 -0500
