@@ -5,8 +5,9 @@ source /usr/libexec/helper-scripts/get_colors.sh
 ## Logging mechanism with easy customization of message format as well as
 ## standardization on how the messages are delivered.
 ## usage: log [info|notice|warn|error] "X occurred."
-## Variable to define outside: log_level
+## Variable to define by calling script: log_level
 log(){
+  : "${log_level:="notice"}"
   ## Avoid clogging output if log() is working alright.
   if test "${xtrace:-}" = "1"; then
     set +o xtrace
@@ -110,7 +111,7 @@ die(){
       true
       ;;
     *)
-      log error "Installer aborting."
+      log error "Aborting."
       ;;
   esac
   exit "${1}"
