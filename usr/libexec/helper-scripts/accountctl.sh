@@ -124,7 +124,7 @@ is_group(){
     return 1
   fi
   group_escaped="$(escape_name "${group}")"
-  if ! grep -q -e "^${group_escaped}:" -- /etc/group >/dev/null 2>&1; then
+  if ! grep --quiet -- "^${group_escaped}:" /etc/group >/dev/null 2>&1; then
     log error "Group does not exist: '${group}'"
     return 1
   fi
@@ -145,7 +145,7 @@ get_pass(){
     pass="$(get_entry "${user}" shadow pass)"
   else
     user_escaped="$(escape_name "${user}")"
-    pass="$(grep -e "^${user_escaped}:" -- /etc/shadow)"
+    pass="$(grep -- "^${user_escaped}:" /etc/shadow)"
     pass="${pass#"${user}:"*}"
     pass="${pass%%":"*}"
   fi
@@ -238,7 +238,7 @@ lock_pass(){
   if is_pass_locked "${user}"; then
     return 0
   fi
-  passwd -ql -- "${user}"
+  passwd --quiet --lock -- "${user}"
 }
 
 
@@ -258,7 +258,7 @@ unlock_pass(){
   fi
   ## The tools "passwd" and "usermod" can't unlock when password is empty.
   pass="$(get_clean_pass "${user}" '!')"
-  chpasswd -c NONE <<< "${user}:${pass}"
+  chpasswd --crypt-method NONE <<< "${user}:${pass}"
 }
 
 
@@ -278,10 +278,10 @@ disable_pass(){
   fi
   pass="$(get_clean_pass "${user}")"
   if is_pass_locked "${user}"; then
-    chpasswd -c NONE <<< "${user}:!*${pass}"
+    chpasswd --crypt-method NONE <<< "${user}:!*${pass}"
     return 0
   fi
-  chpasswd -c NONE <<< "${user}:*${pass}"
+  chpasswd --crypt-method NONE <<< "${user}:*${pass}"
 }
 
 
@@ -301,11 +301,11 @@ enable_pass(){
   fi
   if is_pass_locked "${user}"; then
     pass="$(get_clean_pass "${user}" '!*')"
-    chpasswd -c NONE <<< "${user}:!${pass}"
+    chpasswd --crypt-method NONE <<< "${user}:!${pass}"
     return 0
   fi
   pass="$(get_clean_pass "${user}" '*')"
-  chpasswd -c NONE <<< "${user}:${pass}"
+  chpasswd --crypt-method NONE <<< "${user}:${pass}"
 }
 
 
