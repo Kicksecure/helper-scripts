@@ -34,7 +34,7 @@ draw_progress_bar() {
 
   # Validate input
   if ! [[ "$percent_done" =~ ^[0-9]+$ ]] || [ "$percent_done" -gt 100 ] || [ "$percent_done" -lt 0 ]; then
-      echo "Error: Invalid percentage value '$percent_done'. Must be a number between 0 and 100." >&2
+      printf '%s\n' "Error: Invalid percentage value '$percent_done'. Must be a number between 0 and 100." >&2
       exit 1
   fi
 
