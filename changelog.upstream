@@ -1,3 +1,34 @@
+commit 78ac8e610562d6e4afeeb2fa47e43600aa356b79
+Merge: e9d2584 01de506
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 11:42:10 2025 -0500
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 01de506257dc413720769acf269b68869b122fa2
+Merge: d5f14be 793e297
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 11:25:54 2025 -0500
+
+    Merge pull request #15 from ben-grande/echo-to-printf
+    
+    Use printf instead of echo
+
+commit d5f14be527b4d79200259e2f36edfc51133faf27
+Merge: e9d2584 8d10c9a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 11:21:21 2025 -0500
+
+    Merge pull request #16 from ben-grande/pass-state
+    
+    Use long options for account management
+
+commit e9d2584a99d765c6191912ea9598f4f3c02816e4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 12:56:24 2025 +0000
+
+    bumped changelog version
+
 commit 6127e5c53097a741f93a4a71f8fc805913fe24d4
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 30 07:52:55 2025 -0500
@@ -9,6 +40,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 30 07:44:14 2025 -0500
 
     LANG=C str_replace: no longer requires LANG=C, therefore removed
+
+commit 8d10c9a3eb0232da2d6c44bf580b60e784f08b34
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Wed Jan 29 17:15:50 2025 +0100
+
+    Use long options for account management
 
 commit e36e26475c1d885b1ab22024adce0ce8b368f83a
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -37,6 +74,14 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Jan 28 13:56:01 2025 -0500
 
     output
+
+commit 793e297d0e94869a2b96968709d155fdd0c24428
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Fri Jan 24 21:43:54 2025 +0100
+
+    Use printf instead of echo
+    
+    For: https://github.com/Kicksecure/usability-misc/pull/14
 
 commit 854a7191432fbe2ab9c211122b2d96e69cd1e148
 Author: Ben Grande <ben.grande.b@gmail.com>
