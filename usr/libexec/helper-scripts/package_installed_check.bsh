@@ -11,9 +11,9 @@ pkg_installed() {
    ## install ok half-configured
    ## install ok installed
 
-   requested_action=$(echo "$dpkg_query_output" | awk '{print $1}')
-   status=$(echo "$dpkg_query_output" | awk '{print $2}')
-   error_state=$(echo "$dpkg_query_output" | awk '{print $3}')
+   requested_action=$(printf '%s' "$dpkg_query_output" | awk '{print $1}')
+   status=$(printf '%s' "$dpkg_query_output" | awk '{print $2}')
+   error_state=$(printf '%s' "$dpkg_query_output" | awk '{print $3}')
 
    if [ "$requested_action" = 'install' ]; then
       true "$0: INFO: $package_name is installed, ok."

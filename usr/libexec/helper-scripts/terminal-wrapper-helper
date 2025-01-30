@@ -4,10 +4,10 @@
 ## See the file COPYING for copying conditions.
 
 if ! [ "$TERMINAL_WRAPPER_NO_COMMAND_ECHO" = 'true' ]; then
-   echo "$@"
+   printf '%s\n' "$@"
 fi
 "$@"
 if ! [ "$TERMINAL_WRAPPER_NO_FINISH_MSG" = 'true' ]; then
-   echo 'Command exited. You may close this window safely.'
+   printf '%s\n' 'Command exited. You may close this window safely.'
 fi
 sleep infinity

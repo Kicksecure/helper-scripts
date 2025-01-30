@@ -61,7 +61,7 @@ get_su_cmd(){
   done
 
   log info "Testing root_cmd function..."
-  root_cmd echo "test" ||
+  root_cmd printf '%s\n' "test" ||
     die 1 "${underline}get_su_cmd:${nounderline} Failed to run test command as root."
 
   if test "${ci:-}" = "1"; then

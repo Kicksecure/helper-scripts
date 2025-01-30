@@ -19,8 +19,8 @@ is_addr_port(){
 
   ## Support only IPv4 x.x.x.x:y
   # shellcheck disable=SC2154
-  if [ "$(echo "${addr_port}" | tr -cd "." | wc -c)" != 3 ] ||
-    [ "$(echo "${addr_port}" | tr -cd ":" | wc -c)" != 1 ] ||
+  if [ "$(printf '%s' "${addr_port}" | tr -cd "." | wc -c)" != 3 ] ||
+    [ "$(printf '%s' "${addr_port}" | tr -cd ":" | wc -c)" != 1 ] ||
     [ "${port}" = "${addr}" ]
   then
     die 2 "${underline}is_addr_port test:${nounderline} Invalid address:port assignment: ${addr_port}"
