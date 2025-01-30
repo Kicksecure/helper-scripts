@@ -8,7 +8,7 @@
 ## Exception to run /usr/bin/apt-get-update as user
 ## is defined in /etc/sudoers.d/.
 
-export LANG=C
+export LC_ALL=C
 
 sigterm_trap() {
    if [ "$lastpid" = "" ]; then
