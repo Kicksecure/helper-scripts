@@ -25,12 +25,12 @@ str_replace(1) -- literal search and replace in files (in place) and in STDIN
 
 ## SYNOPSIS
 
-`LANG=C str_replace Search Replace File`
+`str_replace Search Replace File`
 
 ## DESCRIPTION
 Non-Regex text search and replace for linux
 
-LANG=C str_replace will enable you to do literal search and replace in files (in place) and in STDIN
+str_replace will enable you to do literal search and replace in files (in place) and in STDIN
 
 No messing with regular expression anymore. No more `sed` or `awk` or `perl -pie`. This handy script written in perl will replace text exactly as you want, No matter it has the so-called special characters or not. Just like `str_replace` PHP function.
 
@@ -44,7 +44,7 @@ No messing with regular expression anymore. No more `sed` or `awk` or `perl -pie
 ## EXAMPLE
 To read input from STDIN and write to STDOUT.
 
-`STDIN | LANG=C str_replace Search Replace`
+`STDIN | str_replace Search Replace`
 
 ## NOTES
 

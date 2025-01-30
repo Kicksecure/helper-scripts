@@ -4,11 +4,11 @@
 .SH "NAME"
 \fBstr_replace\fR \- literal search and replace in files (in place) and in STDIN
 .SH "SYNOPSIS"
-\fBLANG=C str_replace Search Replace File\fR
+\fBstr_replace Search Replace File\fR
 .SH "DESCRIPTION"
 Non\-Regex text search and replace for linux
 .P
-LANG=C str_replace will enable you to do literal search and replace in files (in place) and in STDIN
+str_replace will enable you to do literal search and replace in files (in place) and in STDIN
 .P
 No messing with regular expression anymore\. No more \fBsed\fR or \fBawk\fR or \fBperl \-pie\fR\. This handy script written in perl will replace text exactly as you want, No matter it has the so\-called special characters or not\. Just like \fBstr_replace\fR PHP function\.
 .SH "RETURN VALUES"
@@ -20,7 +20,7 @@ No messing with regular expression anymore\. No more \fBsed\fR or \fBawk\fR or \
 .SH "EXAMPLE"
 To read input from STDIN and write to STDOUT\.
 .P
-\fBSTDIN | LANG=C str_replace Search Replace\fR
+\fBSTDIN | str_replace Search Replace\fR
 .SH "NOTES"
 .IP "\[ci]" 4
 Search and replace always case\-sensitive
