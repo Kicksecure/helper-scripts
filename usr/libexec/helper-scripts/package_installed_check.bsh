@@ -7,7 +7,7 @@ pkg_installed() {
    package_name="$1"
    ## Cannot use '&>' because it is a bashism.
    dpkg_query_output="$(dpkg-query --show --showformat='${Status}' "$package_name" 2>/dev/null)" || true
-   ## dpkg_query_output Exampels:
+   ## dpkg_query_output Examples:
    ## install ok half-configured
    ## install ok installed
 
