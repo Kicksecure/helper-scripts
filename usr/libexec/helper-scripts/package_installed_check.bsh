@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 pkg_installed() {
    local package_name dpkg_query_output
    local requested_action status error_state
