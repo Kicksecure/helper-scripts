@@ -11,12 +11,12 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 #print "Match found at offset $pos.\n";
 
 def print_usage():
-    print("Usage: str_match Search File")
-    print("Or: STDIN str_match Search")
+    print("str_match: Usage: str_match Search File")
+    print("str_match: Or: STDIN str_match Search")
 
 def main(search_str, source_file=None):
     if source_file is not None and Path(source_file).is_dir():
-        print("Error: '{0}' is a directory, not a file".format(source_file))
+        print("str_match: Error: '{0}' is a directory, not a file".format(source_file))
         sys.exit(1)
 
     try:
@@ -27,22 +27,22 @@ def main(search_str, source_file=None):
             input_data = sys.stdin.read()
 
         if not input_data:
-            print("Error: No input provided.")
+            print("str_match: Error: No input provided.")
             sys.exit(1)
 
         if search_str in input_data:
-            print("Match found.")
+            print("str_match: Match found.")
             sys.exit(0)
         else:
-            print("No matches found.")
+            print("str_match: No matches found.")
             sys.exit(1)
 
     except FileNotFoundError:
-        print(f"Cannot open the file '{source_file}'")
+        print(f"str_match: Cannot open the file '{source_file}'")
         sys.exit(1)
 
     except IOError as e:
-        print(f"Error reading the file: {e}")
+        print(f"str_match: Error reading the file: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":

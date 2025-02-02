@@ -72,8 +72,8 @@ fi
 if [ "$tor_enabled_check_was_sourced" = "false" ]; then
    check_tor_enabled_do
    if [ "$TOR_ENABLED" = "1" ]; then
-      echo "true"
+      printf '%s' "true"
    else
-      echo "false"
+      printf '%s' "false"
    fi
 fi

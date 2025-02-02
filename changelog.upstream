@@ -1,3 +1,151 @@
+commit 66587a68ae3ae1e0e129e24981af515dd5a5a4dc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 31 14:32:13 2025 -0500
+
+    comment
+
+commit 691819f59a9e8c6f622525c64e624f817d56529d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 31 14:31:10 2025 -0500
+
+    copyright
+
+commit cedc672e383fecb12b0f53722f3424c375983b31
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 31 14:27:58 2025 -0500
+
+    comment
+
+commit af88f56e8c15e4bcd9999d06df01184a2a37389f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 16:43:25 2025 +0000
+
+    bumped changelog version
+
+commit 78ac8e610562d6e4afeeb2fa47e43600aa356b79
+Merge: e9d2584 01de506
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 11:42:10 2025 -0500
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 01de506257dc413720769acf269b68869b122fa2
+Merge: d5f14be 793e297
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 11:25:54 2025 -0500
+
+    Merge pull request #15 from ben-grande/echo-to-printf
+    
+    Use printf instead of echo
+
+commit d5f14be527b4d79200259e2f36edfc51133faf27
+Merge: e9d2584 8d10c9a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 11:21:21 2025 -0500
+
+    Merge pull request #16 from ben-grande/pass-state
+    
+    Use long options for account management
+
+commit e9d2584a99d765c6191912ea9598f4f3c02816e4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 12:56:24 2025 +0000
+
+    bumped changelog version
+
+commit 6127e5c53097a741f93a4a71f8fc805913fe24d4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 07:52:55 2025 -0500
+
+    LC_ALL=C
+
+commit 033bcc1f57d860e117667501323fbf987e9b48b3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 07:44:14 2025 -0500
+
+    LANG=C str_replace: no longer requires LANG=C, therefore removed
+
+commit 8d10c9a3eb0232da2d6c44bf580b60e784f08b34
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Wed Jan 29 17:15:50 2025 +0100
+
+    Use long options for account management
+
+commit e36e26475c1d885b1ab22024adce0ce8b368f83a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 29 13:12:54 2025 +0000
+
+    bumped changelog version
+
+commit e59a4daeb62a0946c348c3a83fa2f318c6c6f749
+Merge: f012e1a 170cb24
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 29 07:27:09 2025 -0500
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 170cb24b0387a7d59412ef463c511eb1d8225ed4
+Merge: 08cb583 854a719
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 29 07:07:22 2025 -0500
+
+    Merge pull request #13 from ben-grande/pass-state
+    
+    Add library to manage account state
+
+commit f012e1a29e5e1f47a73ff24c109621b6467abbef
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 28 13:56:01 2025 -0500
+
+    output
+
+commit 793e297d0e94869a2b96968709d155fdd0c24428
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Fri Jan 24 21:43:54 2025 +0100
+
+    Use printf instead of echo
+    
+    For: https://github.com/Kicksecure/usability-misc/pull/14
+
+commit 854a7191432fbe2ab9c211122b2d96e69cd1e148
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Jan 13 17:06:41 2025 +0100
+
+    Add utility and library to manage accounts
+    
+    Query account state, check password state and query any entry from
+    supported databases.
+
+commit 08cb583e8a55add318cb658d65079cbed261ec3f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 23 16:20:54 2025 +0000
+
+    bumped changelog version
+
+commit 02e73a75ef0ec048c1210ac12363c367067f5a29
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 23 11:10:29 2025 -0500
+
+    copyright
+
+commit babe57eb61c32db143e99de9e2dbe2581d022d5f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 23 14:51:34 2025 +0000
+
+    bumped changelog version
+
+commit d450534c9612549350366b3a122db33ffe646b98
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 22 09:52:24 2025 -0500
+
+    output
+
+commit 9b5a189387ebfe3a741d67f0fb2b511dc39a5389
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 20 10:09:15 2025 +0000
+
+    bumped changelog version
+
 commit a45e18771e2e0dbfcd85d50505d8989965d1fd5b
 Merge: 4a23994 1e240b3
 Author: Patrick Schleizer <adrelanos@whonix.org>

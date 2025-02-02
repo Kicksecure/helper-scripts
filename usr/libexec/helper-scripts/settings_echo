@@ -10,6 +10,6 @@ source /usr/libexec/helper-scripts/tor_bootstrap_check.bsh
 
 check_tor_bootstrap_helper_variables
 
-echo "\
+printf '%s\n' "\
 GATEWAY_IP=\"$GATEWAY_IP\"
 gateway_control_port=\"$gateway_control_port\""

@@ -13,7 +13,7 @@ file_name='/usr/sbin/update-initramfs'
 replace='#!/bin/sh -x'
 
 if ! grep --fixed-strings "$replace" "$file_name" ; then
-   LANG=C str_replace "$search" "$replace" "$file_name"
+   str_replace "$search" "$replace" "$file_name"
 fi
 
  search='#!/bin/sh -e'
@@ -21,7 +21,7 @@ replace='#!/bin/sh -ex'
 file_name="/etc/kernel/postinst.d/initramfs-tools"
 
 if ! grep --fixed-strings "$replace" "$file_name" ; then
-   LANG=C str_replace "$search" "$replace" "$file_name"
+   str_replace "$search" "$replace" "$file_name"
 fi
 
 true "$0: end"

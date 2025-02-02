@@ -51,7 +51,7 @@ get_os(){
   esac
 
   ## Debian 'testing' /etc/os-release does not contain VERSION_ID.
-  if echo "${distro}" | grep --quiet "/sid" ; then
+  if printf '%s' "${distro}" | grep --quiet "/sid" ; then
     debian_testing_or_unstable_detected=1
   fi
 
@@ -103,7 +103,7 @@ get_os(){
     ## Also because we check for distribution version to abort if necessary.
   fi
 
-  distro_version_without_dot="$(echo "${distro_version}" | tr -d ".")"
+  distro_version_without_dot="$(printf '%s' "${distro_version}" | tr -d ".")"
   is_integer "${distro_version_without_dot}" ||
      die 101 "${underline}Distribution Check:${nounderline} Distribution version without dot is still not a number: '${distro_version_without_dot}'"
 }

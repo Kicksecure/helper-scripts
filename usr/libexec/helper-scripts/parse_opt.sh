@@ -7,7 +7,7 @@ source /usr/libexec/helper-scripts/log_run_die.sh
 ## Usage of parse_opt.sh
 ##
 ##  usage(){
-##    echo "Usage: ${0##*/} [OPTIONS]
+##    printf '%s\n' "Usage: ${0##*/} [OPTIONS]
 ##    -o, --opt-wo-arg       option without argument
 ##    -w, --opt-with-arg     option with argument
 ##    "

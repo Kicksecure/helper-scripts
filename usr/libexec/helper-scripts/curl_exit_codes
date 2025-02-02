@@ -114,13 +114,13 @@ curl_exit_codes() {
       local number
       IFS="$OIFS"
       number="${line:0:4}"
-      number="${number//[/""}"
-      number="${number//]/""}"
+      number="${number//\[/""}"
+      number="${number//\]/""}"
       number="${number// /""}"
       true "number: $number | line: $line"
       if [ "$number" = "$1" ]; then
          ## exit code found.
-         echo "$line"
+         printf '%s\n' "$line"
          exit 0
       fi
    done
@@ -128,7 +128,7 @@ curl_exit_codes() {
    IFS="$OIFS"
 
    ## exit code not found.
-   echo "[$1] - [Unknown curl exit code, please report this!]"
+   printf '%s\n' "[$1] - [Unknown curl exit code, please report this!]"
    exit 0
 }
 

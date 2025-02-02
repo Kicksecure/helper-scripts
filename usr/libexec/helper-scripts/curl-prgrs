@@ -109,11 +109,11 @@ initialize_variables() {
 
 check_variables() {
   if [ "$CURL_OUT_FILE" = "" ]; then
-    echo "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
+    printf '%s\n' "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
     exit "57"
   fi
   if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
-    echo "$BASH_SOURCE ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
+    printf '%s\n' "$BASH_SOURCE ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
     exit "57"
   fi
 
@@ -129,13 +129,13 @@ shutdown() {
   local signal="$1"
   local last_err="$BASH_COMMAND"
   if [ "$signal" = "err" ]; then
-    echo "$BASH_SOURCE ERROR: Signal $signal received. Exiting." >&4
-    echo "$BASH_SOURCE ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
+    printf '%s\n' "$BASH_SOURCE ERROR: Signal $signal received. Exiting." >&4
+    printf '%s\n' "$BASH_SOURCE ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
     error_exit_code=110
   elif [ "$signal" = "exit" ]; then
     true "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
   else
-    echo "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
+    printf '%s\n' "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
   fi
 
   trap - SIGHUP SIGINT SIGTERM ERR EXIT
@@ -166,11 +166,11 @@ shutdown() {
   if [ "$status" -eq 0 ]; then
     printf "\x1B[0G\x1B[0K" >&4
   else
-    echo >&4
+    printf '\n' >&4
   fi
 
   #stat="$(cat "$statusfile")"
-  #echo "$stat" >&4
+  #printf '%s\n' "$stat" >&4
 
   if [ "$temp_dir_auto_generated" = "true" ]; then
     rm -r -f "$temporary_directory"
@@ -256,7 +256,7 @@ print_progress() {
 curl_exit() {
   curl_exit_code="$1"
   true "$BASH_SOURCE INFO: write $curl_exit_code to $statusfile"
-  echo "$curl_exit_code" > "$statusfile"
+  printf '%s' "$curl_exit_code" > "$statusfile"
   if [ "$curl_exit_code" = "0" ]; then
     return 0
   fi
@@ -297,8 +297,8 @@ curl_download() {
       fi
 
       if [ "$curl_prgrs_print_progress" = "yes" ]; then
-        ## Need to echo to stderr to avoid confusing the stdout output of this command.
-        #echo "$BASH_SOURCE INFO: print_progress '$size_file_downloaded_bytes' '$curl_prgrs_content_length'" >&2
+        ## Need to print to stderr to avoid confusing the stdout output of this command.
+        #printf '%s\n' "$BASH_SOURCE INFO: print_progress '$size_file_downloaded_bytes' '$curl_prgrs_content_length'" >&2
         print_progress "$size_file_downloaded_bytes" "$curl_prgrs_content_length" >&4
       fi
     fi
@@ -352,7 +352,7 @@ remove_argument_for_header_request() {
         args+=("$arg")
     done
 
-    echo "${args[@]}"
+    printf '%s\n' "${args[@]}"
 }
 
 main() {
