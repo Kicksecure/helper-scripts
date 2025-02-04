@@ -5,9 +5,15 @@
 
 leaprun_exe="$(which leaprun)"
 use_leaprun='no'
-if [ -n "${leaprun_exe}" ] \
-   && [ -f "/etc/privleapd/pid" ] \
-   && [ -d "/proc/$(cat /etc/privleapd/pid)" ] \
-   && [ -e "/etc/privleapd/comm/$(id -nu)" ]; then
+
+if [ -z "${leaprun_exe}" ]; then
+   echo "$0: WARNING: leaprun executable cannot be found, cannot use privleap."
+elif ! [ -f "/run/privleapd/pid" ]; then
+   echo "$0: WARNING: Cannot check if privleapd is not running, cannot use privleap."
+elif ! [ -d "/proc/$(cat /run/privleapd/pid)" ]; then
+   echo "$0: WARNING: privleapd is not running, cannot use privleap."
+elif ! [ -e "/run/privleapd/comm/$(id -nu)" ]; then
+   echo "$0: WARNING: Cannot communicate with privleapd, cannot use privleap."
+else
    use_leaprun='yes'
 fi
