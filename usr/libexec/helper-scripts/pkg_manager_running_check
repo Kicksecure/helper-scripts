@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# shellcheck source=./use_leaprun.sh
+source /usr/libexec/helper-scripts/use_leaprun.sh
+
 check_package_manager_running_helper() {
    if [ -f "/run/package_manager_lock" ]; then
       check_apt_get_exit_code="/run/package_manager_lock exists."
@@ -11,7 +14,12 @@ check_package_manager_running_helper() {
 
    local fuser_exit_code
    fuser_exit_code=0
-   sudo --non-interactive fuser /var/lib/dpkg/lock /var/cache/apt/archives/lock &>/dev/null || { fuser_exit_code="$?" ; true; };
+   ## use_leaprun and leaprun_exe come from use_leaprun.bsh
+   if [ "${use_leaprun}" = 'yes' ]; then
+      "${leaprun_exe}" apt-check-lock-files &>/dev/null || { fuser_exit_code="$?" ; true; };
+   else
+      sudo --non-interactive fuser /var/lib/dpkg/lock /var/cache/apt/archives/lock &>/dev/null || { fuser_exit_code="$?" ; true; };
+   fi
 
    ## If a package manager is running:
    ## sudo --non-interactive fuser /var/lib/dpkg/lock /var/cache/apt/archives/lock ; echo $?
