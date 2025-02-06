@@ -1,3 +1,15 @@
+commit a6644656b66ebe2c0bbfcbad5bf3d0e172142304
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Feb 6 16:29:47 2025 -0500
+
+    improve leaprun_useable_test
+
+commit beab994ae8eb849d039cd34759122e7e72aa5b65
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Feb 6 17:48:15 2025 +0000
+
+    bumped changelog version
+
 commit da4b0af13a50911379a413dd6987b39ce7c02bba
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Feb 6 12:48:00 2025 -0500
