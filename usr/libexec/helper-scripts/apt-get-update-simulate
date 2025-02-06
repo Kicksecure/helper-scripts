@@ -6,7 +6,7 @@
 ## Required to run apt-get dist-upgrade --simulate as user (non-root).
 ## Required for systemcheck function check_operating_system.
 ## Exception to run /usr/bin/apt-get-update as user
-## is defined in /etc/sudoers.d/.
+## is defined in /etc/sudoers.d/ and /etc/privleap/conf.d/.
 
 export LC_ALL=C
 

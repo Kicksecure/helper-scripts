@@ -70,15 +70,17 @@ check_tor_bootstrap_helper_run_helper_script() {
 
    check_bootstrap_helper_script_exit_code="0"
 
+   ## TODO: Consider moving the privleap configuration that allows this to work
+   ##   into this package (right now it's part of systemcheck)
    check_bootstrap_helper_script_output=$( \
       timeout \
       --kill-after="$check_tor_bootstrap_helper_kill_after" \
       "$check_tor_bootstrap_helper_timeout_after" \
-         $check_bootstrap_run_as \
-            $check_bootstrap_helper_script \
-            2>&1 \
-            ) \
-            || { check_bootstrap_helper_script_exit_code="$?" ; true; };
+         leaprun \
+            "$check_bootstrap_helper_script" \
+               2>&1 \
+               ) \
+               || { check_bootstrap_helper_script_exit_code="$?" ; true; };
 }
 
 check_tor_bootstrap_helper() {
@@ -87,7 +89,7 @@ check_tor_bootstrap_helper() {
 }
 
 check_tor_bootstrap_status() {
-   check_bootstrap_helper_script="/usr/libexec/helper-scripts/tor_bootstrap_check.py"
+   check_bootstrap_helper_script="tor-bootstrap-check"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
@@ -111,7 +113,7 @@ check_tor_bootstrap_status() {
 }
 
 check_tor_circuit_established() {
-   check_bootstrap_helper_script="/usr/bin/tor-circuit-established-check"
+   check_bootstrap_helper_script="tor-circuit-established-check"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
@@ -134,7 +136,7 @@ check_tor_circuit_established() {
 }
 
 tor_consensus_valid-after() {
-   check_bootstrap_helper_script="/usr/libexec/helper-scripts/tor_consensus_valid-after.py"
+   check_bootstrap_helper_script="tor-consensus-valid-after"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
@@ -155,7 +157,7 @@ tor_consensus_valid-after() {
 }
 
 tor_consensus_valid-until() {
-   check_bootstrap_helper_script="/usr/libexec/helper-scripts/tor_consensus_valid-until.py"
+   check_bootstrap_helper_script="tor-consensus-valid-until"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
