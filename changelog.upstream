@@ -1,3 +1,15 @@
+commit 3d94588da6c1ee9efc6728482096571ac652a9b8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Feb 6 12:40:36 2025 -0500
+
+    fix compatibility with `set -e`
+
+commit a4ee02a2985cdb5ae96756460c59e4fc8eaca68c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Feb 6 14:57:51 2025 +0000
+
+    bumped changelog version
+
 commit c60de82664169c9da5e90d1f0a9175b52b638f55
 Merge: e0298bd c4d2e9d
 Author: Patrick Schleizer <adrelanos@whonix.org>
