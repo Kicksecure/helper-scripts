@@ -1,3 +1,35 @@
+commit c60de82664169c9da5e90d1f0a9175b52b638f55
+Merge: e0298bd c4d2e9d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Feb 6 06:14:08 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/sudoless-privleap'
+
+commit c4d2e9da83b524ba71131e57ef307bd8c111adb3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Feb 4 17:15:32 2025 -0600
+
+    Fix and improve use_leaprun.sh
+
+commit 589ac53d99e8a5d9d1f3fa2d09eda9779569d096
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Feb 3 18:02:42 2025 -0600
+
+    Add use_leaprun.sh library for making sudo+leaprun-compatible scripts, and put it into use
+
+commit 1ee97c40cabdc9d23e40fbb6e25b8aa69dd3937c
+Merge: 5d0575d e0298bd
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Feb 1 19:26:03 2025 -0600
+
+    Merge branch 'master' into arraybolt3/sudoless-privleap
+
+commit e0298bd324bb7676a067f4c6775f348e089e3b4e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 31 19:38:18 2025 +0000
+
+    bumped changelog version
+
 commit 66587a68ae3ae1e0e129e24981af515dd5a5a4dc
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 31 14:32:13 2025 -0500
@@ -133,6 +165,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 23 14:51:34 2025 +0000
 
     bumped changelog version
+
+commit 5d0575dd685ba392b996d26b6462f87c35f2fe73
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jan 22 22:22:23 2025 -0600
+
+    Port some scripts to privleap (wip)
 
 commit d450534c9612549350366b3a122db33ffe646b98
 Author: Patrick Schleizer <adrelanos@whonix.org>
