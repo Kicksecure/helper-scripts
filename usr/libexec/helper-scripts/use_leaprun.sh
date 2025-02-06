@@ -5,7 +5,7 @@
 
 use_leaprun='no'
 
-if leaprun_exe="$(command -v leaprun)"; then
+if ! leaprun_exe="$(command -v leaprun)"; then
    echo "$0: WARNING: leaprun executable cannot be found, cannot use privleap."
 elif ! [ -f "/run/privleapd/pid" ]; then
    echo "$0: WARNING: Cannot check if privleapd is not running, cannot use privleap."
