@@ -3,10 +3,9 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-leaprun_exe="$(which leaprun)"
 use_leaprun='no'
 
-if [ -z "${leaprun_exe}" ]; then
+if leaprun_exe="$(command -v leaprun)"; then
    echo "$0: WARNING: leaprun executable cannot be found, cannot use privleap."
 elif ! [ -f "/run/privleapd/pid" ]; then
    echo "$0: WARNING: Cannot check if privleapd is not running, cannot use privleap."
