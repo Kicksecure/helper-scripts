@@ -9,8 +9,9 @@
 Sanitize text to be safely printed to the terminal.
 """
 
-import re
-import sys
+from os import environ
+from re import match, compile as re_compile
+from sys import argv, stdin
 from typing import (
     Generator,
     Optional,
@@ -49,10 +50,9 @@ def exclude_pattern(original_pattern: str, negate_pattern: list[str]) -> str:
     return rf"{exclude_pattern_str}{original_pattern}"
 
 
-def get_color_pattern(
-    colors: Optional[bool],
-    extra_colors: Optional[bool],
-    exclude_colors: Optional[list[str]],
+def gen_sgr_pattern(
+    sgr: Optional[bool],
+    exclude_sgr: Optional[list[str]],
 ) -> Pattern[str]:
     """Print compiled RegEx for SGR sequences
 
@@ -92,9 +92,9 @@ def get_color_pattern(
 
     Where the angle brackets '<>' stands for a pseudo regex range while the
     square brackets '[]' stands for a valid regex range. Remember that any bit
-    mode can start, end and be in the middle of a sequence and be prefixed,
-    separated and terminated by as many semicolons as it wants. The following
-    are examples of valid sequences:
+    mode can start, end and be in the middle of a sequence as well as be
+    prefixed, separated and terminated by as many semicolons as it wants. The
+    following are examples of valid sequences:
 
     ESC CSI 38;2;0;0;0;1;38;5;255m
     ESC CSI 038;002;000;000;000;001;038;005;255m
@@ -105,12 +105,10 @@ def get_color_pattern(
 
     Parameters
     ----------
-    colors : Optional[bool]
-        Whether to allow colors or not.
-    extra_colors : Optional[bool]
-        Whether to allow extra colors or not.
-    exclude_colors : Optional[list[str]]
-        Color codes to be excluded.
+    sgr : Optional[bool]
+        Whether to allow SGR or not.
+    exclude_sgr : Optional[list[str]]
+        SGR codes to be excluded.
 
     Returns
     -------
@@ -125,36 +123,28 @@ def get_color_pattern(
 
     Examples
     --------
-    Get pattern for 4-bit colors:
-    >>> get_color_pattern(colors=True, extra_colors=False, exclude_pattern="")
+    Get SGR pattern:
+    >>> gen_sgr_pattern(sgr=True)
 
-    Get pattern for all colors:
-    >>> get_color_pattern(colors=True, extra_colors=True, exclude_pattern="")
-
-    Get pattern for all colors excluding some specific colors:
+    Get SGR pattern excluding some specific codes:
     >>> exclude_pattern = ["0*30", "0*4[0-7]", "0*38;0*5;[0-9]+",
     ...                    "0*38;0*2;0*0;[0-9]+;0*255"]
-    >>> get_color_pattern(colors=True, extra_colors=True,
-    ...                   exclude_pattern=exclude_pattern)
+    >>> gen_sgr_pattern(sgr=True, exclude_pattern=exclude_pattern)
     """
-    if not colors:
-        return re.compile(r"(?!)")
+    if not sgr:
+        return re_compile(r"(?!)")
 
     ## TODO: verify which attributes should stay. # pylint: disable=fixme
     sgr_4bit = r"[0-5]|[7-9]|2[1-5]|2[7-9]|3[0-7]|39|4[0-7]|49|9[0-7]|10[0-7]"
     sgr_4bit = rf"0*({sgr_4bit})"
-    if exclude_colors:
-        sgr_4bit = exclude_pattern(sgr_4bit, exclude_colors)
-    sgr_re = rf"(;*({sgr_4bit})?(;+{sgr_4bit})*)?;*m"
-    if extra_colors:
-        eight_bit = r"0*([0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])"
-        sgr_8bit = rf"0*[3-4]8;0*5;{eight_bit}"
-        sgr_24bit = rf"0*[3-4]8;0*2;{eight_bit};{eight_bit};{eight_bit}"
-        sgr_extra = rf"({sgr_4bit}|{sgr_8bit}|{sgr_24bit})"
-        if exclude_colors:
-            sgr_extra = exclude_pattern(sgr_extra, exclude_colors)
-        sgr_re = rf"(;*({sgr_extra})?(;+{sgr_extra})*)?;*m"
-    return re.compile(sgr_re)
+    eight_bit = r"0*([0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])"
+    sgr_8bit = rf"0*[3-4]8;0*5;{eight_bit}"
+    sgr_24bit = rf"0*[3-4]8;0*2;{eight_bit};{eight_bit};{eight_bit}"
+    sgr_combined = rf"({sgr_4bit}|{sgr_8bit}|{sgr_24bit})"
+    if exclude_sgr:
+        sgr_combined = exclude_pattern(sgr_combined, exclude_sgr)
+    sgr_re = rf"(;*({sgr_combined})?(;+{sgr_combined})*)?;*m"
+    return re_compile(sgr_re)
 
 
 def gen_output(
@@ -170,7 +160,7 @@ def gen_output(
     untrusted_text : str
         The unsafe text to be sanitized.
     sgr_pattern : Union[str, Pattern[str]] = re.compile("(?!)")
-        Regular expression to match colors.
+        Regular expression to match SGR codes.
 
     Yields
     -------
@@ -207,11 +197,11 @@ def gen_output(
             yield char
             i += 1
         elif (
-            sgr_pattern
+            sgr_pattern is not None
             and hex_value == 0x1B
             and i + 1 < length
             and untrusted_text[i + 1] == "["
-            and (sgr_match := re.match(sgr_pattern, untrusted_text[i + 2 :]))
+            and (sgr_match := match(sgr_pattern, untrusted_text[i + 2 :]))
         ):
             ## SGR is only accepted when:
             ## - SGR pattern is not None;
@@ -229,26 +219,25 @@ def gen_output(
 
 def stprint(
     untrusted_text: str,
-    colors: Optional[bool] = True,
-    extra_colors: Optional[bool] = True,
-    exclude_colors: Optional[list[str]] = None,
+    sgr: Optional[bool] = True,
+    exclude_sgr: Optional[list[str]] = None,
 ) -> str:
     """Sanitize untrusted text to be printed to the terminal.
 
-    Safely print the text passed as argument based in an allow list, allowing
-    print printable ASCII, newline, tab and a subset of SGR (color and
-    formatting codes).
+    Safely print the text passed as argument
+
+    Sanitize input based on an allow list. By default, allows printable ASCII,
+    newline (\\n), horizontal tab (\\t) and a subset of SGR (Select Graphic
+    Rendition). Illegal characters are replaced with underscores (_).
 
     Parameters
     ----------
     untrusted_text : str
         The unsafe text to be sanitized.
-    colors : Optional[bool] = True
-        Whether to allow colors or not.
-    extra_colors : Optional[bool] = True
-        Whether to allow extra colors or not.
-    exclude_colors : Optional[list[str]] = None
-        Color codes to be excluded.
+    sgr : Optional[bool] = True
+        Whether to allow SGR or not.
+    exclude_sgr : Optional[list[str]] = None
+        SGR codes to be excluded.
 
     Returns
     -------
@@ -261,22 +250,16 @@ def stprint(
     >>> stprint("\x1b[2Jvulnerable: True\b\b\b\bFalse")
     '_[2Jvulnerable: True____False'
 
-    Redact all colors:
-    >>> stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", colors=False)
+    Redact all SGR codes:
+    >>> stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", sgr=False)
     '_[38;5;0m_[31m_[38;2;0;0;0m'
 
-    Allow colors but not extra colors bigger than 4bit:
-    >>> stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", colors=True,
-    ...         extra_colors=False)
-    '_[38;5;0m\x1b[31m_[38;2;0;0;0m'
-
+    Allow 4-bit SGR but not other bit modes:
     >>> stprint.stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m",
-    ...                 exclude_colors=["0*38;0*(2|5);.*"])
+    ...                 exclude_sgr=["0*[3-4]8;0*(2|5);.*"])
     '_[38;5;0m\x1b[31m_[38;2;0;0;0m'
     """
-    sgr_pattern = get_color_pattern(
-        colors=colors, extra_colors=extra_colors, exclude_colors=exclude_colors
-    )
+    sgr_pattern = gen_sgr_pattern(sgr=sgr, exclude_sgr=exclude_sgr)
     return "".join(list(gen_output(untrusted_text, sgr_pattern=sgr_pattern)))
 
 
@@ -287,14 +270,17 @@ def main() -> None:
     sanitized.
     """
     untrusted_text = ""
-    if len(sys.argv) > 1:
-        untrusted_text = "".join(sys.argv[1:])
+    if len(argv) > 1:
+        untrusted_text = "".join(argv[1:])
     else:
-        untrusted_text = sys.stdin.buffer.read().decode(
+        untrusted_text = stdin.buffer.read().decode(
             "ascii", errors="ignore"
         )
 
-    print(stprint(untrusted_text), end="")
+    sgr = True
+    if environ.get("NO_COLOR"):
+        sgr = False
+    print(stprint(untrusted_text, sgr=sgr), end="")
 
 
 if __name__ == "__main__":

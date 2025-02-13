@@ -28,7 +28,7 @@ class TestSTPrint(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def run_stprint_cases(
-        self, cases: list[tuple[Any, str]], **kwargs: Any
+        self, cases: list[str], **kwargs: Any
     ) -> None:
         """
         Run cases with unittest.TestCase().subTest() for easy debugging.
@@ -52,12 +52,12 @@ class TestSTPrint(unittest.TestCase):
                 ):
                     exclude_regex = exclude_pattern(orig_pat, [exc])
                     self.assertNotRegex(exc, exclude_regex)
-            for match in match_pat:
+            for item in match_pat:
                 with self.subTest(
-                    orig_pat, exclude_pat=exclude_pat, match=match
+                    orig_pat=orig_pat, exclude_pat=exclude_pat, match=item
                 ):
                     exclude_regex = exclude_pattern(orig_pat, exclude_pat)
-                    self.assertRegex(match, exclude_regex)
+                    self.assertRegex(item, exclude_regex)
 
     def test_stprint_strip(self) -> None:
         """
@@ -101,9 +101,9 @@ class TestSTPrint(unittest.TestCase):
         ]
         self.run_stprint_cases(cases)
 
-    def test_stprint_color(self) -> None:
+    def test_stprint_sgr(self) -> None:
         """
-        Test with colors.
+        Test with SGR.
         """
         cases = [
             ("\x1b[m", "\x1b[m"),
@@ -140,11 +140,11 @@ class TestSTPrint(unittest.TestCase):
                 "\x1b[;0038;05;0001;000001;000038;005;00002;00038;05;0000003m",
             ),
         ]
-        self.run_stprint_cases(cases, colors=True, extra_colors=True)
+        self.run_stprint_cases(cases, sgr=True)
 
-    def test_stprint_no_extra_color(self) -> None:
+    def test_stprint_no_extra_sgr(self) -> None:
         """
-        Test disabling extra colors.
+        Test disabling extra SGR.
         """
         cases = [
             ("\x1b[31m", "\x1b[31m"),
@@ -153,11 +153,13 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;2;255;0;0m", "_[38;2;255;0;0m"),
             ("\x1b[2;38;2;255;0;0;1m", "_[2;38;2;255;0;0;1m"),
         ]
-        self.run_stprint_cases(cases, colors=True, extra_colors=False)
+        self.run_stprint_cases(
+            cases, sgr=True, exclude_sgr=["0*[3-4]8;+0*(2|5);+.*"]
+        )
 
-    def test_stprint_no_color(self) -> None:
+    def test_stprint_no_sgr(self) -> None:
         """
-        Test disabling colors.
+        Test disabling SGR.
         """
         cases = [
             ("\x1b[31m", "_[31m"),
@@ -166,11 +168,11 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;2;255;0;0m", "_[38;2;255;0;0m"),
             ("\x1b[2;38;2;255;0;0;1m", "_[2;38;2;255;0;0;1m"),
         ]
-        self.run_stprint_cases(cases, colors=False, extra_colors=True)
+        self.run_stprint_cases(cases, sgr=False)
 
-    def test_stprint_no_specific_color(self) -> None:
+    def test_stprint_no_specific_sgr(self) -> None:
         """
-        Test disabling specific colors.
+        Test disabling specific SGR.
         """
         cases = [
             ("\x1b[30m", "_[30m"),
@@ -199,18 +201,13 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;2;10;253;90m", "_[38;2;10;253;90m"),
             ("\x1b[38;5;10;38;2;50;253;90;0m", "_[38;5;10;38;2;50;253;90;0m"),
         ]
-        exclude_colors = [
+        exclude_sgr = [
             "0*30",
             "0*37",
             "0*38;0*5;0*25[0-4]",
             r"0*38;0*2;\d+;0*253;\d+",
         ]
-        self.run_stprint_cases(
-            cases,
-            colors=True,
-            extra_colors=True,
-            exclude_colors=exclude_colors,
-        )
+        self.run_stprint_cases(cases, sgr=True, exclude_sgr=exclude_sgr)
 
     def test_stprint_main(self) -> None:
         """
@@ -251,6 +248,8 @@ class TestSTPrint(unittest.TestCase):
             ("\n\t", "\n\t"),
             ("\ta\n", "\ta\n"),
             ("", ""),
+            ("\x1b[31m", "\x1b[31m"),
+            ("\x1b[6m", "_[6m"),
         ]
         for text, expected_result in cases:
             with self.subTest(text=text, expected_result=expected_result):
