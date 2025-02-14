@@ -14,7 +14,7 @@ check_package_manager_running_helper() {
 
    local fuser_exit_code
    fuser_exit_code=0
-   ## use_leaprun and leaprun_exe come from use_leaprun.bsh
+   ## use_leaprun and leaprun_exe come from use_leaprun.sh
    if [ "${use_leaprun}" = 'yes' ]; then
       "${leaprun_exe}" apt-check-lock-files &>/dev/null || { fuser_exit_code="$?" ; true; };
    else
