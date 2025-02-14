@@ -23,7 +23,7 @@ leaprun_useable_test() {
    fi
 
    if ! [ -d "/proc/${privleap_pid}" ]; then
-      echo "$0: WARNING: privleapd is not running. Cannot use privleap."
+      echo "$0: WARNING: privleapd is not running. Folder '/proc/${privleap_pid}' does not exist. Cannot use privleap."
       return 0
    fi
 
@@ -34,7 +34,7 @@ leaprun_useable_test() {
    fi
 
    if ! [ -e "/run/privleapd/comm/${my_user_id}" ]; then
-      echo "$0: WARNING: Cannot communicate with privleapd. Cannot use privleap."
+      echo "$0: WARNING: Cannot communicate with privleapd. File '/run/privleapd/comm/${my_user_id}' does not exist. Cannot use privleap."
       return 0
    fi
 
