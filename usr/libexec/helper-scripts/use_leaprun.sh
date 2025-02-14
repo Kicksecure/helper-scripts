@@ -26,7 +26,12 @@ leaprun_useable_test() {
    fi
 
    if ! [ -f "/run/privleapd/pid" ]; then
-      echo "$0: WARNING: Cannot check if privleapd is not running. Cannot use privleap." >&2
+      echo "$0: WARNING: Cannot check if privleapd is not running. File '/run/privleapd/pid' does not exist. Cannot use privleap." >&2
+      return 0
+   fi
+
+   if ! [ -r "/run/privleapd/pid" ]; then
+      echo "$0: WARNING: Cannot check if privleapd is not running. File '/run/privleapd/pid' is not readable. Cannot use privleap." >&2
       return 0
    fi
 
