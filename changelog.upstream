@@ -1,3 +1,15 @@
+commit 4c1b9cec9aa97506a11d20258fb03e573ef0d3d1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 14 15:07:28 2025 -0500
+
+    add `/usr/libexec/helper-scripts/use_sudo.sh`
+
+commit 741071d5fbb29543d955cac19bb6f909177a3525
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 14 03:19:31 2025 +0000
+
+    bumped changelog version
+
 commit 788a2424485528e07c187dbd6b0ff698709ecf1b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Feb 13 22:18:41 2025 -0500
