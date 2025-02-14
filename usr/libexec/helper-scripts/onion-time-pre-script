@@ -45,7 +45,10 @@ exit_handler() {
 trap "exit_handler" EXIT
 
 source /usr/libexec/helper-scripts/tor_enabled_check
-source /usr/libexec/helper-scripts/pkg_manager_running_check
+
+## Not actually used anymore. Might cause:
+## Feb 14 02:36:29 host sdwdate[909]: 2025-02-14 02:36:29 - sdwdate - INFO - /usr/libexec/helper-scripts/onion-time-pre-script: WARNING: privleapd is not running. Folder '/proc/681' does not exist. Cannot use privleap.
+#source /usr/libexec/helper-scripts/pkg_manager_running_check
 
 ## provides check_tor_bootstrap_status
 source /usr/libexec/helper-scripts/tor_bootstrap_check.bsh
