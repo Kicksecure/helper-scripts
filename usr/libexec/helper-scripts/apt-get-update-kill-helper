@@ -8,7 +8,7 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-[[ -z "${TMP:-}" ]] && error "TMP is unset"
+[[ -z "${TMP:-}" ]] && error "$0: TMP is unset"
 
 kill -s sigterm "$(cat "$TMP/security-misc-apt-get-update-pid")"
 
