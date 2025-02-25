@@ -228,7 +228,7 @@ current_time_is_in_valid_range() {
    #vend="2099-09-03 09:41:29"
    vendchk="$(date --utc --date="${vstart} -0300" +'%F %T')"
    if [ ! "${vend}" = "${vendchk}" ]; then
-      echo "ERROR: Unexpected valid-until: [vend: '${vend}'] is not [vstart: '${vstart}' + 3h]"
+      echo "ERROR: Unexpected valid-until: [vend: '${vend}'] is not [vstart: '${vstart}' + 3h]" >&2
       exit 1
    fi
    ## }} Sanity Test
