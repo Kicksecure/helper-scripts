@@ -19,14 +19,14 @@ output_init() {
 }
 
 output_cmd() {
-   msg="$@"
+   msg="$0: $@"
    if [ "$indent_style" = "true" ]; then
       echo "____ $msg"
    else
       echo "$msg"
    fi
    if [ ! -w "${anondate_state_folder}/anondate-set-current-message.txt" ]; then
-      true "ERROR: '${anondate_state_folder}/anondate-set-current-message.txt' not writeable!"
+      true "$0: ERROR: '${anondate_state_folder}/anondate-set-current-message.txt' not writeable!"
       return 0
    fi
    if [ "$indent_style" = "true" ]; then
@@ -161,7 +161,7 @@ elif [ "$(id -u)" = "0" ]; then
    mkdir -p "$anondate_state_folder"
 else
    anondate_state_folder=/run/anondate
-   echo "ERROR: Must run as root." >&2
+   echo "$0: ERROR: Must run as root." >&2
    exit 112
 fi
 

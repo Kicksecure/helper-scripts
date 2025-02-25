@@ -54,7 +54,7 @@ set -e
 set -o pipefail
 
 output_cmd() {
-   msg="$@"
+   msg="$0: $@"
    echo "______ $msg" >&2
 }
 
