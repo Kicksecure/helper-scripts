@@ -215,7 +215,7 @@ show-valid-until() {
 show-middle-range() {
    show-valid-after
    show-valid-until
-   vmid="$(date -ud "${vstart} -0130" +'%F %T')" || exit 1
+   vmid="$(date --utc --date="${vstart} -0130" +'%F %T')" || exit 1
    if [ "$show_middle_range_" = "true" ]; then
       echo "$vmid"
    fi
@@ -227,18 +227,18 @@ current_time_is_in_valid_range() {
    ## {{ Sanity Test
    ## Debugging.
    #vend="2099-09-03 09:41:29"
-   vendchk="$(date -ud "${vstart} -0300" +'%F %T')"
+   vendchk="$(date --utc --date="${vstart} -0300" +'%F %T')"
    if [ ! "${vend}" = "${vendchk}" ]; then
       echo "ERROR: Unexpected valid-until: [${vend}] is not [${vstart} + 3h]"
       exit 1
    fi
    ## }} Sanity Test
 
-   curdate="$(date -u +'%F %T')"
+   curdate="$(date --utc +'%F %T')"
    ## Debugging.
    #curdate="2099-09-03 09:41:29"
 
-   vendcons="$(date -ud "${vstart} -0230" +'%F %T')"
+   vendcons="$(date --utc --date="${vstart} -0230" +'%F %T')"
    order="${vstart}
 ${curdate}
 ${vendcons}"
