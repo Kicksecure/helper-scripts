@@ -35,8 +35,7 @@ parse_cmd_options() {
    do
        case $1 in
            --verbose)
-               echo "$0: verbose output..."
-               echo "Script running as $(whoami)"
+               echo "$0: verbose output... Script running as whoami: '$(whoami)'"
                set -x
                true "$0: $@"
                shift
