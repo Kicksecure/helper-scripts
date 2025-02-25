@@ -8,6 +8,25 @@
 set -e
 set -o pipefail
 
+check_is_not_empty_and_only_one_line() {
+   local varname value number_of_lines
+   varname="$1"
+   value="${!varname}"
+
+   number_of_lines="$(printf '%s\n' "$value" | grep -c '^')"  # Count non-empty lines
+
+   if [ "$number_of_lines" -eq 0 ]; then
+      echo "$0: ERROR: Variable '$varname' is empty or contains only newlines." >&2
+      return 1
+   elif [ "$number_of_lines" -ne 1 ]; then
+      echo "$0: ERROR: Variable '$varname' contains more than one line. Content:
+'$value'" >&2
+      return 1
+   fi
+
+   return 0
+}
+
 variables() {
    [ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
 
@@ -192,9 +211,7 @@ has_consensus() {
 show-valid-after() {
    vstart="$(/usr/libexec/helper-scripts/tor_consensus_valid-after.py)"
    #vstart="$(sed -n "/^valid-after \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
-   if [ "$vstart" = "" ]; then
-      exit 1
-   fi
+   check_is_not_empty_and_only_one_line vstart
    if [ "$show_valid_after_" = "true" ]; then
       echo "$vstart"
    fi
@@ -203,9 +220,7 @@ show-valid-after() {
 show-valid-until() {
    vend="$(/usr/libexec/helper-scripts/tor_consensus_valid-until.py)"
    #vend="$(sed -n "/^valid-until \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
-   if [ "$vend" = "" ]; then
-      exit 1
-   fi
+   check_is_not_empty_and_only_one_line vend
    if [ "$show_valid_until_" = "true" ]; then
       echo "$vend"
    fi
@@ -215,6 +230,7 @@ show-middle-range() {
    show-valid-after
    show-valid-until
    vmid="$(date --utc --date="${vstart} -0130" +'%F %T')" || exit 1
+   check_is_not_empty_and_only_one_line vmid
    if [ "$show_middle_range_" = "true" ]; then
       echo "$vmid"
    fi
@@ -227,6 +243,7 @@ current_time_is_in_valid_range() {
    ## Debugging.
    #vend="2099-09-03 09:41:29"
    vendchk="$(date --utc --date="${vstart} -0300" +'%F %T')"
+   check_is_not_empty_and_only_one_line vendchk
    if [ ! "${vend}" = "${vendchk}" ]; then
       echo "$0: ERROR: Unexpected valid-until: [vend: '${vend}'] is not [vstart: '${vstart}' + 3h]" >&2
       exit 1
@@ -238,6 +255,7 @@ current_time_is_in_valid_range() {
    #curdate="2099-09-03 09:41:29"
 
    vendcons="$(date --utc --date="${vstart} -0230" +'%F %T')"
+   check_is_not_empty_and_only_one_line vendcons
    order="${vstart}
 ${curdate}
 ${vendcons}"

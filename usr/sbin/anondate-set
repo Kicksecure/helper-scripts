@@ -13,6 +13,25 @@
 set -e
 set -o pipefail
 
+check_is_not_empty_and_only_one_line() {
+   local varname value number_of_lines
+   varname="$1"
+   value="${!varname}"
+
+   number_of_lines="$(printf '%s\n' "$value" | grep -c '^')"  # Count non-empty lines
+
+   if [ "$number_of_lines" -eq 0 ]; then
+      echo "$0: ERROR: Variable '$varname' is empty or contains only newlines." >&2
+      return 1
+   elif [ "$number_of_lines" -ne 1 ]; then
+      echo "$0: ERROR: Variable '$varname' contains more than one line. Content:
+'$value'" >&2
+      return 1
+   fi
+
+   return 0
+}
+
 output_init() {
    rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
    touch "${anondate_state_folder}/anondate-set-current-message.txt"
@@ -95,9 +114,12 @@ restart_tor_if_running() {
 
 set_date() {
    current_time_human_readable="$(date --utc "+%Y-%m-%d %H:%M:%S")"
+   check_is_not_empty_and_only_one_line current_time_human_readable
    current_unixtime="$(date --utc "+%s")"
+   check_is_not_empty_and_only_one_line current_unixtime
 
    time_result_unixtime="$(date --utc --date "$time_result_human_readable" "+%s")"
+   check_is_not_empty_and_only_one_line time_result_unixtime
 
    if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
       output_cmd "INFO: The 'anondate-get' time_result is earlier than the current system time, ok. Not setting clock backwards."
@@ -198,6 +220,7 @@ anondate_stdout="$(cat "${anondate_state_folder}/anondate-get-stdout.txt")"
 anondate_stderr="$(cat "${anondate_state_folder}/anondate-get-stderr.txt")"
 
 time_result_human_readable="$anondate_stdout"
+check_is_not_empty_and_only_one_line time_result_human_readable
 
 indent_style=false
 output_cmd "$anondate_stderr"
