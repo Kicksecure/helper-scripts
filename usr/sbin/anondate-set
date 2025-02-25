@@ -9,6 +9,10 @@
 ##
 ## Used by: /usr/libexec/helper-scripts/onion-time-pre-script
 
+#set -x
+set -e
+set -o pipefail
+
 output_init() {
    rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
    touch "${anondate_state_folder}/anondate-set-current-message.txt"
