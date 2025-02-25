@@ -35,7 +35,7 @@ parse_cmd_options() {
    do
        case $1 in
            --verbose)
-               echo "$SCRIPTNAME verbose output..."
+               echo "$0: verbose output..."
                echo "Script running as $(whoami)"
                set -x
                true "$0: $@"
@@ -94,7 +94,7 @@ parse_cmd_options() {
                break
                ;;
            -*)
-               echo "$SCRIPTNAME unknown option: $1" >&2
+               echo "$0: unknown option: $1" >&2
                exit 111
                ;;
            *)
