@@ -1,3 +1,63 @@
+commit 839ae9032fd16da71f6f56a2ad85c8e8ce251dbf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Feb 25 11:32:33 2025 -0500
+
+    anondate: improve error handling
+
+commit fa9d67a12bade63ef6a5ab8badf2c8638650211c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Feb 25 10:40:29 2025 -0500
+
+    output
+
+commit ca594d891a4cf6b48c091477ee0054ca67394ff5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Feb 25 10:36:31 2025 -0500
+
+    set stricter shell options for anondate
+
+commit e53bb426ee3a453453d3fd55353ab11f62c973f9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Feb 25 10:25:27 2025 -0500
+
+    output
+
+commit d5f50095302656266bebecb1820f4db3eee34e24
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Feb 25 10:24:30 2025 -0500
+
+    fix
+
+commit 7d30b2afc7e3465233cfcb9734505f3e9f875b61
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Feb 25 10:23:51 2025 -0500
+
+    output
+
+commit 855d54350309780825b23886df65d870adc29b99
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Feb 25 10:23:19 2025 -0500
+
+    fix
+
+commit c17ace2143cdb58a9692b272861a813cb6517b86
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Feb 25 10:22:28 2025 -0500
+
+    output
+
+commit f0ceaa3ea5db7cd6a774b0696b8326751339e501
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Feb 25 10:20:40 2025 -0500
+
+    use long options
+
+commit b5ffd374f9669c3165ef69a29e5819b87affa4ec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Feb 22 08:22:37 2025 +0000
+
+    bumped changelog version
+
 commit c55924fa4865e02359cd11664013fcbae8c48ca3
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Feb 22 01:59:39 2025 -0500
