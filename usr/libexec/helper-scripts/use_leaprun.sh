@@ -55,7 +55,7 @@ leaprun_useable_test() {
    if ! [ -e "/run/privleapd/comm/${my_user_id}" ]; then
       echo "$0: WARNING: Cannot communicate with privleapd. File '/run/privleapd/comm/${my_user_id}' does not exist. Cannot use privleap.
 
-You might be able to create a privleap socket by executing: sudo leapctl --create ''$USER'" >&2
+You might be able to create a privleap socket by executing: sudo leapctl --create '$USER'" >&2
       return 0
    fi
 
