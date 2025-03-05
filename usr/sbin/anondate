@@ -8,24 +8,7 @@
 set -e
 set -o pipefail
 
-check_is_not_empty_and_only_one_line() {
-   local varname value number_of_lines
-   varname="$1"
-   value="${!varname}"
-
-   number_of_lines="$(printf '%s\n' "$value" | grep -c '^')"  # Count non-empty lines
-
-   if [ "$number_of_lines" -eq 0 ]; then
-      echo "$0: ERROR: Variable '$varname' is empty or contains only newlines." >&2
-      return 1
-   elif [ "$number_of_lines" -ne 1 ]; then
-      echo "$0: ERROR: Variable '$varname' contains more than one line. Content:
-'$value'" >&2
-      return 1
-   fi
-
-   return 0
-}
+source /usr/libexec/helper-scripts/strings.bsh
 
 variables() {
    [ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
