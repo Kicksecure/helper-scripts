@@ -60,6 +60,10 @@ run_test() {
 
 tests() {
    set -e
+   set -o errtrace
+   set -o pipefail
+   set -o nounset
+
    run_test "Empty variable" "testvar1" "" 1
    run_test "Only newlines" "testvar2" "
 
