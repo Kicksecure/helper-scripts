@@ -5,6 +5,12 @@
 
 check_is_not_empty_and_only_one_line() {
    local varname value number_of_lines
+
+   if [ -z "$1" ]; then
+      echo "$0: ERROR: No variable name provided to check_is_not_empty_and_only_one_line." >&2
+      return 1
+   fi
+
    varname="$1"
    value="${!varname}"
 
