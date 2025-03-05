@@ -1,3 +1,35 @@
+commit c53e9e3e0bea7caf98bfdcbd5af769c48df3ea37
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 5 07:01:31 2025 -0500
+
+    stricter shell options
+
+commit 0188a3adb5ab741fbdc7bd8da56a35dce867da65
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 5 07:00:33 2025 -0500
+
+    error out if no variable is provided
+
+commit 5406af0fd55961eee211c87fdfd3ab02d0c86095
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 5 06:56:54 2025 -0500
+
+    fix check_is_not_empty_and_only_one_line
+    
+    Thanks to @ArrayBolt3 for the bug report!
+
+commit 4dce5cecb52b5e8cb5f70eaf762038d0c94ceb98
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 5 06:25:34 2025 -0500
+
+    move check_is_not_empty_and_only_one_line to strings.bsh
+
+commit d51f0476b210f48a9c65251eb62bbcb03eb4fd55
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 3 11:24:20 2025 +0000
+
+    bumped changelog version
+
 commit ec7a6e3cc395e728521fa7392c8003611e8ea155
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Mar 3 06:13:51 2025 -0500
