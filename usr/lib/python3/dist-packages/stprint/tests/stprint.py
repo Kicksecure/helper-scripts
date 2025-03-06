@@ -28,7 +28,7 @@ class TestSTPrint(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def run_stprint_cases(
-        self, cases: list[str], **kwargs: Any
+        self, cases: list[tuple[str, str]], **kwargs: Any
     ) -> None:
         """
         Run cases with unittest.TestCase().subTest() for easy debugging.
@@ -140,7 +140,74 @@ class TestSTPrint(unittest.TestCase):
                 "\x1b[;0038;05;0001;000001;000038;005;00002;00038;05;0000003m",
             ),
         ]
-        self.run_stprint_cases(cases, sgr=True)
+        self.run_stprint_cases(cases, sgr=2**24)
+
+    def test_stprint_sgr_no_color(self) -> None:
+        """
+        Test without color
+        """
+        cases = [
+            ("\x1b[m", "_[m"),
+            ("\x1b[31m", "_[31m"),
+        ]
+        for sgr in (-1, -256, 0, 7):
+            self.run_stprint_cases(cases, sgr=sgr)
+
+    def test_stprint_sgr_three_bit(self) -> None:
+        """
+        Test with SGR 3-bit.
+        """
+        cases = [
+            ("\x1b[31m", "\x1b[31m"),
+            ("\x1b[91m", "_[91m"),
+            ("\x1b[4m", "_[4m"),
+            ("\x1b[38;5;1m", "_[38;5;1m"),
+            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
+        ]
+        self.run_stprint_cases(cases, sgr=2**3)
+
+    def test_stprint_sgr_four_bit(self) -> None:
+        """
+        Test with SGR 4-bit.
+        """
+        cases = [
+            ("\x1b[m", "\x1b[m"),
+            ("\x1b[31m", "\x1b[31m"),
+            ("\x1b[91m", "\x1b[91m"),
+            ("\x1b[4m", "_[4m"),
+            ("\x1b[38;5;1m", "_[38;5;1m"),
+            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
+        ]
+        self.run_stprint_cases(cases, sgr=2**4)
+
+    def test_stprint_sgr_eight_bit(self) -> None:
+        """
+        Test with SGR 88 colors and 8-bit.
+        """
+        cases = [
+            ("\x1b[m", "\x1b[m"),
+            ("\x1b[31m", "\x1b[31m"),
+            ("\x1b[91m", "\x1b[91m"),
+            ("\x1b[4m", "\x1b[4m"),
+            ("\x1b[38;5;1m", "\x1b[38;5;1m"),
+            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
+        ]
+        for sgr in (88, 2**8):
+            self.run_stprint_cases(cases, sgr=sgr)
+
+    def test_stprint_sgr_twenty_four_bit(self) -> None:
+        """
+        Test with SGR 24-bit.
+        """
+        cases = [
+            ("\x1b[m", "\x1b[m"),
+            ("\x1b[31m", "\x1b[31m"),
+            ("\x1b[91m", "\x1b[91m"),
+            ("\x1b[4m", "\x1b[4m"),
+            ("\x1b[38;5;1m", "\x1b[38;5;1m"),
+            ("\x1b[38;2;255;0;1m", "\x1b[38;2;255;0;1m"),
+        ]
+        self.run_stprint_cases(cases, sgr=2**24)
 
     def test_stprint_no_extra_sgr(self) -> None:
         """
@@ -154,7 +221,7 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[2;38;2;255;0;0;1m", "_[2;38;2;255;0;0;1m"),
         ]
         self.run_stprint_cases(
-            cases, sgr=True, exclude_sgr=["0*[3-4]8;+0*(2|5);+.*"]
+            cases, sgr=2**24, exclude_sgr=["0*[3-4]8;+0*(2|5);+.*"]
         )
 
     def test_stprint_no_sgr(self) -> None:
@@ -168,7 +235,7 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;2;255;0;0m", "_[38;2;255;0;0m"),
             ("\x1b[2;38;2;255;0;0;1m", "_[2;38;2;255;0;0;1m"),
         ]
-        self.run_stprint_cases(cases, sgr=False)
+        self.run_stprint_cases(cases, sgr=-1)
 
     def test_stprint_no_specific_sgr(self) -> None:
         """
@@ -184,6 +251,8 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[0;30m", "_[0;30m"),
             ("\x1b[38;5;30m", "\x1b[38;5;30m"),
             ("\x1b[0;;;30;;;38;5;0m", "_[0;;;30;;;38;5;0m"),
+            ("\x1b[38;5;254m", "_[38;5;254m"),
+            ("\x1b[38;5;10;38;2;50;253;90;0m", "_[38;5;10;38;2;50;253;90;0m"),
             ("\x1b[38;2;0;30;0m", "\x1b[38;2;0;30;0m"),
             ("\x1b[38;2;0;0;0;30m", "_[38;2;0;0;0;30m"),
             ("\x1b[30;38;2;0;0;0m", "_[30;38;2;0;0;0m"),
@@ -196,10 +265,8 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;2;0;0;0;;36;;38;5;0m", "\x1b[38;2;0;0;0;;36;;38;5;0m"),
             ("\x1b[38;2;0;37;0;;36;;38;5;0m", "\x1b[38;2;0;37;0;;36;;38;5;0m"),
             ("\x1b[38;2;0;37;0;36;38;5;37m", "\x1b[38;2;0;37;0;36;38;5;37m"),
-            ("\x1b[38;5;254m", "_[38;5;254m"),
             ("\x1b[38;2;0;0;0;1;38;5;250;2m", "_[38;2;0;0;0;1;38;5;250;2m"),
             ("\x1b[38;2;10;253;90m", "_[38;2;10;253;90m"),
-            ("\x1b[38;5;10;38;2;50;253;90;0m", "_[38;5;10;38;2;50;253;90;0m"),
         ]
         exclude_sgr = [
             "0*30",
@@ -207,7 +274,7 @@ class TestSTPrint(unittest.TestCase):
             "0*38;0*5;0*25[0-4]",
             r"0*38;0*2;\d+;0*253;\d+",
         ]
-        self.run_stprint_cases(cases, sgr=True, exclude_sgr=exclude_sgr)
+        self.run_stprint_cases(cases, sgr=2**24, exclude_sgr=exclude_sgr)
 
     def test_stprint_main(self) -> None:
         """
@@ -216,7 +283,12 @@ class TestSTPrint(unittest.TestCase):
         expected results.
         """
 
-        def shell(text: str, stdin: bool) -> subprocess.CompletedProcess[str]:
+        def shell(
+            text: str,
+            stdin: bool,
+            no_color: str = "",
+            term: str = "vte-direct",
+        ) -> subprocess.CompletedProcess[str]:
             test_dir = os.path.dirname(os.path.abspath(__file__))
             script_dir = os.path.dirname(test_dir)
             command = "./stprint.py"
@@ -225,9 +297,16 @@ class TestSTPrint(unittest.TestCase):
                 input_data = text
             else:
                 command += f" '{text}'"
+            environment = os.environ.copy()
+            ## Avoid tester environment from affecting tests, such as CI having
+            ## TERM=dumb, but also allow us testing if Regex is correct
+            ## depending on the terminal provided.
+            environment["NO_COLOR"] = no_color
+            environment["TERM"] = term
             return subprocess.run(
                 command,
                 input=input_data,
+                env=environment,
                 cwd=script_dir,
                 shell=True,
                 capture_output=True,
@@ -263,6 +342,63 @@ class TestSTPrint(unittest.TestCase):
                 self.assertEqual(param_stderr, "")
                 self.assertEqual(param_stdout, stdin_stdout)
                 self.assertEqual(param_stderr, stdin_stderr)
+
+        cases = [
+            ("\x1b[31m", "_[31m"),
+        ]
+        for text, expected_result in cases:
+            with self.subTest(text=text, expected_result=expected_result):
+                result = shell(text, stdin=False, term="xterm-old")
+                self.assertEqual(result.stdout, expected_result)
+
+        cases = [
+            ("\x1b[31m", "\x1b[31m"),
+            ("\x1b[91m", "_[91m"),
+            ("\x1b[4m", "_[4m"),
+            ("\x1b[38;5;1;m", "_[38;5;1;m"),
+            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
+        ]
+        for text, expected_result in cases:
+            with self.subTest(text=text, expected_result=expected_result):
+                result = shell(text, stdin=False, term="xterm")
+                self.assertEqual(result.stdout, expected_result)
+
+        cases = [
+            ("\x1b[31m", "\x1b[31m"),
+            ("\x1b[91m", "\x1b[91m"),
+            ("\x1b[4m", "_[4m"),
+            ("\x1b[38;5;1;m", "_[38;5;1;m"),
+            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
+        ]
+        for text, expected_result in cases:
+            with self.subTest(text=text, expected_result=expected_result):
+                result = shell(text, stdin=False, term="xterm-16color")
+                self.assertEqual(result.stdout, expected_result)
+
+        cases = [
+            ("\x1b[31m", "\x1b[31m"),
+            ("\x1b[91m", "\x1b[91m"),
+            ("\x1b[4m", "\x1b[4m"),
+            ("\x1b[38;5;1;m", "\x1b[38;5;1;m"),
+            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
+        ]
+        for text, expected_result in cases:
+            with self.subTest(text=text, expected_result=expected_result):
+                for term in ("xterm-88color", "xterm-256color"):
+                    result = shell(text, stdin=False, term=term)
+                    self.assertEqual(result.stdout, expected_result)
+
+        cases = [
+            ("\x1b[31m", "\x1b[31m"),
+            ("\x1b[91m", "\x1b[91m"),
+            ("\x1b[4m", "\x1b[4m"),
+            ("\x1b[38;5;1;m", "\x1b[38;5;1;m"),
+            ("\x1b[38;2;255;0;1m", "\x1b[38;2;255;0;1m"),
+        ]
+        for text, expected_result in cases:
+            with self.subTest(text=text, expected_result=expected_result):
+                result = shell(text, stdin=False, term="xterm-direct")
+                self.assertEqual(result.stdout, expected_result)
 
 
 if __name__ == "__main__":

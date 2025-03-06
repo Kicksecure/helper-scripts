@@ -22,7 +22,7 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive
           sudo apt-get update --error-on=any
           sudo apt-get dist-upgrade
-          sudo apt-get install python3-pytest pylint mypy black
+          sudo apt-get install python3-pytest pylint mypy black ncurses-base ncurses-term
       - name: Run linters
         working-directory: usr/lib/python3/dist-packages/stprint/
         run: ../../../../../run-tests
