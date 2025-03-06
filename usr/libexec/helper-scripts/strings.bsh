@@ -36,6 +36,26 @@ check_is_not_empty_and_only_one_line() {
    return 0
 }
 
+## Converts $1 to a newline-separated, properly escaped list.
+## Strips leading and trailing space, crunches multiple
+## consecutive spaces into single spaces, then converts spaces to newlines
+## and adds spaces and backslashes where necessary.
+trim_collapse_split() {
+   local input_list="$1"
+   local trimmed_list cleaned_list formatted_list
+
+   ## Step 1: Trim leading and trailing spaces.
+   trimmed_list="$(echo "$input_list" | sed 's/^\s\+//g; s/\s\+$//g')"
+
+   ## Step 2: Replace multiple spaces with a single space.
+   cleaned_list="$(echo "$trimmed_list" | sed 's/\s\+/ /g')"
+
+   ## Step 3: Replace spaces with ' \n' (newline prefixed by space).
+   formatted_list="$(echo "$cleaned_list" | sed 's/\s/ \\\n/g')"
+
+   echo "$formatted_list"
+}
+
 run_test() {
    local test_name varname value expected_exit_code
    test_name="$1"
@@ -79,3 +99,7 @@ tests() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
    tests
 fi
+
+#trim_collapse_split " aaa  bbb ccc ddd "
+#flavor_meta_packages_to_install='non-qubes-vm-enhancements-cli kicksecure-dependencies-cli whonix-shared-packages-dependencies-cli whonix-gateway-packages-dependencies-cli'
+#trim_collapse_split "$flavor_meta_packages_to_install"
