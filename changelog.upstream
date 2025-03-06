@@ -1,3 +1,15 @@
+commit e5e39978c1ac1d984ecd8400ef5d0000907a7c33
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 5 21:38:14 2025 -0500
+
+    add trim_collapse_split
+
+commit d11a704ee33f8b21de25b9066e216f90f134fdf9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 5 12:05:33 2025 +0000
+
+    bumped changelog version
+
 commit c53e9e3e0bea7caf98bfdcbd5af769c48df3ea37
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Mar 5 07:01:31 2025 -0500
