@@ -9,6 +9,7 @@
 Sanitize text to be safely printed to the terminal.
 """
 
+from curses import setupterm, tigetnum, error as curses_error
 from os import environ
 from re import match, compile as re_compile
 from sys import argv, stdin
@@ -18,6 +19,60 @@ from typing import (
     Pattern,
     Union,
 )
+
+
+def get_sgr_support() -> int:
+    """Returns number of supported SGR codes.
+
+    It is possible to query the terminfo database from the shell:
+
+    $ tput -T "$TERM" colors
+
+    $ find $(infocmp -D)/ -type f -not -name README -exec sh -c '
+        term="${0##*/}";
+        colors="$(tput -T "${term}" colors)";
+        printf "%s %s\n" "${term}" "${colors:-"-1"}"
+      ' {} ';'
+
+    To disable SGR support:
+
+    *   Set a non-empty value to the environment variable NO_COLOR; or
+    *   Set the environment variable TERM to a terminal that doesn't support
+        SGR, such as 'dumb'.
+
+    Returns
+    -------
+    int
+        Number of supported SGR codes.
+
+    Notes
+    -----
+    Terminfo database is outdated, it may support 24-bit mode and not advertise
+    it. Some terminals can adapt higher bit modes to lower ones, but there is
+    no easy way to know if it is supported or not.
+    https://github.com/termstandard/colors?tab=readme-ov-file#querying-the-terminal
+
+    Examples
+    --------
+    Get SGR code count supported by your terminal:
+    >>> get_sgr_support()
+    8
+
+    Disable SGR codes:
+    >>> import os
+    >>> os.environ["NO_COLOR"] = "1"
+    >>> get_sgr_support()
+    -1
+    """
+    if environ.get("NO_COLOR"):
+        return -1
+    if environ.get("COLORTERM") in ("truecolor", "24bit"):
+        return 2**24
+    try:
+        setupterm()
+        return tigetnum("colors")
+    except curses_error:
+        return -1
 
 
 def exclude_pattern(original_pattern: str, negate_pattern: list[str]) -> str:
@@ -51,7 +106,7 @@ def exclude_pattern(original_pattern: str, negate_pattern: list[str]) -> str:
 
 
 def gen_sgr_pattern(
-    sgr: Optional[bool],
+    sgr: Optional[int],
     exclude_sgr: Optional[list[str]],
 ) -> Pattern[str]:
     """Print compiled RegEx for SGR sequences
@@ -86,8 +141,9 @@ def gen_sgr_pattern(
 
     With the definitions above, we set the following pseudo regex:
 
-    -  4-bit SGR: 0*(<0-107>)?m
-    -  8-bit SGR: 0*[3-4]8;0*5;0*<0-255>m
+    -  3-bit SGR: 0*([3-4][0-7])?m
+    -  4-bit SGR: 0*((9|10)[0-7])?m
+    -  88 color and 8-bit SGR: <0-107> and 0*[3-4]8;0*5;0*<0-255>m
     - 24-bit SGR: 0*[3-4]8;0*2;0*<0-255>;0*<0-255>;0*<0-255>m
 
     Where the angle brackets '<>' stands for a pseudo regex range while the
@@ -105,8 +161,8 @@ def gen_sgr_pattern(
 
     Parameters
     ----------
-    sgr : Optional[bool]
-        Whether to allow SGR or not.
+    sgr : Optional[int]
+        Number of SGR codes the terminal supports.
     exclude_sgr : Optional[list[str]]
         SGR codes to be excluded.
 
@@ -120,30 +176,50 @@ def gen_sgr_pattern(
     .. [1] https://en.wikipedia.org/wiki/ANSI_escape_code
     .. [2] https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
     .. [3] https://man.archlinux.org/man/console_codes.4.en.txt
+    .. [4] https://invisible-island.net/ncurses/terminfo.src.html
 
     Examples
     --------
     Get SGR pattern:
-    >>> gen_sgr_pattern(sgr=True)
+    >>> gen_sgr_pattern()
 
     Get SGR pattern excluding some specific codes:
     >>> exclude_pattern = ["0*30", "0*4[0-7]", "0*38;0*5;[0-9]+",
     ...                    "0*38;0*2;0*0;[0-9]+;0*255"]
-    >>> gen_sgr_pattern(sgr=True, exclude_pattern=exclude_pattern)
+    >>> gen_sgr_pattern(sgr=2 ** 24, exclude_pattern=exclude_pattern)
     """
-    if not sgr:
+    if not sgr or sgr < 8:
         return re_compile(r"(?!)")
 
-    ## TODO: verify which attributes should stay. # pylint: disable=fixme
-    sgr_4bit = r"[0-5]|[7-9]|2[1-5]|2[7-9]|3[0-7]|39|4[0-7]|49|9[0-7]|10[0-7]"
-    sgr_4bit = rf"0*({sgr_4bit})"
-    eight_bit = r"0*([0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])"
-    sgr_8bit = rf"0*[3-4]8;0*5;{eight_bit}"
-    sgr_24bit = rf"0*[3-4]8;0*2;{eight_bit};{eight_bit};{eight_bit}"
-    sgr_combined = rf"({sgr_4bit}|{sgr_8bit}|{sgr_24bit})"
+    ## 15: emu
+    ## 52: d430*, dg+cc, dgunix+ccc
+    ## 64: hpterm-color, wy370*, wyse370
+    if sgr >= 2**3:  ## 8 colors
+        palette_3bit = r"0*(0|[3-4][0-7])"
+        sgr_combo = rf"{palette_3bit}"
+    if sgr >= 2**4:  ## 16 colors
+        palette_16bit = r"0*(1|9[0-7]|10[0-7])"
+        sgr_combo = rf"{sgr_combo}|{palette_16bit}"
+    if sgr >= 88:  ## 88 and 256 colors
+        ## 88 colors is not well documented but the few terminals that support
+        ## it are very common (xterm, rxvt, Eterm). The terminfo library links
+        ## the 88 variant to the 256 one with the 'use=' keyword. The "real" 88
+        ## color layout is not implemented as the commentator could not
+        ## identify it.
+        ## https://lists.gnu.org/archive/html/bug-ncurses/2020-03/msg00025.html
+        ## TODO: verify which attributes should stay. # pylint: disable=fixme
+        palette_88color = r"0*([2-5]|[7-9]|2[1-5]|2[7-9]|39|49)"
+        range_8bit = r"0*([0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])"
+        palette_8bit = rf"0*[3-4]8;0*5;{range_8bit}"
+        sgr_combo = rf"{sgr_combo}|{palette_88color}|{palette_8bit}"
+    if sgr >= 2**24:  ## 16777216 colors
+        palette_24bit = rf"0*[3-4]8;0*2;{range_8bit};{range_8bit};{range_8bit}"
+        sgr_combo = rf"{sgr_combo}|{palette_24bit}"
+
+    sgr_combo = rf"({sgr_combo})"
     if exclude_sgr:
-        sgr_combined = exclude_pattern(sgr_combined, exclude_sgr)
-    sgr_re = rf"(;*({sgr_combined})?(;+{sgr_combined})*)?;*m"
+        sgr_combo = exclude_pattern(sgr_combo, exclude_sgr)
+    sgr_re = rf"(;*({sgr_combo})?(;+{sgr_combo})*)?;*m"
     return re_compile(sgr_re)
 
 
@@ -219,7 +295,7 @@ def gen_output(
 
 def stprint(
     untrusted_text: str,
-    sgr: Optional[bool] = True,
+    sgr: Optional[int] = get_sgr_support(),
     exclude_sgr: Optional[list[str]] = None,
 ) -> str:
     """Sanitize untrusted text to be printed to the terminal.
@@ -234,8 +310,8 @@ def stprint(
     ----------
     untrusted_text : str
         The unsafe text to be sanitized.
-    sgr : Optional[bool] = True
-        Whether to allow SGR or not.
+    sgr : Optional[int] = get_sgr_support()
+        Number of SGR codes the terminal supports.
     exclude_sgr : Optional[list[str]] = None
         SGR codes to be excluded.
 
@@ -273,14 +349,8 @@ def main() -> None:
     if len(argv) > 1:
         untrusted_text = "".join(argv[1:])
     else:
-        untrusted_text = stdin.buffer.read().decode(
-            "ascii", errors="ignore"
-        )
-
-    sgr = True
-    if environ.get("NO_COLOR"):
-        sgr = False
-    print(stprint(untrusted_text, sgr=sgr), end="")
+        untrusted_text = stdin.buffer.read().decode("ascii", errors="ignore")
+    print(stprint(untrusted_text, sgr=get_sgr_support()), end="")
 
 
 if __name__ == "__main__":
