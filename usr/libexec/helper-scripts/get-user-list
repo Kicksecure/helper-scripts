@@ -1,0 +1,34 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+adduser_conf_file="$(cat /etc/adduser.conf)"
+
+first_uid="$(
+  grep 'FIRST_UID' <<<"${adduser_conf_file}" | grep -v '^\s*#' \
+    | cut -d'=' -f2 | sed 's/^[[:space:]]*//'
+)" || true
+last_uid="$(
+  grep 'LAST_UID' <<<"${adduser_conf_file}" | grep -v '^\s*#' \
+    | cut -d'=' -f2 | sed 's/^[[:space:]]*//'
+)" || true
+if [ -z "${first_uid}" ]; then
+  first_uid=1000
+fi  
+if [ -z "${last_uid}" ]; then
+  last_uid=59999
+fi  
+
+while read -r user_entry; do
+   current_uid="$(cut -d':' -f3 <<< "${user_entry}")"
+   if [ "${current_uid}" -ge "${first_uid}" ] \
+      && [ "${current_uid}" -le "${last_uid}" ]; then
+      cut -d':' -f1 <<< "${user_entry}"
+   fi  
+done < /etc/passwd

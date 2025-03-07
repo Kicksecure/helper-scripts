@@ -1,0 +1,267 @@
+#!/bin/bash
+
+## Copyright (c) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+get_config_section() {
+   local file section found_section line
+   file="$1"
+   section="$2"
+   found_section='n'
+   while read -r line; do
+      if [ "${found_section}" = 'y' ]; then
+         if [[ "${line}" =~ ^\[.*\]$ ]]; then
+            break
+         fi
+         echo "${line}"
+      fi
+      if [ "${line}" = "[${section}]" ]; then
+         found_section='y'
+      fi
+   done < "${file}"
+}
+
+remove_from_config_section() {
+   local file section remove_line filter_stage
+   file="$1"
+   section="$2"
+   remove_line="$3"
+   filter_stage='1'
+   while read -r line; do
+      if [ "${filter_stage}" = '1' ]; then
+         echo "${line}"
+         if [ "${line}" = "[${section}]" ]; then
+            filter_stage='2'
+         fi
+      elif [ "${filter_stage}" = '2' ]; then
+         if [[ "${line}" =~ ^${remove_line}$ ]]; then
+            continue
+         fi
+         echo "${line}"
+         if [[ "${line}" =~ ^\[.*\]$ ]]; then
+            filter_stage='3'
+         fi
+      else
+         echo "${line}"
+      fi
+   done < "${file}" | sponge -- "${file}"
+}
+
+enable_autologin() {
+   local user
+   user="$1"
+   if [ "${default_display_manager}" = 'lightdm' ]; then
+      echo "[Seat:*]
+autologin-user=${user}" | sponge -- '/etc/lightdm/lightdm.conf.d/40_autologin.conf'
+   elif [ "${default_display_manager}" = 'sddm' ]; then
+      echo "[Autologin]
+User=${user}" | sponge -- '/etc/sddm.conf.d/z-autologin.conf'
+   else
+      echo "ERROR: Display manager '${default_display_manager}' is not supported." >&2
+      exit 1
+   fi
+}
+
+disable_autologin() {
+   local user file_list file file_contents
+   user="$1"
+
+   if [ "${default_display_manager}" = 'lightdm' ]; then
+      readarray -t file_list < <(find /etc/lightdm)
+      for file in "${file_list[@]}"; do
+         if ! [ -f "${file}" ]; then
+            continue
+         fi
+         sed -i "/^autologin-user=\s*${user}$/d" "${file}"
+         file_contents="$(cat "${file}")"
+         if [ -z "${file_contents}" ] \
+            || [ "${file_contents}" = '[Seat:*]' ]; then
+            safe-rm "${file}"
+         fi
+      done
+   elif [ "${default_display_manager}" = 'sddm' ]; then
+      for file in /etc/sddm.conf /etc/sddm.conf.d/*; do
+         if ! [ -f "${file}" ]; then
+            continue
+         fi
+         remove_from_config_section "${file}" 'Autologin' "User=${user}"
+         file_contents="$(cat "${file}")"
+         if [ -z "${file_contents}" ] \
+            || [ "${file_contents}" = '[Autologin]' ]; then
+            safe-rm "${file}"
+         fi
+      done
+   else
+      echo "ERROR: Display manager '${default_display_manager}' is not supported." >&2
+      exit 1
+   fi
+}
+
+enable_sysmaint_autologin() {
+   sed -i '/^sysmaint-autologin/d' /etc/user-sysmaint-split.conf;
+   echo 'sysmaint-autologin=y' >> /etc/user-sysmaint-split.conf;
+}
+
+disable_sysmaint_autologin() {
+   sed -i '/^sysmaint-autologin/d' /etc/user-sysmaint-split.conf;
+}
+
+autologinchange() {
+   local user user_list user_entry found_user autologin_user enable_yn disable_yn
+   readarray -t user_list < <(/usr/libexec/helper-scripts/get-user-list)
+   echo "Users present on the system:"
+   for user_entry in "${user_list[@]}"; do
+      echo "   ${user_entry}"
+   done
+
+   read -r -p "Enter the username you would like to toggle autologin for: " user
+
+   if [ "$user" = "" ]; then
+      echo "ERROR: No username provided. Please specify a username." >&2
+      exit 1
+   fi
+
+   if ! id "$user" &>/dev/null ; then
+      echo "ERROR: User '$user' does not exist. Please check the username and try again." >&2
+      exit 1
+   fi
+
+   found_user='n'
+   for user_entry in "${user_list[@]}"; do
+      if [ "${user}" = "${user_entry}" ]; then
+         found_user='y'
+         break
+      fi
+   done
+   if [ "${found_user}" = 'n' ]; then
+      echo "ERROR: User '$user' is not a normal user account. Please check the username and try again." >&2
+      exit 1
+   fi
+
+   autologin_user=''
+   if [ "${#autologin_lines[@]}" != '0' ]; then
+      autologin_user="${autologin_lines[0]}"
+   fi
+
+   if [ "${autologin_user}" = "${user}" ]; then
+      echo "User '$user' is currently configured to automatically log in." >&2
+      read -r -p "Would you like to disable autologin? [Y/N] " disable_yn
+
+      if [ "${disable_yn,,}" = 'y' ]; then
+         disable_autologin "${user}"
+         echo "SUCCESS: Autologin for user '$user' disabled."
+      else
+         echo "CANCELLED disabling autologin for user '$user'."
+      fi
+      exit 0
+   elif [ "${user}" = 'sysmaint' ]; then
+      if [ "${sysmaint_autologin}" = 'y' ]; then
+         echo "User 'sysmaint' is currently configured to automatically log in."
+         read -r -p "Would you like to disable autologin for sysmaint mode? [Y/N] " disable_yn
+
+         if [ "${disable_yn,,}" = 'y' ]; then
+            disable_sysmaint_autologin
+            echo "SUCCESS: Autologin for user 'sysmaint' disabled."
+         else
+            echo "CANCELLED disabling autologin for user 'sysmaint'."
+         fi
+         exit 0
+      else
+         echo "User 'sysmaint' is currently NOT configured to automatically log in."
+         read -r -p "Would you like to enable autologin for sysmaint mode? [Y/N] " enable_yn
+
+         if [ "${enable_yn,,}" = 'y' ]; then
+            enable_sysmaint_autologin
+            echo "SUCCESS: Autologin for user 'sysmaint' enabled."
+         else
+            echo "CANCELLED enabling autologin for user 'sysmaint'."
+         fi
+         exit 0
+      fi
+   else
+      if [ -z "${autologin_user}" ]; then
+         read -r -p "Are you sure you want to enable autologin for user '$user'? [Y/N] " enable_yn
+
+         if [ "${enable_yn,,}" = 'y' ]; then
+            enable_autologin "${user}"
+            echo "SUCCESS: Autologin for user '$user' enabled."
+         else
+            echo "CANCELLED enabling autologin for user '$user'."
+         fi
+         exit 0
+      else
+         echo "User '$autologin_user' is currently configured to automatically log in."
+         read -r -p "Would you like to enable autologin for user '$user' instead? [Y/N] " enable_yn
+
+         if [ "${enable_yn,,}" = 'y' ]; then
+            disable_autologin "${autologin_user}"
+            enable_autologin "${user}"
+            echo "SUCCESS: Autologin for user '$user' enabled."
+         else
+            echo "CANCELLED enabling autologin for user '$user'."
+         fi
+         exit 0
+      fi
+   fi
+}
+
+check_autologin() {
+   if [ "${#autologin_lines[@]}" = '0' ]; then
+      exit 0
+   else
+      exit 1
+   fi
+}
+
+if [ "$(id -u)" != "0" ]; then
+   echo "ERROR: This must be run as root (sudo)!" >&2
+   exit 1
+fi
+
+default_display_manager="$(basename "$(cat /etc/X11/default-display-manager)")"
+
+if [ "${default_display_manager}" = 'lightdm' ]; then
+   ## Ensure that lightdm doesn't have a multi-seat configuration, we can't
+   ## safely manage those
+   if grep -qri '^\[Seat:[^*]' /etc/lightdm; then
+      echo "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
+      exit 1
+   fi
+
+   read -ra autologin_lines < <(
+      grep -ri '^autologin-user=' /etc/lightdm \
+         | grep -v 'sysmaint' \
+         | awk -F'=' '{ print $NF }' || true
+   ) || true
+elif [ "${default_display_manager}" = 'sddm' ]; then
+   read -ra autologin_lines < <(
+      for file in /etc/sddm.conf /etc/sddm.conf.d/*; do
+         if ! [ -f "${file}" ]; then
+            continue
+         fi
+         get_config_section "${file}" 'Autologin'  \
+            | grep '^User=' \
+            | grep -v 'sysmaint' \
+            | awk -F'=' '{ print $NF }' || true
+      done
+   ) || true
+fi
+
+sysmaint_autologin='n'
+if [ ! -f /etc/user-sysmaint-split.conf ]; then
+   touch /etc/user-sysmaint-split.conf
+fi
+if grep -q '^sysmaint-autologin=y$' /etc/user-sysmaint-split.conf; then
+   sysmaint_autologin='y'
+fi
+
+if [ "${1:-}" = '-c' ]; then
+   check_autologin
+fi
+
+autologinchange
