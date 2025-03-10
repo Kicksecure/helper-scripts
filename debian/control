@@ -43,3 +43,8 @@ Description: Helper scripts useful for Linux Distributions
  .
  Provides the dummy-dependency script for quickly creating and installing
  dummy packages for working around package dependencies.
+
+Package: helper-scripts-tests
+Architecture: all
+Depends: helper-scripts, python3-pytest, mypy, ${misc:Depends}
+Description: Helper scripts test packages
