@@ -4,7 +4,7 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-set -eu
+set -euo pipefail -o errtrace
 
 source /usr/libexec/helper-scripts/accountctl.sh
 
