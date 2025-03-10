@@ -16,8 +16,8 @@ Package: helper-scripts
 Architecture: all
 Depends: sudo, python3, python3-stem, python3-scapy, python3-yaml,
  bubblewrap, moreutils, equivs, safe-rm, ${misc:Depends}
-Breaks: usability-misc (<< 3:26.1-1)
-Replaces: usability-misc (<< 3:26.1-1), anon-shared-helper-scripts,
+Breaks: usability-misc (<< 3:26.2-1)
+Replaces: usability-misc (<< 3:26.2-1), anon-shared-helper-scripts,
  curl-scripts, anon-ws-leaktest, python-guimessages, python3-guimessages
 Description: Helper scripts useful for Linux Distributions
  Contains a script for curl progress bar in terminal. Includes another script
