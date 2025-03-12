@@ -8,8 +8,6 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-source /usr/libexec/helper-scripts/package_installed_check.bsh
-
 get_config_section() {
    local file_name section found_section line
    file_name="$1"
@@ -61,66 +59,61 @@ remove_from_config_section() {
 enable_autologin() {
    local user
    user="$1"
-   if [ "${lightdm_installed}" = 'yes' ]; then
-      mkdir --parents -- /etc/lightdm/lightdm.conf.d
-      echo "[Seat:*]
+
+   mkdir --parents -- /etc/lightdm/lightdm.conf.d
+   echo "[Seat:*]
 autologin-user=${user}" | sponge -- '/etc/lightdm/lightdm.conf.d/40_autologin.conf'
-      true "INFO: Wrote file '/etc/lightdm.conf.d/40_autologin.conf' to enable autologin for user '$user'."
-   fi
-   if [ "${sddm_installed}" = 'yes' ]; then
-      mkdir --parents -- /etc/sddm.conf.d
-      echo "[Autologin]
+   true "INFO: Wrote file '/etc/lightdm.conf.d/40_autologin.conf' to enable autologin for account '$user'."
+
+   mkdir --parents -- /etc/sddm.conf.d
+   echo "[Autologin]
 User=${user}" | sponge -- '/etc/sddm.conf.d/z-autologin.conf'
-      true "INFO: Wrote file '/etc/sddm.conf.d/z-autologin.conf' to enable autologin for user '$user'."
-   fi
+   true "INFO: Wrote file '/etc/sddm.conf.d/z-autologin.conf' to enable autologin for account '$user'."
 }
 
 disable_autologin() {
    local user file_list file_name file_contents
    user="$1"
 
-   if [ "${lightdm_installed}" = 'yes' ]; then
-      readarray -t file_list < <(find /etc/lightdm)
-      for file_name in "${file_list[@]}"; do
-         if ! [ -f "${file_name}" ]; then
-            continue
-         fi
-         sed -i "/^autologin-user=\s*${user}$/d" "${file_name}"
-         true "INFO: Removed autologin configuration for user '$user' from file '$file_name'."
-         file_contents="$(cat "${file_name}")"
-         if [ -z "${file_contents}" ] \
-            || [ "${file_contents}" = '[Seat:*]' ]; then
-            true "INFO: File '$file_name' contains no meaningful configuration data, removing."
-            safe-rm "${file_name}"
-         fi
-      done
-   fi
-   if [ "${sddm_installed}" = 'yes' ]; then
-      for file_name in /etc/sddm.conf /etc/sddm.conf.d/*; do
-         if ! [ -f "${file_name}" ]; then
-            continue
-         fi
-         remove_from_config_section "${file_name}" 'Autologin' "User=${user}"
-         true "INFO: Removed autologin configuration for user '$user' from file '$file_name'."
-         file_contents="$(cat "${file_name}")"
-         if [ -z "${file_contents}" ] \
-            || [ "${file_contents}" = '[Autologin]' ]; then
-            true "INFO: File '$file_name' contains no meaningful configuration data, removing."
-            safe-rm "${file_name}"
-         fi
-      done
-   fi
+   readarray -t lightdm_config_file_list < <(find /etc/lightdm)
+   for file_name in "${lightdm_config_file_list[@]}"; do
+      if ! [ -f "${file_name}" ]; then
+         continue
+      fi
+      sed -i "/^autologin-user=\s*${user}$/d" "${file_name}"
+      true "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
+      file_contents="$(cat "${file_name}")"
+      if [ -z "${file_contents}" ] \
+         || [ "${file_contents}" = '[Seat:*]' ]; then
+         true "INFO: File '$file_name' contains no meaningful configuration data, removing."
+         safe-rm "${file_name}"
+      fi
+   done
+
+   for file_name in /etc/sddm.conf /etc/sddm.conf.d/*; do
+      if ! [ -f "${file_name}" ]; then
+         continue
+      fi
+      remove_from_config_section "${file_name}" 'Autologin' "User=${user}"
+      true "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
+      file_contents="$(cat "${file_name}")"
+      if [ -z "${file_contents}" ] \
+         || [ "${file_contents}" = '[Autologin]' ]; then
+         true "INFO: File '$file_name' contains no meaningful configuration data, removing."
+         safe-rm "${file_name}"
+      fi
+   done
 }
 
 enable_sysmaint_autologin() {
    sed -i '/^sysmaint-autologin=/d' /etc/user-sysmaint-split.conf;
    echo 'sysmaint-autologin=y' >> /etc/user-sysmaint-split.conf;
-   true "INFO: Wrote autologin configuration for user 'sysmaint' to file '/etc/user-sysmaint-split.conf'."
+   true "INFO: Wrote autologin configuration for account 'sysmaint' to file '/etc/user-sysmaint-split.conf'."
 }
 
 disable_sysmaint_autologin() {
    sed -i '/^sysmaint-autologin/d' /etc/user-sysmaint-split.conf;
-   true "INFO: Removed autologin configuration for user 'sysmaint' from file '/etc/user-sysmaint-split.conf'."
+   true "INFO: Removed autologin configuration for account 'sysmaint' from file '/etc/user-sysmaint-split.conf'."
 }
 
 autologinchange() {
@@ -139,7 +132,7 @@ autologinchange() {
    fi
 
    if ! id "$user" &>/dev/null ; then
-      echo "ERROR: User '$user' does not exist. Please check the username and try again." >&2
+      echo "ERROR: Account '$user' does not exist. Please check the username and try again." >&2
       exit 1
    fi
 
@@ -151,47 +144,48 @@ autologinchange() {
       fi
    done
    if [ "${found_user}" = 'n' ]; then
-      echo "ERROR: User '$user' is not a normal user account. Please check the username and try again." >&2
+      echo "ERROR: Account '$user' is not a normal user account. Please check the username and try again." >&2
       exit 1
    fi
 
    if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
-      echo "User '$user' is currently configured to automatically log in." >&2
+      echo "Account '$user' is currently configured to automatically log in." >&2
       read -r -p "Would you like to disable autologin? [Y/N] " disable_yn
 
       if [ "${disable_yn,,}" = 'y' ]; then
          disable_autologin "${user}"
-         echo "SUCCESS: Autologin for user '$user' disabled."
+         echo "SUCCESS: Autologin for account '$user' disabled."
       else
-         echo "CANCELLED disabling autologin for user '$user'."
+         echo "CANCELLED disabling autologin for account '$user'."
       fi
       exit 0
    elif [ "${user}" = 'sysmaint' ]; then
       if [ "${sysmaint_autologin}" = 'y' ]; then
-         echo "User 'sysmaint' is currently configured to automatically log in."
+         echo "Account 'sysmaint' is currently configured to automatically log in."
          read -r -p "Would you like to disable autologin for sysmaint mode? [Y/N] " disable_yn
 
          if [ "${disable_yn,,}" = 'y' ]; then
             disable_sysmaint_autologin
-            echo "SUCCESS: Autologin for user 'sysmaint' disabled."
+            echo "SUCCESS: Autologin for account 'sysmaint' disabled."
          else
-            echo "CANCELLED disabling autologin for user 'sysmaint'."
+            echo "CANCELLED disabling autologin for account 'sysmaint'."
          fi
          exit 0
       else
-         echo "User 'sysmaint' is currently NOT configured to automatically log in."
+         echo "Account 'sysmaint' is currently NOT configured to automatically log in."
          read -r -p "Would you like to enable autologin for sysmaint mode? [Y/N] " enable_yn
 
          if [ "${enable_yn,,}" = 'y' ]; then
             enable_sysmaint_autologin
-            echo "SUCCESS: Autologin for user 'sysmaint' enabled."
+            echo "SUCCESS: Autologin for account 'sysmaint' enabled."
          else
-            echo "CANCELLED enabling autologin for user 'sysmaint'."
+            echo "CANCELLED enabling autologin for account 'sysmaint'."
          fi
          exit 0
       fi
    else
-      read -r -p "Are you sure you want to enable autologin for user '$user'? [Y/N] " enable_yn
+      echo "Account '$user' is currently NOT configured to automatically log in." >&2
+      read -r -p "Are you sure you want to enable autologin for account '$user'? [Y/N] " enable_yn
 
       if [ "${enable_yn,,}" = 'y' ]; then
          if [ "${#autologin_users[@]}" = '0' ]; then
@@ -200,9 +194,9 @@ autologinchange() {
             done
          fi
          enable_autologin "${user}"
-         echo "SUCCESS: Autologin for user '$user' enabled."
+         echo "SUCCESS: Autologin for account '$user' enabled."
       else
-         echo "CANCELLED enabling autologin for user '$user'."
+         echo "CANCELLED enabling autologin for account '$user'."
       fi
       exit 0
    fi
@@ -224,38 +218,39 @@ fi
 autologin_users_lightdm=()
 autologin_users_sddm=()
 autologin_users=()
-lightdm_installed="$(pkg_installed lightdm && echo 'yes' || echo 'no')"
-sddm_installed="$(pkg_installed sddm && echo 'yes' || echo 'no')"
 
-if [ "${lightdm_installed}" = 'yes' ]; then
-   ## Ensure that lightdm doesn't have a multi-seat configuration, we can't
-   ## safely manage those
-   if grep -qri -- '^\[Seat:[^*]' /etc/lightdm; then
-      echo "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
-      exit 1
-   fi
+if [ ! -d '/etc/ligthdm' ]; then
+   mkdir /etc/lightdm 2>/dev/null || true;
+fi
+if [ ! -d '/etc/sddm.conf.d' ]; then
+   mkdir /etc/sddm.conf.d 2>/dev/null || true;
+fi
 
-   readarray -t autologin_users_lightdm < <(
-      grep -ri -- '^autologin-user=' /etc/lightdm \
+## Ensure that lightdm doesn't have a multi-seat configuration, we can't
+## safely manage those
+if grep -qri -- '^\[Seat:[^*]' /etc/lightdm; then
+   echo "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
+   exit 1
+fi
+readarray -t autologin_users_lightdm < <(
+   grep -ri -- '^autologin-user=' /etc/lightdm \
+      | grep -v -- 'sysmaint' \
+      | awk -F'=' '{ print $NF }' || true
+) || true
+true "INFO: Collected list of users with lightdm autologin enabled."
+
+readarray -t autologin_users_sddm < <(
+   for file_name in /etc/sddm.conf /etc/sddm.conf.d/*; do
+      if ! [ -f "${file_name}" ]; then
+         continue
+      fi
+      get_config_section "${file_name}" 'Autologin'  \
+         | grep -- '^User=' \
          | grep -v -- 'sysmaint' \
          | awk -F'=' '{ print $NF }' || true
-   ) || true
-   true "INFO: Collected list of users with lightdm autologin enabled."
-fi
-if [ "${sddm_installed}" = 'yes' ]; then
-   readarray -t autologin_users_sddm < <(
-      for file_name in /etc/sddm.conf /etc/sddm.conf.d/*; do
-         if ! [ -f "${file_name}" ]; then
-            continue
-         fi
-         get_config_section "${file_name}" 'Autologin'  \
-            | grep -- '^User=' \
-            | grep -v -- 'sysmaint' \
-            | awk -F'=' '{ print $NF }' || true
-      done
-   ) || true
-   true "INFO: Collected list of users with sddm autologin enabled."
-fi
+   done
+) || true
+true "INFO: Collected list of users with sddm autologin enabled."
 
 readarray -t autologin_users < <(
   IFS=$'\n'
