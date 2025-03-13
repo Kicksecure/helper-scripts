@@ -1,3 +1,21 @@
+commit b88cca5a8abf8df527f433c370aa62a5d4f681d1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 13 06:54:35 2025 -0400
+
+    check additional conditions to disable colors in unsupported terminals
+
+commit 60e62e40b6c79bbfb258746bda77d0d6ac44db0b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 13 06:51:05 2025 -0400
+
+    pick from https://github.com/Kicksecure/helper-scripts/pull/14
+
+commit 4ab0ec85308f2a1fb1459c668b2603013b5343b2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 6 02:39:09 2025 +0000
+
+    bumped changelog version
+
 commit e5e39978c1ac1d984ecd8400ef5d0000907a7c33
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Mar 5 21:38:14 2025 -0500
