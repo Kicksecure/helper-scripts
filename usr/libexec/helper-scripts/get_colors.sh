@@ -20,17 +20,17 @@ get_colors(){
     return 0
   fi
 
-  nocolor="\033[0m"
-  bold="\033[1m"
-  nobold="\033[22m"
-  underline="\033[4m"
-  nounderline="\033[24m"
-  red="\033[31m"
-  green="\033[32m"
-  yellow="\033[33m"
-  blue="\033[34m"
-  magenta="\033[35m"
-  cyan="\033[36m"
+  printf -v nocolor     '%b' "\033[0m"
+  printf -v bold        '%b' "\033[1m"
+  printf -v nobold      '%b' "\033[22m"
+  printf -v underline   '%b' "\033[4m"
+  printf -v nounderline '%b' "\033[24m"
+  printf -v red         '%b' "\033[31m"
+  printf -v green       '%b' "\033[32m"
+  printf -v yellow      '%b' "\033[33m"
+  printf -v blue        '%b' "\033[34m"
+  printf -v magenta     '%b' "\033[35m"
+  printf -v cyan        '%b' "\033[36m"
 }
 
 if test "${get_colors_sourced:-}" != "1"; then
