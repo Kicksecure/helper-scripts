@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+
+## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+##
+## SPDX-License-Identifier: AGPL-3.0-or-later
+
+"""Sanitize it to be safely printed to the terminal."""
+
+import sys
+from stprint.stprint import main
+sys.dont_write_bytecode = True
+
+if __name__ == "__main__":
+    main()
