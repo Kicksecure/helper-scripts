@@ -148,12 +148,21 @@ fi
 
 ## TODO: Tor cert valid after must be after Tor consensus middle range to avoid using stale Tor consensus
 
-## Needs access to TOR_DIR /var/lib/tor.
-# if anondate --has-consensus ; then
-# output_cmd "INFO: has Tor consensus, ok."
-
 output_cmd "INFO: Attempting to determine Tor consensus time middle range..."
-if time_result="$(anondate --show-middle-range)" ; then
+
+## tor_bootstrap_percent might not be completed yet (not be be 100% yet), but a Tor consensus might have
+## been already downloaded earlier.
+##
+## If Tor consensus has not been downloaded yet, '$vstart' will be empty.
+## Use '&>/dev/null' to suppress expected error message:
+#'ERROR: Variable 'vstart' is empty or contains only whitespace/newlines.'
+##
+## Checking if a Tor consensus has already been downloaded is avoided because this needs access to '$TOR_DIR' '/var/lib/tor'.
+#if anondate --has-consensus ; then
+#output_cmd "INFO: has Tor consensus, ok."
+##
+## Therefore use 'anondate --show-middle-range' to check if a Tor consensus is already available.
+if time_result="$(anondate --show-middle-range)" &>/dev/null ; then
    valid_after="$(anondate --show-valid-after)"
    ## example valid_after:
    ## 2021-01-21 15:00:00
