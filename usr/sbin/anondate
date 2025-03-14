@@ -196,7 +196,7 @@ show-valid-after() {
    #vstart="$(sed -n "/^valid-after \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
    check_is_not_empty_and_only_one_line vstart
    if [ "$show_valid_after_" = "true" ]; then
-      echo "$vstart"
+      echo "${vstart}"
    fi
 }
 
