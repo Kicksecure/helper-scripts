@@ -18,10 +18,16 @@ sanitizing non-ASCII characters and dangerous ANSI escape sequenes, from
 the latter, only a strict subset of SGR (Select Graphic Rendition)
 attributes, line feeds (`\n`) and horizontal tabs (`\t`) are allowed).
 
-In case the environment variable `$NO_COLOR` is set to a non-empty
-value, SGR is disabled. If the environment variable `$COLORTERM` is set
-to `truecolor`, 24-bit SGR is enabled. Else, it queries the terminal
-colors from the environment variable `$TERM`.
+The following tests are done in order to verify if SGR should be enabled
+and how large it's set should be:
+
+1.  If the environment variable `$NO_COLOR` is set to a non-empty value,
+    SGR is disabled.
+2.  If the environment variable `$COLORTERM` is set to `truecolor`,
+    24-bit SGR is enabled.
+3.  If none of the above matches, the terminal referenced by the
+    environment variable `$TERM` is queried for its `colors` capability,
+    which returns how many colors the terminal supports.
 
 Every parameter is treated as text to be printed. If no parameter is
 provided, standard input will be opened for reading.

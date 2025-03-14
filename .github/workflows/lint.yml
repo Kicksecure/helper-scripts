@@ -15,14 +15,39 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: fedora:latest
+          - image: fedora:rawhide
+          - image: debian:stable
+          - image: debian:testing
+          - image: debian:unstable
+          - image: ubuntu:latest
+          - image: ubuntu:rolling
+
+    container:
+      image: ${{ matrix.image }}
+
     steps:
-      - uses: actions/checkout@v4
       - name: Install linters
         run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sudo apt-get update --error-on=any
-          sudo apt-get dist-upgrade
-          sudo apt-get install python3-pytest pylint mypy black ncurses-base ncurses-term
+          if command -v dnf >/dev/null; then
+            dnf --refresh -y upgrade
+            dnf install -y git python3-pytest pylint mypy black ncurses-base ncurses-term
+          elif command -v apt-get >/dev/null; then
+            apt-get update --error-on=any
+            apt-get dist-upgrade -y
+            apt-get install -y git python3-pytest pylint mypy black ncurses-base ncurses-term
+          else
+            exit 2
+          fi
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: actions/checkout@v4
       - name: Run linters
         working-directory: usr/lib/python3/dist-packages/stprint/
-        run: ../../../../../run-tests
+        run: |
+          set -o xtrace
+          ../../../../../run-tests

@@ -24,15 +24,9 @@ from typing import (
 def get_sgr_support() -> int:
     """Returns number of supported SGR codes.
 
-    It is possible to query the terminfo database from the shell:
-
-    $ tput -T "$TERM" colors
-
-    $ find $(infocmp -D)/ -type f -not -name README -exec sh -c '
-        term="${0##*/}";
-        colors="$(tput -T "${term}" colors)";
-        printf "%s %s\n" "${term}" "${colors:-"-1"}"
-      ' {} ';'
+    Number of supported colors is limited to a number, there is not definition
+    of which SGR queries are supported without trying to parse the terminfo
+    database.
 
     To disable SGR support:
 
@@ -48,15 +42,31 @@ def get_sgr_support() -> int:
     Notes
     -----
     Terminfo database is outdated, it may support 24-bit mode and not advertise
-    it. Some terminals can adapt higher bit modes to lower ones, but there is
+    it. Some terminals can convert higher bit modes to lower ones, but there is
     no easy way to know if it is supported or not.
     https://github.com/termstandard/colors?tab=readme-ov-file#querying-the-terminal
+
+    It is possible to query the terminfo database from the shell:
+
+    $ tput -T "$TERM" colors
+
+    $ for term in $(toe -as | awk '{print $2}'); do
+        printf '%d %s\n' "$(tput -T "$term" colors || printf '-1')" "$term"
+      done | sort -n
 
     Examples
     --------
     Get SGR code count supported by your terminal:
     >>> get_sgr_support()
     8
+
+    Get SGR code count for any terminal:
+    >>> import os
+    >>> os.environ["NO_COLOR"] = ""
+    >>> os.environ["COLORTERM"] = ""
+    >>> os.environ["TERM"] = "xterm-16color"
+    >>> get_sgr_support()
+    16
 
     Disable SGR codes:
     >>> import os
@@ -72,7 +82,7 @@ def get_sgr_support() -> int:
         setupterm()
         return tigetnum("colors")
     except curses_error:
-        return -1
+        return -2
 
 
 def exclude_pattern(original_pattern: str, negate_pattern: list[str]) -> str:
@@ -92,23 +102,23 @@ def exclude_pattern(original_pattern: str, negate_pattern: list[str]) -> str:
 
     Examples
     --------
-    Redact unsafe sequences by default:
+    Patterns for 3-bit and 4-bit SGR is simple:
     >>> exclude_pattern(r"(0*(30|31))", ["0*31"])
     '(?!(?:0*31))(0*(30|31))'
 
-    Regex in the negating pattern:
-    >>> exclude_pattern(r"(0*38;0*5;0*[0-9])", ["0*38;0*5;[0-9]+"])
-    '(?!(?:0*38;0*5;[0-9]+))(0*38;0*5;0*[0-9])'
+    When excluding 8-bit and 24-bit SGR, a wild matches can be used:
+    >>> exclude_pattern(r"(0*38(:|;)0*5(:|;)0*[0-9])", ["0*38;0*5(:|;)[0-9]+"])
+    '(?!(?:0*38;0*5(:|;)[0-9]+))(0*38(:|;)0*5(:|;)0*[0-9])'
     """
     exclude_pattern_str = "|".join(negate_pattern)
     exclude_pattern_str = rf"(?!(?:{exclude_pattern_str}))"
     return rf"{exclude_pattern_str}{original_pattern}"
 
 
-def gen_sgr_pattern(
+def get_sgr_pattern(
     sgr: Optional[int],
     exclude_sgr: Optional[list[str]],
-) -> Pattern[str]:
+) -> str:
     """Print compiled RegEx for SGR sequences
 
     The SGR implementation is well documented[1][2][3], here is an extract from
@@ -181,25 +191,25 @@ def gen_sgr_pattern(
     Examples
     --------
     Get SGR pattern:
-    >>> gen_sgr_pattern()
+    >>> get_sgr_pattern()
 
     Get SGR pattern excluding some specific codes:
-    >>> exclude_pattern = ["0*30", "0*4[0-7]", "0*38;0*5;[0-9]+",
-    ...                    "0*38;0*2;0*0;[0-9]+;0*255"]
-    >>> gen_sgr_pattern(sgr=2 ** 24, exclude_pattern=exclude_pattern)
+    >>> exclude_pattern = ["0*30", "0*4[0-7]", "0*38(:|;)0*5(:|;)[0-9]+",
+    ...                    "0*38(:|;)0*2(:|;)0*0(:|;)[0-9]+(:|;)0*255"]
+    >>> get_sgr_pattern(sgr=2 ** 24, exclude_pattern=exclude_pattern)
     """
     if not sgr or sgr < 8:
-        return re_compile(r"(?!)")
+        return r"(?!)"
 
     ## 15: emu
     ## 52: d430*, dg+cc, dgunix+ccc
     ## 64: hpterm-color, wy370*, wyse370
     if sgr >= 2**3:  ## 8 colors
-        palette_3bit = r"0*(0|[3-4][0-7])"
-        sgr_combo = rf"{palette_3bit}"
+        pal_3bit = r"0*(0|[3-4][0-7])"
+        sgr_combo = rf"{pal_3bit}"
     if sgr >= 2**4:  ## 16 colors
-        palette_16bit = r"0*(1|9[0-7]|10[0-7])"
-        sgr_combo = rf"{sgr_combo}|{palette_16bit}"
+        pal_16bit = r"0*(1|9[0-7]|10[0-7])"
+        sgr_combo = rf"{sgr_combo}|{pal_16bit}"
     if sgr >= 88:  ## 88 and 256 colors
         ## 88 colors is not well documented but the few terminals that support
         ## it are very common (xterm, rxvt, Eterm). The terminfo library links
@@ -208,22 +218,24 @@ def gen_sgr_pattern(
         ## identify it.
         ## https://lists.gnu.org/archive/html/bug-ncurses/2020-03/msg00025.html
         ## TODO: verify which attributes should stay. # pylint: disable=fixme
-        palette_88color = r"0*([2-5]|[7-9]|2[1-5]|2[7-9]|39|49)"
+        pal_88color = r"0*([2-5]|[7-9]|2[1-5]|2[7-9]|39|49)"
         range_8bit = r"0*([0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])"
-        palette_8bit = rf"0*[3-4]8;0*5;{range_8bit}"
-        sgr_combo = rf"{sgr_combo}|{palette_88color}|{palette_8bit}"
+        pal_8bit = rf"0*[3-4]8;0*5;{range_8bit}"
+        pal_8bit_std = rf"0*[3-4]8:0*5:{range_8bit}"
+        sgr_combo = rf"{sgr_combo}|{pal_88color}|{pal_8bit}|{pal_8bit_std}"
     if sgr >= 2**24:  ## 16777216 colors
-        palette_24bit = rf"0*[3-4]8;0*2;{range_8bit};{range_8bit};{range_8bit}"
-        sgr_combo = rf"{sgr_combo}|{palette_24bit}"
+        pal_24bit = rf"0*[3-4]8;0*2;{range_8bit};{range_8bit};{range_8bit}"
+        pal_24bit_std = rf"0*[3-4]8:0*2:{range_8bit}:{range_8bit}:{range_8bit}"
+        sgr_combo = rf"{sgr_combo}|{pal_24bit}|{pal_24bit_std}"
 
     sgr_combo = rf"({sgr_combo})"
     if exclude_sgr:
         sgr_combo = exclude_pattern(sgr_combo, exclude_sgr)
     sgr_re = rf"(;*({sgr_combo})?(;+{sgr_combo})*)?;*m"
-    return re_compile(sgr_re)
+    return str(sgr_re)
 
 
-def gen_output(
+def get_output(
     untrusted_text: str,
     sgr_pattern: Optional[Union[str, Pattern[str]]] = None,
 ) -> Generator[str, str, None]:
@@ -235,7 +247,7 @@ def gen_output(
     ----------
     untrusted_text : str
         The unsafe text to be sanitized.
-    sgr_pattern : Union[str, Pattern[str]] = re.compile("(?!)")
+    sgr_pattern : Optional[Union[str, Pattern[str]]] = None
         Regular expression to match SGR codes.
 
     Yields
@@ -246,22 +258,22 @@ def gen_output(
     Examples
     --------
     Redact every ANSI escape by default:
-    >>> list(gen_output("\b\x1b[31m\x1b[m\x1b[2K"))
+    >>> list(get_output("\b\x1b[31m\x1b[m\x1b[2K"))
     ['_', '_', '[', '3', '1', 'm', '_', '[', 'm', '_', '[', '2', 'K']
 
     Allow just a subset of SGR:
-    >>> list(gen_output("\b\x1b[31m\x1b[m\x1b[2K", sgr_pattern="(0|3[0-7])?m"))
+    >>> list(get_output("\b\x1b[31m\x1b[m\x1b[2K", sgr_pattern="(0|3[0-7])?m"))
     ['_', '\x1b[31m', '\x1b[m', '_', '[', '2', 'K']
 
     Allow every SGR permissively:
-    >>> list(gen_output("\b\x1b[31m\x1b[m\x1b[2K", sgr_pattern="[0-9;]*m"))
+    >>> list(get_output("\b\x1b[31m\x1b[m\x1b[2K", sgr_pattern="[0-9;]*m"))
     ['_', '\x1b[31m', '\x1b[m', '_', '[', '2', 'K']
 
     Compile the regex when the pattern is large:
     >>> import re
     >>> regex = r"a very big and distinct regex"
     >>> sgr_pattern = re.compile(regex)
-    >>> list(gen_output("\b\x1b[31m\x1b[m\x1b[2K", sgr_pattern=sgr_pattern))
+    >>> list(get_output("\b\x1b[31m\x1b[m\x1b[2K", sgr_pattern=sgr_pattern))
     """
     allowed_space = {ord("\n"), ord("\t")}
     i = 0
@@ -327,16 +339,15 @@ def stprint(
     '_[2Jvulnerable: True____False'
 
     Redact all SGR codes:
-    >>> stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", sgr=False)
+    >>> stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", sgr=-1)
     '_[38;5;0m_[31m_[38;2;0;0;0m'
 
     Allow 4-bit SGR but not other bit modes:
-    >>> stprint.stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m",
-    ...                 exclude_sgr=["0*[3-4]8;0*(2|5);.*"])
+    >>> stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", sgr=2**4)
     '_[38;5;0m\x1b[31m_[38;2;0;0;0m'
     """
-    sgr_pattern = gen_sgr_pattern(sgr=sgr, exclude_sgr=exclude_sgr)
-    return "".join(list(gen_output(untrusted_text, sgr_pattern=sgr_pattern)))
+    sgr_pattern = re_compile(get_sgr_pattern(sgr=sgr, exclude_sgr=exclude_sgr))
+    return "".join(list(get_output(untrusted_text, sgr_pattern=sgr_pattern)))
 
 
 def main() -> None:
@@ -350,7 +361,7 @@ def main() -> None:
         untrusted_text = "".join(argv[1:])
     else:
         untrusted_text = stdin.buffer.read().decode("ascii", errors="ignore")
-    print(stprint(untrusted_text, sgr=get_sgr_support()), end="")
+    print(stprint(untrusted_text), end="")
 
 
 if __name__ == "__main__":
