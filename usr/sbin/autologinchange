@@ -82,7 +82,7 @@ disable_autologin() {
       fi
       sed -i "/^autologin-user=\s*${user}$/d" "${file_name}"
       true "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
-      file_contents="$(cat "${file_name}")"
+      file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Seat:*]' ]; then
          true "INFO: File '$file_name' contains no meaningful configuration data, removing."
@@ -96,7 +96,7 @@ disable_autologin() {
       fi
       remove_from_config_section "${file_name}" 'Autologin' "User=${user}"
       true "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
-      file_contents="$(cat "${file_name}")"
+      file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Autologin]' ]; then
          true "INFO: File '$file_name' contains no meaningful configuration data, removing."
@@ -119,7 +119,7 @@ disable_sysmaint_autologin() {
       fi
       sed -i '/^sysmaint-autologin=/d' "${file_name}";
       echo "INFO: Removed autologin configuration for account 'sysmaint' from file '${file_name}'."
-      file_contents="$(cat "${file_name}")"
+      file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ]; then
          echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
          safe-rm -- "${file_name}"
