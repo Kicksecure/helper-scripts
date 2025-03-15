@@ -121,21 +121,21 @@ linux_user_account_shell_to_zsh() {
   echo "$0: INFO: For more information, see: https://www.kicksecure.com/shell#default"
 
   if ! id "$USER_CREATE_USERNAME" &>/dev/null ; then
-    echo "$0: INFO: user '$USER_CREATE_USERNAME' does not exist. Not setting shell to zsh."
+    echo "$0: INFO: account '$USER_CREATE_USERNAME' does not exist. Not setting shell to zsh."
     return
   fi
 
-  ## Use getent to retrieve the user's entry from /etc/passwd
+  ## Use getent to retrieve the account's entry from /etc/passwd
   user_passwd_entry=$(getent passwd "$USER_CREATE_USERNAME")
 
-  ## Extract the shell field (the last field) from the user's entry
+  ## Extract the shell field (the last field) from the account's entry
   user_default_shell=$(echo "$user_passwd_entry" | awk -F: '{print $NF}')
 
   if [ "$user_default_shell" = "/usr/bin/zsh" ]; then
     return 0
   fi
 
-  echo "$0: INFO: Setting shell for user '$USER_CREATE_USERNAME' to zsh."
+  echo "$0: INFO: Setting shell for account '$USER_CREATE_USERNAME' to zsh."
   ## Use timeout to prevent unexplained bug password prompt caused by chsh.
   if ! timeout --kill-after 5 5 chsh --shell /usr/bin/zsh "$USER_CREATE_USERNAME" ; then
      if [ ! "$derivative_maker" = "true" ] && ! [ -f '/var/lib/dist-base-files/live_build' ]; then
