@@ -1,3 +1,59 @@
+commit 24ce232d162a4d774ecef43b9da6016f5387335e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 06:15:14 2025 -0400
+
+    sponge
+
+commit 131c051c8575a292f0db5d7cbdd1219118c92012
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 06:14:23 2025 -0400
+
+    end-of-options
+
+commit a04791c111b22ef9b46cf6b5405c2df1d45b0073
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 06:13:55 2025 -0400
+
+    output
+
+commit 122bd38798a1ea9f0bd2afc12c55075e3a754890
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 06:11:35 2025 -0400
+
+    end-of-options
+
+commit d3cd3483afa131e3d49b40229e13e5954d92b5f1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 06:03:15 2025 -0400
+
+    improved error handling
+
+commit 93d18df6616f54535750744c354576b3c5c5919b
+Merge: 903fb04 0927ac0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 05:58:25 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/autologin'
+
+commit 903fb04e6da5c39408f82d4373d5227f4ab384db
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 05:53:24 2025 -0400
+
+    output
+
+commit c3ddecfd60208940e1c24f68ba40e6362e5c97e9
+Merge: a1c452f ee730a9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 05:50:11 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/user-create'
+
+commit a1c452f54ba890b0475404d7388ee8902dacd00c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Mar 14 08:28:37 2025 +0000
+
+    bumped changelog version
+
 commit f380eb8028f8a94ceee0295977e7c557d8a4e775
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Mar 14 04:23:27 2025 -0400
@@ -33,6 +89,49 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Mar 13 06:51:05 2025 -0400
 
     pick from https://github.com/Kicksecure/helper-scripts/pull/14
+
+commit 0927ac0a56e1da17b49fa9e01b2958b24acb745a
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Mar 12 19:04:33 2025 -0500
+
+    Add CLI user interface to autologinchange, fix /etc/user-sysmaint-split.conf.d handling, refactor
+
+commit acf77126e0bfe3ab073f86027e31db4582e57f79
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Mar 11 22:43:26 2025 -0500
+
+    Work better with multiple display managers, use less confusing wording for user accounts
+
+commit 5b86ef9137e1a3eb922fff9e248977fb6b7d11ea
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Mar 11 01:11:40 2025 -0500
+
+    wip: refactor to work better with multiple display managers
+
+commit a8473209f5bc120b81a652761c4b307f85b8eb38
+Merge: 838cf30 ee730a9
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Mar 10 16:28:46 2025 -0500
+
+    Merge branch 'arraybolt3/user-create' into arraybolt3/autologin
+
+commit ee730a9e8344b4197481868ca260440036f85b5b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Mar 10 16:28:31 2025 -0500
+
+    Move user account creation logic from dist-base-files to helper-scripts, don't set Bash hardening flags in accountctl library
+
+commit 838cf305f19b844c02e733c733758002388a39d9
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Mar 9 20:04:02 2025 -0500
+
+    Bump usability-misc Breaks/Replaces
+
+commit 5e0b9b7e01cb700b90a8b3794a5d2e99293d6e11
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Mar 6 21:25:41 2025 -0600
+
+    Add autologinchange and get-user-list, move pwchange from usability-misc to helper-scripts
 
 commit 4ab0ec85308f2a1fb1459c668b2603013b5343b2
 Author: Patrick Schleizer <adrelanos@whonix.org>
