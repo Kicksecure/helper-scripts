@@ -107,7 +107,7 @@ disable_autologin() {
 
 enable_sysmaint_autologin() {
    mkdir --parents -- /etc/user-sysmaint-split.conf.d
-   echo 'sysmaint-autologin=yes' >> /etc/user-sysmaint-split.conf.d/40_autologin.conf;
+   echo 'sysmaint-autologin=yes' | sponge -a -- /etc/user-sysmaint-split.conf.d/40_autologin.conf;
    echo "INFO: Wrote autologin configuration for account 'sysmaint' to file '/etc/user-sysmaint-split.conf.d/40_autologin.conf'."
 }
 
