@@ -86,7 +86,7 @@ disable_autologin() {
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Seat:*]' ]; then
          true "INFO: File '$file_name' contains no meaningful configuration data, removing."
-         safe-rm "${file_name}"
+         safe-rm -- "${file_name}"
       fi
    done
 
@@ -100,7 +100,7 @@ disable_autologin() {
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Autologin]' ]; then
          true "INFO: File '$file_name' contains no meaningful configuration data, removing."
-         safe-rm "${file_name}"
+         safe-rm -- "${file_name}"
       fi
    done
 }
@@ -122,7 +122,7 @@ disable_sysmaint_autologin() {
       file_contents="$(cat "${file_name}")"
       if [ -z "${file_contents}" ]; then
          true "INFO: File '$file_name' contains no meaningful configuration data, removing."
-         safe-rm "${file_name}"
+         safe-rm -- "${file_name}"
       fi
    done
 }
