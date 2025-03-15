@@ -108,7 +108,7 @@ disable_autologin() {
 enable_sysmaint_autologin() {
    mkdir --parents -- /etc/user-sysmaint-split.conf.d
    echo 'sysmaint-autologin=yes' >> /etc/user-sysmaint-split.conf.d/40_autologin.conf;
-   true "INFO: Wrote autologin configuration for account 'sysmaint' to file '/etc/user-sysmaint-split.conf.d/40_autologin.conf'."
+   echo "INFO: Wrote autologin configuration for account 'sysmaint' to file '/etc/user-sysmaint-split.conf.d/40_autologin.conf'."
 }
 
 disable_sysmaint_autologin() {
@@ -118,10 +118,10 @@ disable_sysmaint_autologin() {
          continue
       fi
       sed -i '/^sysmaint-autologin=/d' "${file_name}";
-      true "INFO: Removed autologin configuration for account 'sysmaint' from file '${file_name}'."
+      echo "INFO: Removed autologin configuration for account 'sysmaint' from file '${file_name}'."
       file_contents="$(cat "${file_name}")"
       if [ -z "${file_contents}" ]; then
-         true "INFO: File '$file_name' contains no meaningful configuration data, removing."
+         echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
          safe-rm -- "${file_name}"
       fi
    done
