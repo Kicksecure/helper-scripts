@@ -11,6 +11,8 @@ set -o pipefail
 if test -r /etc/adduser.conf; then
   adduser_conf_file="$(cat -- /etc/adduser.conf)"
 
+  ## TODO: Consider multiple matches of FIRST_UID and LAST_UID. Match only last?
+
   first_uid="$(
     grep 'FIRST_UID' <<<"${adduser_conf_file}" | grep -v -- '^\s*#' \
       | cut -d'=' -f2 | sed 's/^[[:space:]]*//'
