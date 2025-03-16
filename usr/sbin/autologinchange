@@ -41,6 +41,7 @@ remove_from_config_section() {
             filter_stage='2'
          fi
       elif [ "${filter_stage}" = '2' ]; then
+         ## TODO: What if remove_line contains special characters?
          if [[ "${line}" =~ ^${remove_line}$ ]]; then
             continue
          fi
