@@ -290,7 +290,7 @@ autologin_users_lightdm=()
 autologin_users_sddm=()
 autologin_users=()
 
-if [ ! -d '/etc/ligthdm' ]; then
+if [ ! -d '/etc/lightdm' ]; then
    mkdir /etc/lightdm 2>/dev/null || true;
 fi
 if [ ! -d '/etc/sddm.conf.d' ]; then
