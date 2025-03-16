@@ -54,7 +54,7 @@ remove_from_config_section() {
       fi
    done < "${file_name}" | sponge -- "${file_name}"
 
-   true "INFO: Removed line '$remove_line' from section '$section' of file '$file_name'."
+   echo "INFO: Removed line '$remove_line' from section '$section' of file '$file_name'."
 }
 
 enable_autologin() {
@@ -64,12 +64,12 @@ enable_autologin() {
    mkdir --parents -- /etc/lightdm/lightdm.conf.d
    echo "[Seat:*]
 autologin-user=${user}" | sponge -- '/etc/lightdm/lightdm.conf.d/40_autologin.conf'
-   true "INFO: Wrote file '/etc/lightdm.conf.d/40_autologin.conf' to enable autologin for account '$user'."
+   echo "INFO: Wrote file '/etc/lightdm.conf.d/40_autologin.conf' to enable autologin for account '$user'."
 
    mkdir --parents -- /etc/sddm.conf.d
    echo "[Autologin]
 User=${user}" | sponge -- '/etc/sddm.conf.d/z-autologin.conf'
-   true "INFO: Wrote file '/etc/sddm.conf.d/z-autologin.conf' to enable autologin for account '$user'."
+   echo "INFO: Wrote file '/etc/sddm.conf.d/z-autologin.conf' to enable autologin for account '$user'."
 }
 
 disable_autologin() {
@@ -82,11 +82,11 @@ disable_autologin() {
          continue
       fi
       sed -i "/^autologin-user=\s*${user}$/d" "${file_name}"
-      true "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
+      echo "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Seat:*]' ]; then
-         true "INFO: File '$file_name' contains no meaningful configuration data, removing."
+         echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
          safe-rm -- "${file_name}"
       fi
    done
@@ -96,11 +96,11 @@ disable_autologin() {
          continue
       fi
       remove_from_config_section "${file_name}" 'Autologin' "User=${user}"
-      true "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
+      echo "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Autologin]' ]; then
-         true "INFO: File '$file_name' contains no meaningful configuration data, removing."
+         echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
          safe-rm -- "${file_name}"
       fi
    done
@@ -172,7 +172,7 @@ cli_enable_autologin() {
    if [ "${user}" = 'sysmaint' ]; then
       ## Account 'sysmaint' requires special handling.
       if [ "${sysmaint_autologin}" = 'yes' ]; then
-         true "INFO: Autologin already enabled for account 'sysmaint', exiting."
+         echo "INFO: Autologin already enabled for account 'sysmaint', exiting."
          exit 0
       fi
       enable_sysmaint_autologin
@@ -181,7 +181,7 @@ cli_enable_autologin() {
 
    ## $user != 'sysmaint' at this point.
    if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
-      true "INFO: Autologin already enabled for account '$user', exiting."
+      echo "INFO: Autologin already enabled for account '$user', exiting."
       exit 0
    fi
 
@@ -197,7 +197,7 @@ cli_disable_autologin() {
    if [ "${user}" = 'sysmaint' ]; then
       ## Account 'sysmaint' requires special handling.
       if [ "${sysmaint_autologin}" = 'no' ]; then
-         true "INFO: Autologin already disabled for account 'sysmaint', exiting."
+         echo "INFO: Autologin already disabled for account 'sysmaint', exiting."
          exit 0
        fi
        disable_sysmaint_autologin
@@ -206,7 +206,7 @@ cli_disable_autologin() {
 
    ## $user != 'sysmaint' at this point.
    if ! [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
-      true "INFO: Autologin already disabled for account '$user', exiting."
+      echo "INFO: Autologin already disabled for account '$user', exiting."
       exit 0
    fi
 
