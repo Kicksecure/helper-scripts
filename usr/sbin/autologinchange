@@ -41,7 +41,7 @@ remove_from_config_section() {
    output=""
    for line in "${lines[@]}"; do
       if [ "${filter_stage}" = '1' ]; then
-         output+="${line}$'\n'"
+         output+="${line}"
          if [ "${line}" = "[${section}]" ]; then
             filter_stage='2'
          fi
@@ -51,12 +51,12 @@ remove_from_config_section() {
             line_was_removed="true"
             continue
          fi
-         output+="${line}$'\n'"
+         output+="${line}"
          if [[ "${line}" =~ ^\[.*\]$ ]]; then
             filter_stage='3'
          fi
       else
-         output+="${line}$'\n'"
+         output+="${line}"
       fi
    done
 
@@ -75,11 +75,17 @@ enable_autologin() {
    echo "[Seat:*]
 autologin-user=${user}" | sponge -- '/etc/lightdm/lightdm.conf.d/40_autologin.conf'
    echo "INFO: Wrote file '/etc/lightdm/lightdm.conf.d/40_autologin.conf' to enable autologin for account '$user'."
+   echo "$delimiter"
+   cat -- '/etc/lightdm/lightdm.conf.d/40_autologin.conf'
+   echo "$delimiter"
 
    mkdir --parents -- /etc/sddm.conf.d
    echo "[Autologin]
 User=${user}" | sponge -- '/etc/sddm.conf.d/z-autologin.conf'
    echo "INFO: Wrote file '/etc/sddm.conf.d/z-autologin.conf' to enable autologin for account '$user'."
+   echo "$delimiter"
+   cat -- '/etc/sddm.conf.d/z-autologin.conf'
+   echo "$delimiter"
 }
 
 disable_autologin() {
@@ -91,7 +97,19 @@ disable_autologin() {
       if ! [ -f "${file_name}" ]; then
          continue
       fi
-      sed -i "/^autologin-user=\s*${user}$/d" -- "${file_name}"
+
+      pattern="^autologin-user=[[:space:]]*${user}$"
+      match_count=$(grep -E -c -- "$pattern" "${file_name}") || true
+
+      sed -i -E "/$pattern/d" -- "${file_name}"
+
+      if [ "$match_count" -gt 0 ]; then
+         echo "INFO: Removed $match_count matching line(s) from file '${file_name}'."
+      else
+         true "INFO: No matching lines found in file '${file_name}'."
+      fi
+
+      #sed -i "/^autologin-user=\s*${user}$/d" -- "${file_name}"
       true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
@@ -297,6 +315,7 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+delimiter="####################"
 autologin_users_lightdm=()
 autologin_users_sddm=()
 autologin_users=()
