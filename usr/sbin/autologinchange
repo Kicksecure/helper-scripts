@@ -290,12 +290,8 @@ autologin_users_lightdm=()
 autologin_users_sddm=()
 autologin_users=()
 
-if [ ! -d '/etc/lightdm' ]; then
-   mkdir /etc/lightdm 2>/dev/null || true;
-fi
-if [ ! -d '/etc/sddm.conf.d' ]; then
-   mkdir /etc/sddm.conf.d 2>/dev/null || true;
-fi
+mkdir --parents -- /etc/lightdm
+mkdir --parents -- /etc/sddm.conf.d
 
 ## Ensure that lightdm doesn't have a multi-seat configuration, we can't
 ## safely manage those
