@@ -21,7 +21,7 @@ get_password() {
    ## license:
    ## licensed under cc by-sa 3.0 with attribution required.
 
-   local char
+   local char prompt
 
    password=""
    prompt=""
@@ -103,4 +103,9 @@ fi
 
 ## Change the password otherwise.
 echo "${user}:${password}" | chpasswd
+
+unset first_input
+unset second_input
+unset password
+
 echo "SUCCESS: Password for user '$user' has been updated successfully."
