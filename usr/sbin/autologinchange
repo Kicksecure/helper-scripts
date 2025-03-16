@@ -115,7 +115,7 @@ disable_autologin() {
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Seat:*]' ]; then
          echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
-         safe-rm -- "${file_name}"
+         safe-rm --verbose -- "${file_name}"
       fi
    done
 
@@ -129,15 +129,18 @@ disable_autologin() {
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Autologin]' ]; then
          echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
-         safe-rm -- "${file_name}"
+         safe-rm --verbose -- "${file_name}"
       fi
    done
 }
 
 enable_sysmaint_autologin() {
    mkdir --parents -- /etc/user-sysmaint-split.conf.d
-   echo 'sysmaint-autologin=yes' | sponge -a -- /etc/user-sysmaint-split.conf.d/40_autologin.conf;
+   echo 'sysmaint-autologin=yes' | sponge -a -- /etc/user-sysmaint-split.conf.d/40_autologin.conf
    echo "INFO: Wrote autologin configuration for account 'sysmaint' to file '/etc/user-sysmaint-split.conf.d/40_autologin.conf'."
+   echo "$delimiter"
+   cat -- /etc/user-sysmaint-split.conf.d/40_autologin.conf
+   echo "$delimiter"
 }
 
 disable_sysmaint_autologin() {
@@ -151,7 +154,7 @@ disable_sysmaint_autologin() {
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ]; then
          echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
-         safe-rm -- "${file_name}"
+         safe-rm --verbose -- "${file_name}"
       fi
    done
 }
