@@ -13,7 +13,7 @@ get_config_section() {
    file_name="$1"
    section="$2"
    found_section='n'
-   while read -r line; do
+   while read -r -- line; do
       if [ "${found_section}" = 'y' ]; then
          if [[ "${line}" =~ ^\[.*\]$ ]]; then
             break
@@ -34,7 +34,7 @@ remove_from_config_section() {
    section="$2"
    remove_line="$3"
    filter_stage='1'
-   while read -r line; do
+   while read -r -- line; do
       if [ "${filter_stage}" = '1' ]; then
          echo "${line}"
          if [ "${line}" = "[${section}]" ]; then
@@ -220,13 +220,13 @@ autologinchange() {
       echo "   ${user_entry}"
    done
 
-   read -r -p "Enter the username you would like to toggle autologin for: " user
+   read -r -p "Enter the username you would like to toggle autologin for: " -- user
 
    validate_username "${user}"
 
    if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
       echo "Account '$user' is currently configured to automatically log in." >&2
-      read -r -p "Would you like to disable autologin? [Y/N] " disable_yn
+      read -r -p "Would you like to disable autologin? [Y/N] " -- disable_yn
 
       if [ "${disable_yn,,}" = 'y' ]; then
          disable_autologin "${user}"
@@ -238,7 +238,7 @@ autologinchange() {
    elif [ "${user}" = 'sysmaint' ]; then
       if [ "${sysmaint_autologin}" = 'yes' ]; then
          echo "Account 'sysmaint' is currently configured to automatically log in."
-         read -r -p "Would you like to disable autologin for sysmaint mode? [Y/N] " disable_yn
+         read -r -p "Would you like to disable autologin for sysmaint mode? [Y/N] " -- disable_yn
 
          if [ "${disable_yn,,}" = 'y' ]; then
             disable_sysmaint_autologin
@@ -249,7 +249,7 @@ autologinchange() {
          exit 0
       else
          echo "Account 'sysmaint' is currently NOT configured to automatically log in."
-         read -r -p "Would you like to enable autologin for sysmaint mode? [Y/N] " enable_yn
+         read -r -p "Would you like to enable autologin for sysmaint mode? [Y/N] " -- enable_yn
 
          if [ "${enable_yn,,}" = 'y' ]; then
             ## Disable sysmaint autologin first, then re-enable it, to make
@@ -265,7 +265,7 @@ autologinchange() {
       fi
    else
       echo "Account '$user' is currently NOT configured to automatically log in." >&2
-      read -r -p "Are you sure you want to enable autologin for account '$user'? [Y/N] " enable_yn
+      read -r -p "Are you sure you want to enable autologin for account '$user'? [Y/N] " -- enable_yn
 
       if [ "${enable_yn,,}" = 'y' ]; then
          if [ "${#autologin_users[@]}" -gt '0' ]; then
