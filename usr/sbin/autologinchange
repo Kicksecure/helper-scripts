@@ -128,7 +128,7 @@ disable_sysmaint_autologin() {
       if ! [ -f "${file_name}" ]; then
          continue
       fi
-      sed -i '/^sysmaint-autologin=/d' -- "${file_name}";
+      sed -i '/^sysmaint-autologin=/d' -- "${file_name}"
       echo "INFO: Removed autologin configuration for account 'sysmaint' from file '${file_name}'."
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ]; then
