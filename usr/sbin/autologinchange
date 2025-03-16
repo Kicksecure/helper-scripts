@@ -29,15 +29,19 @@ get_config_section() {
 }
 
 remove_from_config_section() {
-   local file_name section remove_line filter_stage line_was_removed
+   local file_name section remove_line filter_stage lines output line_was_removed
    file_name="$1"
    section="$2"
    remove_line="$3"
    filter_stage='1'
    line_was_removed=""
-   while read -r -- line; do
+
+   mapfile -t lines < "$file_name"
+
+   output=""
+   for line in "${lines[@]}"; do
       if [ "${filter_stage}" = '1' ]; then
-         echo "${line}"
+         output+="${line}$'\n'"
          if [ "${line}" = "[${section}]" ]; then
             filter_stage='2'
          fi
@@ -47,16 +51,17 @@ remove_from_config_section() {
             line_was_removed="true"
             continue
          fi
-         echo "${line}"
+         output+="${line}$'\n'"
          if [[ "${line}" =~ ^\[.*\]$ ]]; then
             filter_stage='3'
          fi
       else
-         echo "${line}"
+         output+="${line}$'\n'"
       fi
-   done < "${file_name}" | sponge -- "${file_name}"
+   done
 
-   ## TODO: variable scope vs subshell issue
+   echo "${output}" | sponge -- "$file_name"
+
    if [ "$line_was_removed" = "true" ]; then
       echo "INFO: Removed line '$remove_line' from section '$section' of file '$file_name'."
    fi
