@@ -29,11 +29,12 @@ get_config_section() {
 }
 
 remove_from_config_section() {
-   local file_name section remove_line filter_stage
+   local file_name section remove_line filter_stage line_was_removed
    file_name="$1"
    section="$2"
    remove_line="$3"
    filter_stage='1'
+   line_was_removed=""
    while read -r -- line; do
       if [ "${filter_stage}" = '1' ]; then
          echo "${line}"
@@ -43,6 +44,7 @@ remove_from_config_section() {
       elif [ "${filter_stage}" = '2' ]; then
          ## TODO: What if remove_line contains special characters?
          if [[ "${line}" =~ ^${remove_line}$ ]]; then
+            line_was_removed="true"
             continue
          fi
          echo "${line}"
@@ -54,7 +56,10 @@ remove_from_config_section() {
       fi
    done < "${file_name}" | sponge -- "${file_name}"
 
-   echo "INFO: Removed line '$remove_line' from section '$section' of file '$file_name'."
+   ## TODO: variable scope vs subshell issue
+   if [ "$line_was_removed" = "true" ]; then
+      echo "INFO: Removed line '$remove_line' from section '$section' of file '$file_name'."
+   fi
 }
 
 enable_autologin() {
@@ -82,7 +87,7 @@ disable_autologin() {
          continue
       fi
       sed -i "/^autologin-user=\s*${user}$/d" "${file_name}"
-      echo "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
+      true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Seat:*]' ]; then
@@ -96,7 +101,7 @@ disable_autologin() {
          continue
       fi
       remove_from_config_section "${file_name}" 'Autologin' "User=${user}"
-      echo "INFO: Removed autologin configuration for account '$user' from file '$file_name'."
+      true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Autologin]' ]; then
