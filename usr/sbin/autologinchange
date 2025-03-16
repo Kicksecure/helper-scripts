@@ -362,6 +362,8 @@ readarray -t autologin_users < <(
 )
 
 sysmaint_autologin='no'
+## TODO: If user-sysmaint-split is not installed, then /usr/libexec/user-sysmaint-split/sysmaint-boot is missing, which results in
+## BUG: Shows sysmaint autologin NOT enabled but file /etc/user-sysmaint-split.conf.d/40_autologin.conf contains 'sysmaint-autologin=yes'.
 if [ -x /usr/libexec/user-sysmaint-split/sysmaint-boot ]; then
    if [ "$(/usr/libexec/user-sysmaint-split/sysmaint-boot query-sysmaint-autologin 2>/dev/null)" = 'yes' ]; then
       sysmaint_autologin='yes'
