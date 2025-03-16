@@ -8,22 +8,41 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-adduser_conf_file="$(cat /etc/adduser.conf)"
+if test -r /etc/adduser.conf; then
+  adduser_conf_file="$(cat -- /etc/adduser.conf)"
 
-first_uid="$(
-  grep 'FIRST_UID' <<<"${adduser_conf_file}" | grep -v '^\s*#' \
-    | cut -d'=' -f2 | sed 's/^[[:space:]]*//'
-)" || true
-last_uid="$(
-  grep 'LAST_UID' <<<"${adduser_conf_file}" | grep -v '^\s*#' \
-    | cut -d'=' -f2 | sed 's/^[[:space:]]*//'
-)" || true
-if [ -z "${first_uid}" ]; then
+  first_uid="$(
+    grep 'FIRST_UID' <<<"${adduser_conf_file}" | grep -v -- '^\s*#' \
+      | cut -d'=' -f2 | sed 's/^[[:space:]]*//'
+  )" || true
+
+  if [[ "$first_uid" = *[!0-9]* ]]; then
+    echo "$0: ERROR: FIRST_UID in file /etc/adduser.conf is not strictly numeric!" >&2
+    exit 1
+  fi
+
+  last_uid="$(
+    grep 'LAST_UID' <<<"${adduser_conf_file}" | grep -v -- '^\s*#' \
+      | cut -d'=' -f2 | sed 's/^[[:space:]]*//'
+  )" || true
+
+  if [[ "$last_uid" = *[!0-9]* ]]; then
+    echo "$0: ERROR: LAST_UID in file /etc/adduser.conf is not strictly numeric!" >&2
+    exit 1
+  fi
+fi
+
+if [ -z "${first_uid:-}" ]; then
   first_uid=1000
-fi  
-if [ -z "${last_uid}" ]; then
+fi
+if [ -z "${last_uid:-}" ]; then
   last_uid=59999
-fi  
+fi
+
+if ! test -r /etc/passwd; then
+  echo "$0: ERROR: file /etc/passwd is not readable!" >&2
+  exit 1
+fi
 
 while read -r user_entry; do
    current_uid="$(cut -d':' -f3 <<< "${user_entry}")"
