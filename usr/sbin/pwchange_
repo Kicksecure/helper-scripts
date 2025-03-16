@@ -5,8 +5,7 @@
 ## See the file COPYING for copying conditions.
 
 set -o errexit
-## Not compatible with get_password function.
-# set -o nounset
+set -o nounset
 set -o errtrace
 set -o pipefail
 
@@ -24,10 +23,10 @@ get_password() {
 
    local char
 
-   unset password
-   unset prompt
-   while IFS= read -p "$prompt" -r -s -n 1 char
-   do
+   password=""
+   prompt=""
+
+   while IFS= read -p "${prompt:-}" -r -s -n 1 char; do
       # Enter - accept password
       if [[ $char == $'\0' ]] ; then
          break
