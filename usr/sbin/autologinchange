@@ -64,7 +64,7 @@ enable_autologin() {
    mkdir --parents -- /etc/lightdm/lightdm.conf.d
    echo "[Seat:*]
 autologin-user=${user}" | sponge -- '/etc/lightdm/lightdm.conf.d/40_autologin.conf'
-   echo "INFO: Wrote file '/etc/lightdm.conf.d/40_autologin.conf' to enable autologin for account '$user'."
+   echo "INFO: Wrote file '/etc/lightdm/lightdm.conf.d/40_autologin.conf' to enable autologin for account '$user'."
 
    mkdir --parents -- /etc/sddm.conf.d
    echo "[Autologin]
