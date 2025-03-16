@@ -267,7 +267,7 @@ autologinchange() {
       read -r -p "Are you sure you want to enable autologin for account '$user'? [Y/N] " enable_yn
 
       if [ "${enable_yn,,}" = 'y' ]; then
-         if [ "${#autologin_users[@]}" = '0' ]; then
+         if [ "${#autologin_users[@]}" -gt '0' ]; then
             for autologin_user in "${autologin_users[@]}"; do
                disable_autologin "${autologin_user}"
             done
