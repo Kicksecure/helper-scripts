@@ -1,3 +1,51 @@
+commit 325f35753b51c2e1e6c63067398e3fbedaa6ed77
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 21:39:00 2025 -0400
+
+    end of options
+
+commit a5eeec063a4e39942a36cd93f733a203a0ee5acd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 21:38:30 2025 -0400
+
+    renamed: usr/sbin/pwchange -> usr/sbin/pwchange_
+
+commit 5ce7643849a9f99fa5ade9fbd9825dc034a1126b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 21:24:59 2025 -0400
+
+    output
+
+commit 3f7943e9c89ba95cb7877efee345905edac0a740
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 21:22:34 2025 -0400
+
+    todo
+
+commit 3f5743525fec6a58e8269a4356a245e71ec54ba0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 21:14:15 2025 -0400
+
+    fix
+
+commit 2598d5679e86bda39cccb09cd1ad58a66b0e518e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 21:11:43 2025 -0400
+
+    refactoring
+
+commit 44ba40a1fb58fe0ae3351f7a25e465fd74055121
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 21:10:29 2025 -0400
+
+    typo
+
+commit d1c4d1b0d79e12459fbfa1a699791699261cbab4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 15 10:51:08 2025 +0000
+
+    bumped changelog version
+
 commit 24ce232d162a4d774ecef43b9da6016f5387335e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Mar 15 06:15:14 2025 -0400
