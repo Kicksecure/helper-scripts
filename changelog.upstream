@@ -1,3 +1,21 @@
+commit b5698fcfe55ebefacdff737449bf4f06ff89f976
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 17 04:59:17 2025 -0400
+
+    fix for real: avoid expected error message in case a Tor consensus has not been downloaded yet:
+    
+    > ERROR: Variable 'vstart' is empty or contains only whitespace/newlines.
+    
+    Thanks to @marmarek for the bug report!
+    
+    https://forums.whonix.org/t/systemcheck-fails-for-unclear-reason/21424/14
+
+commit c1312072ef1c17808232ba0e74cd2fccf9e64697
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 17 08:52:58 2025 +0000
+
+    bumped changelog version
+
 commit bf23829dee357ca197b391707388cccb56ef762b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Mar 17 04:13:01 2025 -0400
