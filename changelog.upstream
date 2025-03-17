@@ -1,3 +1,42 @@
+commit bf23829dee357ca197b391707388cccb56ef762b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 17 04:13:01 2025 -0400
+
+    add `/usr/libexec/helper-scripts/live-mode.sh`
+
+commit a3a2cda64eea80f1cdc9d1f435017028ebd69886
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 17 03:30:27 2025 -0400
+
+    printf
+
+commit 216e54f949612070452bacf2b76f173f6fde940c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 17 03:26:10 2025 -0400
+
+    `append-once` fix: ignore output by `str_match`
+    
+    (could notify about found versus not found and thereby add unwanted console output)
+
+commit 37424a0cc73857fb3248ceba9264b182eef28d9f
+Merge: e4b0aab 11b7c89
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 17 02:55:29 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/autologin'
+
+commit 11b7c89c3b6c98bdbfeaa5802294e7ff4f3a71dc
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Mar 16 13:42:09 2025 -0500
+
+    Bugfixes, enhance/fix argument parsing, fix -c option behavior and add -r option for handling sysmaint autologin
+
+commit e4b0aabd8170a020c0da54ab154343dc646a2e4f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Mar 16 10:37:32 2025 +0000
+
+    bumped changelog version
+
 commit 588ec435cf7bfc3d4aa105ef6091e850ebedef43
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Mar 16 06:36:46 2025 -0400
