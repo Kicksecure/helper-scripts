@@ -89,7 +89,7 @@ User=${user}" | sponge -- '/etc/sddm.conf.d/z-autologin.conf'
 }
 
 disable_autologin() {
-   local user file_list file_name file_contents
+   local user lightdm_config_file_list file_name file_contents
    user="$1"
 
    readarray -t lightdm_config_file_list < <(find /etc/lightdm)
@@ -187,8 +187,23 @@ validate_username() {
    fi
 }
 
+filter_out_sysmaint_maybe() {
+   ## This function expects to have data piped to in on standard input.
+   if [ "${special_sysmaint_handling}" = 'yes' ]; then
+      grep -v -- 'sysmaint'
+   else
+      cat
+   fi
+}
+
 check_autologin() {
-   if [ "${#autologin_users[@]}" = '0' ]; then
+   local user
+   user="${1:-}"
+   ## Don't run check_root, this might need to be used as a normal user by
+   ## systemcheck
+
+   # shellcheck disable=SC2076
+   if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
       exit 0
    else
       exit 1
@@ -198,10 +213,12 @@ check_autologin() {
 cli_enable_autologin() {
    local user
 
+   check_root
+
    user="${1:-}"
    validate_username "${user}"
 
-   if [ "${user}" = 'sysmaint' ]; then
+   if [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
       ## Account 'sysmaint' requires special handling.
       if [ "${sysmaint_autologin}" = 'yes' ]; then
          echo "INFO: Autologin already enabled for account 'sysmaint', exiting."
@@ -211,7 +228,7 @@ cli_enable_autologin() {
       exit 0
    fi
 
-   ## $user != 'sysmaint' at this point.
+   # shellcheck disable=SC2076
    if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
       echo "INFO: Autologin already enabled for account '$user', exiting."
       exit 0
@@ -223,10 +240,12 @@ cli_enable_autologin() {
 cli_disable_autologin() {
    local user
 
+   check_root
+
    user="${1:-}"
    validate_username "${user}"
 
-   if [ "${user}" = 'sysmaint' ]; then
+   if [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
       ## Account 'sysmaint' requires special handling.
       if [ "${sysmaint_autologin}" = 'no' ]; then
          echo "INFO: Autologin already disabled for account 'sysmaint', exiting."
@@ -236,7 +255,7 @@ cli_disable_autologin() {
        exit 0
    fi
 
-   ## $user != 'sysmaint' at this point.
+   # shellcheck disable=SC2076
    if ! [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
       echo "INFO: Autologin already disabled for account '$user', exiting."
       exit 0
@@ -247,6 +266,9 @@ cli_disable_autologin() {
 
 autologinchange() {
    local user user_entry found_user autologin_user enable_yn disable_yn
+
+   check_root
+
    echo "Users present on the system:"
    for user_entry in "${user_list[@]}"; do
       echo "   ${user_entry}"
@@ -256,6 +278,7 @@ autologinchange() {
 
    validate_username "${user}"
 
+   # shellcheck disable=SC2076
    if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
       echo "Account '$user' is currently configured to automatically log in." >&2
       read -r -p "Would you like to disable autologin? [Y/N] " -- disable_yn
@@ -267,7 +290,7 @@ autologinchange() {
          echo "CANCELLED disabling autologin for account '$user'."
       fi
       exit 0
-   elif [ "${user}" = 'sysmaint' ]; then
+   elif [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
       if [ "${sysmaint_autologin}" = 'yes' ]; then
          echo "Account 'sysmaint' is currently configured to automatically log in."
          read -r -p "Would you like to disable autologin for sysmaint mode? [Y/N] " -- disable_yn
@@ -300,7 +323,7 @@ autologinchange() {
       read -r -p "Are you sure you want to enable autologin for account '$user'? [Y/N] " -- enable_yn
 
       if [ "${enable_yn,,}" = 'y' ]; then
-         if [ "${#autologin_users[@]}" -gt '0' ]; then
+         if [ "${#autologin_users[@]}" != '0' ]; then
             for autologin_user in "${autologin_users[@]}"; do
                disable_autologin "${autologin_user}"
             done
@@ -314,10 +337,12 @@ autologinchange() {
    fi
 }
 
-if [ "$(id -u)" != "0" ]; then
-   echo "ERROR: This must be run as root (sudo)!" >&2
-   exit 1
-fi
+check_root() {
+   if [ "$(id -u)" != "0" ]; then
+      echo "ERROR: This must be run as root (sudo)!" >&2
+      exit 1
+   fi
+}
 
 delimiter="####################"
 autologin_users_lightdm=()
@@ -327,6 +352,49 @@ autologin_users=()
 mkdir --parents -- /etc/lightdm
 mkdir --parents -- /etc/sddm.conf.d
 
+special_sysmaint_handling='no'
+sysmaint_autologin='no'
+if [ -x /usr/libexec/user-sysmaint-split/sysmaint-boot ]; then
+   special_sysmaint_handling='yes'
+   if [ "$(/usr/libexec/user-sysmaint-split/sysmaint-boot query-sysmaint-autologin 2>/dev/null)" = 'yes' ]; then
+      sysmaint_autologin='yes'
+   fi
+fi
+
+autologinchange_mode=''
+while true; do
+   case "${1:-}" in
+      '-c')
+         shift
+         autologinchange_mode='check_autologin'
+         ;;
+      '-e')
+         shift
+         autologinchange_mode='cli_enable_autologin'
+         ;;
+      '-d')
+         shift
+         autologinchange_mode='cli_disable_autologin'
+         ;;
+      '-r')
+         ## -r = raw, don't use special handling on sysmaint account even if
+         ## user-sysmaint-split is installed
+         shift
+         special_sysmaint_handling='no'
+         ;;
+      '--')
+         shift
+         break
+         ;;
+      *)
+         break
+         ;;
+   esac
+done
+if [ -z "${autologinchange_mode}" ]; then
+   autologinchange_mode='autologinchange'
+fi
+
 ## Ensure that lightdm doesn't have a multi-seat configuration, we can't
 ## safely manage those
 if grep -qri -- '^\[Seat:[^*]' /etc/lightdm; then
@@ -335,7 +403,7 @@ if grep -qri -- '^\[Seat:[^*]' /etc/lightdm; then
 fi
 readarray -t autologin_users_lightdm < <(
    grep -ri -- '^autologin-user=' /etc/lightdm \
-      | grep -v -- 'sysmaint' \
+      | filter_out_sysmaint_maybe \
       | awk -F'=' '{ print $NF }' || true
 ) || true
 true "INFO: Collected list of users with lightdm autologin enabled."
@@ -347,7 +415,7 @@ readarray -t autologin_users_sddm < <(
       fi
       get_config_section "${file_name}" 'Autologin'  \
          | grep -- '^User=' \
-         | grep -v -- 'sysmaint' \
+         | filter_out_sysmaint_maybe \
          | awk -F'=' '{ print $NF }' || true
    done
 ) || true
@@ -362,15 +430,6 @@ readarray -t autologin_users < <(
      | sort -u
 )
 
-sysmaint_autologin='no'
-## TODO: If user-sysmaint-split is not installed, then /usr/libexec/user-sysmaint-split/sysmaint-boot is missing, which results in
-## BUG: Shows sysmaint autologin NOT enabled but file /etc/user-sysmaint-split.conf.d/40_autologin.conf contains 'sysmaint-autologin=yes'.
-if [ -x /usr/libexec/user-sysmaint-split/sysmaint-boot ]; then
-   if [ "$(/usr/libexec/user-sysmaint-split/sysmaint-boot query-sysmaint-autologin 2>/dev/null)" = 'yes' ]; then
-      sysmaint_autologin='yes'
-   fi
-fi
-
 if ! output="$(/usr/libexec/helper-scripts/get-user-list)"; then
     echo "ERROR: Failed to get user list!" >&2
     exit 1
@@ -378,20 +437,4 @@ fi
 
 readarray -t user_list <<< "$output"
 
-case "${1:-}" in
-   '-c')
-      check_autologin
-      ;;
-   '-e')
-      shift
-      cli_enable_autologin "$@"
-      ;;
-   '-d')
-      shift
-      cli_disable_autologin "$@"
-      ;;
-   *)
-      ## Fall back to interactive usage
-      autologinchange
-      ;;
-esac
+"${autologinchange_mode}" "$@"
