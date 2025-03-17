@@ -17,7 +17,7 @@ set -o nounset
 true "$0: INFO: START"
 
 error_handler() {
-  echo "$0: ERROR: An error occurred" >&2
+  printf "%s\n" "$0: ERROR: An error occurred" >&2
   exit 1
 }
 
@@ -35,12 +35,12 @@ append_once() {
     #dir_name="${file_name%/*}"
     dir_name="$(dirname -- "$file_name")"
     if ! test -w "$dir_name" ; then
-      echo "$0: ERROR: Folder '$dir_name' (where file '$file_name' should be created) is not writeable!" >&2
+      printf "%s\n" "$0: ERROR: Folder '$dir_name' (where file '$file_name' should be created) is not writeable!" >&2
       exit 1
     fi
   else
     if ! test -r "$file_name" ; then
-      echo "$0: ERROR: File '$file_name' not readable!" >&2
+      printf "%s\n" "$0: ERROR: File '$file_name' not readable!" >&2
       exit 1
     fi
     if str_match "$line" "$file_name" &>/dev/null ; then
@@ -48,19 +48,19 @@ append_once() {
       return 0
     fi
     if ! test -w "$file_name" ; then
-      echo "$0: ERROR: File '$file_name' not writeable!" >&2
+      printf "%s\n" "$0: ERROR: File '$file_name' not writeable!" >&2
       exit 1
     fi
   fi
 
   true "INFO: Appending line to: $file_name"
   ## Use `sponge`, because it is atomic, for nicer xtrace and better error handling.
-  echo "$line" | sponge -a -- "$file_name"
+  printf "%s\n" "$line" | sponge -a -- "$file_name"
 }
 
 # Main execution
 if [ $# -ne 2 ]; then
-  echo "Usage: $0 /path/to/file 'line to append'" >&2
+  printf "%s\n" "Usage: $0 /path/to/file 'line to append'" >&2
   exit 1
 fi
 
