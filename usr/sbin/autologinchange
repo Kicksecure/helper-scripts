@@ -8,6 +8,9 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
+# shellcheck source=../libexec/helper-scripts/get_colors.sh
+source /usr/libexec/helper-scripts/get_colors.sh
+
 get_config_section() {
    local file_name section found_section line
    file_name="$1"
@@ -269,6 +272,7 @@ autologinchange() {
 
    check_root
 
+   echo "[${green}INFO${nocolor}]: This tool enables or disables GUI autologin only."
    echo "Users present on the system:"
    for user_entry in "${user_list[@]}"; do
       echo "   ${user_entry}"
