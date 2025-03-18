@@ -9,7 +9,7 @@
 safe_echo_type_of_printf="$(type -t printf)"
 
 if [ ! "$safe_echo_type_of_printf" = "builtin" ]; then
-  printf '%s\n' "INFO: $0: printf is not a builtin" >&2
+  printf '%s\n' "ERROR: $0: printf is not a builtin" >&2
   exit 1
 fi
 
