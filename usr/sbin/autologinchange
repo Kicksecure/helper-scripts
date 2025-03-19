@@ -217,6 +217,7 @@ cli_enable_autologin() {
    local user
 
    check_root
+   create_dm_config_dirs
 
    user="${1:-}"
    validate_username "${user}"
@@ -244,6 +245,7 @@ cli_disable_autologin() {
    local user
 
    check_root
+   create_dm_config_dirs
 
    user="${1:-}"
    validate_username "${user}"
@@ -271,6 +273,7 @@ autologinchange() {
    local user user_entry found_user autologin_user enable_yn disable_yn
 
    check_root
+   create_dm_config_dirs
 
    echo "[${green}INFO${nocolor}]: This tool enables or disables GUI autologin only."
    echo "Users present on the system:"
@@ -348,13 +351,15 @@ check_root() {
    fi
 }
 
+create_dm_config_dirs() {
+   mkdir --parents -- /etc/lightdm
+   mkdir --parents -- /etc/sddm.conf.d
+}
+
 delimiter="####################"
 autologin_users_lightdm=()
 autologin_users_sddm=()
 autologin_users=()
-
-mkdir --parents -- /etc/lightdm
-mkdir --parents -- /etc/sddm.conf.d
 
 special_sysmaint_handling='no'
 sysmaint_autologin='no'
