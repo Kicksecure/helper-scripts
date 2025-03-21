@@ -356,6 +356,11 @@ create_dm_config_dirs() {
    mkdir --parents -- /etc/sddm.conf.d
 }
 
+if [ -f '/usr/share/qubes/marker-vm' ]; then
+   echo "GUI autologin is not applicable to Qubes OS." >&2
+   exit 0
+fi
+
 delimiter="####################"
 autologin_users_lightdm=()
 autologin_users_sddm=()
