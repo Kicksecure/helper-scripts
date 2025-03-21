@@ -1,3 +1,15 @@
+commit c45f3a1711a61d7bf102128264010d95fae2879b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Mar 21 13:34:50 2025 -0400
+
+    add `/usr/libexec/helper-scripts/temp.sh`
+
+commit aeaf9055e65f8e640790d13538fa51ebfd4a4822
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 19 11:30:02 2025 +0000
+
+    bumped changelog version
+
 commit ebf1e9a6ffb85fd19c9520c142a5690249b40bb3
 Merge: 5a77230 695b4d0
 Author: Patrick Schleizer <adrelanos@whonix.org>
