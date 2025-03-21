@@ -1,10 +1,11 @@
 #!/bin/sh
-set -eu
+set -eux
 git_toplevel="$(git rev-parse --show-toplevel)"
 pyrc="${git_toplevel}/pyproject.toml"
-cd "${git_toplevel}/usr/lib/python3/dist-packages/stprint/"
+pythonpath="${git_toplevel}/usr/lib/python3/dist-packages"
+export PYTHONPATH="${pythonpath}${PYTHONPATH+":${PYTHONPATH}"}"
+cd "${pythonpath}/stdisplay/"
 python3 -m pytest -o 'python_files=*.py' "${@}"
-# shellcheck disable=SC2046
-pylint --rcfile="${pyrc}" $(find . -type f -name "*.py")
-mypy --config-file="${pyrc}" .
 black --config="${pyrc}" --color --diff --check .
+find . -type f -name "*.py" -print0 | xargs -0 pylint --rcfile="${pyrc}"
+mypy --config-file="${pyrc}" .

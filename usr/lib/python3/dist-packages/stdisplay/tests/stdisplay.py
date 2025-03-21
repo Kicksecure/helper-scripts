@@ -1,42 +1,34 @@
 #!/usr/bin/env python3
+
 """
-Test the stprint module.
+Test the stdisplay module.
 """
 
-import os
 import unittest
-import subprocess
 from typing import (
     Any,
 )
-from stprint.stprint import (
+from stdisplay.stdisplay import (
     exclude_pattern,
-    stprint,
-    get_sgr_support,
+    stdisplay,
 )
 
-## TODO: deleteme # pylint: disable=fixme
-from stprint.time_stprint import stprint_repl
 
-
-class TestSTPrint(unittest.TestCase):
+class TestSTDisplay(unittest.TestCase):
     """
-    Test stprint
+    Test stdisplay
     """
 
-    def assert_stprint(
+    def assert_stdisplay(
         self, text: str, expected_result: str, **kwargs: Any
     ) -> None:
         """
-        Assert that stprint returned the expected results.
+        Assert that stdisplay returned the expected results.
         """
-        result = stprint(text, **kwargs)
-        self.assertEqual(result, expected_result)
-        ## TODO: deleteme # pylint: disable=fixme
-        result = stprint_repl(text, **kwargs)
+        result = stdisplay(text, **kwargs)
         self.assertEqual(result, expected_result)
 
-    def run_stprint_cases(
+    def run_stdisplay_cases(
         self, cases: list[tuple[str, str]], **kwargs: Any
     ) -> None:
         """
@@ -44,51 +36,7 @@ class TestSTPrint(unittest.TestCase):
         """
         for text, expected_result in cases:
             with self.subTest(text=text, expected_result=expected_result):
-                self.assert_stprint(text, expected_result, **kwargs)
-
-    # pylint: disable=too-many-arguments
-    def shell(
-        self,
-        text: str,
-        *,
-        stdin: bool = False,
-        no_color: str = "",
-        colorterm: str = "",
-        term: str = "xterm-direct",
-    ) -> subprocess.CompletedProcess[str]:
-        """
-        Run in a shell.
-        """
-        test_dir = os.path.dirname(os.path.abspath(__file__))
-        script_dir = os.path.dirname(test_dir)
-        command = "./stprint.py"
-        input_data = ""
-        if stdin:
-            input_data = text
-        else:
-            command += f" '{text}'"
-        ## Avoid tester environment from affecting tests, such as CI having
-        ## TERM=dumb, but also allow us testing if RegEx is correct
-        ## depending on the terminal provided.
-        env = os.environ.copy()
-        env.update(
-            {"NO_COLOR": no_color, "COLORTERM": colorterm, "TERM": term}
-        )
-
-        os.environ.update({"NO_COLOR": "", "COLORTERM": "", "TERM": term})
-        if get_sgr_support() < -1:
-            self.fail(f"Terminfo entry not found: {term}")
-        return subprocess.run(
-            command,
-            input=input_data,
-            env=env,
-            cwd=script_dir,
-            shell=True,
-            capture_output=True,
-            check=True,
-            text=True,
-            timeout=2,
-        )
+                self.assert_stdisplay(text, expected_result, **kwargs)
 
     def test_exclude_pattern(self) -> None:
         """
@@ -112,7 +60,7 @@ class TestSTPrint(unittest.TestCase):
                     exclude_regex = exclude_pattern(orig_pat, exclude_pat)
                     self.assertRegex(item, exclude_regex)
 
-    def test_stprint_strip(self) -> None:
+    def test_stdisplay_strip(self) -> None:
         """
         Test if stripping whitespace characters is disabled.
         """
@@ -122,9 +70,9 @@ class TestSTPrint(unittest.TestCase):
             ("\ta\n", "\ta\n"),
             ("", ""),
         ]
-        self.run_stprint_cases(cases)
+        self.run_stdisplay_cases(cases)
 
-    def test_stprint_esc(self) -> None:
+    def test_stdisplay_esc(self) -> None:
         """
         Test ESC sequence.
         """
@@ -152,9 +100,9 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[2K", "_[2K"),
             ("\\x1b[2K", "\\x1b[2K"),
         ]
-        self.run_stprint_cases(cases)
+        self.run_stdisplay_cases(cases)
 
-    def test_stprint_sgr(self) -> None:
+    def test_stdisplay_sgr(self) -> None:
         """
         Test with SGR.
         """
@@ -193,9 +141,9 @@ class TestSTPrint(unittest.TestCase):
                 "\x1b[;0038;05;0001;000001;000038;005;00002;00038;05;0000003m",
             ),
         ]
-        self.run_stprint_cases(cases, sgr=2**24)
+        self.run_stdisplay_cases(cases, sgr=2**24)
 
-    def test_stprint_sgr_no_color(self) -> None:
+    def test_stdisplay_sgr_no_color(self) -> None:
         """
         Test without color
         """
@@ -204,9 +152,9 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[31m", "_[31m"),
         ]
         for sgr in (-1, -256, 0, 7):
-            self.run_stprint_cases(cases, sgr=sgr)
+            self.run_stdisplay_cases(cases, sgr=sgr)
 
-    def test_stprint_sgr_three_bit(self) -> None:
+    def test_stdisplay_sgr_three_bit(self) -> None:
         """
         Test with SGR 3-bit.
         """
@@ -217,9 +165,9 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;5;1m", "_[38;5;1m"),
             ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
         ]
-        self.run_stprint_cases(cases, sgr=2**3)
+        self.run_stdisplay_cases(cases, sgr=2**3)
 
-    def test_stprint_sgr_four_bit(self) -> None:
+    def test_stdisplay_sgr_four_bit(self) -> None:
         """
         Test with SGR 4-bit.
         """
@@ -231,9 +179,9 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;5;1m", "_[38;5;1m"),
             ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
         ]
-        self.run_stprint_cases(cases, sgr=2**4)
+        self.run_stdisplay_cases(cases, sgr=2**4)
 
-    def test_stprint_sgr_eight_bit(self) -> None:
+    def test_stdisplay_sgr_eight_bit(self) -> None:
         """
         Test with SGR 88 colors and 8-bit.
         """
@@ -246,9 +194,9 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
         ]
         for sgr in (88, 2**8):
-            self.run_stprint_cases(cases, sgr=sgr)
+            self.run_stdisplay_cases(cases, sgr=sgr)
 
-    def test_stprint_sgr_twenty_four_bit(self) -> None:
+    def test_stdisplay_sgr_twenty_four_bit(self) -> None:
         """
         Test with SGR 24-bit.
         """
@@ -274,9 +222,9 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38:2:255;0:1m", "_[38:2:255;0:1m"),
             ("\x1b[38:2:255:0;1m", "_[38:2:255:0;1m"),
         ]
-        self.run_stprint_cases(cases, sgr=2**24)
+        self.run_stdisplay_cases(cases, sgr=2**24)
 
-    def test_stprint_no_extra_sgr(self) -> None:
+    def test_stdisplay_no_extra_sgr(self) -> None:
         """
         Test disabling extra SGR.
         """
@@ -287,11 +235,11 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;2;255;0;0m", "_[38;2;255;0;0m"),
             ("\x1b[2;38;2;255;0;0;1m", "_[2;38;2;255;0;0;1m"),
         ]
-        self.run_stprint_cases(
+        self.run_stdisplay_cases(
             cases, sgr=2**24, exclude_sgr=["0*[3-4]8;0*(2|5);.*"]
         )
 
-    def test_stprint_no_sgr(self) -> None:
+    def test_stdisplay_no_sgr(self) -> None:
         """
         Test disabling SGR.
         """
@@ -302,9 +250,9 @@ class TestSTPrint(unittest.TestCase):
             ("\x1b[38;2;255;0;0m", "_[38;2;255;0;0m"),
             ("\x1b[2;38;2;255;0;0;1m", "_[2;38;2;255;0;0;1m"),
         ]
-        self.run_stprint_cases(cases, sgr=-1)
+        self.run_stdisplay_cases(cases, sgr=-1)
 
-    def test_stprint_no_specific_sgr(self) -> None:
+    def test_stdisplay_no_specific_sgr(self) -> None:
         """
         Test disabling specific SGR.
         """
@@ -341,143 +289,7 @@ class TestSTPrint(unittest.TestCase):
             "0*38;0*5;0*25[0-4]",
             r"0*38;0*2;\d+;0*253;\d+",
         ]
-        self.run_stprint_cases(cases, sgr=2**24, exclude_sgr=exclude_sgr)
-
-    def test_stprint_main(self) -> None:
-        """
-        Test execution by the shell from standard input and parameter and if
-        both methods of passing text match each other as well as matching the
-        expected results.
-        """
-        cases = [
-            ("-h", "-h"),
-            ("-?", "-?"),
-            ("--help", "--help"),
-            ("--helpabc", "--helpabc"),
-            ("--help-abc", "--help-abc"),
-            ("--whatever", "--whatever"),
-            ("text", "text"),
-            (" \n\t ", " \n\t "),
-            ("\n\t", "\n\t"),
-            ("\ta\n", "\ta\n"),
-            ("", ""),
-            ("\x1b[31m", "\x1b[31m"),
-            ("\x1b[6m", "_[6m"),
-        ]
-        for text, expected_result in cases:
-            with self.subTest(text=text, expected_result=expected_result):
-                proc_param = self.shell(text, stdin=False)
-                proc_stdin = self.shell(text, stdin=True)
-                param_stdout = proc_param.stdout
-                param_stderr = proc_param.stderr
-                stdin_stdout = proc_stdin.stdout
-                stdin_stderr = proc_stdin.stderr
-                self.assertEqual(param_stderr, "")
-                self.assertEqual(param_stdout, expected_result)
-                self.assertEqual(param_stdout, stdin_stdout)
-                self.assertEqual(param_stderr, stdin_stderr)
-
-    def test_stprint_environment_sgr(self) -> None:
-        """
-        Test if environment variable can disable or enable SGR.
-        """
-        cases = [
-            ("\x1b[31m", "_[31m"),
-            ("\x1b[91m", "_[91m"),
-            ("\x1b[4m", "_[4m"),
-            ("\x1b[38;5;1;m", "_[38;5;1;m"),
-            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
-        ]
-        for text, expected_result in cases:
-            with self.subTest(text=text, expected_result=expected_result):
-                result = self.shell(
-                    text,
-                    no_color="1",
-                    colorterm="truecolor",
-                    term="xterm-direct",
-                )
-                self.assertEqual(result.stdout, expected_result)
-
-        cases = [
-            ("\x1b[31m", "\x1b[31m"),
-            ("\x1b[91m", "\x1b[91m"),
-            ("\x1b[4m", "\x1b[4m"),
-            ("\x1b[38;5;1;m", "\x1b[38;5;1;m"),
-            ("\x1b[38;2;255;0;1m", "\x1b[38;2;255;0;1m"),
-        ]
-        for text, expected_result in cases:
-            with self.subTest(text=text, expected_result=expected_result):
-                result = self.shell(
-                    text,
-                    colorterm="truecolor",
-                    term="xterm-old",
-                )
-                self.assertEqual(result.stdout, expected_result)
-
-    def test_stprint_environment_term_sgr(self) -> None:
-        """
-        Test SGR being controlled by the $TERM environment variable.
-        """
-        cases = [
-            ("\x1b[31m", "_[31m"),
-            ("\x1b[91m", "_[91m"),
-            ("\x1b[4m", "_[4m"),
-            ("\x1b[38;5;1;m", "_[38;5;1;m"),
-            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
-        ]
-        for text, expected_result in cases:
-            with self.subTest(text=text, expected_result=expected_result):
-                result = self.shell(text, term="xterm-old")
-                self.assertEqual(result.stdout, expected_result)
-
-        cases = [
-            ("\x1b[31m", "\x1b[31m"),
-            ("\x1b[91m", "_[91m"),
-            ("\x1b[4m", "_[4m"),
-            ("\x1b[38;5;1;m", "_[38;5;1;m"),
-            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
-        ]
-        for text, expected_result in cases:
-            with self.subTest(text=text, expected_result=expected_result):
-                result = self.shell(text, term="xterm")
-                self.assertEqual(result.stdout, expected_result)
-
-        cases = [
-            ("\x1b[31m", "\x1b[31m"),
-            ("\x1b[91m", "\x1b[91m"),
-            ("\x1b[4m", "_[4m"),
-            ("\x1b[38;5;1;m", "_[38;5;1;m"),
-            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
-        ]
-        for text, expected_result in cases:
-            with self.subTest(text=text, expected_result=expected_result):
-                result = self.shell(text, term="xterm-16color")
-                self.assertEqual(result.stdout, expected_result)
-
-        cases = [
-            ("\x1b[31m", "\x1b[31m"),
-            ("\x1b[91m", "\x1b[91m"),
-            ("\x1b[4m", "\x1b[4m"),
-            ("\x1b[38;5;1;m", "\x1b[38;5;1;m"),
-            ("\x1b[38;2;255;0;1m", "_[38;2;255;0;1m"),
-        ]
-        for text, expected_result in cases:
-            with self.subTest(text=text, expected_result=expected_result):
-                for term in ("xterm-88color", "xterm-256color"):
-                    result = self.shell(text, term=term)
-                    self.assertEqual(result.stdout, expected_result)
-
-        cases = [
-            ("\x1b[31m", "\x1b[31m"),
-            ("\x1b[91m", "\x1b[91m"),
-            ("\x1b[4m", "\x1b[4m"),
-            ("\x1b[38;5;1;m", "\x1b[38;5;1;m"),
-            ("\x1b[38;2;255;0;1m", "\x1b[38;2;255;0;1m"),
-        ]
-        for text, expected_result in cases:
-            with self.subTest(text=text, expected_result=expected_result):
-                result = self.shell(text, term="xterm-direct")
-                self.assertEqual(result.stdout, expected_result)
+        self.run_stdisplay_cases(cases, sgr=2**24, exclude_sgr=exclude_sgr)
 
 
 if __name__ == "__main__":

@@ -11,14 +11,8 @@ Sanitize text to be safely printed to the terminal.
 
 from curses import setupterm, tigetnum, error as curses_error
 from os import environ
-from re import match, compile as re_compile
-from sys import argv, stdin
-from typing import (
-    Generator,
-    Optional,
-    Pattern,
-    Union,
-)
+from re import compile as re_compile, sub as re_sub
+from typing import Optional
 
 
 def get_sgr_support() -> int:
@@ -235,77 +229,7 @@ def get_sgr_pattern(
     return str(sgr_re)
 
 
-def get_output(
-    untrusted_text: str,
-    sgr_pattern: Optional[Union[str, Pattern[str]]] = None,
-) -> Generator[str, str, None]:
-    """Create output with a generator.
-
-    Memory efficient method to sanitize the output.
-
-    Parameters
-    ----------
-    untrusted_text : str
-        The unsafe text to be sanitized.
-    sgr_pattern : Optional[Union[str, Pattern[str]]] = None
-        Regular expression to match SGR codes.
-
-    Yields
-    -------
-    str
-        Sanitized text.
-
-    Examples
-    --------
-    Redact every ANSI escape by default:
-    >>> list(get_output("\b\x1b[31m\x1b[m\x1b[2K"))
-    ['_', '_', '[', '3', '1', 'm', '_', '[', 'm', '_', '[', '2', 'K']
-
-    Allow just a subset of SGR:
-    >>> list(get_output("\b\x1b[31m\x1b[m\x1b[2K", sgr_pattern="(0|3[0-7])?m"))
-    ['_', '\x1b[31m', '\x1b[m', '_', '[', '2', 'K']
-
-    Allow every SGR permissively:
-    >>> list(get_output("\b\x1b[31m\x1b[m\x1b[2K", sgr_pattern="[0-9;]*m"))
-    ['_', '\x1b[31m', '\x1b[m', '_', '[', '2', 'K']
-
-    Compile the regex when the pattern is large:
-    >>> import re
-    >>> regex = r"a very big and distinct regex"
-    >>> sgr_pattern = re.compile(regex)
-    >>> list(get_output("\b\x1b[31m\x1b[m\x1b[2K", sgr_pattern=sgr_pattern))
-    """
-    allowed_space = {ord("\n"), ord("\t")}
-    i = 0
-    length = len(untrusted_text)
-    while i < length:
-        char = untrusted_text[i]
-        hex_value = ord(char)
-        if 0x20 <= hex_value <= 0x7E or hex_value in allowed_space:
-            yield char
-            i += 1
-        elif (
-            sgr_pattern is not None
-            and hex_value == 0x1B
-            and i + 1 < length
-            and untrusted_text[i + 1] == "["
-            and (sgr_match := match(sgr_pattern, untrusted_text[i + 2 :]))
-        ):
-            ## SGR is only accepted when:
-            ## - SGR pattern is not None;
-            ## - Character hexadecimal value is ESC (0x1B);
-            ## - Character index + 1 is smaller than text length;
-            ## - Next character is CSI ([); and
-            ## - Regex match starts on the first char after ESC + CSI (i + 2).
-            sequence_length = sgr_match.end() + 2
-            yield untrusted_text[i : i + sequence_length]
-            i += sequence_length
-        else:
-            yield "_"
-            i += 1
-
-
-def stprint(
+def stdisplay(
     untrusted_text: str,
     sgr: Optional[int] = get_sgr_support(),
     exclude_sgr: Optional[list[str]] = None,
@@ -335,34 +259,17 @@ def stprint(
     Examples
     --------
     Redact unsafe sequences by default:
-    >>> stprint("\x1b[2Jvulnerable: True\b\b\b\bFalse")
+    >>> stdisplay("\x1b[2Jvulnerable: True\b\b\b\bFalse")
     '_[2Jvulnerable: True____False'
 
     Redact all SGR codes:
-    >>> stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", sgr=-1)
+    >>> stdisplay("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", sgr=-1)
     '_[38;5;0m_[31m_[38;2;0;0;0m'
 
     Allow 4-bit SGR but not other bit modes:
-    >>> stprint("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", sgr=2**4)
+    >>> stdisplay("\x1b[38;5;0m\x1b[31m\x1b[38;2;0;0;0m", sgr=2**4)
     '_[38;5;0m\x1b[31m_[38;2;0;0;0m'
     """
-    sgr_pattern = re_compile(get_sgr_pattern(sgr=sgr, exclude_sgr=exclude_sgr))
-    return "".join(list(get_output(untrusted_text, sgr_pattern=sgr_pattern)))
-
-
-def main() -> None:
-    """Sanitize text to be safely printed to the terminal.
-
-    The escapes must be already interpreted for them to be printed as is or
-    sanitized.
-    """
-    untrusted_text = ""
-    if len(argv) > 1:
-        untrusted_text = "".join(argv[1:])
-    else:
-        untrusted_text = stdin.buffer.read().decode("ascii", errors="ignore")
-    print(stprint(untrusted_text), end="")
-
-
-if __name__ == "__main__":
-    main()
+    sgr_pattern = get_sgr_pattern(sgr=sgr, exclude_sgr=exclude_sgr)
+    sgr_pattern = r"(\x1b(?!\[" + sgr_pattern + r")|[^\x1b\n\t\x20-\x7E])"
+    return str(re_sub(re_compile(sgr_pattern), "_", untrusted_text))

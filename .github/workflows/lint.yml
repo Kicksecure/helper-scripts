@@ -20,8 +20,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - image: fedora:latest
-          - image: fedora:rawhide
           - image: debian:stable
           - image: debian:testing
           - image: debian:unstable
@@ -34,18 +32,17 @@ jobs:
     steps:
       - name: Install linters
         run: |
-          if command -v dnf >/dev/null; then
-            dnf --refresh -y upgrade
-            dnf install -y git python3-pytest pylint mypy black ncurses-base ncurses-term
-          elif command -v apt-get >/dev/null; then
-            apt-get update --error-on=any
-            apt-get dist-upgrade -y
-            apt-get install -y git python3-pytest pylint mypy black ncurses-base ncurses-term
-          else
-            exit 2
-          fi
+          apt-get update --error-on=any
+          apt-get dist-upgrade -y
+          apt-get install -y git python3-pytest pylint mypy black ncurses-base ncurses-term \
+            build-essential debhelper dh-python dh-apparmor
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/checkout@v4
+
+      - name: Test build
+        run: |
+          dpkg-buildpackage -b -i -us -uc
+          apt install ../helper-scripts
       - name: Run linters
         working-directory: usr/lib/python3/dist-packages/stprint/
         run: |
