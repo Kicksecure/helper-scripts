@@ -142,20 +142,24 @@ def get_sgr_pattern(
     *   Invalid SGR will lead to one of the following behaviors:
         *   Invalidate the whole sequence skipping all SGR.
         *   Invalidate only itself, skipping evaluation of that specific SGR.
+    *   SGR 8-bit and 24-bit can have the separators semicolon ";" or colon ":"
+        as long as only one type of separators is used per sequence.
 
     With the definitions above, we set the following pseudo regex:
 
     -  3-bit SGR: 0*([3-4][0-7])?m
     -  4-bit SGR: 0*((9|10)[0-7])?m
-    -  88 color and 8-bit SGR: <0-107> and 0*[3-4]8;0*5;0*<0-255>m
-    - 24-bit SGR: 0*[3-4]8;0*2;0*<0-255>;0*<0-255>;0*<0-255>m
+    -  88 color and 8-bit SGR: <0-107> and 0*[3-4]8(:|;)0*5(:|;)0*<0-255>m
+    - 24-bit SGR: 0*[3-4]8(:|;)0*2(:|;)0*<0-255>(:|;)0*<0-255>(:|;)0*<0-255>m
 
     Where the angle brackets '<>' stands for a pseudo regex range while the
     square brackets '[]' stands for a valid regex range. Remember that any bit
     mode can start, end and be in the middle of a sequence as well as be
-    prefixed, separated and terminated by as many semicolons as it wants. The
+    prefixed, separated and terminated by as many semicolons as it wants, while
+    separators used in 8-bit and 24-bit SGR have to be consistent. The
     following are examples of valid sequences:
 
+    ESC CSI 38:2:0:0:0:1:38;5;255m
     ESC CSI 38;2;0;0;0;1;38;5;255m
     ESC CSI 038;002;000;000;000;001;038;005;255m
     ESC CSI ;;;;00038;002;00000;00000;000;;;;;001;;;;;;;038;005;0000255;m

@@ -8,6 +8,8 @@
 """Safely print stdin to stdout or file."""
 
 from sys import argv, stdin, stdout
+import shutil
+from tempfile import NamedTemporaryFile
 from stdisplay.stdisplay import stdisplay
 
 
@@ -21,8 +23,12 @@ def main() -> None:
         stdout.write(stdisplay("".join(untrusted_text_list)))
         stdout.flush()
     else:
-        with open(argv[1], mode="w", encoding="ascii") as file:
-            file.write(stdisplay("".join(untrusted_text_list)))
+        with NamedTemporaryFile(mode="w", delete=False) as temp_file:
+            temp_file.write(stdisplay("".join(untrusted_text_list)))
+            temp_file.flush()
+        for file in argv[1:]:
+            shutil.copy2(temp_file.name, file)
+        temp_file.close()
 
 
 if __name__ == "__main__":

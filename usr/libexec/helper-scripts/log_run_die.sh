@@ -55,10 +55,10 @@ log(){
   ## error logs are the minimum and should always be printed, even if
   ## failing to assign a correct log type
   ## send bugs and error to stdout and stderr
-  log_full="${log_source_script}${log_level_colorized}${log_content}"$'\n'
+  log_full="${log_source_script}${log_level_colorized}${log_content}"
   case "${log_type}" in
     bug|error)
-      stprint "${log_full}" >&2
+      stecho "${log_full}" >&2
       return 0
       ;;
     null)
@@ -76,7 +76,7 @@ log(){
         true
         ;;
       *)
-        stprint "${log_full}" >&2
+        stecho "${log_full}" >&2
         ;;
     esac
   fi

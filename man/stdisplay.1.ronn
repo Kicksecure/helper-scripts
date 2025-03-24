@@ -1,0 +1,215 @@
+stdisplay(1) -- Sanitize text to be safely printed to the terminal
+=================================================================
+
+<!--
+# Copyright (C) 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+# Copyright (C) 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+
+`stprint [TEXT...]`<br>
+`stecho [TEXT...]`<br>
+`stcat [FILE...]`<br>
+`sttee [FILE...]`<br>
+`stsponge [FILE]`<br>
+
+## DESCRIPTION
+
+`stdisplay` is a Python library used to safely print text from untrusted
+sources sanitizing non-ASCII characters and dangerous ANSI escape
+sequenes, from the latter, only a strict subset of SGR (Select Graphic
+Rendition) attributes, line feeds (`\n`) and horizontal tabs (`\t`) are
+allowed).
+
+The following tests are done in order to verify if SGR should be enabled
+and how large it's set should be:
+
+1.  If the environment variable `$NO_COLOR` is set to a non-empty value,
+    SGR is disabled.
+2.  If the environment variable `$COLORTERM` is set to `truecolor`,
+    24-bit SGR is enabled.
+3.  If none of the above matches, the terminal referenced by the
+    environment variable `$TERM` is queried for its `colors` capability,
+    which returns how many colors the terminal supports.
+
+Tools based on this library have no option parameters, everything is
+treated either as text or file, depending on the tool used, therefore,
+`--` is interpreted as text and not end of options.
+
+Each tool behaves as if their shell utility counterpart was used without
+any options:
+
+| Tool     | Sanitizer |
+| -------- | --------- |
+| strint   | printf    |
+| stecho   | echo      |
+| stcat    | cat       |
+| sttee    | tee       |
+| stsponge | sponge    |
+
+## RETURN VALUES
+
+* `0` Successfully printed text.
+* Any other return value is an error.
+
+## EXAMPLE: SGR CONTROL
+
+Enable 24-bit SGR if the terminfo database is outdated:
+
+<code>
+COLORTERM=truecolor stprint "$(printf '%b' "\033[38;2;0;0;255mSome color\033[m")"<br>
+</code>
+
+Disable SGR:
+
+<code>
+NO_COLOR=1 stprint "$(printf '%b' "\033[31mNo color\033[m")"<br>
+TERM=dumb stprint "$(printf '%b' "\033[31mNo color\033[m")"<br>
+</code>
+
+## EXAMPLE: STCAT
+
+Copy standard input to standard output:
+
+<code>
+printf '%s' "${untrusted_string}" | stcat<br>
+stcat < /untrusted/file<br>
+.<br>
+untrusted-cmd 2>&1 | stcat<br>
+# Or with Bash/Zsh syntax:<br>
+stcat &lt; &lt;(untrusted-cmd 2>&1)
+</code>
+
+Concatenate files:
+
+<code>
+stcat /untrusted/file /untrusted/log
+</code>
+
+Piping to a pager (can also be `sttee`):
+
+<code>
+data | stcat | less -R<br>
+GIT_PAGER="stcat | less -R" git log
+</code>
+
+Print a ownership restricted file with external programs:
+
+<code>
+sudo -- stcat /untrusted/log<br>
+</code>
+
+## EXAMPLE: STTEE/STSPONGE
+
+The tools `sttee` and `stsponge` have the same usage but differ when
+writing. While `sttee` always writes to standrd output as soon as
+it is read, `stsponge` only writes to standard output if no file is
+provided and the write is atomic.
+
+Copy standrd input to standard output and optionally to a file:
+
+<code>
+printf '%s' "${untrusted_string}" | sttee<br>
+printf '%s' "${untrusted_string}" | sttee /trusted/file<br>
+sttee /trusted/file < /untrusted/file</br>
+</code>
+
+Only `stsponge` can sanitize a file in-place:
+
+<code>
+stsponge /untrusted/file < /untrusted/file
+</code>
+
+## EXAMPLE: STPRINT/STECHO
+
+The tools `stprint` and `stecho` have the same usage but differ in
+formatting. While `stprint` does print text as is, `stecho` adds a space
+between each argument and a newline at the end of the string.
+
+Print a variable value is simple:
+
+<code>
+stprint "${untrusted_string}"
+</code>
+
+Note that items are joined without word-splitting (no space separation):
+
+<code>
+stprint "${untrusted_string}" "${another_untrusted_string}"
+</code>
+
+To have space separated items, simply add a space between them:
+
+<code>
+stprint "${untrusted_string} ${another_untrusted_string}"<br>
+stprint "${untrusted_string}" " ${another_untrusted_string}"
+</code>
+
+Print with heredoc to avoid quoting problems:
+
+<code>
+stprint &lt;&lt;EOF<br>
+${untrusted_string}<br>
+EOF
+</code>
+
+### EXAMPLE: STPRINT WITH VARIABLES
+
+Print a variable as is:
+
+<code>
+var="$(stprint "${untrusted_string}")"<br>
+## Or Bash/Zsh syntax:<br>
+printf -v var '%s' "$(stprint "${red}Hey${nocolor}: ${untrusted_string}")"<br>
+.<br>
+## Raw print:<br>
+printf '%s' "${var}"
+</code>
+
+Interpret wanted escapes before passing them:
+
+<code>
+red="$(printf '%b' "\033[31m")"<br>
+nocolor="$(printf '%b' "\033[m")"<br>
+## Or Bash/Zsh syntax:<br>
+red=$"\033[31m"<br>
+nocolor=$"\033[m"<br>
+.<br>
+## Raw assignment:<br>
+var="$(stprint "${red}Hey${nocolor}: ${untrusted_string}")"
+</code>
+
+### EXAMPLE: STPRINT MISUSE
+
+*Warning*: Reinterpreting the escapes from the data returned from
+`stprint` is insecure. Stack of escaped escape sequences not interpreted
+before will be evaluated.
+
+Do *NOT* reinterpret the escape sequences on variable assignment (dangerous
+when printing to the terminal later:
+
+<code>
+var="$(stprint "${untrusted_string}")" # OK<br>
+# Or with Bash/Zsh syntax:<br>
+printf -v var "$(stprint "${untrusted_string}")" # DANGER (format is '%b')<br>
+printf -v var '%b' "$(stprint "${untrusted_string}")" # DANGER
+</code>
+
+Do *NOT* reinterpret the escape sequences when printing a variable, one
+more layer of escapes will be interpreted:
+
+<code>
+var="$(stprint "${untrusted_string}")" # OK<br>
+printf "${var}" # DANGER (format is '%b')<br>
+printf '%b' "${var}" # DANGER<br>
+echo -e "${var}" # DANGER<br>
+echo "${var}" # DANGER (may default to use '-e')<br>
+echo -E "${var}" # DANGER (var may have '-e' prefix)
+</code>
+
+## AUTHOR
+
+This man page has been written by Benjamin Grand M. S.
+(ben.grande.b@gmail.com).

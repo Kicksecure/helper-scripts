@@ -49,3 +49,4 @@ Architecture: all
 Depends: helper-scripts, git, python3-pytest, pylint, mypy, black,
  ncurses-base, ncurses-term, ${misc:Depends}
 Description: Helper scripts test packages
+ This is a dependency package for tests.

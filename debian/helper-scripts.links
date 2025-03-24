@@ -1,8 +1,0 @@
-## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
-## See the file COPYING for copying conditions.
-
-/usr/bin/stprint /usr/bin/stecho
-/usr/bin/stprint /usr/bin/stcat
-/usr/bin/stprint /usr/bin/sttee
-/usr/bin/stprint /usr/bin/stteea
-/usr/bin/stprint /usr/bin/stsponge

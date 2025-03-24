@@ -12,15 +12,16 @@ from stdisplay.stdisplay import stdisplay
 
 def main() -> None:
     """Safely print stdin to stdout and file."""
-    untrusted_text = ""
+    untrusted_text_list = []
     stdin.reconfigure(errors="ignore")  # type: ignore
     for untrusted_text in stdin:
+        untrusted_text_list.append(untrusted_text)
         stdout.write(stdisplay(untrusted_text))
     stdout.flush()
     if len(argv) > 1:
         for file_arg in argv[1:]:
             with open(file_arg, mode="w", encoding="ascii") as file:
-                file.write(stdisplay(untrusted_text))
+                file.write(stdisplay("".join(untrusted_text_list)))
 
 
 if __name__ == "__main__":
