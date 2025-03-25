@@ -1,8 +1,27 @@
+commit 9d0ad8e725f1433ad45e627dab391cd66a693b7d
+Merge: 5df9da3 8fee416
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Mar 25 09:01:17 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/qubes-sysmaint'
+
+commit 5df9da3b84792f716d21fce3ebaf14cfeaddc66b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Mar 21 19:06:50 2025 +0000
+
+    bumped changelog version
+
 commit c45f3a1711a61d7bf102128264010d95fae2879b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Mar 21 13:34:50 2025 -0400
 
     add `/usr/libexec/helper-scripts/temp.sh`
+
+commit 8fee41672d58e64d03130facdacf233312d479f1
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Mar 20 21:38:25 2025 -0500
+
+    Don't allow using autologinchange on Qubes OS
 
 commit aeaf9055e65f8e640790d13538fa51ebfd4a4822
 Author: Patrick Schleizer <adrelanos@whonix.org>
