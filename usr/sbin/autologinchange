@@ -21,7 +21,7 @@ get_config_section() {
          if [[ "${line}" =~ ^\[.*\]$ ]]; then
             break
          fi
-         echo "${line}"
+         printf '%s\n' "${line}"
       fi
       if [ "${line}" = "[${section}]" ]; then
          found_section='y'
@@ -63,10 +63,10 @@ remove_from_config_section() {
       fi
    done
 
-   echo "${output}" | sponge -- "$file_name"
+   printf '%s\n' "${output}" | sponge -- "$file_name"
 
    if [ "$line_was_removed" = "true" ]; then
-      echo "INFO: Removed line '$remove_line' from section '$section' of file '$file_name'."
+      echo "INFO: Removed line '$remove_line' from section '$section' of file '$file_name'." >&2
    fi
 }
 
@@ -77,18 +77,18 @@ enable_autologin() {
    mkdir --parents -- /etc/lightdm/lightdm.conf.d
    echo "[Seat:*]
 autologin-user=${user}" | sponge -- '/etc/lightdm/lightdm.conf.d/40_autologin.conf'
-   echo "INFO: Wrote file '/etc/lightdm/lightdm.conf.d/40_autologin.conf' to enable autologin for account '$user'."
-   echo "$delimiter"
-   cat -- '/etc/lightdm/lightdm.conf.d/40_autologin.conf'
-   echo "$delimiter"
+   echo "INFO: Wrote file '/etc/lightdm/lightdm.conf.d/40_autologin.conf' to enable autologin for account '$user'." >&2
+   echo "$delimiter" >&2
+   cat -- '/etc/lightdm/lightdm.conf.d/40_autologin.conf' >&2
+   echo "$delimiter" >&2
 
    mkdir --parents -- /etc/sddm.conf.d
    echo "[Autologin]
 User=${user}" | sponge -- '/etc/sddm.conf.d/z-autologin.conf'
-   echo "INFO: Wrote file '/etc/sddm.conf.d/z-autologin.conf' to enable autologin for account '$user'."
-   echo "$delimiter"
-   cat -- '/etc/sddm.conf.d/z-autologin.conf'
-   echo "$delimiter"
+   echo "INFO: Wrote file '/etc/sddm.conf.d/z-autologin.conf' to enable autologin for account '$user'." >&2
+   echo "$delimiter" >&2
+   cat -- '/etc/sddm.conf.d/z-autologin.conf' >&2
+   echo "$delimiter" >&2
 }
 
 disable_autologin() {
@@ -107,7 +107,7 @@ disable_autologin() {
       sed -i -E "/$pattern/d" -- "${file_name}"
 
       if [ "$match_count" -gt 0 ]; then
-         echo "INFO: Removed $match_count matching line(s) from file '${file_name}'."
+         echo "INFO: Removed $match_count matching line(s) from file '${file_name}'." >&2
       else
          true "INFO: No matching lines found in file '${file_name}'."
       fi
@@ -117,7 +117,7 @@ disable_autologin() {
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Seat:*]' ]; then
-         echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
+         echo "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
          safe-rm --verbose -- "${file_name}"
       fi
    done
@@ -131,7 +131,7 @@ disable_autologin() {
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
          || [ "${file_contents}" = '[Autologin]' ]; then
-         echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
+         echo "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
          safe-rm --verbose -- "${file_name}"
       fi
    done
@@ -140,10 +140,10 @@ disable_autologin() {
 enable_sysmaint_autologin() {
    mkdir --parents -- /etc/user-sysmaint-split.conf.d
    echo 'sysmaint-autologin=yes' | sponge -a -- /etc/user-sysmaint-split.conf.d/40_autologin.conf
-   echo "INFO: Wrote autologin configuration for account 'sysmaint' to file '/etc/user-sysmaint-split.conf.d/40_autologin.conf'."
-   echo "$delimiter"
-   cat -- /etc/user-sysmaint-split.conf.d/40_autologin.conf
-   echo "$delimiter"
+   echo "INFO: Wrote autologin configuration for account 'sysmaint' to file '/etc/user-sysmaint-split.conf.d/40_autologin.conf'." >&2
+   echo "$delimiter" >&2
+   cat -- /etc/user-sysmaint-split.conf.d/40_autologin.conf >&2
+   echo "$delimiter" >&2
 }
 
 disable_sysmaint_autologin() {
@@ -154,10 +154,10 @@ disable_sysmaint_autologin() {
       fi
       sed -i '/^sysmaint-autologin=/d' -- "${file_name}"
       ## TODO: Report only actually removed instances similar to disable_autologin function.
-      echo "INFO: Removed autologin configuration for account 'sysmaint' from file '${file_name}'."
+      echo "INFO: Removed autologin configuration for account 'sysmaint' from file '${file_name}'." >&2
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ]; then
-         echo "INFO: File '$file_name' contains no meaningful configuration data, removing."
+         echo "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
          safe-rm --verbose -- "${file_name}"
       fi
    done
@@ -225,7 +225,7 @@ cli_enable_autologin() {
    if [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
       ## Account 'sysmaint' requires special handling.
       if [ "${sysmaint_autologin}" = 'yes' ]; then
-         echo "INFO: Autologin already enabled for account 'sysmaint', exiting."
+         echo "INFO: Autologin already enabled for account 'sysmaint', exiting." >&2
          exit 0
       fi
       enable_sysmaint_autologin
@@ -234,7 +234,7 @@ cli_enable_autologin() {
 
    # shellcheck disable=SC2076
    if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
-      echo "INFO: Autologin already enabled for account '$user', exiting."
+      echo "INFO: Autologin already enabled for account '$user', exiting." >&2
       exit 0
    fi
 
@@ -253,7 +253,7 @@ cli_disable_autologin() {
    if [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
       ## Account 'sysmaint' requires special handling.
       if [ "${sysmaint_autologin}" = 'no' ]; then
-         echo "INFO: Autologin already disabled for account 'sysmaint', exiting."
+         echo "INFO: Autologin already disabled for account 'sysmaint', exiting." >&2
          exit 0
        fi
        disable_sysmaint_autologin
@@ -262,7 +262,7 @@ cli_disable_autologin() {
 
    # shellcheck disable=SC2076
    if ! [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
-      echo "INFO: Autologin already disabled for account '$user', exiting."
+      echo "INFO: Autologin already disabled for account '$user', exiting." >&2
       exit 0
    fi
 
@@ -275,10 +275,10 @@ autologinchange() {
    check_root
    create_dm_config_dirs
 
-   echo "[${green}INFO${nocolor}]: This tool enables or disables GUI autologin only."
-   echo "Users present on the system:"
+   echo "[${green}INFO${nocolor}]: This tool enables or disables GUI autologin only." >&2
+   echo "Users present on the system:" >&2
    for user_entry in "${user_list[@]}"; do
-      echo "   ${user_entry}"
+      echo "   ${user_entry}" >&2
    done
 
    read -r -p "Enter the username you would like to toggle autologin for: " -- user
@@ -292,25 +292,25 @@ autologinchange() {
 
       if [ "${disable_yn,,}" = 'y' ]; then
          disable_autologin "${user}"
-         echo "SUCCESS: Autologin for account '$user' disabled."
+         echo "SUCCESS: Autologin for account '$user' disabled." >&2
       else
-         echo "CANCELLED disabling autologin for account '$user'."
+         echo "CANCELLED disabling autologin for account '$user'." >&2
       fi
       exit 0
    elif [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
       if [ "${sysmaint_autologin}" = 'yes' ]; then
-         echo "Account 'sysmaint' is currently configured to automatically log in."
+         echo "Account 'sysmaint' is currently configured to automatically log in." >&2
          read -r -p "Would you like to disable autologin for sysmaint mode? [Y/N] " -- disable_yn
 
          if [ "${disable_yn,,}" = 'y' ]; then
             disable_sysmaint_autologin
-            echo "SUCCESS: Autologin for account 'sysmaint' disabled."
+            echo "SUCCESS: Autologin for account 'sysmaint' disabled." >&2
          else
-            echo "CANCELLED disabling autologin for account 'sysmaint'."
+            echo "CANCELLED disabling autologin for account 'sysmaint'." >&2
          fi
          exit 0
       else
-         echo "Account 'sysmaint' is currently NOT configured to automatically log in."
+         echo "Account 'sysmaint' is currently NOT configured to automatically log in." >&2
          read -r -p "Would you like to enable autologin for sysmaint mode? [Y/N] " -- enable_yn
 
          if [ "${enable_yn,,}" = 'y' ]; then
@@ -319,9 +319,9 @@ autologinchange() {
             ## user's choice.
             disable_sysmaint_autologin
             enable_sysmaint_autologin
-            echo "SUCCESS: Autologin for account 'sysmaint' enabled."
+            echo "SUCCESS: Autologin for account 'sysmaint' enabled." >&2
          else
-            echo "CANCELLED enabling autologin for account 'sysmaint'."
+            echo "CANCELLED enabling autologin for account 'sysmaint'." >&2
          fi
          exit 0
       fi
@@ -336,9 +336,9 @@ autologinchange() {
             done
          fi
          enable_autologin "${user}"
-         echo "SUCCESS: Autologin for account '$user' enabled."
+         echo "SUCCESS: Autologin for account '$user' enabled." >&2
       else
-         echo "CANCELLED enabling autologin for account '$user'."
+         echo "CANCELLED enabling autologin for account '$user'." >&2
       fi
       exit 0
    fi
@@ -357,7 +357,7 @@ create_dm_config_dirs() {
 }
 
 if [ -f '/usr/share/qubes/marker-vm' ]; then
-   echo "GUI autologin is not applicable to Qubes OS." >&2
+   echo "INFO: GUI autologin is not applicable to Qubes OS." >&2
    exit 0
 fi
 
