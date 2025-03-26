@@ -1,3 +1,22 @@
+commit b7407c6ddbd9caea0e69383096a8f503156bd1fc
+Merge: 5d37892 5c9ab21
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 26 04:45:42 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/autologinchange-output'
+
+commit 5c9ab21459ca358ede28bc524c1a77338dfe50af
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Mar 25 20:40:44 2025 -0500
+
+    Improve autologinchange output, convert potentially unsafe echos to printf
+
+commit 5d37892bccc56c920a6a0547530f7d430f3932bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Mar 25 13:32:25 2025 +0000
+
+    bumped changelog version
+
 commit 9d0ad8e725f1433ad45e627dab391cd66a693b7d
 Merge: 5df9da3 8fee416
 Author: Patrick Schleizer <adrelanos@whonix.org>
