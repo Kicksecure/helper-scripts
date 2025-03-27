@@ -1,0 +1,25 @@
+#!/bin/bash
+set -eux
+git_toplevel="$(git rev-parse --show-toplevel)"
+pyrc="${git_toplevel}/pyproject.toml"
+pythonpath="${git_toplevel}/usr/lib/python3/dist-packages"
+export PYTHONPATH="${pythonpath}${PYTHONPATH+":${PYTHONPATH}"}"
+
+pytest=(python3 -m pytest -o 'python_files=*.py')
+black=(black --config="${pyrc}" --color --diff --check)
+pylint=(pylint --rcfile="${pyrc}")
+mypy=(mypy --config-file="${pyrc}")
+
+cd "${pythonpath}/stdisplay/"
+"${pytest[@]}" "${@}"
+"${black[@]}" .
+find . -type f -name "*.py" -print0 | xargs -0 "${pylint[@]}"
+"${mypy[@]}" .
+
+utils=(stprint stecho stcat sttee stsponge)
+cd "${git_toplevel}/usr/bin"
+"${black[@]}" -- "${utils[@]}"
+"${pylint[@]}" -- "${utils[@]}"
+for file in "${utils[@]}"; do
+  "${mypy[@]}" -- "${file}"
+done
