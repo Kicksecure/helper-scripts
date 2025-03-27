@@ -1,3 +1,46 @@
+commit c9e57530242520b5e46c67ea0fdc7ffaaba66419
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 03:37:03 2025 -0400
+
+    fix: disable autologincheck in pwchange for Qubes since not applicable to Qubes
+
+commit 86146490a23742c8f94c7597e4a2a5534dc7e594
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 03:35:33 2025 -0400
+
+    comment
+
+commit e59e52eaf2896a46928e065ce4596b05855bd6be
+Merge: 5f2f269 a3468cd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 03:27:31 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/screenlock'
+
+commit a3468cd049fa4bd074cde4279d9c1f2829245f92
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Mar 26 23:43:09 2025 -0500
+
+    Add screen lock script
+
+commit 7f27aa085c17e8fdb790bf50013183d8a883c231
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Mar 26 21:31:12 2025 -0500
+
+    Warn users when hardening account password or login may not be sufficient
+
+commit 99bcb0df5f1a65d2e6ebecd7f6a785d90a8c2c40
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Mar 26 15:24:44 2025 -0500
+
+    Don't display every argument to terminal-helper on its own line
+
+commit 5f2f2692a0738bca6924911855959037bd191cfa
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 26 09:15:38 2025 +0000
+
+    bumped changelog version
+
 commit b7407c6ddbd9caea0e69383096a8f503156bd1fc
 Merge: 5d37892 5c9ab21
 Author: Patrick Schleizer <adrelanos@whonix.org>
