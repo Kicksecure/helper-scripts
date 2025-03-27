@@ -3,8 +3,6 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-#!/bin/bash
-
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   set -o errexit
   set -o nounset
