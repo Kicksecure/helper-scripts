@@ -4,11 +4,17 @@
 ## See the file COPYING for copying conditions.
 
 sanitize_variable() {
-   local input
+   local input sanitize_variable_output actual_string_length
    input="$@"
 
-   sanitize_variable_output="$(/usr/libexec/msgcollector/striphtml "$input")"
-   sanitize_variable_output="$@"
+   if [ "$max_string_length" = "" ]; then
+      return 1
+   fi
+
+   sanitize_variable_output="$(printf "%s\n" "$input")"
+   ## TODO
+   #sanitize_variable_output="$(stecho "$input")"
+   sanitize_variable_output="$(/usr/libexec/msgcollector/striphtml "$sanitize_variable_output")"
 
    actual_string_length="${#sanitize_variable_output}"
 
@@ -16,4 +22,6 @@ sanitize_variable() {
       ## Shorten excess length $sanitize_variable_output to $max_string_length chars.
       sanitize_variable_output="${sanitize_variable_output:0:$max_string_length}"
    fi
+
+   printf "%s\n" "$sanitize_variable_output"
 }
