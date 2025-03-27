@@ -1,0 +1,14 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+case "$XDG_CURRENT_DESKTOP" in
+   XFCE|sysmaint-session)
+      xscreensaver-command --lock
+      ;;
+   sysmaint-session-wayland)
+      ## TODO: Implement once a wayland screenlocker is chosen
+      true
+      ;;
+esac

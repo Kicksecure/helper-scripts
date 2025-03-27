@@ -10,6 +10,8 @@ set -o pipefail
 
 # shellcheck source=../libexec/helper-scripts/get_colors.sh
 source /usr/libexec/helper-scripts/get_colors.sh
+# shellcheck source=../libexec/helper-scripts/accountctl.sh
+source /usr/libexec/helper-scripts/accountctl.sh
 
 get_config_section() {
    local file_name section found_section line
@@ -269,6 +271,15 @@ cli_disable_autologin() {
    disable_autologin "${user}"
 }
 
+warn_on_empty_user_password() {
+   if [ -z "$(get_clean_pass "$1")" ]; then
+      echo "${red}WARNING:${nocolor} Account '$1' has no password set." >&2
+      echo "Users can log into this account knowing only the username." >&2
+      echo "You can use the 'pwchange' utility to change this." >&2
+      echo "See https://www.kicksecure.com/wiki/Login for more information." >&2
+   fi
+}
+
 autologinchange() {
    local user user_entry found_user autologin_user enable_yn disable_yn
 
@@ -296,6 +307,7 @@ autologinchange() {
       else
          echo "CANCELLED disabling autologin for account '$user'." >&2
       fi
+      warn_on_empty_user_password "$user"
       exit 0
    elif [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
       if [ "${sysmaint_autologin}" = 'yes' ]; then
@@ -308,6 +320,7 @@ autologinchange() {
          else
             echo "CANCELLED disabling autologin for account 'sysmaint'." >&2
          fi
+         warn_on_empty_user_password 'sysmaint'
          exit 0
       else
          echo "Account 'sysmaint' is currently NOT configured to automatically log in." >&2
