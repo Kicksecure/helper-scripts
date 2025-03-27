@@ -8,13 +8,10 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   set -o nounset
   set -o errtrace
   set -o pipefail
+fi
+
+if [ -z "${proc_cmdline_output+x}" ]; then
   proc_cmdline_output="$(cat -- /proc/cmdline)"
-else
-  if [ -z "${proc_cmdline_output+x}" ]; then
-    error "proc_cmdline_output is unset"
-    return 1
-    exit 1
-  fi
 fi
 
 ## Detect if the system was booted in live mode
