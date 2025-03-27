@@ -2,6 +2,13 @@
 
 source /usr/libexec/helper-scripts/get_colors.sh
 
+if ! command -v stecho &>/dev/null ; then
+  ## Fallback to printf in case stecho is unavailable.
+  stecho() {
+    printf "%s\n" "$@"
+  }
+fi
+
 ## Logging mechanism with easy customization of message format as well as
 ## standardization on how the messages are delivered.
 ## usage: log [info|notice|warn|error] "X occurred."
