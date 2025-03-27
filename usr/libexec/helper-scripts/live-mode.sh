@@ -8,7 +8,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   set -o nounset
   set -o errtrace
   set -o pipefail
-  proc_cmdline_output=$(cat -- /proc/cmdline)
+  proc_cmdline_output="$(cat -- /proc/cmdline)"
 else
   if [ -z "${proc_cmdline_output+x}" ]; then
     error "proc_cmdline_output is unset"
