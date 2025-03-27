@@ -306,10 +306,10 @@ autologinchange() {
       if [ "${disable_yn,,}" = 'y' ]; then
          disable_autologin "${user}"
          echo "SUCCESS: Autologin for account '$user' disabled." >&2
+         warn_on_empty_user_password "$user"
       else
          echo "CANCELLED disabling autologin for account '$user'." >&2
       fi
-      warn_on_empty_user_password "$user"
       exit 0
    elif [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
       if [ "${sysmaint_autologin}" = 'yes' ]; then
@@ -319,10 +319,10 @@ autologinchange() {
          if [ "${disable_yn,,}" = 'y' ]; then
             disable_sysmaint_autologin
             echo "SUCCESS: Autologin for account 'sysmaint' disabled." >&2
+            warn_on_empty_user_password 'sysmaint'
          else
             echo "CANCELLED disabling autologin for account 'sysmaint'." >&2
          fi
-         warn_on_empty_user_password 'sysmaint'
          exit 0
       else
          echo "Account 'sysmaint' is currently NOT configured to automatically log in." >&2
