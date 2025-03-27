@@ -1,3 +1,79 @@
+commit 0ea7a5ec625f86eb4401446d7d1781091006d37a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 08:37:54 2025 -0400
+
+    re-generate man pages (generated using "genmkfile manpages")
+
+commit af8f9099f2661983fdaf95dbf9ad4a7f800aaf51
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 07:42:07 2025 -0400
+
+    add fallback in case stecho is unavailable
+
+commit 3db83c70b07a8cfb5ee38747cf945ead13b765b6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 07:28:42 2025 -0400
+
+    lintian
+
+commit beda2097bcb1a17da69f22f552aebcf663133726
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 07:23:36 2025 -0400
+
+    sanitize_variable: use stecho
+
+commit 5388d952a5c4ab5aa8543fc748cbd616080002dd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 07:15:22 2025 -0400
+
+    improve sanitize_variable
+
+commit 3273557c1241678e10ed50e8646271337ff7871a
+Merge: 238249e 5e5a860
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 06:39:24 2025 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 5e5a860388b5581cf97903e0ff9aea248083ae75
+Merge: 238249e 6756278
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 06:35:32 2025 -0400
+
+    Merge pull request #14 from ben-grande/stprint
+    
+    Add safe terminal printing program
+
+commit 238249e9abe32c0c66be39e5106f3e28c531feb5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 06:04:43 2025 -0400
+
+    minor
+
+commit 9de54a2146e2315f08f483b8c9b9b63779dbf960
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 06:03:01 2025 -0400
+
+    code simplification
+
+commit aac4e9b9e479f700b02de6eac08041b552234672
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 06:02:14 2025 -0400
+
+    quotes
+
+commit 18e7f930430502f430ad9cd7d169727879933e19
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 05:59:03 2025 -0400
+
+    minor
+
+commit adcc1b3ffe6fa79f7671b5934229d0bda03f2c5b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 08:41:35 2025 +0000
+
+    bumped changelog version
+
 commit c9e57530242520b5e46c67ea0fdc7ffaaba66419
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Mar 27 03:37:03 2025 -0400
@@ -67,6 +143,12 @@ Date:   Tue Mar 25 09:01:17 2025 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/qubes-sysmaint'
 
+commit 6756278f47d677770156fb03da44a1a3b3c60533
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Mar 24 15:33:04 2025 +0100
+
+    Fix shell utilities usage and documentation
+
 commit 5df9da3b84792f716d21fce3ebaf14cfeaddc66b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Mar 21 19:06:50 2025 +0000
@@ -78,6 +160,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Mar 21 13:34:50 2025 -0400
 
     add `/usr/libexec/helper-scripts/temp.sh`
+
+commit 960f5a3e93ebcc5e1e82d217347cd874b2af1692
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Fri Mar 21 13:52:55 2025 +0100
+
+    Regex substitution and shell utilities
 
 commit 8fee41672d58e64d03130facdacf233312d479f1
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
@@ -416,6 +504,12 @@ Date:   Sat Mar 15 05:50:11 2025 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/user-create'
 
+commit c7a4ab85afd4400fa01029b56e6e0b6f1c0404b0
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Fri Mar 14 12:30:48 2025 +0100
+
+    Improve test coverage
+
 commit a1c452f54ba890b0475404d7388ee8902dacd00c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Mar 14 08:28:37 2025 +0000
@@ -489,6 +583,12 @@ Date:   Mon Mar 10 16:28:31 2025 -0500
 
     Move user account creation logic from dist-base-files to helper-scripts, don't set Bash hardening flags in accountctl library
 
+commit 28146c168ece3541304602e333d0429cb1a46b28
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Thu Mar 6 15:43:23 2025 +0100
+
+    Control SGR range based on terminal capabilities
+
 commit 838cf305f19b844c02e733c733758002388a39d9
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
 Date:   Sun Mar 9 20:04:02 2025 -0500
@@ -544,6 +644,21 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Mar 5 06:25:34 2025 -0500
 
     move check_is_not_empty_and_only_one_line to strings.bsh
+
+commit 087a9380efc82d856f8dc1cb19557ab2be42d7d1
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Thu Feb 13 16:24:44 2025 +0100
+
+    Remove extra_colors option
+    
+    Exclude SGR is much more reliable now. SGR bit modes 16 and 24 bit were
+    difficult to generate the regex, but as it became simpler, separating
+    them from 4-bit SGR does not make sense. Although it was an optional
+    parameter, it now makes the code easier to read with less options per
+    function.
+    
+    Also change the word color to SGR when appropriate, as it can show
+    graphics that are not colors such as italic, underline, blink, bold etc.
 
 commit d51f0476b210f48a9c65251eb62bbcb03eb4fd55
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -694,6 +809,14 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Feb 13 20:25:11 2025 -0500
 
     output
+
+commit 148363146d4438c39bd62a3f30d5244df8bbb7d4
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Thu Jan 23 16:49:59 2025 +0100
+
+    Add safe terminal printing program
+    
+    Prints only ASCII and ANSI escape sequences configured in an allow list.
 
 commit c2cbf79718d12d1c2d3e01efe450d748332198e7
 Author: Patrick Schleizer <adrelanos@whonix.org>
