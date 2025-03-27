@@ -11,9 +11,7 @@ sanitize_variable() {
       return 1
    fi
 
-   sanitize_variable_output="$(printf "%s\n" "$input")"
-   ## TODO
-   #sanitize_variable_output="$(stecho "$input")"
+   sanitize_variable_output="$(stecho "$input")"
    sanitize_variable_output="$(/usr/libexec/msgcollector/striphtml "$sanitize_variable_output")"
 
    actual_string_length="${#sanitize_variable_output}"
