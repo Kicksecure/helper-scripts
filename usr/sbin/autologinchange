@@ -207,6 +207,8 @@ check_autologin() {
    ## Don't run check_root, this might need to be used as a normal user by
    ## systemcheck
 
+   ## NOTE: Exit code is important here because pwchange uses
+   ##       'autologinchange -c "$user"' and relies on the exit code.
    # shellcheck disable=SC2076
    if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
       exit 0
