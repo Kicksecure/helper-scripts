@@ -113,6 +113,11 @@ unset password
 
 echo "SUCCESS: Password for account '$user' has been updated successfully." >&2
 
+if [ -f '/usr/share/qubes/marker-vm' ]; then
+   true "INFO: GUI autologin is not applicable to Qubes OS."
+   exit 0
+fi
+
 if /usr/sbin/autologinchange -c "$user"; then
    echo "${yellow}WARNING:${nocolor} Account '$user' has autologin enabled." >&2
    echo "Passwordless access to this account is likely still possible." >&2
