@@ -48,6 +48,6 @@ Description: Helper scripts useful for Linux Distributions
 Package: helper-scripts-tests
 Architecture: all
 Depends: helper-scripts, git, python3-pytest, pylint, mypy, black,
- ncurses-base, ncurses-term, ${misc:Depends}
+ ncurses-base (>= 6.4-4), ncurses-term, ${misc:Depends}
 Description: Helper scripts test packages
  This is a dependency package for tests.
