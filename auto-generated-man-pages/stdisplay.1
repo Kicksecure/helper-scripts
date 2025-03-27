@@ -1,0 +1,189 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "STDISPLAY" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
+.SH "NAME"
+\fBstdisplay\fR \- Sanitize text to be safely printed to the terminal
+.SH "SYNOPSIS"
+\fBstprint [TEXT\|\.\|\.\|\.]\fR
+.br
+\fBstecho [TEXT\|\.\|\.\|\.]\fR
+.br
+\fBstcat [FILE\|\.\|\.\|\.]\fR
+.br
+\fBsttee [FILE\|\.\|\.\|\.]\fR
+.br
+\fBstsponge [FILE]\fR
+.br
+.SH "DESCRIPTION"
+\fBstdisplay\fR is a Python library used to safely print text from untrusted sources sanitizing non\-ASCII characters and dangerous ANSI escape sequenes, from the latter, only a strict subset of SGR (Select Graphic Rendition) attributes, line feeds (\fB\en\fR) and horizontal tabs (\fB\et\fR) are allowed)\.
+.P
+The following tests are done in order to verify if SGR should be enabled and how large it's set should be:
+.IP "1." 4
+If the environment variable \fB$NO_COLOR\fR is set to a non\-empty value, SGR is disabled\.
+.IP "2." 4
+If the environment variable \fB$COLORTERM\fR is set to \fBtruecolor\fR, 24\-bit SGR is enabled\.
+.IP "3." 4
+If none of the above matches, the terminal referenced by the environment variable \fB$TERM\fR is queried for its \fBcolors\fR capability, which returns how many colors the terminal supports\.
+.IP "" 0
+.P
+Tools based on this library have no option parameters, everything is treated either as text or file, depending on the tool used, therefore, \fB\-\-\fR is interpreted as text and not end of options\.
+.P
+Each tool behaves as if their shell utility counterpart was used without any options:
+.TS
+allbox;
+l l.
+Tool	Sanitizer
+strint	printf
+stecho	echo
+stcat	cat
+sttee	tee
+stsponge	sponge
+.TE
+.SH "RETURN VALUES"
+.IP "\[ci]" 4
+\fB0\fR Successfully printed text\.
+.IP "\[ci]" 4
+Any other return value is an error\.
+.IP "" 0
+.SH "EXAMPLE: SGR CONTROL"
+Enable 24\-bit SGR if the terminfo database is outdated:
+.P
+\fBCOLORTERM=truecolor stprint "$(printf '%b' "\e033[38;2;0;0;255mSome color\e033[m")"
+.br
+\fR
+.P
+Disable SGR:
+.P
+\fBNO_COLOR=1 stprint "$(printf '%b' "\e033[31mNo color\e033[m")"
+.br
+TERM=dumb stprint "$(printf '%b' "\e033[31mNo color\e033[m")"
+.br
+\fR
+.SH "EXAMPLE: STCAT"
+Copy standard input to standard output:
+.P
+\fBprintf '%s' "${untrusted_string}" | stcat
+.br
+stcat < /untrusted/file
+.br
+\&\.
+.br
+untrusted\-cmd 2>&1 | stcat
+.br
+# Or with Bash/Zsh syntax:
+.br
+stcat < <(untrusted\-cmd 2>&1)\fR
+.P
+Concatenate files:
+.P
+\fBstcat /untrusted/file /untrusted/log\fR
+.P
+Piping to a pager (can also be \fBsttee\fR):
+.P
+\fBdata | stcat | less \-R
+.br
+GIT_PAGER="stcat | less \-R" git log\fR
+.P
+Print a ownership restricted file with external programs:
+.P
+\fBsudo \-\- stcat /untrusted/log
+.br
+\fR
+.SH "EXAMPLE: STTEE/STSPONGE"
+The tools \fBsttee\fR and \fBstsponge\fR have the same usage but differ when writing\. While \fBsttee\fR always writes to standrd output as soon as it is read, \fBstsponge\fR only writes to standard output if no file is provided and the write is atomic\.
+.P
+Copy standrd input to standard output and optionally to a file:
+.P
+\fBprintf '%s' "${untrusted_string}" | sttee
+.br
+printf '%s' "${untrusted_string}" | sttee /trusted/file
+.br
+sttee /trusted/file < /untrusted/file</br>\fR
+.P
+Only \fBstsponge\fR can sanitize a file in\-place:
+.P
+\fBstsponge /untrusted/file < /untrusted/file\fR
+.SH "EXAMPLE: STPRINT/STECHO"
+The tools \fBstprint\fR and \fBstecho\fR have the same usage but differ in formatting\. While \fBstprint\fR does print text as is, \fBstecho\fR adds a space between each argument and a newline at the end of the string\.
+.P
+Print a variable value is simple:
+.P
+\fBstprint "${untrusted_string}"\fR
+.P
+Note that items are joined without word\-splitting (no space separation):
+.P
+\fBstprint "${untrusted_string}" "${another_untrusted_string}"\fR
+.P
+To have space separated items, simply add a space between them:
+.P
+\fBstprint "${untrusted_string} ${another_untrusted_string}"
+.br
+stprint "${untrusted_string}" " ${another_untrusted_string}"\fR
+.P
+Print with heredoc to avoid quoting problems:
+.P
+\fBstprint <<EOF
+.br
+${untrusted_string}
+.br
+EOF\fR
+.SS "EXAMPLE: STPRINT WITH VARIABLES"
+Print a variable as is:
+.P
+\fBvar="$(stprint "${untrusted_string}")"
+.br
+## Or Bash/Zsh syntax:
+.br
+printf \-v var '%s' "$(stprint "${red}Hey${nocolor}: ${untrusted_string}")"
+.br
+\&\.
+.br
+## Raw print:
+.br
+printf '%s' "${var}"\fR
+.P
+Interpret wanted escapes before passing them:
+.P
+\fBred="$(printf '%b' "\e033[31m")"
+.br
+nocolor="$(printf '%b' "\e033[m")"
+.br
+## Or Bash/Zsh syntax:
+.br
+red=$"\e033[31m"
+.br
+nocolor=$"\e033[m"
+.br
+\&\.
+.br
+## Raw assignment:
+.br
+var="$(stprint "${red}Hey${nocolor}: ${untrusted_string}")"\fR
+.SS "EXAMPLE: STPRINT MISUSE"
+\fIWarning\fR: Reinterpreting the escapes from the data returned from \fBstprint\fR is insecure\. Stack of escaped escape sequences not interpreted before will be evaluated\.
+.P
+Do \fINOT\fR reinterpret the escape sequences on variable assignment (dangerous when printing to the terminal later:
+.P
+\fBvar="$(stprint "${untrusted_string}")" # OK
+.br
+# Or with Bash/Zsh syntax:
+.br
+printf \-v var "$(stprint "${untrusted_string}")" # DANGER (format is '%b')
+.br
+printf \-v var '%b' "$(stprint "${untrusted_string}")" # DANGER\fR
+.P
+Do \fINOT\fR reinterpret the escape sequences when printing a variable, one more layer of escapes will be interpreted:
+.P
+\fBvar="$(stprint "${untrusted_string}")" # OK
+.br
+printf "${var}" # DANGER (format is '%b')
+.br
+printf '%b' "${var}" # DANGER
+.br
+echo \-e "${var}" # DANGER
+.br
+echo "${var}" # DANGER (may default to use '\-e')
+.br
+echo \-E "${var}" # DANGER (var may have '\-e' prefix)\fR
+.SH "AUTHOR"
+This man page has been written by Benjamin Grand M\. S\. (ben\.grande\.b@gmail\.com)\.
