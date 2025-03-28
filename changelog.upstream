@@ -1,3 +1,22 @@
+commit 093c14592d4ee8103fdba3a6e59cdb7e945694f3
+Merge: 686a462 adaecfa
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Mar 28 09:09:07 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/master'
+
+commit adaecfafcb6abae0bafb6f2d31436a661875bdfd
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Mar 27 16:35:13 2025 -0500
+
+    Don't warn about a missing password if a user cancels disabling autologin
+
+commit 686a462c0b2542fa143825fd6a3d48ee4e20f2c5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 27 12:37:55 2025 +0000
+
+    bumped changelog version
+
 commit 0ea7a5ec625f86eb4401446d7d1781091006d37a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Mar 27 08:37:54 2025 -0400
