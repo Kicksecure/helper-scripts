@@ -1,3 +1,33 @@
+commit 266dc12d46a476f5749fcb584122139bf21f03c1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 29 03:40:01 2025 -0400
+
+    comment
+
+commit 0e3ad9217787ed242e63a0d903fae050257ffe21
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 29 03:35:33 2025 -0400
+
+    use log function in terminal wrapper to show exit code status
+
+commit 0dcc0bc19821d1d8290fcb20e08a52f5d56528bd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 29 03:30:57 2025 -0400
+
+    notify about exit code in terminal-wrapper
+
+commit d523a0368d82f3fee1e36053d04034a8f1937950
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 29 03:27:13 2025 -0400
+
+    minor
+
+commit 619a7832aca4a8cf0c7c1adf13fbecd09b16e9c0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Mar 28 17:22:04 2025 +0000
+
+    bumped changelog version
+
 commit a1691c4fff74144282903b0c1c62d16dad71f4ec
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Mar 28 12:58:20 2025 -0400
