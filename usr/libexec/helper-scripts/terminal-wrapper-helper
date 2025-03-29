@@ -21,4 +21,6 @@ if ! [ "$TERMINAL_WRAPPER_NO_FINISH_MSG" = 'true' ]; then
    fi
 fi
 
+## Hide message by xfce4-terminal:
+## > The child process exited normally with status code 127. [ ] Do not ask me again. Relaunch [*]
 sleep infinity
