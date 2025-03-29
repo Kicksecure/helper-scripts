@@ -7,10 +7,12 @@ if ! [ "$TERMINAL_WRAPPER_NO_COMMAND_ECHO" = 'true' ]; then
    printf '%s\n' "$*"
 fi
 
+terminal_wrapper_command_exit_code="0"
 "$@"
+terminal_wrapper_command_exit_code="$?"
 
 if ! [ "$TERMINAL_WRAPPER_NO_FINISH_MSG" = 'true' ]; then
-   printf '%s\n' 'Command exited. You may close this window safely.'
+   printf '%s\n' "Command exited with exit code '$terminal_wrapper_command_exit_code'. You may close this window safely."
 fi
 
 sleep infinity
