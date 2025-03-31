@@ -11,10 +11,4 @@ include <tunables/global>
   include <abstractions/tor-circuit-established-check>
   include <abstractions/tor>
   include <local/usr.bin.tor-circuit-established-check>
-
-  ## AVC apparmor="DENIED" operation="open" profile="/usr/bin/tor-circuit-established-check" name="/proc/1/cmdline" comm="ps" requested_mask="r" denied_mask="r"
-  /proc/*/cmdline r,
-  /proc/*/environ r,
-  owner /{usr/,}lib{,32,64}/** rw,
-
 }

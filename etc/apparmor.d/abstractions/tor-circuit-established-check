@@ -29,6 +29,12 @@
   @{PROC}/uptime r,
   @{PROC}/sys/kernel/osrelease r,
 
+  ## AVC apparmor="DENIED" operation="open" profile="/usr/bin/tor-circuit-established-check" name="/proc/1/cmdline" comm="ps" requested_mask="r" denied_mask="r"
+  @{PROC}/*/cmdline r,
+  @{PROC}/*/environ r,
+
+  owner /{usr/,}lib{,32,64}/** rw,
+
   /dev/tty rw,
 
   /run/tor/control.authcookie r,
