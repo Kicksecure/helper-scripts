@@ -40,6 +40,7 @@ AuthorizedGroups=sudo
 AuthorizedUsers=user
 "
 sudo systemctl restart privleapd.service
+privleapd --check-config
 leaprun sudo
 
 sudo repository-dist --enable --repository developers
