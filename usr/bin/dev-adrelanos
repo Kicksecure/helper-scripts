@@ -15,7 +15,9 @@ if [ "$1" = "" ]; then
    exit 1
 fi
 
-dsudo passwordless-root
+dsudo test -d /usr
+
+sudo passwordless-root
 
 setxkbmap de || true
 sudo loadkeys de || true
@@ -23,13 +25,22 @@ sudo loadkeys de || true
 append-once /home/user/.bashrc "setxkbmap de"
 append-once /home/user/.zshrc "setxkbmap de"
 
-dsudo mkdir --parents /etc/lightdm/lightdm.conf.d
+sudo mkdir --parents /etc/lightdm/lightdm.conf.d
 
-dsudo append-once /etc/lightdm/lightdm.conf.d/user-autologin.conf "\
+sudo append-once /etc/lightdm/lightdm.conf.d/user-autologin.conf "\
 [SeatDefaults]
 user-session=xfce
 autologin-user=user
 "
+
+sudo append-once /etc/privleap/conf.d/privleap-debugging.conf "\
+[action:sudo]
+Command=chmod o+x /usr/bin/sudo
+AuthorizedGroups=sudo
+AuthorizedUsers=user
+"
+sudo systemctl restart privleapd.service
+leaprun sudo
 
 sudo repository-dist --enable --repository developers
 
