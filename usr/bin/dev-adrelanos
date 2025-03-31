@@ -15,15 +15,17 @@ if [ "$1" = "" ]; then
    exit 1
 fi
 
-dsudo test -d /usr
+sudo test -d /usr
 
 sudo passwordless-root
 
 setxkbmap de || true
 sudo loadkeys de || true
 
-append-once /home/user/.bashrc "setxkbmap de"
-append-once /home/user/.zshrc "setxkbmap de"
+sudo -u user append-once /home/user/.bashrc "setxkbmap de"
+sudo -u sysmaint append-once /home/user/.bashrc "setxkbmap de"
+sudo -u user append-once /home/user/.zshrc "setxkbmap de"
+sudo -u sysmaint append-once /home/user/.zshrc "setxkbmap de"
 
 sudo mkdir --parents /etc/lightdm/lightdm.conf.d
 
@@ -39,6 +41,7 @@ Command=chmod o+x /usr/bin/sudo
 AuthorizedGroups=sudo
 AuthorizedUsers=user
 "
+
 sudo systemctl restart privleapd.service
 privleapd --check-config
 leaprun sudo
