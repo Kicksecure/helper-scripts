@@ -59,8 +59,7 @@ If you are not aware of any package mangers running, exit now, find out if there
 Technical Info:
 \"<code>sudo --non-interactive fuser /var/lib/dpkg/lock /var/cache/apt/archives/lock</code>\" exit code: <code>$fuser_exit_code</code></p>"
    else
-      package_manager_waiting_msg="No package manger currently running. \
-You should not see this message. Please report this bug!"
+      package_manager_waiting_msg="No package manger currently running."
       package_manager_waiting_msg_x="$package_manager_waiting_msg"
    fi
 }
