@@ -1,3 +1,21 @@
+commit c6232991cada4577f4bfae1cbfe60203be74883e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 2 14:03:45 2025 -0400
+
+    improve unicode detection tooling
+    
+    * added `unicode-show`
+    * improved `grep-find-unicode-wrapper`
+    * added `/usr/libexec/helper-scripts/write-suspicious-unicode`
+    
+    https://forums.whonix.org/t/detecting-malicious-unicode-in-source-code-and-pull-requests/13754
+
+commit 6d350e3bd7bfa5b0650d4fdd550ed9e3c645999b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 31 14:18:18 2025 +0000
+
+    bumped changelog version
+
 commit 7588d6839487b610baa03ed49d8ad4e470e323e1
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Mar 31 10:16:27 2025 -0400
