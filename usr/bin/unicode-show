@@ -1,0 +1,115 @@
+#!/usr/bin/python3 -u
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+"""
+This script scans input text or files for non-ASCII and suspicious Unicode characters.
+It prints lines with suspicious characters annotated inline (e.g., [U+XXXX]).
+For each such character, it prints the Unicode codepoint, name, and category.
+
+Exit codes:
+  0 - No suspicious Unicode found
+  1 - Suspicious Unicode found
+  2 - Error (e.g., file I/O or decoding error)
+"""
+
+import sys
+import unicodedata
+import string
+import io
+import os
+
+SAFE_ASCII = set(string.printable) - set(string.whitespace)
+
+USE_COLOR = (
+    not os.getenv("NOCOLOR") and
+    os.getenv("TERM") != "dumb" and
+    sys.stdout.isatty()
+)
+
+RED = "\033[91m"
+CYAN = "\033[96m"
+RESET = "\033[0m"
+
+VISIBLE_ASCII_RANGE = range(0x20, 0x7F)
+ALLOWED_WHITESPACE = {'\n', '\r', '\t'}
+SAFE_ASCII_SEMANTIC = set(string.ascii_letters + string.digits + string.punctuation + " \n\r\t")
+
+def colorize(text, color):
+    return f"{color}{text}{RESET}" if USE_COLOR else text
+
+def is_suspicious(c):
+    codepoint_allowed = ord(c) in VISIBLE_ASCII_RANGE or c in ALLOWED_WHITESPACE
+    semantically_allowed = c in SAFE_ASCII_SEMANTIC
+    ## Purposeful redundancy for extra safety.
+    return not (codepoint_allowed and semantically_allowed)
+
+def describe_char(c):
+    """Return a description of a Unicode character including codepoint, name, and category."""
+    code = ord(c)
+    name = unicodedata.name(c, "<unnamed>")
+    cat = unicodedata.category(c)
+    display = c if c in SAFE_ASCII else repr(c)
+    desc = f"{display} (U+{code:04X}, {name}, {cat})"
+    return colorize(desc, CYAN)
+
+def scan_line(line, lineno=None, filename=None):
+    """Scan a single line for suspicious characters, print annotated line and character info."""
+    has_suspicious = any(is_suspicious(c) for c in line)
+    if not has_suspicious:
+        return False
+
+    annotated = ""
+    for c in line:
+        if is_suspicious(c):
+            code = f"[U+{ord(c):04X}]"
+            annotated += colorize(code, RED)
+        else:
+            annotated += c
+
+    prefix = f"{filename}:{lineno}: " if filename else f"{lineno}: "
+    print(prefix + annotated.rstrip())
+
+    for c in line:
+        if is_suspicious(c):
+            print("   ->", describe_char(c))
+    return True
+
+def scan_file(f, filename=None):
+    """Scan an entire file-like object for suspicious characters."""
+    found = False
+    for lineno, line in enumerate(f, 1):
+        if scan_line(line, lineno=lineno, filename=filename):
+            found = True
+    return found
+
+if __name__ == "__main__":
+    clean = True
+    try:
+        if len(sys.argv) > 1:
+            for fname in sys.argv[1:]:
+                try:
+                    with open(fname, 'r', encoding='utf-8', errors='strict') as f:
+                        if scan_file(f, filename=fname):
+                            clean = False
+                except UnicodeDecodeError as e:
+                    print(f"Unicode decode error in {fname}: {e}", file=sys.stderr)
+                    clean = False
+                except Exception as e:
+                    print(f"Error reading {fname}: {e}", file=sys.stderr)
+                    sys.exit(2)
+        else:
+            try:
+                stdin_buffer = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8', errors='strict')
+                if scan_file(stdin_buffer):
+                    clean = False
+            except UnicodeDecodeError as e:
+                print(f"Unicode decode error in stdin: {e}", file=sys.stderr)
+                clean = False
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
+        sys.exit(2)
+
+    if not clean:
+        sys.exit(1)

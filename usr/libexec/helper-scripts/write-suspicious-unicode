@@ -1,0 +1,68 @@
+#!/usr/bin/python3 -u
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+"""
+Writes individual test files, each containing a suspicious Unicode character
+that might be missed by basic scanners. Characters include ASCII control
+characters and invisible or formatting Unicode characters.
+
+Each character is encoded using its codepoint (not literal Unicode) and written
+into a separate file named 1.txt, 2.txt, etc., inside $TMP/suspicious-unicode-test/.
+
+Most likely folder:
+/tmp/user/1000/suspicious-unicode-test
+
+Example file:
+/tmp/user/1000/suspicious-unicode-test/1.txt
+
+The script checks that the $TMP environment variable is set before writing files.
+"""
+
+import os
+import sys
+import unicodedata
+
+def write_test_files(base_dir):
+    # List of suspicious Unicode codepoints to include (decimal form)
+    codepoints = [
+        1,       # START OF HEADING
+        7,       # BELL
+        11,      # VERTICAL TAB
+        27,      # ESCAPE
+        127,     # DELETE
+        0x00AD,  # SOFT HYPHEN
+        0x200B,  # ZERO WIDTH SPACE
+        0x200E,  # LEFT-TO-RIGHT MARK
+        0x200F,  # RIGHT-TO-LEFT MARK
+        0x2060,  # WORD JOINER
+        0xFEFF,  # ZERO WIDTH NO-BREAK SPACE (BOM)
+    ]
+
+    os.makedirs(base_dir, exist_ok=True)
+
+    for i, cp in enumerate(codepoints, start=1):
+        char = chr(cp)
+        try:
+            hex_cp = f"U+{cp:04X}"
+            try:
+                name = unicodedata.name(char)
+            except ValueError:
+                name = "UNKNOWN CHARACTER"
+            line = f"Index: {i} | Decimal: {cp} | Codepoint: {hex_cp} | Name: {name} | Character: {char}\n"
+            file_path = os.path.join(base_dir, f"{i}.txt")
+            print(file_path)
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(line)
+        except UnicodeEncodeError as e:
+            print(f"Error encoding U+{cp:04X}: {e}")
+
+if __name__ == "__main__":
+    tmp = os.environ.get('TMP')
+    if not tmp:
+        print("Error: $TMP environment variable is not set.", file=sys.stderr)
+        sys.exit(1)
+
+    target_dir = os.path.join(tmp, "suspicious-unicode-test")
+    write_test_files(target_dir)

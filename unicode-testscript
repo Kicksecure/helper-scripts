@@ -1,0 +1,92 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## NOTE:
+## Assumes folder 'trojan-source' in the home folder.
+##
+## cd ~
+## git clone git@github.com:nickboucher/trojan-source.git
+
+## TODO: Convert into proper unit test and/or CI.
+
+#set -x
+set -e
+set -o nounset
+set -o pipefail
+set -o errtrace
+
+folder_list="Assembly  Bash  C  C#  C++  Go  Java  JavaScript  Python  RegEx  Rust  Solidity"
+
+total_file_counter=0
+
+process_file() {
+  local file_name
+  file_name="$1"
+  test -r "$file_name"
+  base_name="$(basename "$file_name")"
+
+  if [ "$base_name" = "README.md" ] || \
+    [ "$base_name" = "omnisharp.json" ] || \
+    [ "$base_name" = "java.regex" ] || \
+    [ "$base_name" = "pcre2.regex" ]; then
+    return 0
+  fi
+
+  total_file_counter=$(( total_file_counter + 1))
+  printf "%s\n" "$file_name" >/dev/null
+
+  ## grep-find-unicode-wrapper is similar like grep.
+  ## - Exit code 0: if found.
+  ## - Non-zero exit code: if not found.
+  if ! grep-find-unicode-wrapper "$file_name" >/dev/null ; then
+    printf "%s\n" "$0: ERROR: Failed to find unicode using grep-find-unicode-wrapper in file '$file_name'." >&2
+    exit 1
+  fi
+
+  ## unicode-show will exit 1 if unicode was found.
+  ## So if unicode-show was to exit 0, then it would have failed to find unicode.
+  if unicode-show "$file_name" >/dev/null ; then
+    ## unicode-show exit code 0.
+    printf "%s\n" "$0: ERROR: Failed to find unicode using unicode-show (file check) in file '$file_name'."  >&2
+    exit 1
+  fi
+
+  if cat -- "$file_name" | unicode-show >/dev/null ; then
+    ## unicode-show exit code 0.
+    printf "%s\n" "$0: ERROR: Failed to find unicode using cat unicode-show (stdin check) in file '$file_name'."  >&2
+    exit 1
+  fi
+
+  ## unicode-show non-zero exit code.
+
+  return 0
+}
+
+if ! test -d "$HOME/trojan-source" ; then
+  printf "%s\n" "
+$0: ERROR: Folder '$HOME/trojan-source' missing. To get it:
+
+cd ~
+git clone git@github.com:nickboucher/trojan-source.git" >&2
+fi
+
+## Creates files:
+## /tmp/user/1000/suspicious-unicode-test/1.txt
+## etc.
+/usr/libexec/helper-scripts/write-suspicious-unicode >/dev/null
+
+for folder_name in $folder_list ; do
+  while IFS= read -r -d '' file_name; do
+    ## Must be outside of process substitution to be able to exit script.
+    process_file "$file_name"
+  done < <(find "$HOME/trojan-source/$folder_name" -maxdepth 1 -type f -not -iwholename '*.git*' -print0 )
+done
+
+while IFS= read -r -d '' file_name; do
+  ## Must be outside of process substitution to be able to exit script.
+  process_file "$file_name"
+done < <(find "$TMP/suspicious-unicode-test" -maxdepth 1 -type f -not -iwholename '*.git*' -print0 )
+
+printf "%s\n" "$0: INFO: OK"
