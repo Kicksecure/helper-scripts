@@ -18,25 +18,25 @@ stdisplay(1) -- Sanitize text to be safely printed to the terminal
 ## DESCRIPTION
 
 `stdisplay` is a Python library used to safely print text from untrusted
-sources sanitizing non-ASCII characters and dangerous ANSI escape
-sequenes, from the latter, only a strict subset of SGR (Select Graphic
-Rendition) attributes, line feeds (`\n`) and horizontal tabs (`\t`) are
-allowed).
+sources, sanitizing non-ASCII characters and dangerous ANSI escape
+sequences. From the latter, only a strict subset of SGR (Select Graphic
+Rendition) attributes, line feeds (`\n`), and horizontal tabs (`\t`) are
+allowed.
 
 The following tests are done in order to verify if SGR should be enabled
-and how large it's set should be:
+and how large its set should be:
 
 1.  If the environment variable `$NO_COLOR` is set to a non-empty value,
     SGR is disabled.
 2.  If the environment variable `$COLORTERM` is set to `truecolor`,
     24-bit SGR is enabled.
-3.  If none of the above matches, the terminal referenced by the
+3.  If none of the above match, the terminal referenced by the
     environment variable `$TERM` is queried for its `colors` capability,
     which returns how many colors the terminal supports.
 
-Tools based on this library have no option parameters, everything is
-treated either as text or file, depending on the tool used, therefore,
-`--` is interpreted as text and not end of options.
+Tools based on this library have no option parameters. Everything is
+treated either as text or file, depending on the tool used. Therefore,
+`--` is interpreted as text and not as the end of options.
 
 Each tool behaves as if their shell utility counterpart was used without
 any options:
@@ -95,7 +95,7 @@ data | stcat | less -R<br>
 GIT_PAGER="stcat | less -R" git log
 </code>
 
-Print a ownership restricted file with external programs:
+Print an ownership-restricted file with external programs:
 
 <code>
 sudo -- stcat /untrusted/log<br>
@@ -104,11 +104,11 @@ sudo -- stcat /untrusted/log<br>
 ## EXAMPLE: STTEE/STSPONGE
 
 The tools `sttee` and `stsponge` have the same usage but differ when
-writing. While `sttee` always writes to standrd output as soon as
+writing. While `sttee` always writes to standard output as soon as
 it is read, `stsponge` only writes to standard output if no file is
-provided and the write is atomic.
+provided, and the write is atomic.
 
-Copy standrd input to standard output and optionally to a file:
+Copy standard input to standard output and optionally to a file:
 
 <code>
 printf '%s' "${untrusted_string}" | sttee<br>
@@ -125,10 +125,10 @@ stsponge /untrusted/file < /untrusted/file
 ## EXAMPLE: STPRINT/STECHO
 
 The tools `stprint` and `stecho` have the same usage but differ in
-formatting. While `stprint` does print text as is, `stecho` adds a space
+formatting. While `stprint` prints text as-is, `stecho` adds a space
 between each argument and a newline at the end of the string.
 
-Print a variable value is simple:
+Printing a variable value is simple:
 
 <code>
 stprint "${untrusted_string}"
@@ -140,7 +140,7 @@ Note that items are joined without word-splitting (no space separation):
 stprint "${untrusted_string}" "${another_untrusted_string}"
 </code>
 
-To have space separated items, simply add a space between them:
+To have space-separated items, simply add a space between them:
 
 <code>
 stprint "${untrusted_string} ${another_untrusted_string}"<br>
@@ -157,7 +157,7 @@ EOF
 
 ### EXAMPLE: STPRINT WITH VARIABLES
 
-Print a variable as is:
+Print a variable as-is:
 
 <code>
 var="$(stprint "${untrusted_string}")"<br>
@@ -184,11 +184,11 @@ var="$(stprint "${red}Hey${nocolor}: ${untrusted_string}")"
 ### EXAMPLE: STPRINT MISUSE
 
 *Warning*: Reinterpreting the escapes from the data returned from
-`stprint` is insecure. Stack of escaped escape sequences not interpreted
-before will be evaluated.
+`stprint` is insecure. A stack of previously uninterpreted escape sequences
+will be evaluated.
 
 Do *NOT* reinterpret the escape sequences on variable assignment (dangerous
-when printing to the terminal later:
+when printing to the terminal later):
 
 <code>
 var="$(stprint "${untrusted_string}")" # OK<br>
@@ -197,7 +197,7 @@ printf -v var "$(stprint "${untrusted_string}")" # DANGER (format is '%b')<br>
 printf -v var '%b' "$(stprint "${untrusted_string}")" # DANGER
 </code>
 
-Do *NOT* reinterpret the escape sequences when printing a variable, one
+Do *NOT* reinterpret the escape sequences when printing a variable. One
 more layer of escapes will be interpreted:
 
 <code>
@@ -211,5 +211,5 @@ echo -E "${var}" # DANGER (var may have '-e' prefix)
 
 ## AUTHOR
 
-This man page has been written by Benjamin Grand M. S.
+This man page has been written by Benjamin Grande M. S.
 (ben.grande.b@gmail.com).
