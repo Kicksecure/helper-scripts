@@ -1,3 +1,64 @@
+commit 829410d963ca91cccddcb6dfe86af2c8f6aca662
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 8 07:52:22 2025 -0400
+
+    genmkfile manpages
+
+commit 51a12031ee8bf713c7c29ec49b000aeff8a05ffe
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 8 07:52:00 2025 -0400
+
+    add unicode-show man page
+
+commit 39d612fab1e50da0dc0ed4372c64f0e35f0c4b54
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 8 07:10:07 2025 -0400
+
+    remove trailing spaces
+
+commit 7848a8c852ce53846615df6fcfafa1ce2d74a1a3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 8 07:04:20 2025 -0400
+
+    genmkfile manpages
+
+commit 05ca327281267f64fbeb945e5fc84384ba5a4fa1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 8 07:03:39 2025 -0400
+
+    man
+
+commit b99a1ce2dc08eabb68ad047786c9fbe0ec9965b5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 8 07:00:10 2025 -0400
+
+    man
+
+commit d0de2d58c3b5a13be0ecbd844dbe4a0c402c95ce
+Merge: 8316d4a f0fc4bf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 8 06:57:22 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/unicode-show-enhance'
+
+commit f0fc4bfa0e91638ddd68209734021c03a544a09d
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Apr 6 18:43:31 2025 -0500
+
+    unicode-show: enhance efficiency, show trailing whitespace
+
+commit 345d20955b121f2a2249e53c3319dbf118e0f805
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Apr 5 23:27:01 2025 -0500
+
+    Minor fixes to debian/control and stdisplay manpage
+
+commit 8316d4a24a54dd0d33337b70a3f489539376868d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 2 18:15:30 2025 +0000
+
+    bumped changelog version
+
 commit c6232991cada4577f4bfae1cbfe60203be74883e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Apr 2 14:03:45 2025 -0400
