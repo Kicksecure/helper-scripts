@@ -56,24 +56,41 @@ def describe_char(c):
 
 def scan_line(line, lineno=None, filename=None):
     """Scan a single line for suspicious characters, print annotated line and character info."""
-    has_suspicious = any(is_suspicious(c) for c in line)
-    if not has_suspicious:
-        return False
 
     annotated = ""
+    has_suspicious = False
+    prefix = f"{filename}:{lineno}: " if filename else f"{lineno}: "
+    suspicious_descrs = []
+
     for c in line:
         if is_suspicious(c):
+            has_suspicious = True
             code = f"[U+{ord(c):04X}]"
             annotated += colorize(code, RED)
+            suspicious_descrs.append("   ->" + describe_char(c))
         else:
             annotated += c
 
-    prefix = f"{filename}:{lineno}: " if filename else f"{lineno}: "
-    print(prefix + annotated.rstrip())
+    if annotated[-1] == "\n":
+        annotated = annotated[:-1]
 
-    for c in line:
-        if is_suspicious(c):
-            print("   ->", describe_char(c))
+    annotated_stripped = annotated.rstrip()
+    if len(annotated) != len(annotated_stripped):
+        annotated_new = annotated_stripped
+        has_suspicious = True
+        for c in annotated[len(annotated_stripped):]:
+            code = f"[U+{ord(c):04X}]"
+            annotated_new += colorize(code, RED)
+            suspicious_descrs.append("   ->" + describe_char(c))
+        annotated = annotated_new
+
+    if not has_suspicious:
+        return False
+
+    print(prefix + annotated)
+    for suspicious_descr in suspicious_descrs:
+        print(suspicious_descr)
+
     return True
 
 def scan_file(f, filename=None):
