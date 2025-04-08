@@ -1,0 +1,68 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UNICODE\-SHOW" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
+.SH "NAME"
+\fBunicode\-show\fR \- Scan and annotate suspicious Unicode characters
+.SH "NAME"
+\fBunicode\-show\fR \- detect and annotate non\-ASCII or suspicious Unicode characters in text or files
+.SH "SYNOPSIS"
+\fBunicode\-show\fR [\fIFILE\fR]\|\.\|\.\|\.
+.SH "DESCRIPTION"
+\fBunicode\-show\fR is a utility that reads text input (from standard input or files) and highlights suspicious Unicode characters, such as those outside the safe ASCII range\. This tool is useful for identifying potentially malicious or misleading Unicode characters in source code, logs, or user input\.
+.SH "For each suspicious character, <strong>unicode\-show</strong> prints:"
+.IP "\[ci]" 4
+The line it appears on, annotated with \fB[U+XXXX]\fR markers
+.IP "\[ci]" 4
+A description including the character (if visible), Unicode codepoint, character name, and category
+.IP "" 0
+.SS "What is considered suspicious:"
+.IP "\[ci]" 4
+Characters outside the printable ASCII range (\fB0x20\fR\-\fB0x7E\fR)
+.IP "\[ci]" 4
+Control characters (excluding \fB\en\fR, \fB\er\fR, \fB\et\fR)
+.IP "\[ci]" 4
+Any character not in the standard set of ASCII letters, digits, punctuation, and trailing whitespace
+.IP "" 0
+.SS "Output formatting:"
+.IP "\[ci]" 4
+Annotations are colorized using ANSI escape codes if stdout is a terminal and the environment is color\-friendly
+.IP "\[ci]" 4
+Red for inline \fB[U+XXXX]\fR markers
+.IP "\[ci]" 4
+Cyan for character metadata descriptions
+.IP "" 0
+.SH "Color output is disabled if:"
+.IP "\[ci]" 4
+The environment variable \fB$NOCOLOR\fR is set
+.IP "\[ci]" 4
+\fB$TERM\fR is set to \fBdumb\fR
+.IP "\[ci]" 4
+Output is redirected (non\-interactive terminal)
+.IP "" 0
+.SH "OPTIONS"
+This tool takes no options\. Any arguments are treated as file paths\. If no arguments are given, input is read from standard input\.
+.SH "EXIT STATUS"
+.IP "\[ci]" 4
+\fB0\fR \- No suspicious Unicode characters found
+.IP "\[ci]" 4
+\fB1\fR \- Suspicious characters were detected
+.IP "\[ci]" 4
+\fB2\fR \- An error occurred (e\.g\., file I/O or decoding failure)
+.IP "" 0
+.SH "EXAMPLES"
+.SS "Scan a file for suspicious characters:"
+\fBunicode\-show suspicious\.txt\fR
+.SS "Scan multiple files:"
+\fBunicode\-show file1\.txt file2\.md\fR
+.SS "Scan input from a pipeline:"
+\fBcat file1\.txt | unicode\-show\fR
+.SS "Disable color output:"
+\fBNOCOLOR=1 unicode\-show example\.txt\fR
+.SH "ENVIRONMENT"
+.IP "\[ci]" 4
+\fBNOCOLOR\fR \- disables color output if set
+.IP "\[ci]" 4
+\fBTERM\fR \- if set to \fBdumb\fR, disables color output
+.IP "" 0
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
