@@ -54,7 +54,7 @@ add_linux_user_account() {
   ## skeletal configuration, running a custom script, and other features.
   ##
   ## https://forums.whonix.org/t/port-from-useradd-groupadd-and-usermod-to-adduser-and-addgroup/7977
-  
+
   ## Use --no-create-home and leave home folder creation to pam mkhomedir
   ## https://phabricator.whonix.org/T913
   ## https://forums.whonix.org/t/bug-not-all-files-form-etc-skel-are-copied-to-home-user/6778/4

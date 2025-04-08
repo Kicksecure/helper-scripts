@@ -118,7 +118,7 @@ def detect_underlying_symlink_folder(file_path):
             continue
         current_path = os.path.join(current_path, part)
         if os.path.islink(current_path):
-            real_path = os.path.realpath(current_path) 
+            real_path = os.path.realpath(current_path)
             return (
                 f"Yes\n"
                 f"Parent Folder Symlink Path: '{current_path}'\n"

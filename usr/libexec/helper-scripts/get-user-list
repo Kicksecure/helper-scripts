@@ -51,5 +51,5 @@ while read -r user_entry; do
    if [ "${current_uid}" -ge "${first_uid}" ] \
       && [ "${current_uid}" -le "${last_uid}" ]; then
       cut -d':' -f1 <<< "${user_entry}"
-   fi  
+   fi
 done < /etc/passwd
