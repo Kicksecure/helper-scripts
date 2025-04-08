@@ -41,13 +41,13 @@ treated either as text or file, depending on the tool used, therefore,
 Each tool behaves as if their shell utility counterpart was used without
 any options:
 
-| Tool     | Non-sanitizing equivalent |
-| -------- | ------------------------- |
-| stprint  | printf                    |
-| stecho   | echo                      |
-| stcat    | cat                       |
-| sttee    | tee                       |
-| stsponge | sponge                    |
+| Sanitizer Command | Non-Sanitizing Equivalent |
+| ----------------- | ------------------------- |
+| stprint           | printf                    |
+| stecho            | echo                      |
+| stcat             | cat                       |
+| sttee             | tee                       |
+| stsponge          | sponge                    |
 
 ## RETURN VALUES
 
