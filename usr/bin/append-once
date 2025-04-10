@@ -1,72 +1,100 @@
-#!/bin/bash
+#!/usr/bin/python3 -u
 
-## Copyright (C) 2024 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 ## Usage:
 ## append-once /path/to/file 'line to append'
 
-## TODO: Does not support multi-line (with empty lines) yet.
+import sys
+import os
+import shutil
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 
-#set -x
-set -e
-set -o errtrace
-set -o pipefail
-set -o nounset
 
-true "$0: INFO: START"
+def print_usage_and_bail():
+    print(
+        f"Usage: {sys.argv[0]} /path/to/file 'line to append'", file=sys.stderr
+    )
+    sys.exit(1)
 
-error_handler() {
-  printf "%s\n" "$0: ERROR: An error occurred" >&2
-  exit 1
-}
 
-trap error_handler ERR
+def print_error_and_bail(error_msg):
+    print(f"{sys.argv[0]}: ERROR: {error_msg}", file=sys.stderr)
+    sys.exit(1)
 
-append_once() {
-  local file_name="$1"
-  local line="$2"
 
-  if ! test -f "$file_name" ; then
-    true "INFO: File does not exist yet: $file_name"
-    local dir_name
-    ## Pure bash would be preferred over external `dirname` command. (Simplifies mandatory access control.)
-    ## But pure bash does not handle cases where simply a file name is given without a directory.
-    #dir_name="${file_name%/*}"
-    dir_name="$(dirname -- "$file_name")"
-    if ! test -w "$dir_name" ; then
-      printf "%s\n" "$0: ERROR: Folder '$dir_name' (where file '$file_name' should be created) is not writeable!" >&2
-      exit 1
-    fi
-  else
-    if ! test -r "$file_name" ; then
-      printf "%s\n" "$0: ERROR: File '$file_name' not readable!" >&2
-      exit 1
-    fi
-    if str_match "$line" "$file_name" &>/dev/null ; then
-      true "INFO: Line already exists in: $file_name"
-      return 0
-    fi
-    if ! test -w "$file_name" ; then
-      printf "%s\n" "$0: ERROR: File '$file_name' not writeable!" >&2
-      exit 1
-    fi
-  fi
+def main():
+    if len(sys.argv) != 3:
+        print_usage_and_bail()
 
-  true "INFO: Appending line to: $file_name"
-  ## Use `sponge`, because it is atomic, for nicer xtrace and better error handling.
-  printf "%s\n" "$line" | sponge -a -- "$file_name"
-}
+    file_path = Path(sys.argv[1])
+    orig_file_path = file_path
+    line_to_append = sys.argv[2]
+    file_contents = ""
 
-# Main execution
-if [ $# -ne 2 ]; then
-  printf "%s\n" "Usage: $0 /path/to/file 'line to append'" >&2
-  exit 1
-fi
+    try:
+        file_path = file_path.resolve()
+    except Exception:
+        print_error_and_bail(
+            f"Error while resolving path '{orig_file_path}'!"
+        )
 
-file_path="$1"
-line_to_append="$2"
+    if file_path.exists():
+        if not file_path.is_file():
+            print_error_and_bail(f"'{file_path}' is not a file!")
+        if not os.access(file_path, os.R_OK):
+            print_error_and_bail(f"File '{file_path}' not readable!")
+        with open(file_path, "r", encoding="utf-8") as f:
+            try:
+                file_contents = f.read()
+            except Exception:
+                print_error_and_bail(
+                    f"Error while reading file '{orig_file_path}'!"
+                )
+        if line_to_append in file_contents:
+            print(f"INFO: Line already exists in: '{orig_file_path}'")
+            sys.exit(0)
+        if not os.access(file_path, os.W_OK):
+            print_error_and_bail(f"File '{orig_file_path}' not writable!")
+    else:
+        print(f"INFO: File does not exist yet: {orig_file_path}")
+        if not os.access(file_path.parent, os.W_OK):
+            print_error_and_bail(
+                f"Folder '{file_path.parent}' (where file '{file_path.name}' "
+                "should be created) is not writable!"
+            )
 
-append_once "$file_path" "$line_to_append"
+    print(f"INFO: Appending line to: {orig_file_path}")
+    if file_contents != "" and file_contents[-1] != "\n":
+        # Fix a missing terminating newline. Some text editors will fail to
+        # write these properly and it will break our line appending if we don't
+        # correct it first.
+        file_contents += "\n"
+    if line_to_append != "" and line_to_append[-1] != "\n":
+        # Make sure we add a terminating newline ourselves too :)
+        line_to_append += "\n"
+    file_contents += line_to_append
 
-true "$0: INFO: END"
+    temp_file = None
+    try:
+        temp_file = NamedTemporaryFile(mode="w", delete=False)
+        temp_file.write(file_contents)
+        temp_file.flush()
+        temp_file.close()
+        shutil.move(temp_file.name, file_path)
+    except Exception:
+        try:
+            if temp_file is not None:
+                Path(temp_file.name).unlink()
+        except Exception:
+            print_error_and_bail(
+                f"Error while writing file '{orig_file_path}', and could not "
+                "delete temp file!"
+            )
+        print_error_and_bail(f"Error while writing file '{orig_file_path}'!")
+
+
+if __name__ == "__main__":
+    main()
