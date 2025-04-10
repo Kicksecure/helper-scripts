@@ -12,6 +12,7 @@ set -o pipefail
 # shellcheck source=../libexec/helper-scripts/get_colors.sh
 source /usr/libexec/helper-scripts/get_colors.sh
 
+## TODO: also used by grub-pwchange - move to helper-scripts and 'source' from here
 get_password() {
    ## author of contents of get_password function
    ## Dipto
