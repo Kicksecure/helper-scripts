@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+##
+## SPDX-License-Identifier: AGPL-3.0-or-later
+
+"""Safely print stdin or file to stdout."""
+
+from fileinput import input as file_input
+from sys import stdin, stdout
+
+
+def main() -> None:
+    """Safely print stdin or file to stdout with non-printing as ^ and M-
+    notation.
+
+    https://github.com/coreutils/coreutils/blob/356e40ff8e113e6d30a3b469c3aa7a77c6cc56f4/src/cat.c#L412-L461
+    """
+    stdin.reconfigure(errors="ignore")  # type: ignore
+    ## File input reads stdin when no file is provided or file is '-'.
+    for untrusted_text in file_input(mode="rb", encoding="ascii"):
+        for untrusted_byte in untrusted_text:
+            ## Caret notation: non-printable.
+            ## Meta character notation: Above ASCII range.
+            ## Meta character and caret notation can be combined.
+            if 32 <= untrusted_byte <= 126 or untrusted_byte in (9, 10):
+                stdout.write(chr(untrusted_byte))
+            elif untrusted_byte < 128:
+                stdout.write(f"^{chr(untrusted_byte ^ 64)}")
+            else:
+                meta_char = untrusted_byte - 128
+                if 32 <= meta_char <= 126:
+                    stdout.write(f"M-{chr(meta_char)}")
+                else:
+                    stdout.write(f"M-^{chr(meta_char ^ 64)}")
+    stdout.flush()
+
+if __name__ == "__main__":
+    main()

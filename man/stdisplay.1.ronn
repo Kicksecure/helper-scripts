@@ -46,6 +46,7 @@ any options:
 | stprint           | printf                    |
 | stecho            | echo                      |
 | stcat             | cat                       |
+| stcatv            | cat -v                    |
 | sttee             | tee                       |
 | stsponge          | sponge                    |
 
@@ -69,7 +70,7 @@ NO_COLOR=1 stprint "$(printf '%b' "\033[31mNo color\033[m")"<br>
 TERM=dumb stprint "$(printf '%b' "\033[31mNo color\033[m")"<br>
 </code>
 
-## EXAMPLE: STCAT
+## EXAMPLE: STCAT/STCATV
 
 Copy standard input to standard output:
 
@@ -100,6 +101,9 @@ Print an ownership-restricted file with external programs:
 <code>
 sudo -- stcat /untrusted/log<br>
 </code>
+
+The tool `stcatv` differs by showing non-printing characters the same
+way as `cat -v` would.
 
 ## EXAMPLE: STTEE/STSPONGE
 
