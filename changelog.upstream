@@ -1,3 +1,33 @@
+commit be30b7e66f91c41acd3aaf7d98779a59c99bed80
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 10 07:35:34 2025 -0400
+
+    improvements
+
+commit 8e3524067f80bd28f88ca17c8f9ff866a3f0d2e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 10 07:32:43 2025 -0400
+
+    improvements
+
+commit 566d7d5e8b486411e74b978bb61331a54d6d6257
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 10 07:27:41 2025 -0400
+
+    improvements
+
+commit 6570a37423f398d499987d0364640e276283d96c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 10 07:20:11 2025 -0400
+
+    implement `grub-password-status-check` and `grub-pwchange`
+
+commit 8705fed077647e8d09fdfa9effc5e529d8bd57f9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 9 15:15:10 2025 +0000
+
+    bumped changelog version
+
 commit c3564ee15b3f590ea5bc32093311ff3f12338101
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Apr 9 11:00:08 2025 -0400
