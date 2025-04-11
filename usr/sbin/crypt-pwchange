@@ -1,0 +1,115 @@
+#!/bin/bash
+
+## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## Copyright (C) 2019 - 2019 Dipto
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+# shellcheck source=../libexec/helper-scripts/get_colors.sh
+source /usr/libexec/helper-scripts/get_colors.sh
+# shellcheck source=../libexec/helper-scripts/get_password.sh
+source /usr/libexec/helper-scripts/get_password.sh
+
+if [ "$(id -u)" != "0" ]; then
+   echo "ERROR: This must be run as root (sudo)!" >&2
+   exit 1
+fi
+
+readarray -t crypt_dev_list < <(
+  blkid \
+  | grep 'crypto_LUKS' \
+  | cut -d':' -f1
+) || true
+
+if (( ${#crypt_dev_list[@]} == 0 )) || [ -z "${crypt_dev_list[0]}" ]; then
+  printf "%s\n" "$0: INFO: No encrypted storage devices are present in the system." >&2
+  exit 0
+fi
+
+crypt_dev_size_list=()
+
+for crypt_dev in "${crypt_dev_list[@]}"; do
+  crypt_dev_size_bytes="$(blockdev --getsize64 "${crypt_dev}")"
+  crypt_dev_size_list+=( "$(bc <<< "scale=2; ${crypt_dev_size_bytes} / 1024 / 1024")M" )
+done
+
+printf "%s\n" "Encrypted storage devices present in the system:" >&2
+for (( i = 0; i < ${#crypt_dev_list[@]}; i++ )); do
+  (( show_idx = i + 1 ))
+  crypt_dev="${crypt_dev_list[i]}"
+  crypt_dev_size="${crypt_dev_size_list[i]}"
+  printf "%s\n" "   ${show_idx}: ${crypt_dev} (${crypt_dev_size})" >&2
+done
+
+read -r -p "Enter the number of the disk you want to change: " crypt_dev_idx
+
+if [ -z "$crypt_dev_idx" ]; then
+  printf "%s\n" "$0: ERROR: No disk number provided. Please specify a disk number." >&2
+  exit 1
+fi
+
+if [[ "$crypt_dev_idx" = *[!0-9]* ]]; then
+  printf "%s\n" "$0: ERROR: Provided value is not a number. Please specify a disk number." >&2
+  exit 1
+fi
+
+if (( crypt_dev_idx > ${#crypt_dev_list[@]} )) || (( crypt_dev_idx == 0 )); then
+  printf "%s\n" "$0: ERROR: Provided value is out of range. Please specify a disk number." >&2
+  exit 1
+fi
+
+(( crypt_dev_idx-- )) || true
+target_crypt_dev="${crypt_dev_list[crypt_dev_idx]}"
+
+printf "%s\n" "Enter the existing passphrase for disk '$target_crypt_dev':" >&2
+## Sets variable 'password'.
+get_password
+orig_passphrase="$password"
+echo >&2
+
+printf "%s\n" "Testing passphrase. This may take a while..." >&2
+if ! cryptsetup luksOpen --test-passphrase "$target_crypt_dev" <<< "$orig_passphrase" 2>/dev/null; then
+  printf "%s\n" "$0: ERROR: Provided passphrase is incorrect for disk '$target_crypt_dev'." >&2
+  exit 1
+fi
+
+printf "%s\n" "$0: INFO: Provided passphrase is correct for disk '$target_crypt_dev', ok." >&2
+printf "%s\n" "Enter the new passphrase for disk '$target_crypt_dev':" >&2
+## Sets variable 'password'.
+get_password
+first_input="$password"
+echo >&2
+
+printf "%s\n" "Re-enter the new passphrase to confirm:" >&2
+## Sets variable 'password'.
+get_password
+second_input="$password"
+echo >&2
+
+if [ "$first_input" != "$second_input" ]; then
+  printf "%s\n" "$0: ERROR: Passphrases do not match. Passphrase has not been changed." >&2
+  exit 1
+fi
+
+if [ -z "$first_input" ]; then
+  printf "%s\n" "$0: ERROR: Cannot set an empty passphrase. Passphrase has not been changed." >&2
+  exit 1
+fi
+
+if [ "$first_input" = "$orig_passphrase" ]; then
+  printf "%s\n" "$0: INFO: Old and new passphrases are identical. Passphrase has not been changed." >&2
+  exit 0
+fi
+
+printf "%s\n" "Changing passphrase. This may take a while..." >&2
+if cryptsetup luksChangeKey "$target_crypt_dev" <<< "$orig_passphrase"$'\n'"$first_input" 2>/dev/null; then
+  printf "%s\n" "$0: SUCCESS: Passphrase for disk '$target_crypt_dev' has been updated successfully." >&2
+  exit 0
+else
+  printf "%s\n" "$0: ERROR: Passphrase for disk '$target_crypt_dev' could not be updated." >&2
+  exit 1
+fi

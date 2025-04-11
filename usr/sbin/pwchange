@@ -11,84 +11,52 @@ set -o pipefail
 
 # shellcheck source=../libexec/helper-scripts/get_colors.sh
 source /usr/libexec/helper-scripts/get_colors.sh
-
-## TODO: also used by grub-pwchange - move to helper-scripts and 'source' from here
-get_password() {
-   ## author of contents of get_password function
-   ## Dipto
-   ## https://askubuntu.com/users/133486/dipto
-   ##
-   ## source of contents of get_password function
-   ##
-   ## https://askubuntu.com/a/299469/389275
-   ##
-   ## license:
-   ## licensed under cc by-sa 3.0 with attribution required.
-
-   local char prompt
-
-   password=""
-   prompt=""
-
-   while IFS= read -p "${prompt:-}" -r -s -n 1 char; do
-      # Enter - accept password
-      if [[ $char == $'\0' ]] ; then
-         break
-      fi
-      # Backspace
-      if [[ $char == $'\177' ]] ; then
-         prompt=$'\b \b'
-         password="${password%?}"
-      else
-         prompt='*'
-         password+="$char"
-      fi
-   done
-}
+# shellcheck source=../libexec/helper-scripts/get_password.sh
+source /usr/libexec/helper-scripts/get_password.sh
 
 if [ "$(id -u)" != "0" ]; then
-   echo "ERROR: This must be run as root (sudo)!" >&2
+   printf "%s\n" "$0: ERROR: This must be run as root (sudo)!" >&2
    exit 1
 fi
 
 if ! output="$(/usr/libexec/helper-scripts/get-user-list)"; then
-    echo "ERROR: Failed to get user list!" >&2
+    printf "%s\n" "$0: ERROR: Failed to get user list!" >&2
     exit 1
 fi
 
 readarray -t user_list <<< "$output"
 
-echo "Users present on the system:" >&2
+printf "%s\n" "Users present on the system:" >&2
 for user_entry in "${user_list[@]}"; do
-   echo "   ${user_entry}" >&2
+   printf "%s\n" "   ${user_entry}" >&2
 done
 
 read -r -p "Enter the username whose password you want to change: " user
 
 if [ "$user" = "" ]; then
-   echo "ERROR: No username provided. Please specify a username." >&2
+   printf "%s\n" "$0: ERROR: No username provided. Please specify a username." >&2
    exit 1
 fi
 
 if ! id "$user" &>/dev/null ; then
-   echo "ERROR: Account '$user' does not exist. Please check the username and try again." >&2
+   printf "%s\n" "$0: ERROR: Account '$user' does not exist. Please check the username and try again." >&2
    exit 1
 fi
 
-echo -n "Enter the new password for account '$user': " >&2
-echo >&2
+printf "%s\n" "Enter the new password for account '$user':" >&2
+## Sets variable `password`.
 get_password
 first_input="$password"
 echo >&2
 
-echo -n "Re-enter the new password to confirm: " >&2
-echo >&2
+printf "%s\n" "Re-enter the new password to confirm:" >&2
+## Sets variable `password`.
 get_password
 second_input="$password"
 echo >&2
 
 if [ ! "$first_input" = "$second_input" ]; then
-   echo "ERROR: Passwords do not match. Password has not been changed." >&2
+   printf "%s\n" "ERROR: Passwords do not match. Password has not been changed." >&2
    exit 1
 fi
 
@@ -98,30 +66,30 @@ if [ "$first_input" = "" ]; then
 
    if [ "${delete_pw_yn,,}" = 'y' ]; then
       passwd -d "$user"
-      echo "SUCCESS: Password for account '$user' has been deleted successfully." >&2
+      printf "%s\n" "$0: SUCCESS: Password for account '$user' has been deleted successfully." >&2
    else
-      echo "CANCELLED deleting password for account '$user'." >&2
+      printf "%s\n" "$0: CANCELLED deleting password for account '$user'." >&2
    fi
    exit 0
 fi
 
 ## Change the password otherwise.
-echo "${user}:${password}" | chpasswd
+chpasswd <<< "${user}:${password}"
 
 unset first_input
 unset second_input
 unset password
 
-echo "SUCCESS: Password for account '$user' has been updated successfully." >&2
+printf "%s\n" "$0: SUCCESS: Password for account '$user' has been updated successfully." >&2
 
 if [ -f '/usr/share/qubes/marker-vm' ]; then
-   true "INFO: GUI autologin is not applicable to Qubes OS."
+   true "$0: INFO: GUI autologin is not applicable to Qubes OS."
    exit 0
 fi
 
 if /usr/sbin/autologinchange -c "$user"; then
-   echo "${yellow}WARNING:${nocolor} Account '$user' has autologin enabled." >&2
-   echo "Passwordless access to this account is likely still possible." >&2
-   echo "You can use the 'autologinchange' utility to change this." >&2
-   echo "See https://www.kicksecure.com/wiki/Login for more information." >&2
+   printf "%s\n" "${yellow}WARNING:${nocolor} Account '$user' has autologin enabled." >&2
+   printf "%s\n" "Passwordless access to this account is likely still possible." >&2
+   printf "%s\n" "You can use the 'autologinchange' utility to change this." >&2
+   printf "%s\n" "See https://www.kicksecure.com/wiki/Login for more information." >&2
 fi
