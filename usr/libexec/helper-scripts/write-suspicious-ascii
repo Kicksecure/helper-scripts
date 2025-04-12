@@ -1,0 +1,84 @@
+#!/usr/bin/python3 -u
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC
+## See the file COPYING for copying conditions.
+
+"""
+Writes individual test files, each containing an ASCII control character
+that might be used in obfuscation.
+
+Each is written into a separate file named 1.txt, 2.txt, etc.,
+inside $TMP/suspicious-ascii-test/.
+
+Most likely folder:
+    /tmp/user/1000/suspicious-ascii-test
+
+Example file:
+    /tmp/user/1000/suspicious-ascii-test/1.txt
+
+The script checks that the $TMP environment variable is set before writing files.
+"""
+
+import os
+import sys
+
+ascii_control_names = {
+    0: "NUL (Null)",
+    1: "SOH (Start of Heading)",
+    2: "STX (Start of Text)",
+    3: "ETX (End of Text)",
+    4: "EOT (End of Transmission)",
+    5: "ENQ (Enquiry)",
+    6: "ACK (Acknowledge)",
+    7: "BEL (Bell)",
+    8: "BS (Backspace)",
+    9: "HT (Horizontal Tab)",
+    10: "LF (Line Feed)",
+    11: "VT (Vertical Tab)",
+    12: "FF (Form Feed)",
+    13: "CR (Carriage Return)",
+    14: "SO (Shift Out)",
+    15: "SI (Shift In)",
+    16: "DLE (Data Link Escape)",
+    17: "DC1 (Device Control 1)",
+    18: "DC2 (Device Control 2)",
+    19: "DC3 (Device Control 3)",
+    20: "DC4 (Device Control 4)",
+    21: "NAK (Negative Acknowledge)",
+    22: "SYN (Synchronous Idle)",
+    23: "ETB (End of Transmission Block)",
+    24: "CAN (Cancel)",
+    25: "EM (End of Medium)",
+    26: "SUB (Substitute)",
+    27: "ESC (Escape)",
+    28: "FS (File Separator)",
+    29: "GS (Group Separator)",
+    30: "RS (Record Separator)",
+    31: "US (Unit Separator)",
+    127: "DEL (Delete)"
+}
+
+def write_ascii_control_files(base_dir):
+    skip_controls = {9, 10, 13} ## HT, LF, CR
+    ascii_controls = [i for i in list(range(0, 32)) + [127] if i not in skip_controls]
+    os.makedirs(base_dir, exist_ok=True)
+
+    for i, cp in enumerate(ascii_controls, start=1):
+        char = chr(cp)
+        name = ascii_control_names.get(cp, "UNKNOWN CONTROL CHARACTER")
+        hex_cp = f"U+{cp:04X}"
+        metadata = f"Index: {i} | Decimal: {cp} | Codepoint: {hex_cp} | Name: {name}\n  | Character:"
+        file_path = os.path.join(base_dir, f"{i}.txt")
+        print(file_path)
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(metadata)
+            f.write(char)
+
+if __name__ == "__main__":
+    tmp = os.environ.get('TMP')
+    if not tmp:
+        print("Error: $TMP environment variable is not set.", file=sys.stderr)
+        sys.exit(1)
+
+    target_dir = os.path.join(tmp, "suspicious-ascii-test")
+    write_ascii_control_files(target_dir)

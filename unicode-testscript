@@ -77,6 +77,11 @@ fi
 ## etc.
 /usr/libexec/helper-scripts/write-suspicious-unicode >/dev/null
 
+## Create files:
+## /tmp/user/1000/suspicious-ascii-test
+## etc.
+/usr/libexec/helper-scripts/write-suspicious-ascii >/dev/null
+
 for folder_name in $folder_list ; do
   while IFS= read -r -d '' file_name; do
     ## Must be outside of process substitution to be able to exit script.
@@ -88,5 +93,10 @@ while IFS= read -r -d '' file_name; do
   ## Must be outside of process substitution to be able to exit script.
   process_file "$file_name"
 done < <(find "$TMP/suspicious-unicode-test" -maxdepth 1 -type f -not -iwholename '*.git*' -print0 )
+
+while IFS= read -r -d '' file_name; do
+  ## Must be outside of process substitution to be able to exit script.
+  process_file "$file_name"
+done < <(find "$TMP/suspicious-ascii-test" -maxdepth 1 -type f -not -iwholename '*.git*' -print0 )
 
 printf "%s\n" "$0: INFO: OK"
