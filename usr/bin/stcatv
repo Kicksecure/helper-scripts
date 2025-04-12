@@ -5,7 +5,7 @@
 ##
 ## SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Safely print stdin or file to stdout."""
+"""Safely print stdin or file to stdout with non-printing as ^ and M- notation."""
 
 from fileinput import input as file_input
 from sys import stdin, stdout
