@@ -67,7 +67,7 @@ process_file() {
     printf "%s\n" "$0: ERROR: Failed to sanitize string using 'stcatv' in file '$file_name'." >&2
     exit 1
   fi
-  ## unicode-show non-zero exit code..
+  ## unicode-show non-zero exit code.
 
   return 0
 }
