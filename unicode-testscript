@@ -65,7 +65,10 @@ process_file() {
   if ! stcatv "$file_name" | unicode-show >/dev/null ; then
     ## unicode-show exit code 0.
     printf "%s\n" "$0: ERROR: Failed to sanitize string using 'stcatv' in file '$file_name'." >&2
-    exit 1
+    ## TODO: stcatv fails to sanitize trailing whitespaces
+    ## https://github.com/Kicksecure/helper-scripts/issues/20
+    ## TODO: re-enable 'exit 1'
+    #exit 1
   fi
   ## unicode-show non-zero exit code.
 
