@@ -16,7 +16,7 @@ def main() -> None:
     """Safely print stdin or file to stdout."""
     stdin.reconfigure(errors="ignore")  # type: ignore
     ## File input reads stdin when no file is provided or file is '-'.
-    for untrusted_text in file_input(encoding="ascii"):
+    for untrusted_text in file_input(encoding="ascii", errors="replace"):
         stdout.write(stdisplay(untrusted_text))
     stdout.flush()
 
