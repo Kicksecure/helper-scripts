@@ -84,6 +84,8 @@ def scan_line(line, lineno=None, filename=None):
         annotated = annotated[:-1]
 
     annotated_stripped = annotated.rstrip()
+    ## Trailing whitespaces are suspicious.
+    ## https://forums.whonix.org/t/detecting-malicious-unicode-in-source-code-and-pull-requests/13754/28
     if len(annotated) != len(annotated_stripped):
         annotated_new = annotated_stripped
         has_suspicious = True
