@@ -50,7 +50,16 @@ def describe_char(c):
     code = ord(c)
     name = unicodedata.name(c, "<unnamed>")
     cat = unicodedata.category(c)
-    display = c if c in SAFE_ASCII else repr(c)
+
+    codepoint_allowed = code in VISIBLE_ASCII_RANGE or c in ALLOWED_WHITESPACE
+    semantically_allowed = c in SAFE_ASCII_SEMANTIC
+
+    ## Purposeful redundancy for extra safety in character display.
+    if codepoint_allowed and semantically_allowed:
+        display = c
+    else:
+        display = repr(c)
+
     desc = f"{display} (U+{code:04X}, {name}, {cat})"
     return colorize(desc, CYAN)
 
