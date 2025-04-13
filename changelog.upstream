@@ -1,3 +1,70 @@
+commit bb33ed5c64acdf8fe1a8a27d6c4dc22ecccb91f4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 13 13:23:40 2025 -0400
+
+    re-generate man pages (generated using "genmkfile manpages")
+
+commit 529bbb2efa879d4a38541a483792ec1e7d1671e8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 11 20:53:35 2025 -0400
+
+    relax stcatv test
+
+commit 35dcd3aabf4b18be078f25e6e8fd2c4b645325e4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 11 20:44:31 2025 -0400
+
+    minor
+
+commit 52818df9e06294fe9ed5cb958e173597201b8035
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 11 20:36:55 2025 -0400
+
+    improve unicode test script
+
+commit 98485b433b667892843e080dbd77c5de7b931182
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 11 20:23:07 2025 -0400
+
+    comment
+
+commit a305659ecc28e722e575ef6b723d369c851d401d
+Merge: a78be7c b5bfc75
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 11 20:21:56 2025 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit b5bfc750a699cb33358c303223a0bced99a9d85d
+Merge: a78be7c 3d900bf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 11 20:21:01 2025 -0400
+
+    Merge pull request #19 from ben-grande/stdisplay
+    
+    Add stcatv
+
+commit a78be7c1b136add74e324c1ba77bb80fe7fa43a4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 11 20:16:02 2025 -0400
+
+    improved `grep-find-unicode-wrapper` to find more ASCII control characters
+    created test script `/usr/libexec/helper-scripts/write-suspicious-ascii`
+
+commit 3d900bf228f7a4774a25ed80993b8c080d0de750
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Fri Apr 11 21:22:39 2025 +0200
+
+    Add stcatv
+    
+    Fixes: https://github.com/Kicksecure/helper-scripts/issues/17
+
+commit 965a77a7018906b133a2d7a19656aa3ee20c4028
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 10 11:37:26 2025 +0000
+
+    bumped changelog version
+
 commit be30b7e66f91c41acd3aaf7d98779a59c99bed80
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 10 07:35:34 2025 -0400
