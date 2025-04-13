@@ -130,6 +130,8 @@ if __name__ == "__main__":
         if len(sys.argv) > 1:
             for fname in sys.argv[1:]:
                 try:
+                    ## Must not use errors='replace' because otherwise suspicious unicode might slip.
+                    ## Fail closed for non-UTF-8.
                     with open(fname, 'r', encoding='utf-8', errors='strict') as f:
                         if scan_file(f, filename=fname):
                             clean = False
