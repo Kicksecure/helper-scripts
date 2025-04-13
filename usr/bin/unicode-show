@@ -20,8 +20,6 @@ import string
 import io
 import os
 
-SAFE_ASCII = set(string.printable) - set(string.whitespace)
-
 USE_COLOR = (
     not os.getenv("NOCOLOR") and
     os.getenv("TERM") != "dumb" and
