@@ -80,7 +80,7 @@ def scan_line(line, lineno=None, filename=None):
         else:
             annotated += c
 
-    if annotated[-1] == "\n":
+    if annotated and annotated[-1] == "\n":
         annotated = annotated[:-1]
 
     annotated_stripped = annotated.rstrip()
