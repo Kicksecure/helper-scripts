@@ -118,6 +118,7 @@ def scan_file(f, filename=None):
 
     if last_line is not None and not last_line.endswith('\n'):
         found = True
+        ## Missing newline at the end is suspicious.
         msg = f"{filename + ': ' if filename else ''}{last_lineno}: " + colorize("[No newline at end of file]", RED)
         print(msg)
 
