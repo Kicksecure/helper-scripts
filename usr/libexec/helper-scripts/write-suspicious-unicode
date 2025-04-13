@@ -55,6 +55,7 @@ def write_test_files(base_dir):
             print(file_path)
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(line)
+                f.write("\n")
         except UnicodeEncodeError as e:
             print(f"Error encoding U+{cp:04X}: {e}")
 

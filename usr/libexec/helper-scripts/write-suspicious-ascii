@@ -73,6 +73,7 @@ def write_ascii_control_files(base_dir):
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(metadata)
             f.write(char)
+            f.write("\n")
 
 if __name__ == "__main__":
     tmp = os.environ.get('TMP')

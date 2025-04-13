@@ -96,9 +96,20 @@ def scan_line(line, lineno=None, filename=None):
 def scan_file(f, filename=None):
     """Scan an entire file-like object for suspicious characters."""
     found = False
+    last_lineno = 0
+    last_line = None
+
     for lineno, line in enumerate(f, 1):
+        last_lineno = lineno
+        last_line = line
         if scan_line(line, lineno=lineno, filename=filename):
             found = True
+
+    if last_line is not None and not last_line.endswith('\n'):
+        found = True
+        msg = f"{filename + ': ' if filename else ''}{last_lineno}: " + colorize("[No newline at end of file]", RED)
+        print(msg)
+
     return found
 
 if __name__ == "__main__":
