@@ -74,7 +74,7 @@ def scan_line(line, lineno=None, filename=None):
             has_suspicious = True
             code = f"[U+{ord(c):04X}]"
             annotated += colorize(code, RED)
-            suspicious_descrs.append("   ->" + describe_char(c))
+            suspicious_descrs.append(f"   -> {describe_char(c)}")
         else:
             annotated += c
 
@@ -90,7 +90,7 @@ def scan_line(line, lineno=None, filename=None):
         for c in annotated[len(annotated_stripped):]:
             code = f"[U+{ord(c):04X}]"
             annotated_new += colorize(code, RED)
-            suspicious_descrs.append("   ->" + describe_char(c))
+            suspicious_descrs.append(f"   -> {describe_char(c)}")
         annotated = annotated_new
 
     if not has_suspicious:
@@ -106,6 +106,8 @@ def scan_file(f, filename=None):
     """Scan an entire file-like object for suspicious characters."""
     found = False
     last_lineno = 0
+    ## Empty files should not report "missing newline at end".
+    #last_line = ""
     last_line = None
 
     for lineno, line in enumerate(f, 1):
