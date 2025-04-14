@@ -134,10 +134,10 @@ if __name__ == "__main__":
                         if scan_file(f, filename=fname):
                             clean = False
                 except UnicodeDecodeError as e:
-                    print(f"Unicode decode error [{fname}]: {e}", file=sys.stderr)
+                    print(f"[ERROR] Unicode decode error [{fname}]: {e}", file=sys.stderr)
                     clean = False
                 except Exception as e:
-                    print(f"File read error [{fname}]: {e}", file=sys.stderr)
+                    print(f"[ERROR] File read error [{fname}]: {e}", file=sys.stderr)
                     sys.exit(2)
         else:
             try:
@@ -145,10 +145,10 @@ if __name__ == "__main__":
                 if scan_file(stdin_buffer):
                     clean = False
             except UnicodeDecodeError as e:
-                print(f"Unicode decode error [stdin]: {e}", file=sys.stderr)
+                print(f"[ERROR] Unicode decode error [stdin]: {e}", file=sys.stderr)
                 clean = False
     except Exception as e:
-        print(f"Unexpected error [main]: {e}", file=sys.stderr)
+        print(f"[ERROR] Unexpected error [main]: {e}", file=sys.stderr)
         sys.exit(2)
 
     if not clean:
