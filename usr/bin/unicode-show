@@ -66,7 +66,7 @@ def scan_line(line, lineno=None, filename=None):
 
     annotated = ""
     has_suspicious = False
-    prefix = f"{filename}:{lineno}: " if filename else f"{lineno}: "
+    prefix = f"{filename or '<stdin>'}:{lineno}: "
     suspicious_descrs = []
 
     for c in line:
