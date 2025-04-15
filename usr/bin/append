@@ -85,7 +85,11 @@ def main():
                 "should be created) is not writable!"
             )
 
-    print(f"INFO: Appending data to: {orig_file_path}")
+    if executable_name == "overwrite":
+        print(f"INFO: Overwriting file: {orig_file_path}")
+    else:
+        print(f"INFO: Appending data to: {orig_file_path}")
+
     if file_contents != "" and file_contents[-1] != "\n":
         # Fix a missing terminating newline. Some text editors will fail to
         # write these properly and it will break our line appending if we don't
