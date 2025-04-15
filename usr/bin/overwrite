@@ -1,1 +1,3 @@
-append
+#!/bin/bash
+
+exec /usr/libexec/helper-scripts/append-shared overwrite "$@"
