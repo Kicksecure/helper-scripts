@@ -1,3 +1,42 @@
+commit e9f42063f4386deac46dc8ed1fa41fac6fcf6dc4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 15 16:32:35 2025 -0400
+
+    avoid git style symlinks
+
+commit 8ee40cc7cdbc3b7b6c7b71d860c26b6cd4283863
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 15 15:57:51 2025 -0400
+
+    fix
+
+commit c4e8c26e85662097683cf7d310d0ad199235dc6d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 15 15:57:27 2025 -0400
+
+    Revert "fix"
+    
+    This reverts commit 9c179a48d755f4b01dd909af052143ee3a40ac21.
+
+commit 9c179a48d755f4b01dd909af052143ee3a40ac21
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 15 15:36:21 2025 -0400
+
+    fix
+
+commit 29181182913cebb881cb2ef20bee4ad7c0a38a34
+Merge: a421b92 f13a236
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 15 15:30:31 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/pwchange'
+
+commit a421b92512d1cd711309301cfd9378b378f8fb87
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 14 01:00:07 2025 +0000
+
+    bumped changelog version
+
 commit 8b4886fcc4b4fa8edb00109c191831e25b7e98d5
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Apr 13 20:23:37 2025 -0400
@@ -137,6 +176,25 @@ Date:   Fri Apr 11 21:22:39 2025 +0200
     
     Fixes: https://github.com/Kicksecure/helper-scripts/issues/17
 
+commit f13a236a6c22c064499329a7b51c9e1dd7a36b65
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Apr 11 13:56:20 2025 -0500
+
+    Reduce pwchange code duplication, polish pwchange, implement crypt-pwchange
+
+commit 14343ac921cdf2c6819d326ec08d3aedfa86c72a
+Merge: 9f2cc5a 965a77a
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Apr 11 10:10:47 2025 -0500
+
+    Merge branch 'master' into arraybolt3/file-utils
+
+commit 9f2cc5ab2c98fef0fe181c7948b5867453ef42a3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Apr 10 14:51:15 2025 -0500
+
+    Implement append and overwrite executables
+
 commit 965a77a7018906b133a2d7a19656aa3ee20c4028
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 10 11:37:26 2025 +0000
@@ -166,6 +224,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 10 07:20:11 2025 -0400
 
     implement `grub-password-status-check` and `grub-pwchange`
+
+commit 1f1c958b70591e27c6fa21f0318d228ac1198693
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Apr 10 00:18:09 2025 -0500
+
+    Rewrite append-once in Python, with enhanced error and edge case handling
 
 commit 8705fed077647e8d09fdfa9effc5e529d8bd57f9
 Author: Patrick Schleizer <adrelanos@whonix.org>
