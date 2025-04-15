@@ -19,6 +19,8 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+unchanged_test="Passphrase has ${bold}not${nobold} been changed."
+
 readarray -t crypt_dev_list < <(
   blkid \
   | grep 'crypto_LUKS' \
@@ -26,7 +28,7 @@ readarray -t crypt_dev_list < <(
 ) || true
 
 if (( ${#crypt_dev_list[@]} == 0 )) || [ -z "${crypt_dev_list[0]}" ]; then
-  printf "%s\n" "$0: INFO: No encrypted storage devices are present in the system." >&2
+  printf "%s\n" "$0: INFO: No encrypted storage devices are present in the system. $unchanged_test" >&2
   exit 0
 fi
 
@@ -48,17 +50,17 @@ done
 read -r -p "Enter the number of the disk you want to change: " crypt_dev_idx
 
 if [ -z "$crypt_dev_idx" ]; then
-  printf "%s\n" "$0: ERROR: No disk number provided. Please specify a disk number." >&2
+  printf "%s\n" "$0: ERROR: No disk number provided. Please specify a disk number. $unchanged_test" >&2
   exit 1
 fi
 
 if [[ "$crypt_dev_idx" = *[!0-9]* ]]; then
-  printf "%s\n" "$0: ERROR: Provided value is not a number. Please specify a disk number." >&2
+  printf "%s\n" "$0: ERROR: Provided value is ${bold}not${nobold} a number. Please specify a disk number. $unchanged_test" >&2
   exit 1
 fi
 
 if (( crypt_dev_idx > ${#crypt_dev_list[@]} )) || (( crypt_dev_idx == 0 )); then
-  printf "%s\n" "$0: ERROR: Provided value is out of range. Please specify a disk number." >&2
+  printf "%s\n" "$0: ERROR: Provided value is out of range. Please specify a disk number. $unchanged_test" >&2
   exit 1
 fi
 
@@ -73,7 +75,7 @@ echo >&2
 
 printf "%s\n" "Testing passphrase. This may take a while..." >&2
 if ! cryptsetup luksOpen --test-passphrase "$target_crypt_dev" <<< "$orig_passphrase" 2>/dev/null; then
-  printf "%s\n" "$0: ERROR: Provided passphrase is incorrect for disk '$target_crypt_dev'." >&2
+  printf "%s\n" "$0: ERROR: Provided passphrase is incorrect for disk '$target_crypt_dev'. $unchanged_test" >&2
   exit 1
 fi
 
@@ -91,17 +93,17 @@ second_input="$password"
 echo >&2
 
 if [ "$first_input" != "$second_input" ]; then
-  printf "%s\n" "$0: ERROR: Passphrases do not match. Passphrase has not been changed." >&2
+  printf "%s\n" "$0: ERROR: Passphrases do ${bold}not${nobold} match. $unchanged_test" >&2
   exit 1
 fi
 
 if [ -z "$first_input" ]; then
-  printf "%s\n" "$0: ERROR: Cannot set an empty passphrase. Passphrase has not been changed." >&2
+  printf "%s\n" "$0: ERROR: ${bold}Cannot${nobold} set an empty passphrase. $unchanged_test" >&2
   exit 1
 fi
 
 if [ "$first_input" = "$orig_passphrase" ]; then
-  printf "%s\n" "$0: INFO: Old and new passphrases are identical. Passphrase has not been changed." >&2
+  printf "%s\n" "$0: INFO: Old and new passphrases are identical. $unchanged_test" >&2
   exit 0
 fi
 
@@ -110,6 +112,6 @@ if cryptsetup luksChangeKey "$target_crypt_dev" <<< "$orig_passphrase"$'\n'"$fir
   printf "%s\n" "$0: SUCCESS: Passphrase for disk '$target_crypt_dev' has been updated successfully." >&2
   exit 0
 else
-  printf "%s\n" "$0: ERROR: Passphrase for disk '$target_crypt_dev' could not be updated." >&2
+  printf "%s\n" "$0: ERROR: Passphrase for disk '$target_crypt_dev' could ${bold}not${nobold} be updated. $unchanged_test" >&2
   exit 1
 fi
