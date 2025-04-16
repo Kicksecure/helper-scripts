@@ -149,7 +149,7 @@ shutdown() {
 
   if [ -f "$statusfile" ]; then
     true "$BASH_SOURCE INFO: got status file"
-    status="$(cat "$statusfile")"
+    status="$(cat -- "$statusfile")"
     if ! is_whole_number "$status"; then
       true "$BASH_SOURCE ERROR: status is not a number! status: '$status'"
       status="111"
@@ -169,11 +169,11 @@ shutdown() {
     printf '\n' >&4
   fi
 
-  #stat="$(cat "$statusfile")"
+  #stat="$(cat -- "$statusfile")"
   #printf '%s\n' "$stat" >&4
 
   if [ "$temp_dir_auto_generated" = "true" ]; then
-    rm -r -f "$temporary_directory"
+    safe-rm -r -f -- "$temporary_directory"
   fi
 
   true curl_pid
@@ -181,9 +181,9 @@ shutdown() {
 
   processes_list="$curl_pid"
   for processes_item in $processes_list ; do
-    if kill -0 "$processes_item" 2>/dev/null ; then
+    if kill -0 -- "$processes_item" 2>/dev/null ; then
       #ps -p "$processes_item" || true
-      kill -s sigkill "$processes_item" &>/dev/null || true
+      kill -s sigkill -- "$processes_item" &>/dev/null || true
     fi
   done
 
@@ -262,8 +262,8 @@ curl_exit() {
   fi
   : "${curl_pid:=""}"
   if [ "$curl_pid" = "" ]; then
-    if ! kill -0 "$curl_pid" 2>/dev/null; then
-      kill -s SIGKILL "$curl_pid" &>/dev/null || true
+    if ! kill -0 -- "$curl_pid" 2>/dev/null; then
+      kill -s SIGKILL -- "$curl_pid" &>/dev/null || true
     fi
   fi
 }
@@ -303,7 +303,7 @@ curl_download() {
       fi
     fi
 
-    if ! kill -0 "$curl_pid" 2>/dev/null; then
+    if ! kill -0 -- "$curl_pid" 2>/dev/null; then
       break
     fi
 
