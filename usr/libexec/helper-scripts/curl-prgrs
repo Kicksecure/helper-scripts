@@ -50,6 +50,7 @@
 set -e
 set -o nounset
 set -o pipefail
+set -o errtrace
 
 ## provides: draw_progress_bar
 source /usr/libexec/helper-scripts/progress-bar
