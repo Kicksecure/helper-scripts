@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## Copyright (C) 2019 - 2019 Dipto
+## See the file COPYING for copying conditions.
+
 get_password() {
    ## author of contents of get_password function
    ## Dipto
