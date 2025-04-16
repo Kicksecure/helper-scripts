@@ -41,7 +41,7 @@ process_file() {
   ## - Exit code 0: if found.
   ## - Non-zero exit code: if not found.
   if ! grep-find-unicode-wrapper "$file_name" >/dev/null ; then
-    printf "%s\n" "$0: ERROR: Failed to find unicode using grep-find-unicode-wrapper in file '$file_name'." >&2
+    printf "%s\n" "$0: ERROR: Failed to find unicode using 'grep-find-unicode-wrapper' in file '$file_name'." >&2
     exit 1
   fi
 
@@ -55,7 +55,7 @@ process_file() {
 
   if cat -- "$file_name" | unicode-show >/dev/null ; then
     ## unicode-show exit code non-zero.
-    printf "%s\n" "$0: ERROR: Failed to find unicode using unicode-show (stdin check) in file '$file_name'." >&2
+    printf "%s\n" "$0: ERROR: Failed to find unicode using 'unicode-show' (stdin check) in file '$file_name'." >&2
     exit 1
   fi
   ## unicode-show exit code 0.
