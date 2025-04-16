@@ -1,3 +1,102 @@
+commit b37d4dc796a53c6d12f22e371c539a0dd1444ef8
+Merge: 5be4f5a 370bd93
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 16 17:41:55 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/master'
+
+commit 5be4f5ac6d25eda633616027b1bdb5eb52d32431
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 16 17:40:38 2025 -0400
+
+    fix; code simplification
+
+commit bfd85383085c9a193f5afdee2972a6ecd92c7e01
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 16 16:09:24 2025 -0400
+
+    output
+
+commit 355c973630d779e77cbe37323bfffb98b1a668bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 16 15:21:02 2025 -0400
+
+    chmod +x
+
+commit ea979fee069d756a1b525ebced88f0031b1853fb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 16 15:20:19 2025 -0400
+
+    chmod +x
+
+commit 6fbf2e6bbdf7a2ea6c5893b16bc34f92bee8c5fe
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 16 15:17:52 2025 -0400
+
+    chmod +x
+
+commit b9f4ad3de0f2ca43ff5d70e94a19be3bc124b05c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 16 13:45:27 2025 -0400
+
+    genmkfile manpages
+
+commit 8bc16dbc4d735999d641177aecf87f52830896cf
+Merge: 815363c 08eb6b2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 16 12:31:45 2025 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 08eb6b2acc039e6d43725e8b217c9ed97bc66432
+Merge: 815363c 0f0fc67
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 16 12:29:38 2025 -0400
+
+    Merge pull request #23 from ben-grande/stcatn
+    
+    Deprecated stcatv and add stcatn
+
+commit 0f0fc67b554d426a41df2ceb5b8c7c1daccf579b
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Wed Apr 16 13:21:04 2025 +0200
+
+    Deprecated stcatv and add stcatn
+    
+    Deprecate stcatv:
+    
+    - The 'M-' and '^' notation were not covering all unicode codepoints,
+      issue is present in cat from coreutils also.
+    
+    Add stcatn:
+    
+    - Printing data without ending with a newline can lead to problems on
+      the terminal and also how the file is read by another problem later.
+      Add a newline at the end of each file that does not have one.
+    - Trailing whitespace is trimmed from each line.
+    
+    Fixes: https://github.com/Kicksecure/helper-scripts/issues/22
+    Fixes: https://github.com/Kicksecure/helper-scripts/issues/21
+    Fixes: https://github.com/Kicksecure/helper-scripts/issues/20
+
+commit 370bd938dd54f9a53f95913ac174189d6cf57a03
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Apr 15 23:50:44 2025 -0500
+
+    Fix broken symlink conversion for append-once and overwrite
+
+commit dc20f4921bffd6960d1ccc5c6c34131a9b632081
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Apr 15 20:48:38 2025 -0500
+
+    Fix copyright headers for pwchange utilities
+
+commit 815363c816cc04954149a9e915c25ae2cfe8ec12
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 15 21:17:54 2025 +0000
+
+    bumped changelog version
+
 commit ca7c42158571987fe33415d8c3eee0996b33b350
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Apr 15 17:14:40 2025 -0400
