@@ -16,7 +16,7 @@ cd "${pythonpath}/stdisplay/"
 find . -type f -name "*.py" -print0 | xargs -0 "${pylint[@]}"
 "${mypy[@]}" .
 
-utils=(stprint stecho stcat sttee stsponge)
+utils=(stprint stecho stcat stcatn sttee stsponge)
 cd "${git_toplevel}/usr/bin"
 "${black[@]}" -- "${utils[@]}"
 "${pylint[@]}" -- "${utils[@]}"

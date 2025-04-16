@@ -60,15 +60,12 @@ process_file() {
   fi
   ## unicode-show exit code 0.
 
-  ## 'stcatv' should sanitize. Therefore 'unicode-show' should not find any unicode and exit 0.
+  ## 'stcatn' should sanitize. Therefore 'unicode-show' should not find any unicode and exit 0.
   ## Check if there is a non-zero exit code in this pipe, because if so, that's a bug.
-  if ! stcatv "$file_name" | unicode-show >/dev/null ; then
+  if ! stcatn "$file_name" | unicode-show >/dev/null ; then
     ## unicode-show exit code 0.
-    printf "%s\n" "$0: ERROR: Failed to sanitize string using 'stcatv' in file '$file_name'." >&2
-    ## TODO: stcatv fails to sanitize trailing whitespaces
-    ## https://github.com/Kicksecure/helper-scripts/issues/20
-    ## TODO: re-enable 'exit 1'
-    #exit 1
+    printf "%s\n" "$0: ERROR: Failed to sanitize string using 'stcatn' in file '$file_name'." >&2
+    exit 1
   fi
   ## unicode-show non-zero exit code.
 

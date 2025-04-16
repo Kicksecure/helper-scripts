@@ -12,6 +12,7 @@ stdisplay(1) -- Sanitize text to be safely printed to the terminal
 `stprint [TEXT...]`<br>
 `stecho [TEXT...]`<br>
 `stcat [FILE...]`<br>
+`stcatn [FILE...]`<br>
 `sttee [FILE...]`<br>
 `stsponge [FILE]`<br>
 
@@ -46,7 +47,7 @@ any options:
 | stprint           | printf                    |
 | stecho            | echo                      |
 | stcat             | cat                       |
-| stcatv            | cat -v                    |
+| stcatn            | stcat plust end with \n   |
 | sttee             | tee                       |
 | stsponge          | sponge                    |
 
@@ -70,7 +71,7 @@ NO_COLOR=1 stprint "$(printf '%b' "\033[31mNo color\033[m")"<br>
 TERM=dumb stprint "$(printf '%b' "\033[31mNo color\033[m")"<br>
 </code>
 
-## EXAMPLE: STCAT/STCATV
+## EXAMPLE: STCAT/STCATN
 
 Copy standard input to standard output:
 
@@ -102,8 +103,11 @@ Print an ownership-restricted file with external programs:
 sudo -- stcat /untrusted/log<br>
 </code>
 
-The tool `stcatv` differs by showing non-printing characters the same
-way as `cat -v` would.
+The tool `stcatn` differs by:
+
+- Adding a newline at the end of each file in case it is not empty and
+  does not end with a newline.
+- Trimming trailing whitespace.
 
 ## EXAMPLE: STTEE/STSPONGE
 
