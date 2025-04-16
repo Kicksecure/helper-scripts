@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+##
+## SPDX-License-Identifier: AGPL-3.0-or-later
+
+"""Safely print stdin or file to stdout with tweaks"""
+
+from fileinput import input as file_input
+from sys import stdin, stdout
+from stdisplay.stdisplay import stdisplay
+
+
+def main() -> None:
+    """Safely print stdin or file to stdout with tweaks
+
+    - Newline is added to the end of each file if it doesn't contain one and
+      the file is not empty; and
+    - Trailing whitespace is trimmed."""
+    stdin.reconfigure(errors="ignore")  # type: ignore
+    ## File input reads stdin when no file is provided or file is '-'.
+    for untrusted_text in file_input(encoding="ascii", errors="replace"):
+        untrusted_last_char = untrusted_text[-1]
+        untrusted_line_list = []
+        for untrusted_line in untrusted_text.splitlines():
+            newline = "\n"
+            if untrusted_line.endswith("\n"):
+                newline = "\n"
+            untrusted_line_list.append(untrusted_line.rstrip("\t ") + newline)
+        stdout.write(stdisplay("".join(untrusted_line_list)))
+        if untrusted_last_char is not None and untrusted_last_char != "\n":
+            stdout.write("\n")
+    stdout.flush()
+
+
+if __name__ == "__main__":
+    main()
