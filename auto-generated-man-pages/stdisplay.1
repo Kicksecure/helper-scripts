@@ -10,6 +10,8 @@
 .br
 \fBstcat [FILE\|\.\|\.\|\.]\fR
 .br
+\fBstcatn [FILE\|\.\|\.\|\.]\fR
+.br
 \fBsttee [FILE\|\.\|\.\|\.]\fR
 .br
 \fBstsponge [FILE]\fR
@@ -36,7 +38,7 @@ Sanitizer Command	Non-Sanitizing Equivalent
 stprint	printf
 stecho	echo
 stcat	cat
-stcatv	cat \-v
+stcatn	stcat plust end with \en
 sttee	tee
 stsponge	sponge
 .TE
@@ -60,7 +62,7 @@ Disable SGR:
 TERM=dumb stprint "$(printf '%b' "\e033[31mNo color\e033[m")"
 .br
 \fR
-.SH "EXAMPLE: STCAT/STCATV"
+.SH "EXAMPLE: STCAT/STCATN"
 Copy standard input to standard output:
 .P
 \fBprintf '%s' "${untrusted_string}" | stcat
@@ -91,7 +93,12 @@ Print an ownership\-restricted file with external programs:
 .br
 \fR
 .P
-The tool \fBstcatv\fR differs by showing non\-printing characters the same way as \fBcat \-v\fR would\.
+The tool \fBstcatn\fR differs by:
+.IP "\[ci]" 4
+Adding a newline at the end of each file in case it is not empty and does not end with a newline\.
+.IP "\[ci]" 4
+Trimming trailing whitespace\.
+.IP "" 0
 .SH "EXAMPLE: STTEE/STSPONGE"
 The tools \fBsttee\fR and \fBstsponge\fR have the same usage but differ when writing\. While \fBsttee\fR always writes to standard output as soon as it is read, \fBstsponge\fR only writes to standard output if no file is provided, and the write is atomic\.
 .P
