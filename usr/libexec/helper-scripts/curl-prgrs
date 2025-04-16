@@ -84,7 +84,7 @@ initialize_terminal() {
 initialize_variables() {
   command -v tput >/dev/null
   command -v curl >/dev/null
-  command -v rm >/dev/null
+  command -v safe-rm >/dev/null
   command -v mktemp >/dev/null
 
   : "${CURL:="curl"}"
