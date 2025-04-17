@@ -111,11 +111,11 @@ initialize_variables() {
 check_variables() {
   if [ "$CURL_OUT_FILE" = "" ]; then
     stecho "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
-    exit "57"
+    exit 57
   fi
   if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
     stecho "$BASH_SOURCE ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
-    exit "57"
+    exit 57
   fi
 
   is_whole_number "$CURL_PRGRS_MAX_FILE_SIZE_BYTES"
@@ -263,7 +263,7 @@ curl_exit() {
   fi
   : "${curl_pid:=""}"
   if [ "$curl_pid" = "" ]; then
-    if ! kill -0 -- "$curl_pid" 2>/dev/null; then
+    if kill -0 -- "$curl_pid" 2>/dev/null; then
       kill -s SIGKILL -- "$curl_pid" &>/dev/null || true
     fi
   fi
