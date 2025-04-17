@@ -9,13 +9,13 @@ set -e
 
 kernel="$(kernel-file-detect)"
 
-initrd="$(echo "$kernel" | sed "s#vmlinuz#initrd.img#")"
+initrd="$(printf "%s\n" "$kernel" | sed "s#vmlinuz#initrd.img#")"
 ## example initrd:
 ## /boot//initrd.img-5.10.0-20-amd64
 
 if ! test -r "$kernel"; then
-   echo "$0: ERROR: Kernel File '$kernel' not found or not readable!" >&2
+   printf "%s\n" "$0: ERROR: Kernel File '$kernel' not found or not readable!" >&2
    exit 1
 fi
 
-echo "$initrd"
+printf "%s\n" "$initrd"
