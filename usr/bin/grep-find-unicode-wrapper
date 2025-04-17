@@ -7,7 +7,7 @@
 grep_args="\
    --files-with-matches \
    --perl-regexp \
-   --line-number
+   --line-number \
    --binary-files=text"
 
 one=$(LC_ALL=C grep $grep_args '[^\x00-\x7F]' "$@")
