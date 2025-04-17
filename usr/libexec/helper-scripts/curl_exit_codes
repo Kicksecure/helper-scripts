@@ -3,7 +3,8 @@
 ## See the file COPYING for copying conditions.
 
 curl_exit_codes() {
-   local codes="
+   local codes
+   codes="
 [0] - [Success.]
 [1] - [Unsupported protocol. This build of curl has no support for this protocol.]
 [2] - [Failed to initialize.]

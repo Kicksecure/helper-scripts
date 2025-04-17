@@ -110,11 +110,11 @@ initialize_variables() {
 
 check_variables() {
   if [ "$CURL_OUT_FILE" = "" ]; then
-    printf '%s\n' "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
+    stecho "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
     exit "57"
   fi
   if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
-    printf '%s\n' "$BASH_SOURCE ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
+    stecho "$BASH_SOURCE ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
     exit "57"
   fi
 
@@ -130,13 +130,13 @@ shutdown() {
   local signal="$1"
   local last_err="$BASH_COMMAND"
   if [ "$signal" = "err" ]; then
-    printf '%s\n' "$BASH_SOURCE ERROR: Signal $signal received. Exiting." >&4
-    printf '%s\n' "$BASH_SOURCE ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
+    stecho "$BASH_SOURCE ERROR: Signal $signal received. Exiting." >&4
+    stecho "$BASH_SOURCE ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
     error_exit_code=110
   elif [ "$signal" = "exit" ]; then
     true "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
   else
-    printf '%s\n' "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
+    stecho "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
   fi
 
   trap - SIGHUP SIGINT SIGTERM ERR EXIT
@@ -150,7 +150,7 @@ shutdown() {
 
   if [ -f "$statusfile" ]; then
     true "$BASH_SOURCE INFO: got status file"
-    status="$(cat -- "$statusfile")"
+    status="$(stcat "$statusfile")"
     if ! is_whole_number "$status"; then
       true "$BASH_SOURCE ERROR: status is not a number! status: '$status'"
       status="111"
@@ -170,8 +170,8 @@ shutdown() {
     printf '\n' >&4
   fi
 
-  #stat="$(cat -- "$statusfile")"
-  #printf '%s\n' "$stat" >&4
+  #stat="$(stcat "$statusfile")"
+  #stecho "$stat" >&4
 
   if [ "$temp_dir_auto_generated" = "true" ]; then
     safe-rm -r -f -- "$temporary_directory"
@@ -257,7 +257,7 @@ print_progress() {
 curl_exit() {
   curl_exit_code="$1"
   true "$BASH_SOURCE INFO: write $curl_exit_code to $statusfile"
-  printf '%s' "$curl_exit_code" > "$statusfile"
+  stecho "$curl_exit_code" > "$statusfile"
   if [ "$curl_exit_code" = "0" ]; then
     return 0
   fi
@@ -267,17 +267,18 @@ curl_exit() {
       kill -s SIGKILL -- "$curl_pid" &>/dev/null || true
     fi
   fi
+  return "$curl_exit_code"
 }
 
 curl_download() {
   local size_file_downloaded_bytes
 
   $CURL --no-progress-meter "$@" &
-  curl_pid=$!
+  curl_pid="$!"
 
   while true ; do
     if [ -f "$CURL_OUT_FILE" ]; then
-      size_file_downloaded_bytes=$(stat -c%s "$CURL_OUT_FILE")
+      size_file_downloaded_bytes="$(stat -c "%s" "$CURL_OUT_FILE")"
 
       if ! is_whole_number "$size_file_downloaded_bytes" ; then
         curl_exit 113
@@ -289,17 +290,21 @@ curl_download() {
         curl_exit 116
       fi
 
+      true "size_file_downloaded_bytes: $size_file_downloaded_bytes"
+      true "CURL_PRGRS_MAX_FILE_SIZE_BYTES: $CURL_PRGRS_MAX_FILE_SIZE_BYTES"
       if [ "$size_file_downloaded_bytes" -gt "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" ]; then
         curl_exit 81
       fi
 
-      if [ "$size_file_downloaded_bytes" -ge "$curl_prgrs_content_length" ]; then
+      true "size_file_downloaded_bytes: $size_file_downloaded_bytes"
+      true "curl_prgrs_content_length: $curl_prgrs_content_length"
+      if [ "$size_file_downloaded_bytes" -gt "$curl_prgrs_content_length" ]; then
         curl_exit 114
       fi
 
       if [ "$curl_prgrs_print_progress" = "yes" ]; then
         ## Need to print to stderr to avoid confusing the stdout output of this command.
-        #printf '%s\n' "$BASH_SOURCE INFO: print_progress '$size_file_downloaded_bytes' '$curl_prgrs_content_length'" >&2
+        #stecho "$BASH_SOURCE INFO: print_progress '$size_file_downloaded_bytes' '$curl_prgrs_content_length'" >&2
         print_progress "$size_file_downloaded_bytes" "$curl_prgrs_content_length" >&4
       fi
     fi
@@ -315,8 +320,12 @@ curl_download() {
 
   : "${size_file_downloaded_bytes:=""}"
   if is_whole_number "$size_file_downloaded_bytes" ; then
-    if [ "$size_file_downloaded_bytes" -le "$curl_prgrs_content_length" ]; then
-      curl_exit 115
+    true "size_file_downloaded_bytes: $size_file_downloaded_bytes"
+    true "curl_prgrs_content_length: $curl_prgrs_content_length"
+    if [ "$header_download" = "false" ]; then
+      if [ "$size_file_downloaded_bytes" -lt "$curl_prgrs_content_length" ]; then
+        curl_exit 115
+      fi
     fi
   fi
 
@@ -353,13 +362,13 @@ remove_argument_for_header_request() {
         args+=("$arg")
     done
 
-    printf '%s\n' "${args[@]}"
+    stecho "${args[@]}"
 }
 
 main() {
   local header_arguments header_file
 
-  header_arguments=($(remove_argument_for_header_request "$@"))
+  header_arguments=("$(remove_argument_for_header_request "$@")")
   header_file="$temporary_directory/header"
 
   true "$BASH_SOURCE INFO: Download header..."
@@ -374,7 +383,9 @@ main() {
   ##
   ## CURL_OUT_FILE and
   ## --output "$header_file" to avoid overwriting files when using "--continue-at -".
-  curl_prgrs_content_length=$( \
+  ## '--write-out' will echo.
+  curl_prgrs_content_length="$(
+    header_download="true" \
     curl_prgrs_content_length="$expected_header_size" \
     CURL_PRGRS_MAX_FILE_SIZE_BYTES="$maximum_http_header_size" \
     CURL_PRGRS_EXEC="" \
@@ -383,8 +394,8 @@ main() {
         --head \
         --write-out '%header{Content-Length}' \
         "${header_arguments[@]}" \
-        --output "$header_file"
-  )
+        --output "$header_file" \
+    )"
 
   ## Reset from previews invocation of curl_download, which calls print_progress.
   percent_last=""
@@ -399,7 +410,7 @@ main() {
 
   ## Launching into the background required.
   ## If attempting to refactor this, make sure signal sigterm stops downloads.
-  curl_download "$@" &
+  header_download="false" curl_download "$@" &
 
   true "$BASH_SOURCE INFO: File download done."
 
