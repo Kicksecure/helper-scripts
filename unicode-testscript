@@ -117,13 +117,8 @@ if [ ! "$(printf "%s\n" "test" | stcatn | wc -l)" = "1" ]; then
   exit 1
 fi
 
-if [ ! "$(printf "%s\n" "test" | stcatn | wc -l)" = "1" ]; then
-  printf "%s\n" "$0: ERROR: 3" >&2
-  exit 1
-fi
-
 if [ ! "$(printf "%s\n\n" "test" | stcatn | wc -l)" = "2" ]; then
-  printf "%s\n" "$0: ERROR: 4" >&2
+  printf "%s\n" "$0: ERROR: 3" >&2
   exit 1
 fi
 
@@ -131,12 +126,12 @@ mkdir --parents "$TMP/suspicious-whitespace-test"
 printf "\n \n " | sponge -- "$TMP/suspicious-whitespace-test/1.txt"
 
 if ! stcatn "$TMP/suspicious-whitespace-test/1.txt" | unicode-show ; then
-  printf "%s\n" "$0: ERROR: 5" >&2
+  printf "%s\n" "$0: ERROR: 4" >&2
   exit 1
 fi
 
 if [ ! "$(stcatn "$TMP/suspicious-whitespace-test/1.txt" | wc -l)" = "3" ]; then
-  printf "%s\n" "$0: ERROR: 6" >&2
+  printf "%s\n" "$0: ERROR: 5" >&2
   exit 1
 fi
 
