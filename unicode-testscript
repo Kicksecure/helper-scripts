@@ -17,6 +17,11 @@ set -o nounset
 set -o pipefail
 set -o errtrace
 
+if [ "$(id -u)" = 0 ]; then
+   printf "%s\n" "$0: ERROR: No need to run as root!" >&2
+   exit 1
+fi
+
 folder_list="Assembly  Bash  C  C#  C++  Go  Java  JavaScript  Python  RegEx  Rust  Solidity"
 
 total_file_counter=0
