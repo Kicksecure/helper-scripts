@@ -9,15 +9,13 @@ that might be missed by basic scanners. Characters include ASCII control
 characters and invisible or formatting Unicode characters.
 
 Each character is encoded using its codepoint (not literal Unicode) and written
-into a separate file named 1.txt, 2.txt, etc., inside $TMP/suspicious-unicode-test/.
+into a separate file named 1.txt, 2.txt, etc.
 
 Most likely folder:
-/tmp/user/1000/suspicious-unicode-test
+    $HOME/suspicious-unicode-tests-temp-folder/suspicious-unicode-test
 
 Example file:
-/tmp/user/1000/suspicious-unicode-test/1.txt
-
-The script checks that the $TMP environment variable is set before writing files.
+    $HOME/suspicious-unicode-tests-temp-folder/suspicious-unicode-test/1.txt
 """
 
 import os
@@ -50,7 +48,7 @@ def write_test_files(base_dir):
                 name = unicodedata.name(char)
             except ValueError:
                 name = "UNKNOWN CHARACTER"
-            line = f"Index: {i} | Decimal: {cp} | Codepoint: {hex_cp} | Name: {name} | Character: {char}\n"
+            line = f"Index: {i} | Decimal: {cp} | Codepoint: {hex_cp} | Name: {name} | Character: {char}"
             file_path = os.path.join(base_dir, f"{i}.txt")
             print(file_path)
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -60,10 +58,5 @@ def write_test_files(base_dir):
             print(f"Error encoding U+{cp:04X}: {e}")
 
 if __name__ == "__main__":
-    tmp = os.environ.get('TMP')
-    if not tmp:
-        print("Error: $TMP environment variable is not set.", file=sys.stderr)
-        sys.exit(1)
-
-    target_dir = os.path.join(tmp, "suspicious-unicode-test")
+    target_dir = sys.argv[1]
     write_test_files(target_dir)

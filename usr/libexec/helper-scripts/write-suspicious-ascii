@@ -7,16 +7,13 @@
 Writes individual test files, each containing an ASCII control character
 that might be used in obfuscation.
 
-Each is written into a separate file named 1.txt, 2.txt, etc.,
-inside $TMP/suspicious-ascii-test/.
+Each is written into a separate file named 1.txt, 2.txt, etc.
 
 Most likely folder:
-    /tmp/user/1000/suspicious-ascii-test
+    $HOME/suspicious-unicode-tests-temp-folder/suspicious-ascii-test
 
 Example file:
-    /tmp/user/1000/suspicious-ascii-test/1.txt
-
-The script checks that the $TMP environment variable is set before writing files.
+    $HOME/suspicious-unicode-tests-temp-folder/suspicious-ascii-test/1.txt
 """
 
 import os
@@ -67,19 +64,13 @@ def write_ascii_control_files(base_dir):
         char = chr(cp)
         name = ascii_control_names.get(cp, "UNKNOWN CONTROL CHARACTER")
         hex_cp = f"U+{cp:04X}"
-        metadata = f"Index: {i} | Decimal: {cp} | Codepoint: {hex_cp} | Name: {name}\n  | Character:"
+        line = f"Index: {i} | Decimal: {cp} | Codepoint: {hex_cp} | Name: {name} | Character: {char}"
         file_path = os.path.join(base_dir, f"{i}.txt")
         print(file_path)
         with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(metadata)
-            f.write(char)
+            f.write(line)
             f.write("\n")
 
 if __name__ == "__main__":
-    tmp = os.environ.get('TMP')
-    if not tmp:
-        print("Error: $TMP environment variable is not set.", file=sys.stderr)
-        sys.exit(1)
-
-    target_dir = os.path.join(tmp, "suspicious-ascii-test")
+    target_dir = sys.argv[1]
     write_ascii_control_files(target_dir)
