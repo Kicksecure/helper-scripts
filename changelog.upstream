@@ -1,3 +1,63 @@
+commit 3d65b889a40a4b70d3f04547291dab0c6d27afc3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 19 13:23:37 2025 -0400
+
+    fix
+
+commit 254931f22fce306dd8d5e13140ba8caaa5cd3477
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 19 13:17:03 2025 -0400
+
+    refactoring
+
+commit d937c988b166293081f5b803b7c02e430ade9542
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 19 13:13:29 2025 -0400
+
+    refactoring
+
+commit 358a90260b3f74051d45a07aca14f6cac1e03951
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 19 12:54:51 2025 -0400
+
+    refactoring
+
+commit b34e226d125f1fb1bbd4bfdc55a44766ba917496
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 19 12:51:15 2025 -0400
+
+    cleanup
+
+commit ca1c4f15e1fcf8e293edb4aa6c3b02c74ad3bc00
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 19 12:47:09 2025 -0400
+
+    update path
+
+commit 5575e7973ae311d9b1edfe1986aec7471573d7b6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 18 18:23:01 2025 -0400
+
+    improve unit test
+
+commit 862dba1b931f5f4cdd3b73803a47da6b431aac36
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 18 18:08:52 2025 -0400
+
+    prevent unit test running as root
+
+commit c40cf46e3852b195701738dbda3e09ee71778703
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 17 16:25:58 2025 -0400
+
+    fix
+
+commit 61d960372ba459bc3cf986c3306f75ee795a7408
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 17 14:47:13 2025 +0000
+
+    bumped changelog version
+
 commit 80555d504dedc13c86e83be2205ba3b6d85784ae
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 17 10:30:52 2025 -0400
