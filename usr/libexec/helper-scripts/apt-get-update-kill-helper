@@ -15,13 +15,6 @@ if ! test -f "$pidfile" ; then
   exit 0
 fi
 
-pid="$(stcat "$pidfile")"
-
-if ! kill -0 -- "$pid" &>/dev/null ; then
-  true "$0: INFO: pid $pid not running, ok."
-  exit 0
-fi
-
-kill -s sigterm -- "$pid"
+start-stop-daemon --stop --quiet --retry=TERM/5/KILL/5 --pidfile "$pidfile"
 
 exit 0
