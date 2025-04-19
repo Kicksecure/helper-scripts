@@ -11,10 +11,14 @@ set -o pipefail
 pidfile="/run/helper-scripts/security-misc-apt-get-update-pid"
 
 if ! test -f "$pidfile" ; then
-  true "$0: INFO: pidfile $pidfile does not exist, ok."
+  printf "%s\n" "$0: INFO: pidfile $pidfile does not exist, ok."
   exit 0
 fi
 
-start-stop-daemon --stop --quiet --retry=TERM/5/KILL/5 --pidfile "$pidfile"
+if start-stop-daemon --stop --quiet --retry=TERM/5/KILL/5 --pidfile "$pidfile" &>/dev/null ; then
+  printf "%s\n" "$0: INFO: apt-get update pid killed, ok."
+else
+  printf "%s\n" "$0: INFO: apt-get update pid was no longer running, ok"
+fi
 
 exit 0
