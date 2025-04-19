@@ -8,6 +8,20 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-kill -s sigterm "$(cat "/run/helper-scripts/security-misc-apt-get-update-pid")"
+pidfile="/run/helper-scripts/security-misc-apt-get-update-pid"
+
+if ! test -f "$pidfile" ; then
+  true "$0: INFO: pidfile $pidfile does not exist, ok."
+  exit 0
+fi
+
+pid="$(stcat "$pidfile")"
+
+if ! kill -0 -- "$pid" &>/dev/null ; then
+  true "$0: INFO: pid $pid not running, ok."
+  exit 0
+fi
+
+kill -s sigterm -- "$pid"
 
 exit 0
