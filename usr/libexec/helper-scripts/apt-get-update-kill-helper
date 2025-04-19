@@ -10,6 +10,6 @@ set -o pipefail
 
 [[ -z "${TMP:-}" ]] && error "$0: TMP is unset"
 
-kill -s sigterm "$(cat "$TMP/security-misc-apt-get-update-pid")"
+kill -s sigterm "$(cat "/run/helper-scripts/security-misc-apt-get-update-pid")"
 
 exit 0
