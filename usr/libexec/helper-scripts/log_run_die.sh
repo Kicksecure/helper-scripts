@@ -78,7 +78,7 @@ log(){
       ;;
   esac
   ## reverse importance order is required, excluding 'error'
-  all_log_levels="warn notice info debug null"
+  all_log_levels="warn notice info debug echo null"
   # shellcheck disable=SC2154
   if printf '%s' " ${all_log_levels} " | grep -o ".* ${log_level} " \
     | grep -q " ${log_type}"
