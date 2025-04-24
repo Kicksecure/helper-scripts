@@ -124,7 +124,7 @@ die(){
 
 ## Wrapper to log command before running to avoid duplication of code
 log_run(){
-  local level command_without_extraneous_spaces
+  local level command_without_extraneous_spaces_temp command_without_extraneous_spaces
   level="${1}"
   shift
   ## Extra spaces appearing when breaking log_run on multiple lines.
