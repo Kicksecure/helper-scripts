@@ -130,7 +130,8 @@ log_run(){
   ## Extra spaces appearing when breaking log_run on multiple lines.
   ## bug: removes all spaces
   #command_without_extraneous_spaces="$(printf '%s' "${@}" | tr -s " ")"
-  printf -v command_without_extraneous_spaces '%q ' "${@}"
+  printf -v command_without_extraneous_spaces_temp '%q ' "${@}"
+  command_without_extraneous_spaces="$(printf "%s\n" "${command_without_extraneous_spaces_temp}")"
   if test "${dry_run:-}" = "1"; then
     log "${level}" "Skipping command (dry-run): $ ${command_without_extraneous_spaces}"
     return 0
