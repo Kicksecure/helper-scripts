@@ -1,3 +1,15 @@
+commit db01f44db16aa4bf1068208a142c58dc4419f18e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 23 22:50:48 2025 -0400
+
+    provide `leaprun_useable_result`
+
+commit 37a9ef2e84e352e37b7e84bd8ed36e5d31218778
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 19 17:32:23 2025 +0000
+
+    bumped changelog version
+
 commit 3d65b889a40a4b70d3f04547291dab0c6d27afc3
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Apr 19 13:23:37 2025 -0400
