@@ -128,22 +128,22 @@ log_run(){
   shift
   ## Extra spaces appearing when breaking log_run on multiple lines.
   ## bug: removes all spaces
-  #command_without_extrarenous_spaces="$(printf '%s' "${@}" | tr -s " ")"
-  printf -v command_without_extrarenous_spaces '%q ' "${@}"
+  #command_without_extraneous_spaces="$(printf '%s' "${@}" | tr -s " ")"
+  printf -v command_without_extraneous_spaces '%q ' "${@}"
   if test "${dry_run:-}" = "1"; then
-    log "${level}" "Skipping command (dry-run): $ ${command_without_extrarenous_spaces}"
+    log "${level}" "Skipping command (dry-run): $ ${command_without_extraneous_spaces}"
     return 0
   fi
 
   ## TODO: Still an issue? CI expects no output from root_cmd() which calls log_run().
 
   if test "${run_background:-}" = "1"; then
-    log "${level}" "Background command starting: $ ${command_without_extrarenous_spaces} &"
+    log "${level}" "Background command starting: $ ${command_without_extraneous_spaces} &"
     "${@}" &
     background_pid="$!"
     disown "$background_pid"
   else
-    log "${level}" "Command executing: $ ${command_without_extrarenous_spaces}"
+    log "${level}" "Command executing: $ ${command_without_extraneous_spaces}"
     "${@}" || return 1
   fi
 }
