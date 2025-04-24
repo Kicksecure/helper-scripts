@@ -11,7 +11,7 @@ root_cmd(){
   if test -z "${sucmd:-}"; then
     get_su_cmd
   fi
-  : "${root_cmd_loglevel:=null}"
+  : "${root_cmd_loglevel:=echo}"
   case "${sucmd}" in
     su)
       ## Thanks to Congelli501 for su to not mess with quotes.

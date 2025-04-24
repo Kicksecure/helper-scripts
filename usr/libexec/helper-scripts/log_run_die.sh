@@ -47,6 +47,10 @@ log(){
     notice)
       log_color="${green}"
       ;;
+    echo)
+      log_color=""
+      true
+      ;;
     null)
       log_color=""
       true
@@ -123,9 +127,11 @@ log_run(){
   level="${1}"
   shift
   ## Extra spaces appearing when breaking log_run on multiple lines.
-  command_without_extrarenous_spaces="$(printf '%s' "${@}" | tr -s " ")"
+  ## bug: removes all spaces
+  #command_without_extrarenous_spaces="$(printf '%s' "${@}" | tr -s " ")"
+  printf -v command_without_extrarenous_spaces '%q ' "${@}"
   if test "${dry_run:-}" = "1"; then
-    log "${level}" "Skipping command: $ ${command_without_extrarenous_spaces}"
+    log "${level}" "Skipping command (dry-run): $ ${command_without_extrarenous_spaces}"
     return 0
   fi
 
