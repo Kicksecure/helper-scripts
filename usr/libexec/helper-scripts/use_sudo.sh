@@ -20,7 +20,7 @@ sudo_useable_test() {
 #    fi
 
    if ! sudo_exe="$(command -v sudo)"; then
-      true "$0: INFO: sudo executable cannot be found. Cannot use sudo." >&2
+      true "$0: INFO: sudo executable cannot be found. Cannot use sudo."
       return 0
    fi
 
@@ -35,7 +35,7 @@ sudo_useable_test() {
    fi
 
    if ! test -x "$sudo_exe"; then
-      true "$0: INFO: sudo is not executable. Cannot use sudo." >&2
+      true "$0: INFO: sudo is not executable. Cannot use sudo."
       return 0
    fi
 
