@@ -1,3 +1,33 @@
+commit d0cdbe372b41e2d9f6aea90f42196e063cd62258
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 25 01:06:59 2025 -0400
+
+    fix
+
+commit 3346e713d159ccef2ca135b6c2136cdf5355c6df
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 25 01:06:40 2025 -0400
+
+    cleanup
+
+commit af3943f2efbeafa52f3ee86384094a019b84c157
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 25 01:06:21 2025 -0400
+
+    end-of-options
+
+commit 0e6ed7e0788d8158ebdd58acc3502dffc338c143
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 25 01:05:46 2025 -0400
+
+    add `/usr/libexec/helper-scripts/use_pkexec.sh`
+
+commit c3b5cf6ef4cd8e957c9a51fff6e4b950d6085180
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 24 06:15:28 2025 +0000
+
+    bumped changelog version
+
 commit 6d833d3ed9950eb11dfd482dc0eeebf9ddbd2629
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 24 01:39:39 2025 -0400
