@@ -3,9 +3,6 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-# shellcheck source=./package_installed_check.bsh
-source /usr/libexec/helper-scripts/package_installed_check.bsh
-
 sudo_useable_test() {
    local kernel_cmdline
 
