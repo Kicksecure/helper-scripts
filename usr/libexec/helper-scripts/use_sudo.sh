@@ -27,7 +27,7 @@ sudo_useable_test() {
       return 0
    fi
 
-   kernel_cmdline="$(cat /proc/cmdline)"
+   kernel_cmdline="$(cat -- /proc/cmdline)"
 
    if ! [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]]; then
       true "INFO: user mode boot detected. (Not sysmaint boot mode.)"
