@@ -165,9 +165,9 @@ shutdown() {
   # If we are exiting normally, jump back to the beginning of the line
   # and clear it. Otherwise, print a newline.
   if [ "$status" -eq 0 ]; then
-    printf "\x1B[0G\x1B[0K" >&4
+    printf '%b' "\x1B[0G\x1B[0K" >&4
   else
-    printf '\n' >&4
+    printf '%s\n' '' >&4
   fi
 
   #stat="$(stcat "$statusfile")"
@@ -240,7 +240,7 @@ print_progress() {
   if [ "$percent_last" = "$percent" ]; then
     true "$BASH_SOURCE INFO: percentage number unchanged. Not re-drawing progress bar to avoid flicker."
   else
-    draw_progress_bar "$percent"
+    draw_progress_bar "$percent" >&4
     if [ "$CURL_PRGRS_EXEC" = "" ]; then
       true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
     else
@@ -262,7 +262,7 @@ curl_exit() {
     return 0
   fi
   : "${curl_pid:=""}"
-  if [ "$curl_pid" = "" ]; then
+  if [ "$curl_pid" != "" ]; then
     if kill -0 -- "$curl_pid" 2>/dev/null; then
       kill -s SIGKILL -- "$curl_pid" &>/dev/null || true
     fi
@@ -276,18 +276,19 @@ curl_download() {
   $CURL --no-progress-meter "$@" &
   curl_pid="$!"
 
+  ## Additional validation.
+  ## Already validated earlier, but:
+  ## /usr/libexec/helper-scripts/curl-prgrs: line 266: [: : integer expression expected
+  if ! is_whole_number "$curl_prgrs_content_length" ; then
+    curl_exit 116
+  fi
+
   while true ; do
     if [ -f "$CURL_OUT_FILE" ]; then
       size_file_downloaded_bytes="$(stat -c "%s" "$CURL_OUT_FILE")"
 
       if ! is_whole_number "$size_file_downloaded_bytes" ; then
         curl_exit 113
-      fi
-      ## Additional validation.
-      ## Already validated earlier, but:
-      ## /usr/libexec/helper-scripts/curl-prgrs: line 266: [: : integer expression expected
-      if ! is_whole_number "$curl_prgrs_content_length" ; then
-        curl_exit 116
       fi
 
       true "size_file_downloaded_bytes: $size_file_downloaded_bytes"
@@ -305,7 +306,7 @@ curl_download() {
       if [ "$curl_prgrs_print_progress" = "yes" ]; then
         ## Need to print to stderr to avoid confusing the stdout output of this command.
         #stecho "$BASH_SOURCE INFO: print_progress '$size_file_downloaded_bytes' '$curl_prgrs_content_length'" >&2
-        print_progress "$size_file_downloaded_bytes" "$curl_prgrs_content_length" >&4
+        print_progress "$size_file_downloaded_bytes" "$curl_prgrs_content_length"
       fi
     fi
 
@@ -400,7 +401,7 @@ main() {
   ## Reset from previews invocation of curl_download, which calls print_progress.
   percent_last=""
 
-  true "$BASH_SOURCE INFO: Header downloaded done."
+  true "$BASH_SOURCE INFO: Header download done."
 
   if ! is_whole_number "$curl_prgrs_content_length" ; then
     curl_exit 116
@@ -412,10 +413,9 @@ main() {
   ## If attempting to refactor this, make sure signal sigterm stops downloads.
   header_download="false" curl_download "$@" &
 
-  true "$BASH_SOURCE INFO: File download done."
-
   wait_exit_code=0
   wait "$!" &>/dev/null || { wait_exit_code=$? ; true; };
+  true "$BASH_SOURCE INFO: File download done."
   true "$BASH_SOURCE INFO: END."
   exit "$wait_exit_code"
 }
