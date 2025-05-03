@@ -5,24 +5,7 @@
 ##
 ## SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Safely print stdin to stdout and file."""
-from sys import argv, stdin, stdout
-from stdisplay.stdisplay import stdisplay
-
-
-def main() -> None:
-    """Safely print stdin to stdout and file."""
-    untrusted_text_list = []
-    stdin.reconfigure(errors="ignore")  # type: ignore
-    for untrusted_text in stdin:
-        untrusted_text_list.append(untrusted_text)
-        stdout.write(stdisplay(untrusted_text))
-    stdout.flush()
-    if len(argv) > 1:
-        for file_arg in argv[1:]:
-            with open(file_arg, mode="w", encoding="ascii") as file:
-                file.write(stdisplay("".join(untrusted_text_list)))
-
+from stdisplay.sttee import main
 
 if __name__ == "__main__":
     main()

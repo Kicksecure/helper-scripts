@@ -5,20 +5,7 @@
 ##
 ## SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Safely print argument to stdout with echo's formatting."""
-
-from sys import argv, stdout
-from stdisplay.stdisplay import stdisplay
-
-
-def main() -> None:
-    """Safely print argument to stdout with echo's formatting."""
-    if len(argv) > 1:
-        untrusted_text = " ".join(argv[1:])
-        stdout.write(stdisplay(untrusted_text))
-    stdout.write("\n")
-    stdout.flush()
-
+from stdisplay.stecho import main
 
 if __name__ == "__main__":
     main()

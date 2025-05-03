@@ -5,13 +5,17 @@ Test the stprint module.
 """
 
 import os
-import unittest
 import subprocess
+import sys
+import unittest
+from unittest.mock import patch
+from test.support import captured_stdout
 from stdisplay.stdisplay import (
     get_sgr_support,
 )
 
 
+# TODO: stop using shell and pass arguments to sys.argv.
 class TestSTPrint(unittest.TestCase):
     """
     Test stprint
@@ -196,6 +200,47 @@ class TestSTPrint(unittest.TestCase):
             with self.subTest(text=text, expected_result=expected_result):
                 result = self.shell(text, term="xterm-direct")
                 self.assertEqual(result.stdout, expected_result)
+
+class TestSTPrintArgv(unittest.TestCase):
+    """
+    Test stprint.
+    """
+
+    def tearDown(self):
+        del sys.modules["stdisplay.stprint"]
+
+    def test_stprint_no_arg(self):
+        """
+        Test stprint without argument.
+        """
+        argv = ["stprint.py"]
+        with patch.object(sys, "argv", argv), captured_stdout() as stdout:
+            import stdisplay.stprint  # pylint: disable=import-outside-toplevel
+            stdisplay.stprint.main()
+        result = stdout.getvalue()
+        self.assertEqual("", result)
+
+    def test_stprint_word_split(self):
+        """
+        Test stprint word splitting behavior.
+        """
+        argv = ["stprint.py", "Hello", "world"]
+        with patch.object(sys, "argv", argv), captured_stdout() as stdout:
+            import stdisplay.stprint  # pylint: disable=import-outside-toplevel
+            stdisplay.stprint.main()
+        result = stdout.getvalue()
+        self.assertEqual("Helloworld", result)
+
+    def test_stprint_sanitize(self):
+        """
+        Test stprint sanitization.
+        """
+        argv = ["stprint.py", "\x1b[0mHello world\x1b[2K"]
+        with patch.object(sys, "argv", argv), captured_stdout() as stdout:
+            import stdisplay.stprint  # pylint: disable=import-outside-toplevel
+            stdisplay.stprint.main()
+        result = stdout.getvalue()
+        self.assertEqual("\x1b[0mHello world_[2K", result)
 
 
 if __name__ == "__main__":
