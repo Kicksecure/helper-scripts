@@ -5,7 +5,7 @@
 ##
 ## SPDX-License-Identifier: AGPL-3.0-or-later
 
-## """Safely print argument to stdout."""
+"""Safely print argument to stdout."""
 
 from sys import argv, stdout
 from stdisplay.stdisplay import stdisplay

@@ -1,51 +1,44 @@
 #!/usr/bin/env python3
+# pylint: disable=missing-module-docstring
+
+## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+##
+## SPDX-License-Identifier: AGPL-3.0-or-later
 
 import unittest
-import sys
-from unittest.mock import patch
-from test.support import captured_stdout
+import stdisplay.tests
 
-# TODO: rewrite
-class TestSTCatn(unittest.TestCase):
+
+class TestSTCat(stdisplay.tests.TestSTBase):
     """
     Test stcatn.
     """
 
-    def tearDown(self):
-        del sys.modules["stdisplay.stcatn"]
+    def setUp(self) -> None:
+        self.module = "stcatn"
+        super().setUp()
 
-    def test_stcatn_no_arg(self):
+    def test_stcatn_file(self) -> None:
         """
-        Test stcatn without argument.
+        Test passing files.
         """
-        argv = ["stcatn.py"]
-        with patch.object(sys, "argv", argv), captured_stdout() as stdout:
-            import stdisplay.stcatn  # pylint: disable=import-outside-toplevel
-            stdisplay.stcatn.main()
-        result = stdout.getvalue()
-        self.assertEqual("\n", result)
+        cases = [
+            ("a b\nc d\n", [self.tmpfiles["raw"]]),
+            (
+                "a b\nc d\na b\nc d\n",
+                [self.tmpfiles["raw"], self.tmpfiles["raw"]],
+            ),
+            (self.text_dirty_sanitized + "\n", [self.tmpfiles["dirty"]]),
+        ]
+        for text, argv in cases:
+            with self.subTest(text=text, argv=argv):
+                self.assertEqual(text, self._test_util(argv=argv))
 
-    def test_stcatn_word_split(self):
-        """
-        Test stcatn word splitting behavior.
-        """
-        argv = ["stcatn.py", "Hello", "world"]
-        with patch.object(sys, "argv", argv), captured_stdout() as stdout:
-            import stdisplay.stcatn  # pylint: disable=import-outside-toplevel
-            stdisplay.stcatn.main()
-        result = stdout.getvalue()
-        self.assertEqual("Hello world\n", result)
-
-    def test_stcatn_sanitize(self):
-        """
-        Test stcatn sanitization.
-        """
-        argv = ["stcatn.py", "\x1b[0mHello world\x1b[2K"]
-        with patch.object(sys, "argv", argv), captured_stdout() as stdout:
-            import stdisplay.stcatn  # pylint: disable=import-outside-toplevel
-            stdisplay.stcatn.main()
-        result = stdout.getvalue()
-        self.assertEqual("\x1b[0mHello world_[2K\n", result)
+        self.assertEqual(
+            "a b\nc d\n",
+            self._test_util(stdin="is ignored", argv=[self.tmpfiles["raw"]]),
+        )
 
 
 if __name__ == "__main__":

@@ -11,7 +11,8 @@ pylint=(pylint --rcfile="${pyrc}")
 mypy=(mypy --config-file="${pyrc}")
 
 cd "${pythonpath}/stdisplay/"
-"${pytest[@]}" "${@}"
+# Ideally, these variables should be ignored by the tests...
+NO_COLOR="" COLORTERM="" TERM="xterm-direct" "${pytest[@]}" "${@}"
 "${black[@]}" .
 find . -type f -name "*.py" -print0 | xargs -0 "${pylint[@]}"
 "${mypy[@]}" .
