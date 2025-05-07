@@ -7,7 +7,7 @@ check_is_not_empty_and_only_one_line() {
    local varname value number_of_lines
 
    if [ -z "$1" ]; then
-      echo "$0: ERROR: No variable name provided to check_is_not_empty_and_only_one_line." >&2
+      printf '%s\n' "$0: ERROR: No variable name provided to check_is_not_empty_and_only_one_line." >&2
       return 1
    fi
 
@@ -19,7 +19,7 @@ check_is_not_empty_and_only_one_line() {
 
    # Check if value is empty or only contains spaces/newlines.
    if [[ -z "$trimmed_value" || -z "${value//[[:space:]]/}" ]]; then
-      echo "$0: ERROR: Variable '$varname' is empty or contains only whitespace/newlines." >&2
+      printf '%s\n' "$0: ERROR: Variable '$varname' is empty or contains only whitespace/newlines." >&2
       return 1
    fi
 
@@ -28,7 +28,7 @@ check_is_not_empty_and_only_one_line() {
    number_of_lines="${#lines[@]}"
 
    if [ "$number_of_lines" -ne 1 ]; then
-      echo "$0: ERROR: Variable '$varname' contains more than one line. Content:
+      printf '%s\n' "$0: ERROR: Variable '$varname' contains more than one line. Content:
 '$value'" >&2
       return 1
    fi
@@ -45,15 +45,15 @@ trim_collapse_split() {
    local trimmed_list cleaned_list formatted_list
 
    ## Step 1: Trim leading and trailing spaces.
-   trimmed_list="$(echo "$input_list" | sed 's/^\s\+//g; s/\s\+$//g')"
+   trimmed_list="$(printf '%s\n' "$input_list" | sed 's/^\s\+//g; s/\s\+$//g')"
 
    ## Step 2: Replace multiple spaces with a single space.
-   cleaned_list="$(echo "$trimmed_list" | sed 's/\s\+/ /g')"
+   cleaned_list="$(printf '%s\n' "$trimmed_list" | sed 's/\s\+/ /g')"
 
    ## Step 3: Replace spaces with ' \n' (newline prefixed by space).
-   formatted_list="$(echo "$cleaned_list" | sed 's/\s/ \\\n/g')"
+   formatted_list="$(printf '%s\n' "$cleaned_list" | sed 's/\s/ \\\n/g')"
 
-   echo "$formatted_list"
+   printf '%s\n' "$formatted_list"
 }
 
 ## success: whole numbers such as 1 2 3 456 etc.
@@ -78,18 +78,18 @@ run_test() {
    expected_exit_code="$4"
 
    eval "$varname=\"\$value\""
-   echo "$0: Running test: $test_name"
+   printf '%s\n' "$0: Running test: $test_name"
 
    exit_code=0
    check_is_not_empty_and_only_one_line "$varname" 2>/dev/null || { exit_code=$? ; true; };
 
    if [ "$exit_code" -eq "$expected_exit_code" ]; then
-      echo "$0: Test Passed"
+      printf '%s\n' "$0: Test Passed"
    else
-      echo "$0: Test Failed (Expected exit code: $expected_exit_code, Got: $exit_code)" >&2
+      printf '%s\n' "$0: Test Failed (Expected exit code: $expected_exit_code, Got: $exit_code)" >&2
       return 1
    fi
-   echo "---------------------------------"
+   printf '%s\n' "---------------------------------"
 }
 
 tests() {
