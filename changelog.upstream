@@ -1,3 +1,22 @@
+commit 948a08d9497ed147f166c8f2da892a3c73d105b2
+Merge: cce49c0 e2b8ca0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 7 00:31:41 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/curl-prgrs'
+
+commit e2b8ca090b8f84ab0613983bea7d6cbc9a2d8a4f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Apr 30 17:43:37 2025 -0500
+
+    curl-prgrs improvements
+
+commit cce49c033511b877479322ef7f6745a193334402
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 29 08:16:51 2025 +0000
+
+    bumped changelog version
+
 commit b58d412f3d61e8ac831a3649d71784425f1b1f05
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Apr 29 03:48:37 2025 -0400
