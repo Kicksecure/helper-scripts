@@ -55,19 +55,8 @@ set -o errtrace
 ## provides: draw_progress_bar
 source /usr/libexec/helper-scripts/progress-bar
 
-## success: whole numbers such as 1 2 3 456 etc.
-## fail:
-## 5.5
-## 5,500
-## trailing spaces
-## leading spaces
-## empty input
-## space only
-## scientific notation such as 1.23e10
-## negative numbers such as -1
-is_whole_number() {
-  [[ "$1" =~ ^[0-9]+$ ]]
-}
+## provides: is_whole_number
+source /usr/libexec/helper-scripts/strings.bsh
 
 initialize_terminal() {
   # We want to print the progress bar to stderr, but only if stderr is a
