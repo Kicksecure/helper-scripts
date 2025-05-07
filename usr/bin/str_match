@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -u
+#!/usr/bin/python3 -su
 
 from pathlib import Path
 import sys
