@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+##
+## SPDX-License-Identifier: AGPL-3.0-or-later
+
 """
 Test the stdisplay module.
 """

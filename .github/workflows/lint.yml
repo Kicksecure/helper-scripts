@@ -38,7 +38,6 @@ jobs:
             build-essential debhelper dh-python dh-apparmor
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/checkout@v4
-
       - name: Test build
         run: |
           dpkg-buildpackage -b -i -us -uc
@@ -47,3 +46,5 @@ jobs:
         run: |
           set -o xtrace
           ./run-tests
+          git clone https://github.com/nickboucher/trojan-source
+          ./unicode-testscript
