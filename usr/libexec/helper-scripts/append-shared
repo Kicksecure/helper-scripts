@@ -106,6 +106,13 @@ def main():
         temp_file.write(file_contents)
         temp_file.flush()
         temp_file.close()
+        if file_path.exists():
+            shutil.copymode(file_path, temp_file.name)
+        else:
+            current_umask = os.umask(0)
+            os.umask(current_umask)
+            new_mode = 0o666 & (current_umask ^ 0o777)
+            os.chmod(temp_file.name, new_mode)
         shutil.move(temp_file.name, file_path)
     except Exception:
         try:
