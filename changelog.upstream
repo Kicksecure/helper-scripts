@@ -1,3 +1,16 @@
+commit 5367f54a441f0232ec41269c3fd87bdc8e212fc5
+Merge: 2879460 2fa5e6a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 11 11:14:17 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/live-mode'
+
+commit 2879460dea9f386c17f66b13620413a63fa09737
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 11 14:39:23 2025 +0000
+
+    bumped changelog version
+
 commit 707f2a9d926cb78b1844cb7aeb273ac56de512a1
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat May 10 13:54:13 2025 -0400
@@ -71,6 +84,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed May 7 00:31:41 2025 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/curl-prgrs'
+
+commit 2fa5e6a72f148da1b3476615c26e7839dea0c4de
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun May 4 22:54:18 2025 -0500
+
+    Make live-mode.sh more robust and able to detect a semi-persistent state
 
 commit e2b8ca090b8f84ab0613983bea7d6cbc9a2d8a4f
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
