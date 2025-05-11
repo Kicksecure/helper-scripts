@@ -17,7 +17,7 @@ import stdisplay.tests
 
 class TestSTPrint(stdisplay.tests.TestSTBase):
     """
-    Test stecho.
+    Test stprint.
     """
 
     def setUp(self) -> None:

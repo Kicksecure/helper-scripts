@@ -21,6 +21,14 @@ from stdisplay.stdisplay import get_sgr_support
 class TestSTBase(unittest.TestCase):
     """
     Base class for testing safe terminal utilities.
+
+    Assign "self.module" to the module you want to try on the "setup()" using
+    "super()":
+
+    >>> class TestSTCat(stdisplay.tests.TestSTBase):
+    >>>     def setUp(self) -> None:
+    >>>         self.module = "stcat"
+    >>>         super().setUp()
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -31,9 +39,8 @@ class TestSTBase(unittest.TestCase):
     def setUp(self) -> None:
         self.tmpfiles_list = []
         contents = ["a b\n", "c d"]
-        i = 0
         self.tmpdir = tempfile.mkdtemp()
-        while i < 6:
+        for i in range(0, 6):
             self.tmpfiles_list.append(os.path.join(self.tmpdir, str(i)))
             with open(self.tmpfiles_list[i], "w", encoding="utf-8") as file:
                 if i == 0:
@@ -48,7 +55,6 @@ class TestSTBase(unittest.TestCase):
                     pass
                 file.flush()
                 file.close()
-            i += 1
         self.tmpfiles = {
             "empty": self.tmpfiles_list[0],
             "raw": self.tmpfiles_list[1],
@@ -91,11 +97,3 @@ class TestSTBase(unittest.TestCase):
             module.main()
         result = str(stdout.getvalue())  # pylint: disable=no-member
         return result
-
-    def _get_file(self, file: str) -> str:
-        """
-        Helper function get contents of a file.
-        """
-        with open(file, mode="r", encoding="utf-8") as fileobj:
-            text = fileobj.read()
-        return text

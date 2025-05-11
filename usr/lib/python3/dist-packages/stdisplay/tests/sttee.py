@@ -7,6 +7,7 @@
 ## SPDX-License-Identifier: AGPL-3.0-or-later
 
 import unittest
+from pathlib import Path
 import stdisplay.tests
 
 
@@ -30,7 +31,7 @@ class TestSTTee(stdisplay.tests.TestSTBase):
         self.assertEqual("", self._test_util(argv=[self.tmpfiles["fill"]]))
         self.assertEqual(
             "",
-            self._get_file(file=self.tmpfiles["fill"]),
+            Path(self.tmpfiles["fill"]).read_text(encoding="utf-8"),
         )
         # Stdin sanitization and writing to file.
         self.assertEqual(
@@ -41,7 +42,7 @@ class TestSTTee(stdisplay.tests.TestSTBase):
         )
         self.assertEqual(
             self.text_dirty_sanitized,
-            self._get_file(file=self.tmpfiles["fill"]),
+            Path(self.tmpfiles["fill"]).read_text(encoding="utf-8"),
         )
         # Stdin sanitization and writing to multiple files.
         self.assertEqual(
@@ -53,11 +54,11 @@ class TestSTTee(stdisplay.tests.TestSTBase):
         )
         self.assertEqual(
             self.text_dirty_sanitized,
-            self._get_file(file=self.tmpfiles["fill"]),
+            Path(self.tmpfiles["fill"]).read_text(encoding="utf-8"),
         )
         self.assertEqual(
             self.text_dirty_sanitized,
-            self._get_file(file=self.tmpfiles["fill2"]),
+            Path(self.tmpfiles["fill2"]).read_text(encoding="utf-8"),
         )
 
 

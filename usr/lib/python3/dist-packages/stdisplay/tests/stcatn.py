@@ -10,7 +10,7 @@ import unittest
 import stdisplay.tests
 
 
-class TestSTCat(stdisplay.tests.TestSTBase):
+class TestSTCatn(stdisplay.tests.TestSTBase):
     """
     Test stcatn.
     """
