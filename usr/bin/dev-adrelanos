@@ -38,7 +38,7 @@ autologin-user=user
 
 sudo append-once /etc/privleap/conf.d/privleap-debugging.conf "\
 [action:sudo]
-Command=chmod o+x /usr/bin/sudo
+Command=/usr/libexec/helper-scripts/sudo-tools-enable
 AuthorizedGroups=sudo
 AuthorizedUsers=user
 "
