@@ -1,3 +1,15 @@
+commit 00ad2b24cb0159b02925c7a318fa3329cfafb424
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 03:39:12 2025 -0400
+
+    add live-status-detected
+
+commit 0503e736f76362a2fc538d82278629d09e6eee3f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 11 15:56:29 2025 +0000
+
+    bumped changelog version
+
 commit a46ee4d8e11b342f9af17e3a573367f6471b2e5f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun May 11 11:44:37 2025 -0400
