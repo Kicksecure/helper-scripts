@@ -22,6 +22,7 @@ sudo passwordless-root
 setxkbmap de || true
 sudo loadkeys de || true
 
+## TODO: if folder does not exist yet
 sudo -u user append-once /home/user/.bashrc "setxkbmap de"
 sudo -u sysmaint append-once /home/sysmaint/.bashrc "setxkbmap de"
 sudo -u user append-once /home/user/.zshrc "setxkbmap de"
