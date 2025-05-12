@@ -1,3 +1,15 @@
+commit 50a6b0b0015cc0895261367fadb50ea072e8a65d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 07:16:14 2025 -0400
+
+    add `usr/libexec/helper-scripts/sudo-tools-enable`
+
+commit 5b30da2f6fa144584ede4721a6e14a3bee4b0732
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 09:56:04 2025 +0000
+
+    bumped changelog version
+
 commit 78645c0b090578d2f649ff9fd879df1be6c6d3a7
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 12 05:33:03 2025 -0400
