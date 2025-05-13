@@ -10,14 +10,12 @@ true "$0: START"
 
 true "$0: INFO: This script is for developers-only."
 
-if [ "$1" = "" ]; then
+if [ ! "$1" = "force" ]; then
    true "$0: ERROR: No argument given!" >&2
    exit 1
 fi
 
-sudo test -d /usr
-
-sudo passwordless-root
+dev-root force
 
 setxkbmap de || true
 sudo loadkeys de || true
@@ -28,27 +26,8 @@ sudo -u sysmaint append-once /home/sysmaint/.bashrc "setxkbmap de" || true
 sudo -u user append-once /home/user/.zshrc "setxkbmap de" || true
 sudo -u sysmaint append-once /home/sysmaint/.zshrc "setxkbmap de" || true
 
-sudo mkdir --parents /etc/lightdm/lightdm.conf.d
-
-sudo append-once /etc/lightdm/lightdm.conf.d/user-autologin.conf "\
-[SeatDefaults]
-user-session=xfce
-autologin-user=user
-"
-
-sudo append-once /etc/privleap/conf.d/privleap-debugging.conf "\
-[action:sudo]
-Command=/usr/libexec/helper-scripts/sudo-tools-enable
-AuthorizedGroups=sudo
-AuthorizedUsers=user
-"
-
-sudo systemctl restart privleapd.service
-privleapd --check-config
-leaprun sudo
-
 sudo repository-dist --enable --repository developers
 
 systemcheck --verbose --leak-tests --gui --cli
 
-true "$0: END"
+true "$0: END: OK"
