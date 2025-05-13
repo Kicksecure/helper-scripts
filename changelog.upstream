@@ -1,3 +1,16 @@
+commit be407ed5daf5d6d5f784b719c43af3863295a267
+Merge: 3335c00 5607d7b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 10:32:45 2025 -0400
+
+    Merge remote-tracking branch 'ben/st-test'
+
+commit 3335c004d3683d36cf89450c4274d31aaf02792c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 12:03:42 2025 +0000
+
+    bumped changelog version
+
 commit 50a6b0b0015cc0895261367fadb50ea072e8a65d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 12 07:16:14 2025 -0400
@@ -70,6 +83,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun May 11 14:39:23 2025 +0000
 
     bumped changelog version
+
+commit 5607d7ba97ca3a9e3fdf876511edddddb5624ee9
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Sun May 11 10:56:40 2025 +0200
+
+    Fix typos and cleaner code
 
 commit 707f2a9d926cb78b1844cb7aeb273ac56de512a1
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -145,11 +164,49 @@ Date:   Wed May 7 00:31:41 2025 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/curl-prgrs'
 
+commit 11a7d0e8006afec6abde3448ead288f7c31c6550
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon May 5 17:04:32 2025 +0200
+
+    Add unicode trojan test
+
+commit ab5e5e45257100521f520ac6d5b7710ff883b728
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon May 5 13:01:59 2025 +0200
+
+    Test every safe terminal tool
+    
+    - Check output when no argument is provided;
+    - Check if stdin is ignored by default;
+    - Check if stdin is ignored if file is provided;
+    - Check how many arguments a utility accepts;
+    - Check how word splitting works on multiple arguments;
+    - Check if newline is present; and
+    - How it treats the argument '-'.
+
 commit 2fa5e6a72f148da1b3476615c26e7839dea0c4de
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
 Date:   Sun May 4 22:54:18 2025 -0500
 
     Make live-mode.sh more robust and able to detect a semi-persistent state
+
+commit 748a3bedef7cf12df5dc6bdea154d165e8bb499d
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Sun May 4 16:27:58 2025 +0200
+
+    Add base test class
+
+commit d00ecab2c21d81e63145b6407b888544a8b683d4
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Sun May 4 15:26:25 2025 +0200
+
+    Test reading from files
+
+commit bc92fabb8bb657e52c5daf41ab7002a5612538f8
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Sun May 4 01:36:00 2025 +0200
+
+    Add tests
 
 commit e2b8ca090b8f84ab0613983bea7d6cbc9a2d8a4f
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
