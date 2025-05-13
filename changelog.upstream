@@ -1,3 +1,15 @@
+commit 50bf9fbd435da1d49383bce3e908a233562104b0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 11:27:28 2025 -0400
+
+    add `dev-root`: development mode
+
+commit dd20885031266562fb8c5e73bdba35c74b57a37d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 14:33:23 2025 +0000
+
+    bumped changelog version
+
 commit be407ed5daf5d6d5f784b719c43af3863295a267
 Merge: 3335c00 5607d7b
 Author: Patrick Schleizer <adrelanos@whonix.org>
