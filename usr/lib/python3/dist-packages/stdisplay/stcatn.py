@@ -20,7 +20,7 @@ def main() -> None:
     main
     """
     # https://github.com/pytest-dev/pytest/issues/4843
-    if "pytest" not in modules:
+    if "pytest" not in modules and stdin is not None:
         stdin.reconfigure(errors="ignore")  # type: ignore
 
     for line in file_input(encoding="ascii", errors="replace"):
