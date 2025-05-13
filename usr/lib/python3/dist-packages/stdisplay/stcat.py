@@ -15,7 +15,7 @@ from stdisplay.stdisplay import stdisplay
 def main() -> None:
     """Safely print stdin or file to stdout."""
     # https://github.com/pytest-dev/pytest/issues/4843
-    if "pytest" not in modules:
+    if "pytest" not in modules and stdin is not None:
         stdin.reconfigure(errors="ignore")  # type: ignore
     ## File input reads stdin when no file is provided or file is '-'.
     for untrusted_text in file_input(encoding="ascii", errors="replace"):

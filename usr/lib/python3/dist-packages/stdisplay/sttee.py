@@ -13,7 +13,7 @@ from stdisplay.stdisplay import stdisplay
 def main() -> None:
     """Safely print stdin to stdout and file."""
     # https://github.com/pytest-dev/pytest/issues/4843
-    if "pytest" not in modules:
+    if "pytest" not in modules and stdin is not None:
         stdin.reconfigure(errors="ignore")  # type: ignore
     untrusted_text_list = []
     for untrusted_text in stdin:
