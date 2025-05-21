@@ -14,8 +14,8 @@ if [ "$(id -u)" = 0 ] && [ -z "${GITHUB_WORKSPACE:-}" ]; then
     exit 1
 fi
 
-if ! printf '%s\n' | wc -l >/dev/null ; then
-  printf "\
+if ! printf '%s\n' "" | wc -l >/dev/null ; then
+  printf '%s\n' "\
 $0: ERROR: command 'wc' test failed! Do not ignore this!
 
 'wc' can core dump. Example:
