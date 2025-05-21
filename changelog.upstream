@@ -1,3 +1,23 @@
+commit 93152b9ab74e76719b8916bea3f75318f0261446
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 21 07:21:35 2025 -0400
+
+    add `usr/libexec/helper-scripts/wc-test.sh`
+
+commit f78bea57962a9a69285f480b850b7430f1930646
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 21 07:21:11 2025 -0400
+
+    test that `wc` is functional
+    
+    https://github.com/Kicksecure/security-misc/pull/305#issuecomment-2892378246
+
+commit 8c7fb9884398f638570d5c7afb92cd95cc446b37
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 18:50:33 2025 +0000
+
+    bumped changelog version
+
 commit 483907e0902eada87c1d529568df1f2cd724d828
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue May 13 14:50:18 2025 -0400
