@@ -14,6 +14,16 @@ if [ "$(id -u)" = 0 ] && [ -z "${GITHUB_WORKSPACE:-}" ]; then
     exit 1
 fi
 
+if ! printf '%s\n' | wc -l >/dev/null ; then
+  printf "\
+$0: ERROR: command 'wc' test failed! Do not ignore this!
+
+'wc' can core dump. Example:
+zsh: illegal hardware instruction (core dumped) wc -l
+https://github.com/rspamd/rspamd/issues/5137" >&2
+  exit 1
+fi
+
 folder_list="Assembly  Bash  C  C#  C++  Go  Java  JavaScript  Python  RegEx  Rust  Solidity"
 
 total_file_counter=0
