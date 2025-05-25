@@ -6,7 +6,7 @@
 source /usr/libexec/helper-scripts/get_colors.sh
 
 if ! command -v stecho &>/dev/null ; then
-  ## Fallback to printf in case stecho is unavailable.
+  ## Fallback to 'printf' in case 'stecho' is unavailable.
   stecho() {
     printf "%s\n" "$@"
   }
