@@ -51,6 +51,7 @@ get_su_cmd(){
     has sudo && sucmd=sudo && break
     has doas && sucmd=doas && break
     has su && sucmd=su && break
+    [ -z "${sucmd:-}" ] && sucmd=''
     test -z "${sucmd}" && {
       die 1 "${underline}get_su_cmd:${nounderline} Failed to find program to run commands with administrative ('root') privileges. This installer requires either one of the following programs to be installed:
 - sudo (recommended)
