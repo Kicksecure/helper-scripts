@@ -1,3 +1,69 @@
+commit bef2f48eaba5c09e03fa5b04f805e053e0ff54a6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:20:44 2025 -0400
+
+    comment
+
+commit 415367797e2d6fd985e91f4393ef02e705b915d9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:19:29 2025 -0400
+
+    protect against `printf`, `grep --quiet` broken pipe
+
+commit 064b6f745aec6c33e0b815c6309f70e654720d5e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:18:01 2025 -0400
+
+    refactoring
+
+commit 8f64fb2aa63179ee375e094577b7c9879e16367a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:16:36 2025 -0400
+
+    protect against `printf`, `grep --quiet` broken pipe
+
+commit 9e9dc751861c86709beed5b55653edf85f4c2844
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:14:37 2025 -0400
+
+    fix
+
+commit 0f13f4ed1b12f0bcf60565e310fc5b26a9d7be66
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:44:25 2025 -0400
+
+    output
+
+commit f550f73d9afb79dbe1fafd99b954c3bff72c4379
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:42:24 2025 -0400
+
+    `/usr/libexec/helper-scripts/root_cmd.sh`: fix error message in case no privilege escalation tool can be found
+
+commit 14561dd4267c58ed595f2982bdc011babc3f265e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:37:15 2025 -0400
+
+    copyright
+
+commit 5f1718ab429170b43dd47eae5c6647e16f3fbdec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:33:51 2025 -0400
+
+    output
+
+commit 8450c50db258c027f354977be187228b868333ee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:15:14 2025 -0400
+
+    output
+
+commit d9e5d265840f40832e1c2f4af9de5ef32fa9d4b0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 21 15:51:46 2025 +0000
+
+    bumped changelog version
+
 commit f5d0ebdd1874029e142e4377597af419580fb4eb
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed May 21 11:50:44 2025 -0400
