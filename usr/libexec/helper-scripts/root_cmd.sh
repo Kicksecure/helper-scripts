@@ -53,7 +53,7 @@ get_su_cmd(){
     has su && sucmd=su && break
     [ -z "${sucmd:-}" ] && sucmd=''
     test -z "${sucmd}" && {
-      die 1 "${underline}get_su_cmd:${nounderline} Failed to find program to run commands with administrative ('root') privileges. This installer requires either one of the following programs to be installed:
+      die 1 "${underline}get_su_cmd:${nounderline} Failed to find program to run commands with administrative ('root') privileges. This program requires either one of the following programs to be installed:
 - sudo (recommended)
 - doas
 - su"
@@ -80,7 +80,7 @@ get_su_cmd(){
   ## Other su cmds do not have an option that does the same.
   if test "${sucmd}" = "sudo"; then
     if ! timeout --kill-after 5 5 sudo --non-interactive -- test -d /usr; then
-      log warn "Credential Caching Status: 'No' - Without credential caching, this installer will prompt for 'sudo' authorization multiple times. Consider configuring 'sudo' credential caching to streamline the installation process."
+      log warn "Credential Caching Status: 'No' - Without credential caching, this program will prompt for 'sudo' authorization multiple times. Consider configuring 'sudo' credential caching to streamline the installation process."
       return 0
     fi
     ## Used by dist-installer-gui.
