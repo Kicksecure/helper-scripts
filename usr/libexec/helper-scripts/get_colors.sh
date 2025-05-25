@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 ## colors
 # shellcheck disable=SC2034
 get_colors(){

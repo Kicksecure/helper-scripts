@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 ## TODO: how to handle installer specific code?
 
 source /usr/libexec/helper-scripts/log_run_die.sh
