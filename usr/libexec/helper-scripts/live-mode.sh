@@ -22,14 +22,14 @@ fi
 
 ## Detect if the system was booted in live mode
 ## Check for 'rd.live.image' first, because both, ISO and grub-live come with 'boot=live' kernel parameter.
-if printf "%s" "${mount_command_output}" 2>/dev/null | grep --quiet 'LiveOS_rootfs on / type overlay'; then
+if printf "%s" "${mount_command_output}" 2>/dev/null | grep 'LiveOS_rootfs on / type overlay' &>/dev/null; then
   live_status_detected_live_mode_environment_pretty="ISO Live"
   live_status_detected_live_mode_environment_machine="iso-live"
   live_status_word_pretty="ISO"
   live_status_detected="true"
   live_status_maybe_iso_live_message="<br/><u>This message can be safely ignored if only using this ISO to install to the hard drive.</u><br/>"
-elif printf "%s" "${mount_command_output}" 2>/dev/null | grep --quiet 'overlay on / type overlay'; then
-  if printf "%s" "${mount_command_output}" 2>/dev/null | grep --quiet '/dev/.* on /home ' ; then
+elif printf "%s" "${mount_command_output}" 2>/dev/null | grep 'overlay on / type overlay' &>/dev/null; then
+  if printf "%s" "${mount_command_output}" 2>/dev/null | grep '/dev/.* on /home ' &>/dev/null; then
     live_status_detected_live_mode_environment_pretty="grub-live-semi-persistent"
     live_status_detected_live_mode_environment_machine="grub-live-semi-persistent"
     live_status_word_pretty="Semi-persistent"
