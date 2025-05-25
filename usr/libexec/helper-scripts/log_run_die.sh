@@ -84,7 +84,7 @@ log(){
   all_log_levels="warn notice info debug echo null"
   # shellcheck disable=SC2154
   if printf '%s' " ${all_log_levels} " | grep -o ".* ${log_level} " \
-    | grep --quiet " ${log_type}"
+    | grep " ${log_type}" &>/dev/null
   then
     case "${log_type}" in
       null)
