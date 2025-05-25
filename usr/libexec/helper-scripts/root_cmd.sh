@@ -7,7 +7,7 @@ source /usr/libexec/helper-scripts/log_run_die.sh
 root_cmd(){
   local cmdarr
 
-  test -z "${1:-}" && die 1 "${underline}root_cmd function:${nounderline} Failed to pass arguments to root_cmd."
+  test -z "${1:-}" && die 1 "${underline}root_cmd function:${nounderline} Failed to pass arguments to function 'root_cmd'."
   if test -z "${sucmd:-}"; then
     get_su_cmd
   fi
@@ -35,7 +35,7 @@ root_cmd(){
       log_run "$root_cmd_loglevel" doas -u root -- "${@}"
       ;;
     *)
-      die 1 "${underline}root_cmd function:${nounderline} root_cmd does not support sucmd: '${sucmd}'"
+      die 1 "${underline}root_cmd function:${nounderline} 'root_cmd' does not support sucmd: '${sucmd}'"
       ;;
   esac
 }
@@ -49,7 +49,7 @@ get_su_cmd(){
     has doas && sucmd=doas && break
     has su && sucmd=su && break
     test -z "${sucmd}" && {
-      die 1 "${underline}get_su_cmd:${nounderline} Failed to find program to run commands with administrative (\"root\") privileges. This installer requires either one of the following programs to be installed:
+      die 1 "${underline}get_su_cmd:${nounderline} Failed to find program to run commands with administrative ('root') privileges. This installer requires either one of the following programs to be installed:
 - sudo (recommended)
 - doas
 - su"
@@ -62,7 +62,7 @@ get_su_cmd(){
 
   log info "Testing root_cmd function..."
   root_cmd printf '%s\n' "test" >/dev/null ||
-    die 1 "${underline}get_su_cmd:${nounderline} Failed to run test command as root."
+    die 1 "${underline}get_su_cmd:${nounderline} Failed to run test command as 'root'."
 
   if test "${ci:-}" = "1"; then
     root_output="$(timeout --kill-after 5 5 sudo --non-interactive -- test -d /usr 2>&1)"
@@ -86,7 +86,7 @@ get_su_cmd(){
     root_output="$(timeout --kill-after 5 5 sudo -- test -d /usr 2>&1)"
     if test -n "${root_output}"; then
       log error "sudo output: '${root_output}'"
-      die 1 "${underline}get_su_cmd:${nounderline} Unexpected non-empty output for sudo test in normal mode."
+      die 1 "${underline}get_su_cmd:${nounderline} Unexpected non-empty output for 'sudo' test in normal mode."
     fi
   fi
 }
