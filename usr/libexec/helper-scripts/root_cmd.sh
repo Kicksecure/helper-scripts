@@ -56,19 +56,19 @@ get_su_cmd(){
     }
     case "${sucmd}" in
       sudo) :;;
-      *) log warn "Using sucmd '$sucmd'. Consider installation of sudo instead to cache your passwords instead of typing them every time.";;
+      *) log warn "Using sucmd '$sucmd'. Consider installation of 'sudo' instead to cache your passwords instead of typing them every time.";;
     esac
   done
 
-  log info "Testing root_cmd function..."
+  log info "Testing 'root_cmd' function..."
   root_cmd printf '%s\n' "test" >/dev/null ||
     die 1 "${underline}get_su_cmd:${nounderline} Failed to run test command as 'root'."
 
   if test "${ci:-}" = "1"; then
     root_output="$(timeout --kill-after 5 5 sudo --non-interactive -- test -d /usr 2>&1)"
     if test -n "${root_output}"; then
-      log error "sudo output: '${root_output}'"
-      die 1 "${underline}get_su_cmd:${nounderline} Unexpected non-empty output for sudo test in CI mode."
+      log error "'sudo' output: '${root_output}'"
+      die 1 "${underline}get_su_cmd:${nounderline} Unexpected non-empty output for 'sudo' test in CI mode."
     fi
     return 0
   fi
@@ -76,7 +76,7 @@ get_su_cmd(){
   ## Other su cmds do not have an option that does the same.
   if test "${sucmd}" = "sudo"; then
     if ! timeout --kill-after 5 5 sudo --non-interactive -- test -d /usr; then
-      log warn "Credential Caching Status: 'No' - Without credential caching, this installer will prompt for sudo authorization multiple times. Consider configuring sudo credential caching to streamline the installation process."
+      log warn "Credential Caching Status: 'No' - Without credential caching, this installer will prompt for 'sudo' authorization multiple times. Consider configuring 'sudo' credential caching to streamline the installation process."
       return 0
     fi
     ## Used by dist-installer-gui.
@@ -85,7 +85,7 @@ get_su_cmd(){
     log info "Credential Caching Status: 'Yes'"
     root_output="$(timeout --kill-after 5 5 sudo -- test -d /usr 2>&1)"
     if test -n "${root_output}"; then
-      log error "sudo output: '${root_output}'"
+      log error "'sudo' output: '${root_output}'"
       die 1 "${underline}get_su_cmd:${nounderline} Unexpected non-empty output for 'sudo' test in normal mode."
     fi
   fi
