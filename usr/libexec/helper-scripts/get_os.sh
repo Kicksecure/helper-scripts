@@ -54,7 +54,7 @@ get_os(){
   esac
 
   ## Debian 'testing' /etc/os-release does not contain VERSION_ID.
-  if printf '%s' "${distro}" | grep --quiet "/sid" ; then
+  if printf '%s' "${distro}" | grep "/sid" &>/dev/null ; then
     debian_testing_or_unstable_detected=1
   fi
 

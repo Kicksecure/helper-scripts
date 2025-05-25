@@ -96,6 +96,8 @@ log(){
     esac
   fi
 
+  #sleep 0.1
+
   if test "${xtrace:-}" = "1"; then
     set -o xtrace
   fi
