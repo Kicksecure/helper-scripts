@@ -18,11 +18,13 @@ get_os(){
   distro=""
   distro_version=""
   debian_testing_or_unstable_detected=""
+  distro_codename=""
   case "${os}" in
     Linux*)
       if has lsb_release; then
         distro="$(lsb_release --short --description || lsb_release -sd)"
         distro_version="$(lsb_release --short --release || lsb_release -sr)"
+        distro_codename="$(lsb_release --short --codename || lsb_release -sc)"
       elif test -f /etc/os-release; then
         while IFS='=' read -r key val; do
           case "${key}" in
