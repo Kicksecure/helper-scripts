@@ -30,6 +30,8 @@ get_os(){
               ;;
             (VERSION_ID) distro_version="${val}"
               ;;
+            (VERSION_CODENAME) distro_codename="${val}"
+              ;;
           esac
         done < /etc/os-release
       else
@@ -55,6 +57,12 @@ get_os(){
 
   ## Debian 'testing' /etc/os-release does not contain VERSION_ID.
   if printf '%s' "${distro}" | grep "/sid" &>/dev/null ; then
+    log info "Debian 'testing' or 'unstable' detection: '/sid' matched"
+    debian_testing_or_unstable_detected=1
+  fi
+
+  if [ "$distro_codename" = "trixie" ]; then
+    log info "Debian 'testing' or 'unstable' detection: 'trixie' still considered 'testing' (hardcoded in this program)"
     debian_testing_or_unstable_detected=1
   fi
 
@@ -74,7 +82,7 @@ get_os(){
   log notice "Distribution/Derivative version detected: '${distro_version}' / '${distro_derivative_version}'"
 
   if [ "$debian_testing_or_unstable_detected" = "1" ]; then
-    log notice "Debian 'testing' or 'unstable' detection: 'success'"
+    log notice "Debian 'testing' or 'unstable' detection: 'yes', detected"
     if test "${oracle_repo}" = "1"; then
       log error "You are attempting to use '--oracle-repo' on Debian 'testing' or 'unstable'. This is impossible."
       if test "${ci}" = "1"; then
@@ -88,7 +96,7 @@ get_os(){
     ## Debian 'testing' '/etc/os-release' does not contain VERSION_ID.
     return 0
   fi
-  log info "Debian 'testing' or 'unstable' detection: 'not detected'"
+  log info "Debian 'testing' or 'unstable' detection: 'no', not detected"
 
   ## This at last so the user can hopefully post his system info from the
   ## logs before the error below.
