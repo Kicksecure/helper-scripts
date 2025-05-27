@@ -1,3 +1,39 @@
+commit d5739699742af00bf48413802a896613d328bb4a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:38:45 2025 -0400
+
+    fix
+
+commit 506df612d54a5001a5bfc0175a3fdd5ad4c52967
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:38:10 2025 -0400
+
+    fix
+
+commit 631d824105f2661575be339fef5004db0a358367
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:26:34 2025 -0400
+
+    fix: consider Debian 'trixie' still being 'testing'
+
+commit 6228e0d479965b3fe39c68f0a16cf2e363691a41
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:17:01 2025 -0400
+
+    output
+
+commit 313c5b5b593c88a756caf703e334b1ecfd16d226
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:15:08 2025 -0400
+
+    refactoring
+
+commit b68a5b03a99d20462c55d2348aace5a6ce89d651
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 19:31:53 2025 +0000
+
+    bumped changelog version
+
 commit bef2f48eaba5c09e03fa5b04f805e053e0ff54a6
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun May 25 15:20:44 2025 -0400
