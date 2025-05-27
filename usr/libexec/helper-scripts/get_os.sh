@@ -62,10 +62,10 @@ get_os(){
   distro_derivative_version="(No derivative detected.)"
   if test -f /usr/share/kicksecure/marker; then
     distro_derivative_name_pretty="Kicksecure"
-    distro_derivative_version="$(cat /etc/kicksecure_version)"
+    distro_derivative_version="$(cat -- /etc/kicksecure_version)"
   elif test -f /usr/share/whonix/marker; then
     distro_derivative_name_pretty="Whonix"
-    distro_derivative_version="$(cat /etc/whonix_version)"
+    distro_derivative_version="$(cat -- /etc/whonix_version)"
   fi
 
   log notice "Architecture detected: '${arch}'"
@@ -95,7 +95,7 @@ get_os(){
   if [ -z "${distro_version}" ]; then
     if test -f /etc/os-release; then
       log notice "Contents of /etc/os-release:"
-      cat /etc/os-release || true
+      cat -- /etc/os-release || true
     else
       log notice "/etc/os-release file not found."
     fi
