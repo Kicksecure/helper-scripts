@@ -12,6 +12,12 @@ if ! command -v stecho &>/dev/null ; then
   }
 fi
 
+re_enable_xtrace_maybe() {
+  if test "${xtrace:-}" = "1"; then
+    set -o xtrace
+  fi
+}
+
 ## Logging mechanism with easy customization of message format as well as
 ## standardization on how the messages are delivered.
 ## usage: log [info|notice|warn|error] "X occurred."
@@ -60,6 +66,7 @@ log(){
       ;;
     *)
       log bug "Unsupported log type specified: '${log_type}'"
+      re_enable_xtrace_maybe
       die 1 "Please report this bug."
   esac
   ## uniform log format
@@ -74,6 +81,7 @@ log(){
   case "${log_type}" in
     bug|error)
       stecho "${log_full}" >&2
+      re_enable_xtrace_maybe
       return 0
       ;;
     null)
@@ -98,9 +106,7 @@ log(){
 
   #sleep 0.1
 
-  if test "${xtrace:-}" = "1"; then
-    set -o xtrace
-  fi
+  re_enable_xtrace_maybe
 }
 
 
