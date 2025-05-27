@@ -85,7 +85,7 @@ get_os(){
     fi
     log info "Not attempting to use '--oracle-repo' on Debian 'testing' or 'unstable', good."
     ## In Debian 'testing' distro_version was previously observed as 'n/a' or empty, because
-    ## Debian testing /etc/os-release does not contain VERSION_ID.
+    ## Debian 'testing' '/etc/os-release' does not contain VERSION_ID.
     return 0
   fi
   log info "Debian 'testing' or 'unstable' detection: 'not detected'"
@@ -94,10 +94,10 @@ get_os(){
   ## logs before the error below.
   if [ -z "${distro_version}" ]; then
     if test -f /etc/os-release; then
-      log notice "Contents of /etc/os-release:"
+      log notice "Contents of '/etc/os-release' file:"
       cat -- /etc/os-release || true
     else
-      log notice "/etc/os-release file not found."
+      log notice "'/etc/os-release' file not found."
     fi
     die 101 "${underline}Distribution Check:${nounderline} Failed to find distribution version."
     ## it will fail later on get_host_pkgs if the system is not supported.
@@ -161,7 +161,7 @@ get_distro() {
   esac
 
   if test "${oracle_repo:-}" = "1" && test "${kali_derivative_detected:-}"; then
-    die 1 "Distribution Extended Check: Oracle repository does not work with Kali"
+    die 1 "Distribution Extended Check: Oracle repository does not work with Kali."
   fi
 
   if test ! "${fedora_derivative_detected:-}" = "1" ||
