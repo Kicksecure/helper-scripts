@@ -5,6 +5,7 @@
 
 ## TODO: how to handle installer specific code?
 
+source /usr/libexec/helper-scripts/has.sh
 source /usr/libexec/helper-scripts/log_run_die.sh
 source /usr/libexec/helper-scripts/ip_syntax.sh
 
