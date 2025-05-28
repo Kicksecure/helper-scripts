@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 leaprun_useable_output() {
-   printf "%s\n" "$@"
+   printf "%s\n" "$*"
 }
 
 leaprun_useable_test() {
