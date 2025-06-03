@@ -16,29 +16,103 @@ if [ -o pipefail ]; then
   set +o pipefail
 fi
 
-if [ -z "${mount_command_output+x}" ]; then
-  mount_command_output="$(mount)"
+if [ -z "${proc_mount_contents+x}" ]; then
+  proc_mount_contents="$(cat /proc/self/mounts)"
 fi
 
-## Detect if the system was booted in live mode
-## Check for 'rd.live.image' first, because both, ISO and grub-live come with 'boot=live' kernel parameter.
-if printf "%s" "${mount_command_output}" 2>/dev/null | grep 'LiveOS_rootfs on / type overlay' &>/dev/null; then
-  live_status_detected_live_mode_environment_pretty="ISO Live"
-  live_status_detected_live_mode_environment_machine="iso-live"
-  live_status_word_pretty="ISO"
-  live_status_detected="true"
-  live_status_maybe_iso_live_message="<br/><u>This message can be safely ignored if only using this ISO to install to the hard drive.</u><br/>"
-elif printf "%s" "${mount_command_output}" 2>/dev/null | grep 'overlay on / type overlay' &>/dev/null; then
-  if printf "%s" "${mount_command_output}" 2>/dev/null | grep '/dev/.* on /home ' &>/dev/null; then
+live_state_str='live'
+live_mode_str='none'
+
+while read -r line; do
+  if [[ "${line}" =~ ^/dev/ ]]; then
+    IFS=' ' read -r -a line_parts <<< "${line}"
+    if [ "${#line_parts[@]}" != '6' ]; then
+      continue
+    fi
+
+    mount_src="${line_parts[1]}"
+    opt_str="${line_parts[3]}"
+
+    IFS=',' read -r -a opt_parts <<< "${opt_str}"
+    rw_found='false'
+    for opt_part in "${opt_parts[@]}"; do
+      if [ "${opt_part}" = 'rw' ]; then
+        rw_found='true'
+        break
+      fi
+    done
+
+    if [ "${rw_found}" = 'true' ]; then
+      if [ "${live_state_str}" = 'live' ]; then
+        live_state_str='semi-persistent-safe'
+      fi
+
+      if [ "${mount_src}" = '/' ]; then
+        live_state_str='persistent'
+        break
+      elif ! [[ "${mount_src}" =~ ^/media/ ]] \
+        && ! [[ "${mount_src}" =~ ^/mnt/ ]] \
+        && ! [ "${mount_src}" = '/media' ] \
+        && ! [ "${mount_src}" = '/mnt' ]; then
+        live_state_str='semi-persistent-unsafe'
+      fi
+    fi
+  fi
+done <<< "${proc_mount_contents}"
+
+if [ "${live_state_str}" != 'persistent' ]; then
+  while read -r line; do
+    if [[ "${line}" =~ ^LiveOS_rootfs\ / ]]; then
+      if [ "${live_state_str}" = 'live' ]; then
+        live_mode_str='iso-live'
+      else
+        live_mode_str='iso-live-semi-persistent'
+      fi
+    fi
+  done <<< "${proc_mount_contents}"
+
+  if [ "${live_mode_str}" = 'none' ]; then
+    if [ "${live_state_str}" = 'live' ]; then
+      live_mode_str='grub-live'
+    else
+      live_mode_str='grub-live-semi-persistent'
+    fi
+  fi
+
+  if [ "${live_mode_str}" = 'iso-live' ] && [ "${live_state_str}" = 'live' ]; then
+    live_status_detected_live_mode_environment_pretty="ISO Live"
+    live_status_detected_live_mode_environment_machine="iso-live"
+    live_status_word_pretty="ISO"
+    live_status_detected="true"
+    live_status_maybe_iso_live_message="<br/><u>This message can be safely ignored if only using this ISO to install to the hard drive.</u><br/>"
+  elif [ "${live_mode_str}" = 'iso-live-semi-persistent' ] && [ "${live_state_str}" = 'semi-persistent-safe' ]; then
+    live_status_detected_live_mode_environment_pretty="ISO Live (semi-persistent)"
+    live_status_detected_live_mode_environment_machine="iso-live-semi-persistent"
+    live_status_word_pretty="ISO"
+    live_status_detected="true"
+    live_status_maybe_iso_live_message="<br/><u>This message can be safely ignored if only using this ISO to install to the hard drive.</u><br/>"
+  elif [ "${live_mode_str}" = 'iso-live-semi-persistent' ] && [ "${live_state_str}" = 'semi-persistent-unsafe' ]; then
+    live_status_detected_live_mode_environment_pretty="ISO Live (semi-persistent)"
+    live_status_detected_live_mode_environment_machine="iso-live-semi-persistent-unsafe"
+    live_status_word_pretty="ISO"
+    live_status_detected="true"
+    live_status_maybe_iso_live_message="<br/><u>This message can be safely ignored if only using this ISO to install to the hard drive.</u><br/>"
+  elif [ "${live_mode_str}" = 'grub-live' ] && [ "${live_state_str}" = 'live' ]; then
+    live_status_detected_live_mode_environment_pretty="grub-live"
+    live_status_detected_live_mode_environment_machine="grub-live"
+    live_status_word_pretty="Live"
+    live_status_detected="true"
+    live_status_maybe_iso_live_message=""
+  elif [ "${live_state_str}" = 'semi-persistent-safe' ]; then
     live_status_detected_live_mode_environment_pretty="grub-live-semi-persistent"
     live_status_detected_live_mode_environment_machine="grub-live-semi-persistent"
     live_status_word_pretty="Semi-persistent"
     live_status_detected="true"
     live_status_maybe_iso_live_message=""
-  else
-    live_status_detected_live_mode_environment_pretty="grub-live"
-    live_status_detected_live_mode_environment_machine="grub-live"
-    live_status_word_pretty="Live"
+  elif [ "${live_state_str}" = 'semi-persistent-unsafe' ]; then
+    live_status_detected_live_mode_environment_pretty="grub-live-semi-persistent"
+    live_status_detected_live_mode_environment_machine="grub-live-semi-persistent-unsafe"
+    live_status_word_pretty="Semi-persistent"
     live_status_detected="true"
     live_status_maybe_iso_live_message=""
   fi
