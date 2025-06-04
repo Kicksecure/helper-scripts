@@ -24,14 +24,16 @@ live_state_str='live'
 live_mode_str='none'
 
 while read -r line; do
-  if [[ "${line}" =~ ^/dev/ ]]; then
-    IFS=' ' read -r -a line_parts <<< "${line}"
-    if [ "${#line_parts[@]}" != '6' ]; then
-      continue
-    fi
-
-    mount_src="${line_parts[1]}"
-    opt_str="${line_parts[3]}"
+  IFS=' ' read -r -a line_parts <<< "${line}"
+  if [ "${#line_parts[@]}" != '6' ]; then
+    continue
+  fi
+  src_device="${line_parts[0]}"
+  mount_point="${line_parts[1]}"
+  fs_type="${line_parts[2]}"
+  opt_str="${line_parts[3]}"
+  if [[ "${src_device}" =~ ^/dev/ ]] \
+    || [[ "${fs_type}" =~ ^(nfs|vboxsf|virtiofs|9pfs) ]]; then
 
     IFS=',' read -r -a opt_parts <<< "${opt_str}"
     rw_found='false'
@@ -47,13 +49,16 @@ while read -r line; do
         live_state_str='semi-persistent-safe'
       fi
 
-      if [ "${mount_src}" = '/' ]; then
+      if [ "${mount_point}" = '/' ]; then
         live_state_str='persistent'
         break
-      elif ! [[ "${mount_src}" =~ ^/media/ ]] \
-        && ! [[ "${mount_src}" =~ ^/mnt/ ]] \
-        && ! [ "${mount_src}" = '/media' ] \
-        && ! [ "${mount_src}" = '/mnt' ]; then
+      elif ! [[ "${mount_point}" =~ ^/media/ ]] \
+        && ! [[ "${mount_point}" =~ ^/mnt/ ]] \
+        && ! [ "${mount_point}" = '/media' ] \
+        && ! [ "${mount_point}" = '/mnt' ]; then
+        live_state_str='semi-persistent-unsafe'
+      elif [ "$(printf '%s' "${src_device}" | sed 's/[^\/]//g' | wc -c)" = 2 ] \
+        && ! [ -f "/sys/class/block/${src_device##*/}/removable" ]; then
         live_state_str='semi-persistent-unsafe'
       fi
     fi
