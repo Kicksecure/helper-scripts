@@ -46,5 +46,5 @@ jobs:
         run: |
           set -o xtrace
           ./run-tests
-          git clone https://github.com/nickboucher/trojan-source
+          git clone https://github.com/nickboucher/trojan-source ~/trojan-source
           ./unicode-testscript

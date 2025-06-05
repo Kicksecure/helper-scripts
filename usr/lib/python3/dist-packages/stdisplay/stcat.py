@@ -7,19 +7,31 @@
 
 """Safely print stdin or file to stdout."""
 
-from fileinput import input as file_input
-from sys import stdin, stdout, modules
+from pathlib import Path
+from sys import argv, stdin, stdout, modules
 from stdisplay.stdisplay import stdisplay
 
 
 def main() -> None:
     """Safely print stdin or file to stdout."""
     # https://github.com/pytest-dev/pytest/issues/4843
-    if "pytest" not in modules:
+    if "pytest" not in modules and stdin is not None:
         stdin.reconfigure(errors="ignore")  # type: ignore
-    ## File input reads stdin when no file is provided or file is '-'.
-    for untrusted_text in file_input(encoding="ascii", errors="replace"):
-        stdout.write(stdisplay(untrusted_text))
+    if len(argv) == 1:
+        if stdin is not None:
+            for untrusted_line in stdin:
+                stdout.write(stdisplay(untrusted_line))
+            stdout.flush()
+        return
+    for untrusted_arg in argv[1:]:
+        if untrusted_arg == "-":
+            if stdin is not None:
+                for untrusted_line in stdin:
+                    stdout.write(stdisplay(untrusted_line))
+        else:
+            path = Path(untrusted_arg)
+            untrusted_text = path.read_text(encoding="ascii", errors="replace")
+            stdout.write(stdisplay(untrusted_text))
     stdout.flush()
 
 
