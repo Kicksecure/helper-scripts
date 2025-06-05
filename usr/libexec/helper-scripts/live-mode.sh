@@ -23,47 +23,35 @@ fi
 live_state_str='live'
 live_mode_str='none'
 
-while read -r line; do
-  IFS=' ' read -r -a line_parts <<< "${line}"
-  if [ "${#line_parts[@]}" != '6' ]; then
-    continue
+writable_fs_lists_str="$(/usr/libexec/helper-scripts/get_writable_fs_lists.sh)"
+readarray -t writable_fs_lists <<< "${writable_fs_lists_str}"
+IFS=' ' read -r -a safe_writable_fs_list <<< "${writable_fs_lists[0]:-}"
+IFS=' ' read -r -a danger_writable_fs_list <<< "${writable_fs_lists[1]:-}"
+if [ "${#safe_writable_fs_list[@]}" = '0' ] \
+  || [ -z "${safe_writable_fs_list[0]}" ]; then
+  safe_writable_list_empty='true'
+else
+  safe_writable_list_empty='false'
+fi
+if [ "${#danger_writable_fs_list[@]}" = '0' ] \
+  || [ -z "${danger_writable_fs_list[0]}" ]; then
+  danger_writable_list_empty='true'
+else
+  danger_writable_list_empty='false'
+fi
+for danger_writable_fs in "${danger_writable_fs_list[@]}"; do
+  if [ "${danger_writable_fs}" = '/' ]; then
+    live_state_str='persistent'
+    break
   fi
-  src_device="${line_parts[0]}"
-  mount_point="${line_parts[1]}"
-  fs_type="${line_parts[2]}"
-  opt_str="${line_parts[3]}"
-  if [[ "${src_device}" =~ ^/dev/ ]] \
-    || [[ "${fs_type}" =~ ^(nfs|vboxsf|virtiofs|9pfs) ]]; then
-
-    IFS=',' read -r -a opt_parts <<< "${opt_str}"
-    rw_found='false'
-    for opt_part in "${opt_parts[@]}"; do
-      if [ "${opt_part}" = 'rw' ]; then
-        rw_found='true'
-        break
-      fi
-    done
-
-    if [ "${rw_found}" = 'true' ]; then
-      if [ "${live_state_str}" = 'live' ]; then
-        live_state_str='semi-persistent-safe'
-      fi
-
-      if [ "${mount_point}" = '/' ]; then
-        live_state_str='persistent'
-        break
-      elif ! [[ "${mount_point}" =~ ^/media/ ]] \
-        && ! [[ "${mount_point}" =~ ^/mnt/ ]] \
-        && ! [ "${mount_point}" = '/media' ] \
-        && ! [ "${mount_point}" = '/mnt' ]; then
-        live_state_str='semi-persistent-unsafe'
-      elif [ "$(printf '%s' "${src_device}" | sed 's/[^\/]//g' | wc -c)" = 2 ] \
-        && ! [ -f "/sys/class/block/${src_device##*/}/removable" ]; then
-        live_state_str='semi-persistent-unsafe'
-      fi
-    fi
-  fi
-done <<< "${proc_mount_contents}"
+done
+if [ "${live_state_str}" = 'live' ] \
+  && [ "${danger_writable_list_empty}" = 'false' ]; then
+  live_state_str='semi-persistent-unsafe'
+elif [ "${live_state_str}" = 'live' ] \
+  && [ "${safe_writable_list_empty}" = 'false' ]; then
+  live_state_str='semi-persistent-safe'
+fi
 
 if [ "${live_state_str}" != 'persistent' ]; then
   while read -r line; do
