@@ -10,22 +10,34 @@ Safely print stdin or file to stdout with tweaks
 (trim trailing whitespace, ensure final newline).
 """
 
-from fileinput import input as file_input
-from sys import stdin, stdout, modules
+from pathlib import Path
+from sys import argv, stdin, stdout, modules
 from stdisplay.stdisplay import stdisplay
 
 
 def main() -> None:
     """
-    main
+    Safely print stdin or file to stdout with tweaks
+    (trim trailing whitespace, ensure final newline).
     """
     # https://github.com/pytest-dev/pytest/issues/4843
-    if "pytest" not in modules:
+    if "pytest" not in modules and stdin is not None:
         stdin.reconfigure(errors="ignore")  # type: ignore
-
-    for line in file_input(encoding="ascii", errors="replace"):
-        stdout.write(stdisplay(line).rstrip() + "\n")
-
+    if len(argv) == 1:
+        if stdin is not None:
+            for untrusted_line in stdin:
+                stdout.write(stdisplay(untrusted_line).rstrip() + "\n")
+            stdout.flush()
+        return
+    for untrusted_arg in argv[1:]:
+        if untrusted_arg == "-":
+            if stdin is not None:
+                for untrusted_line in stdin:
+                    stdout.write(stdisplay(untrusted_line).rstrip() + "\n")
+        else:
+            path = Path(untrusted_arg)
+            untrusted_text = path.read_text(encoding="ascii", errors="replace")
+            stdout.write(stdisplay(untrusted_text).rstrip() + "\n")
     stdout.flush()
 
 

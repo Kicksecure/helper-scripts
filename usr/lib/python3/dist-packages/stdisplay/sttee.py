@@ -13,13 +13,14 @@ from stdisplay.stdisplay import stdisplay
 def main() -> None:
     """Safely print stdin to stdout and file."""
     # https://github.com/pytest-dev/pytest/issues/4843
-    if "pytest" not in modules:
+    if "pytest" not in modules and stdin is not None:
         stdin.reconfigure(errors="ignore")  # type: ignore
     untrusted_text_list = []
-    for untrusted_text in stdin:
-        untrusted_text_list.append(untrusted_text)
-        stdout.write(stdisplay(untrusted_text))
-    stdout.flush()
+    if stdin is not None:
+        for untrusted_text in stdin:
+            untrusted_text_list.append(untrusted_text)
+            stdout.write(stdisplay(untrusted_text))
+        stdout.flush()
     if len(argv) > 1:
         for file_arg in argv[1:]:
             with open(file_arg, mode="w", encoding="ascii") as file:
