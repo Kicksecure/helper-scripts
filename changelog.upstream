@@ -1,3 +1,58 @@
+commit 04dd30b9fff7d68ef13b78fc9f08090b9173fb9b
+Merge: 4963ac8 58bc03d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 6 15:54:03 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/livecheck'
+
+commit 4963ac8598166144b68174b8ef58b54d7053530b
+Merge: f9bd0e4 d4c3045
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jun 5 06:22:15 2025 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit d4c3045a02846c2412be7b55c1c5c59cdd088bd6
+Merge: f9bd0e4 6bc3b5c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jun 5 06:03:42 2025 -0400
+
+    Merge pull request #27 from ben-grande/st-test
+    
+    Handle closed standard input gracefully
+
+commit 58bc03d48e4ccddf6b5c0df0d0565e1c13657e5f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jun 4 20:48:23 2025 -0500
+
+    Refactor live_mode.sh to allow reducing logic duplication with livecheck
+
+commit 836bb8ead95685f681224bdfc41c4a077834df27
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Jun 3 23:38:40 2025 -0500
+
+    Add better handling of removable media, NFS, and VM shared folders
+
+commit 6bc3b5cab5d8ce5d4902df8ce93b49759dca8717
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Jun 3 14:10:02 2025 +0200
+
+    Handle closed standard input gracefully
+    
+    For: https://github.com/Kicksecure/helper-scripts/issues/26
+
+commit e878cc6b1e1fbe3aebdd4a5163de3a7b9d56aa6b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Jun 3 01:02:25 2025 -0500
+
+    Rework live-mode.sh to provide more detailed info
+
+commit f9bd0e4b7e1d20199420d9757af2f38ee63024c1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 28 12:10:09 2025 +0000
+
+    bumped changelog version
+
 commit ce7c036bfb3724dbd4bfd1b402a78748189a23fc
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed May 28 07:57:21 2025 -0400
