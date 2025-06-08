@@ -20,6 +20,14 @@ if [ -z "${proc_mount_contents+x}" ]; then
   proc_mount_contents="$(cat /proc/self/mounts)"
 fi
 
+if [ -z "${livecheck_lsblk_contents+x}" ]; then
+  if [ -r '/run/desktop-config-dist/livecheck-lsblk' ]; then
+    livecheck_lsblk_contents="$(cat /run/desktop-config-dist/livecheck-lsblk)"
+  else
+    livecheck_lsblk_contents='0'
+  fi
+fi
+
 live_state_str='live'
 live_mode_str='none'
 
@@ -72,6 +80,21 @@ if [ "${live_state_str}" != 'persistent' ]; then
     fi
   fi
 
+  if [ "${live_mode_str}" = 'grub-live' ] && [ "${live_state_str}" = 'live' ]; then
+    readarray -t livecheck_lsblk_list <<< "${livecheck_lsblk_contents}"
+    all_drives_readonly='true'
+    for livecheck_lsblk_line in "${livecheck_lsblk_list[@]}"; do
+      if [ "${livecheck_lsblk_line}" != '1' ]; then
+        all_drives_readonly='false'
+        break
+      fi
+    done
+
+    if [ "${all_drives_readonly}" = 'true' ]; then
+      live_state_str='read-only'
+    fi
+  fi
+
   if [ "${live_mode_str}" = 'iso-live' ] && [ "${live_state_str}" = 'live' ]; then
     live_status_detected_live_mode_environment_pretty="ISO Live"
     live_status_detected_live_mode_environment_machine="iso-live"
@@ -94,6 +117,12 @@ if [ "${live_state_str}" != 'persistent' ]; then
     live_status_detected_live_mode_environment_pretty="grub-live"
     live_status_detected_live_mode_environment_machine="grub-live"
     live_status_word_pretty="Live"
+    live_status_detected="true"
+    live_status_maybe_iso_live_message=""
+  elif [ "${live_mode_str}" = 'grub-live' ] && [ "${live_state_str}" = 'read-only' ]; then
+    live_status_detected_live_mode_environment_pretty="grub-live read-only"
+    live_status_detected_live_mode_environment_machine="grub-live-read-only"
+    live_status_word_pretty="Read-only"
     live_status_detected="true"
     live_status_maybe_iso_live_message=""
   elif [ "${live_state_str}" = 'semi-persistent-safe' ]; then

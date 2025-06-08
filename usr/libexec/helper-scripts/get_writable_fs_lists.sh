@@ -17,7 +17,7 @@ if [ -z "${proc_mount_contents+x}" ]; then
   proc_mount_contents="$(cat /proc/self/mounts)"
 fi
 
-[ -z "${sysfs_prefix}" ] && sysfs_prefix=""
+[ -z "${sysfs_prefix+x}" ] && sysfs_prefix=""
 
 while read -r line; do
   IFS=' ' read -r -a line_parts <<< "${line}"
