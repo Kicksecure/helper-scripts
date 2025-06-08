@@ -325,6 +325,7 @@ curl_download() {
 }
 
 remove_argument_for_header_request() {
+    local arg
     local args=()
     local skip_next=false
 
