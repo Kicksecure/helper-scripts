@@ -1,3 +1,40 @@
+commit cd95cb0855bdd6ded129734b56632c61c74224ec
+Merge: 0eb65e7 d2d6c75
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 10 06:30:41 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/fix-stcatn'
+
+commit 0eb65e70eaedb26fb1a47cc705b7135c98e5234a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 10 06:29:27 2025 -0400
+
+    fix
+
+commit d2d6c75ae2b22a7c27037ed4af175e1b0f7ffa1b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 8 10:44:48 2025 -0500
+
+    Add unicode-testscript run to run-tests
+
+commit 13d6ec843a72cb3b904dec1863a0b4e3d799fb5b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 8 10:39:11 2025 -0500
+
+    Fix stcatn failing to trim whitespace from all but the last line of an input file
+
+commit 47ef6530fcc2a2a0c69dd95c732637225b395dcf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 8 07:55:34 2025 -0400
+
+    local
+
+commit 1a69dd98815af5db5d7f417b18b50425828cbddd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 6 20:52:25 2025 +0000
+
+    bumped changelog version
+
 commit 04dd30b9fff7d68ef13b78fc9f08090b9173fb9b
 Merge: 4963ac8 58bc03d
 Author: Patrick Schleizer <adrelanos@whonix.org>
