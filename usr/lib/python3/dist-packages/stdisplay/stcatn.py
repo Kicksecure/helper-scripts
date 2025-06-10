@@ -10,7 +10,6 @@ Safely print stdin or file to stdout with tweaks
 (trim trailing whitespace, ensure final newline).
 """
 
-from pathlib import Path
 from sys import argv, stdin, stdout, modules
 from stdisplay.stdisplay import stdisplay
 
@@ -35,9 +34,12 @@ def main() -> None:
                 for untrusted_line in stdin:
                     stdout.write(stdisplay(untrusted_line).rstrip() + "\n")
         else:
-            path = Path(untrusted_arg)
-            untrusted_text = path.read_text(encoding="ascii", errors="replace")
-            stdout.write(stdisplay(untrusted_text).rstrip() + "\n")
+            ## We cannot read the entire file in at once like we do with
+            ## stcat, since we need to trim trailing whitespace from each
+            ## individual line in the file.
+            with open(untrusted_arg, "r", encoding="utf-8") as untrusted_file:
+                for untrusted_line in untrusted_file:
+                    stdout.write(stdisplay(untrusted_line).rstrip() + "\n")
     stdout.flush()
 
 

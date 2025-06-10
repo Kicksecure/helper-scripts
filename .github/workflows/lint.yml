@@ -45,6 +45,5 @@ jobs:
       - name: Run linters
         run: |
           set -o xtrace
-          ./run-tests
           git clone https://github.com/nickboucher/trojan-source ~/trojan-source
-          ./unicode-testscript
+          ./run-tests
