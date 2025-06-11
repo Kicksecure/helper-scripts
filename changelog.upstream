@@ -1,3 +1,28 @@
+commit 055ef5aec61fa5a47d0aff6f4c291f876a87a0f3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 14:58:37 2025 -0400
+
+    safe-rm
+
+commit 7fb07fa8b609a556fff0666d8fc311afae72425c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 14:57:30 2025 -0400
+
+    end-of-options
+
+commit b7a8109b338b59515a273625544452b2829db96c
+Merge: 5c7395a b17ff9d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 14:56:32 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/livecheck'
+
+commit 5c7395ac378a4d65267e2d7c55335c2eadee7941
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 18:22:06 2025 +0000
+
+    bumped changelog version
+
 commit 53c570563fb68fff88a6245e622c02c497d75856
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 11 12:48:24 2025 -0400
@@ -23,6 +48,12 @@ Date:   Tue Jun 10 06:29:27 2025 -0400
 
     fix
 
+commit b17ff9d1974e2d22fd26328938b4e15dd1fdaf75
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 8 17:32:18 2025 -0500
+
+    Bring back read-only mode detection
+
 commit d2d6c75ae2b22a7c27037ed4af175e1b0f7ffa1b
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
 Date:   Sun Jun 8 10:44:48 2025 -0500
@@ -40,6 +71,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jun 8 07:55:34 2025 -0400
 
     local
+
+commit 08ea7fbce0baf576304754ac9e1267014a81f42f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jun 6 20:23:08 2025 -0500
+
+    Improve get_writable_fs_lists.sh, add tests for get_writable_fs_lists.sh and live-mode.sh
 
 commit 1a69dd98815af5db5d7f417b18b50425828cbddd
 Author: Patrick Schleizer <adrelanos@whonix.org>
