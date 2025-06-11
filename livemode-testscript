@@ -1,0 +1,385 @@
+#!/bin/bash
+# shellcheck disable=SC2031
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -e
+set -o nounset
+set -o pipefail
+set -o errtrace
+
+###################################
+## get_writable_fs_lists.sh test ##
+###################################
+
+gwfl_base_mount_str='sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0
+proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
+udev /dev devtmpfs rw,nosuid,relatime,size=16235792k,nr_inodes=4058948,mode=755,inode64 0 0
+devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
+tmpfs /run tmpfs rw,nosuid,nodev,noexec,relatime,size=3255628k,mode=755,inode64 0 0
+efivarfs /sys/firmware/efi/efivars efivarfs rw,nosuid,nodev,noexec,relatime 0 0
+securityfs /sys/kernel/security securityfs rw,nosuid,nodev,noexec,relatime 0 0
+tmpfs /dev/shm tmpfs rw,nosuid,nodev,inode64 0 0
+tmpfs /run/lock tmpfs rw,nosuid,nodev,noexec,relatime,size=5120k,inode64 0 0
+cgroup2 /sys/fs/cgroup cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot 0 0
+pstore /sys/fs/pstore pstore rw,nosuid,nodev,noexec,relatime 0 0
+bpf /sys/fs/bpf bpf rw,nosuid,nodev,noexec,relatime,mode=700 0 0
+systemd-1 /proc/sys/fs/binfmt_misc autofs rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=10336 0 0
+mqueue /dev/mqueue mqueue rw,nosuid,nodev,noexec,relatime 0 0
+debugfs /sys/kernel/debug debugfs rw,nosuid,nodev,noexec,relatime 0 0
+hugetlbfs /dev/hugepages hugetlbfs rw,nosuid,nodev,relatime,pagesize=2M 0 0
+tracefs /sys/kernel/tracing tracefs rw,nosuid,nodev,noexec,relatime 0 0
+fusectl /sys/fs/fuse/connections fusectl rw,nosuid,nodev,noexec,relatime 0 0
+configfs /sys/kernel/config configfs rw,nosuid,nodev,noexec,relatime 0 0
+binfmt_misc /proc/sys/fs/binfmt_misc binfmt_misc rw,nosuid,nodev,noexec,relatime 0 0
+tmpfs /run/user/1000 tmpfs rw,nosuid,nodev,relatime,size=3255624k,nr_inodes=813906,mode=700,uid=1000,gid=1000,inode64 0 0
+portal /run/user/1000/doc fuse.portal rw,nosuid,nodev,relatime,user_id=1000,group_id=1000 0 0
+'
+
+gwfl_additional_mount_table=(
+  '/dev/sda1 / ext4 rw,relatime 0 0' # 1
+  '/dev/sda1 / ext4 ro,relatime 0 0' # 2
+  '/dev/sda1 / ext4 relatime,nodev,rw 0 0' # 3
+  '/dev/sda1 / ext4 rw,relatime 0 0
+/dev/sda2 /home ext4 rw,relatime 0 0' # 4
+  '/dev/sda1 / ext4 relatime,ro 0 0
+/dev/sda2 /home ext4 rw,relatime 0 0' # 5
+  '/dev/nvme0n1p1 / btrfs noatime,rw 0 0
+/dev/nvme0n1p2 /home ext4 ro,relatime 0 0
+/dev/nvme1n1p1 /srv/data xfs whatever,goes,rw,here 0 0
+/dev/sda /var ext4 whatever,goes,ro,here 0 0' # 6
+  '/dev/nvme0n1p1 / btrfs noatime,rw 0 0
+/dev/nvme0n1p2 /home ext4 rw,relatime 0 0
+/dev/sda1 /mnt exfat nosuid,nodev,rw,relatime 0 0' # 7
+  '/dev/nvme0n1p1 / btrfs noatime,rw 0 0
+/dev/nvme0n1p2 /home ext4 rw,relatime 0 0
+/dev/sda1 /mnt exfat nosuid,nodev,rw,relatime 0 0' # 8
+  '/dev/nvme0n1p1 / btrfs noatime,rw 0 0
+/dev/nvme0n1p2 /home ext4 rw,relatime 0 0
+/dev/sda1 /media exfat nosuid,nodev,rw,relatime 0 0' # 9
+  '/dev/sda1 /mnt/drive1 exfat nosuid,nodev,rw,relatime 0 0
+/dev/sda2 /mnt/drive2 ext4 rw,relatime 0 0
+/dev/sdb1 /media/drive\040one exfat nosuid,nodev,rw,relatime 0 0
+/dev/sdb2 /media/drive\040two ext4 rw,relatime 0 0' # 10
+  '/dev/sda1 /mnt/drive1 exfat nosuid,nodev,ro,relatime 0 0
+/dev/sda2 /mnt/drive2 ext4 ro,relatime 0 0
+/dev/sdb1 /media/drive\040one exfat nosuid,nodev,ro,relatime 0 0
+/dev/sdb2 /media/drive\040two ext4 ro,relatime 0 0' # 11
+  '/dev/nvme0n1p1 / ext4 ro,relatime 0 0
+/dev/sda1 /home/user/Public ext4 rw,relatime 0 0
+/dev/sdb /mnt/drive1 exfat rw,nosuid,nodev,relatime 0 0
+/dev/xvdi1 /media/user/ABCD-EFGH exfat ro,nosuid,nodev,relatime 0 0' # 12
+)
+
+gwfl_phys_dev_state_table=(
+  ## device|removable?
+  'sda|0' # 1
+  'sda|1' # 2
+  'sda|0' # 3
+  'sda|0' # 4
+  'sda|0' # 5
+  'nvme0n1|0
+nvme1n1|0
+sda|0' # 6
+  'nvme0n1|0
+sda|0' # 7
+  'nvme0n1|0
+sda|1' # 8
+  'nvme0n1|0
+sda|1' # 9
+  'sda|1
+sdb|1' # 10
+  'sda|1
+sdb|1' # 11
+  'nvme0n1|0
+sda|1
+sdb|1
+xvdi|0' # 12
+)
+
+gwfl_expect_result_table=(
+  '
+/' # 1
+  '' # 2
+  '
+/' # 3
+  '
+/ /home' # 4
+  '
+/home' # 5
+  '
+/ /srv/data' # 6
+  '
+/ /home /mnt' # 7
+  '/mnt
+/ /home' # 8
+  '/media
+/ /home' # 9
+  '/mnt/drive1 /mnt/drive2 /media/drive\040one /media/drive\040two' # 10
+  '' # 11
+  '/mnt/drive1
+/home/user/Public' # 12
+)
+
+sysfs_prefix="$(mktemp -d)"
+export sysfs_prefix
+proc_mount_contents=''
+export proc_mount_contents
+
+run_writable_fs_assert() {
+  local item_idx additional_mount_entry phys_dev_state_entry \
+    phys_dev_state_list phys_dev_state_item bit_list phys_dev \
+    removable_int test_passed result_str
+
+  test_passed='true'
+
+  if [ -z "${sysfs_prefix}" ]; then
+    printf '%s\n' 'sysfs prefix variable is empty!'
+    exit 1
+  fi
+
+  item_idx="${1:-}"
+  if [ -z "${item_idx}" ]; then
+    printf '%s\n' 'No index passed to run_writable_fs_assert!'
+    exit 1
+  fi
+  additional_mount_entry="${gwfl_additional_mount_table[item_idx]}"
+  phys_dev_state_entry="${gwfl_phys_dev_state_table[item_idx]}"
+
+  rm -rf -- "${sysfs_prefix}/sys"
+  mkdir --parents -- "${sysfs_prefix}/sys/class/block"
+  readarray -t phys_dev_state_list <<< "${phys_dev_state_entry}"
+  for phys_dev_state_item in "${phys_dev_state_list[@]}"; do
+    IFS='|' read -r -a bit_list <<< "${phys_dev_state_item}"
+    phys_dev="${bit_list[0]}"
+    removable_int="${bit_list[1]}"
+    mkdir --parents -- "${sysfs_prefix}/sys/class/block/${phys_dev}"
+    printf '%s\n' "${removable_int}" \
+      > "${sysfs_prefix}/sys/class/block/${phys_dev}/removable"
+  done
+
+  proc_mount_contents="${gwfl_base_mount_str}${additional_mount_entry}"
+  result_str="$(source usr/libexec/helper-scripts/get_writable_fs_lists.sh)"
+  if [ "${result_str}" != "${gwfl_expect_result_table[item_idx]}" ]; then
+    printf '%s\n' 'ERROR: Expected:'
+    printf '%s\n' "${gwfl_expect_result_table[item_idx]}"
+    printf '%s\n' 'ERROR: Got:'
+    printf '%s\n' "${result_str}"
+    printf '%s\n' ''
+    test_passed='false'
+  fi
+
+  if [ "${test_passed}" = 'false' ]; then
+    return 1
+  fi
+}
+
+for (( item_idx = 0; item_idx < ${#gwfl_expect_result_table[@]}; \
+  item_idx++ )); do
+  if ! run_writable_fs_assert "${item_idx}"; then
+    rm -rf "${sysfs_prefix}"
+    exit 1
+  else
+    printf '%s\n' "run_writable_fs_assert: Assert $(( item_idx + 1 )) passed."
+  fi
+done
+
+#######################
+## live-mode.sh test ##
+#######################
+
+lm_base_mount_str="sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0
+proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
+udev /dev devtmpfs rw,nosuid,relatime,size=16235792k,nr_inodes=4058948,mode=755,inode64 0 0
+devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
+tmpfs /run tmpfs rw,nosuid,nodev,noexec,relatime,size=3255628k,mode=755,inode64 0 0
+efivarfs /sys/firmware/efi/efivars efivarfs rw,nosuid,nodev,noexec,relatime 0 0
+securityfs /sys/kernel/security securityfs rw,nosuid,nodev,noexec,relatime 0 0
+tmpfs /dev/shm tmpfs rw,nosuid,nodev,inode64 0 0
+tmpfs /run/lock tmpfs rw,nosuid,nodev,noexec,relatime,size=5120k,inode64 0 0
+cgroup2 /sys/fs/cgroup cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot 0 0
+pstore /sys/fs/pstore pstore rw,nosuid,nodev,noexec,relatime 0 0
+bpf /sys/fs/bpf bpf rw,nosuid,nodev,noexec,relatime,mode=700 0 0
+systemd-1 /proc/sys/fs/binfmt_misc autofs rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=10336 0 0
+mqueue /dev/mqueue mqueue rw,nosuid,nodev,noexec,relatime 0 0
+debugfs /sys/kernel/debug debugfs rw,nosuid,nodev,noexec,relatime 0 0
+hugetlbfs /dev/hugepages hugetlbfs rw,nosuid,nodev,relatime,pagesize=2M 0 0
+tracefs /sys/kernel/tracing tracefs rw,nosuid,nodev,noexec,relatime 0 0
+fusectl /sys/fs/fuse/connections fusectl rw,nosuid,nodev,noexec,relatime 0 0
+configfs /sys/kernel/config configfs rw,nosuid,nodev,noexec,relatime 0 0
+binfmt_misc /proc/sys/fs/binfmt_misc binfmt_misc rw,nosuid,nodev,noexec,relatime 0 0
+tmpfs /run/user/1000 tmpfs rw,nosuid,nodev,relatime,size=3255624k,nr_inodes=813906,mode=700,uid=1000,gid=1000,inode64 0 0
+portal /run/user/1000/doc fuse.portal rw,nosuid,nodev,relatime,user_id=1000,group_id=1000 0 0
+/dev/vda3 /live/image ext4 ro,relatime 0 0
+overlay / overlay rw,noatime,lowerdir=/live/image,upperdir=/cow/rw,workdir=/cow/work,default_permissions 0 0
+/dev/vdb1 /srv/data ext4 ro,relatime 0 0
+/dev/vdc1 /srv/sup ext4 ro,relatime 0 0
+/dev/vdc2 /var/extra ext4 ro,relatime 0 0
+overlay /srv/data rw,noatime,lowerdir=/srv/data,upperdir=/var/lib/grub-live/overlay_tmpfs_repo/0/upper,workdir=/var/lib/grub-live/overlay_tmpfs_repo/0/work,default_permissions 0 0
+overlay /srv/sup rw,noatime,lowerdir=/srv/sup,upperdir=/var/lib/grub-live/overlay_tmpfs_repo/1/upper,workdir=/var/lib/grub-live/overlay_tmpfs_repo/1/work,default_permissions 0 0
+overlay /var/extra rw,noatime,lowerdir=/var/extra,upperdir=/var/lib/grub-live/overlay_tmpfs_repo/2/upper,workdir=/var/lib/grub-live/overlay_tmpfs_repo/2/work,default_permissions 0 0
+"
+
+lm_additional_mount_table=(
+  '' # 1
+  '/dev/sda /mnt exfat nosuid,nodev,rw,relatime 0 0' # 2
+  '/dev/sda /mnt/drive1 exfat nosuid,nodev,rw,relatime 0 0
+/dev/sdb1 /mnt/drive2 xfs rw,relatime 0 0' # 3
+  '/dev/sda /media exfat nosuid,nodev,rw,relatime 0 0' # 4
+  '/dev/sda /media/drive\040one exfat nosuid,nodev,rw,relatime 0 0
+/dev/sdb1 /media/drive\040two xfs rw,relatime 0 0' # 5
+  '/dev/vdc1 /media ext4 rw,relatime 0 0' # 6
+  '/dev/vdc1 /media ext4 rw,relatime 0 0
+/dev/vdc2 /mnt/drive1 ext4 rw,relatime 0 0' # 7
+  '/dev/vdc1 /media ext4 rw,relatime 0 0
+/dev/vdc2 /mnt/drive1 ext4 rw,relatime 0 0
+/dev/sdb2 /mnt/drive2 xfs rw,relatime 0 0' # 8
+  '/dev/sdb2 /mnt/drive2 xfs rw,relatime 0 0' # 9
+  '192.168.0.1:/nfs/myshare /mnt nfs rw,whatever,else 0 0' # 10
+  'vmshare /mnt/drive1 virtiofs rw,relatime 0 0
+192.168.0.1:/nfs/myshare /mnt/drive2 nfs rw,whatever,else 0 0' # 11
+  'vmshare /home/sysmaint/Public virtiofs rw,relatime 0 0
+192.168.0.1:/nfs/myshare /mnt/drive2 nfs rw,whatever,else 0 0' # 12
+  'vmshare /home/sysmaint/Public virtiofs rw,relatime 0 0' # 13
+  'vmshare /home/sysmaint/Public virtiofs rw,relatime 0 0
+192.168.0.1:/nfs/myshare /home/sysmaint/Documents nfs rw,whatever,else 0 0' # 14
+  'LiveOS_rootfs / overlay rw,relatime,lowerdir=/run/rootfsbase,upperdir=/run/overlayfs,workdir=/run/ovlwork 0 0' # 15
+  'LiveOS_rootfs / overlay rw,relatime,lowerdir=/run/rootfsbase,upperdir=/run/overlayfs,workdir=/run/ovlwork 0 0
+/dev/sda /media ext4 rw,relatime 0 0' # 16
+  'LiveOS_rootfs / overlay rw,relatime,lowerdir=/run/rootfsbase,upperdir=/run/overlayfs,workdir=/run/ovlwork 0 0
+/dev/sda /media ext4 rw,relatime 0 0
+192.168.0.1:/nfs/myshare /home/user/Documents nfs rw,whatever,else 0 0' # 17
+)
+
+## device|removable?
+lm_phys_dev_state_str='vda|0
+vbd|0
+vdc|0
+sda|1
+sdb|1'
+
+iso_live_msg="live_status_detected_live_mode_environment_pretty='ISO Live'
+live_status_detected_live_mode_environment_machine='iso-live'
+live_status_word_pretty='ISO'
+live_status_detected='true'
+live_status_maybe_iso_live_message='<br/><u>This message can be safely ignored if only using this ISO to install to the hard drive.</u><br/>'"
+
+iso_live_semi_persistent_msg="live_status_detected_live_mode_environment_pretty='ISO Live (semi-persistent)'
+live_status_detected_live_mode_environment_machine='iso-live-semi-persistent'
+live_status_word_pretty='ISO'
+live_status_detected='true'
+live_status_maybe_iso_live_message='<br/><u>This message can be safely ignored if only using this ISO to install to the hard drive.</u><br/>'"
+
+iso_live_semi_persistent_unsafe_msg="live_status_detected_live_mode_environment_pretty='ISO Live (semi-persistent)'
+live_status_detected_live_mode_environment_machine='iso-live-semi-persistent-unsafe'
+live_status_word_pretty='ISO'
+live_status_detected='true'
+live_status_maybe_iso_live_message='<br/><u>This message can be safely ignored if only using this ISO to install to the hard drive.</u><br/>'"
+
+grub_live_msg="live_status_detected_live_mode_environment_pretty='grub-live'
+live_status_detected_live_mode_environment_machine='grub-live'
+live_status_word_pretty='Live'
+live_status_detected='true'
+live_status_maybe_iso_live_message=''"
+
+grub_live_semi_persistent_msg="live_status_detected_live_mode_environment_pretty='grub-live-semi-persistent'
+live_status_detected_live_mode_environment_machine='grub-live-semi-persistent'
+live_status_word_pretty='Semi-persistent'
+live_status_detected='true'
+live_status_maybe_iso_live_message=''"
+
+grub_live_semi_persistent_unsafe_msg="live_status_detected_live_mode_environment_pretty='grub-live-semi-persistent'
+live_status_detected_live_mode_environment_machine='grub-live-semi-persistent-unsafe'
+live_status_word_pretty='Semi-persistent'
+live_status_detected='true'
+live_status_maybe_iso_live_message=''"
+
+lm_expect_result_table=(
+  "${grub_live_msg}" # 1
+  "${grub_live_semi_persistent_msg}" # 2
+  "${grub_live_semi_persistent_msg}" # 3
+  "${grub_live_semi_persistent_msg}" # 4
+  "${grub_live_semi_persistent_msg}" # 5
+  "${grub_live_semi_persistent_unsafe_msg}" # 6
+  "${grub_live_semi_persistent_unsafe_msg}" # 7
+  "${grub_live_semi_persistent_unsafe_msg}" # 8
+  "${grub_live_semi_persistent_msg}" # 9
+  "${grub_live_semi_persistent_msg}" # 10
+  "${grub_live_semi_persistent_msg}" # 11
+  "${grub_live_semi_persistent_unsafe_msg}" # 12
+  "${grub_live_semi_persistent_unsafe_msg}" # 13
+  "${grub_live_semi_persistent_unsafe_msg}" # 14
+  "${iso_live_msg}" # 15
+  "${iso_live_semi_persistent_msg}" # 16
+  "${iso_live_semi_persistent_unsafe_msg}" # 17
+)
+
+run_live_mode_assert() {
+  local item_idx additional_mount_entry phys_dev_state_list \
+    phys_dev_state_item bit_list phys_dev removable_int test_passed result_str
+
+  test_passed='true'
+
+  if [ -z "${sysfs_prefix}" ]; then
+    printf '%s\n' 'sysfs prefix variable is empty!'
+    exit 1
+  fi
+
+  item_idx="${1:-}"
+  if [ -z "${item_idx}" ]; then
+    printf '%s\n' 'No index passed to run_writable_fs_assert!'
+    exit 1
+  fi
+  additional_mount_entry="${lm_additional_mount_table[item_idx]}"
+
+  rm -rf -- "${sysfs_prefix}/sys"
+  mkdir --parents -- "${sysfs_prefix}/sys/class/block"
+  readarray -t phys_dev_state_list <<< "${lm_phys_dev_state_str}"
+  for phys_dev_state_item in "${phys_dev_state_list[@]}"; do
+    IFS='|' read -r -a bit_list <<< "${phys_dev_state_item}"
+    phys_dev="${bit_list[0]}"
+    removable_int="${bit_list[1]}"
+    mkdir --parents -- "${sysfs_prefix}/sys/class/block/${phys_dev}"
+    printf '%s\n' "${removable_int}" \
+      > "${sysfs_prefix}/sys/class/block/${phys_dev}/removable"
+  done
+
+  proc_mount_contents="${lm_base_mount_str}${additional_mount_entry}"
+  result_str="$(
+    source usr/libexec/helper-scripts/live-mode.sh
+    var_list=("live_status_detected_live_mode_environment_pretty"
+      "live_status_detected_live_mode_environment_machine"
+      "live_status_word_pretty"
+      "live_status_detected"
+      "live_status_maybe_iso_live_message")
+    for var_name in "${var_list[@]}"; do
+      ## Single quotes. Do not change without reflecting this change by users of this script.
+      printf "%s='%s'\n" "$var_name" "${!var_name}"
+    done
+  )"
+  if [ "${result_str}" != "${lm_expect_result_table[item_idx]}" ]; then
+    printf '%s\n' 'ERROR: Expected:'
+    printf '%s\n' "${lm_expect_result_table[item_idx]}"
+    printf '%s\n' 'ERROR: Got:'
+    printf '%s\n' "${result_str}"
+    printf '%s\n' ''
+    test_passed='false'
+  fi
+
+  if [ "${test_passed}" = 'false' ]; then
+    return 1
+  fi
+}
+
+for (( item_idx = 0; item_idx < ${#lm_expect_result_table[@]}; \
+  item_idx++ )); do
+  if ! run_live_mode_assert "${item_idx}"; then
+    rm -rf "${sysfs_prefix}"
+    exit 1
+  else
+    printf '%s\n' "run_live_mode_assert: Assert $(( item_idx + 1 )) passed."
+  fi
+done
+
+rm -rf "${sysfs_prefix}"
