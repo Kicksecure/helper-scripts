@@ -3,7 +3,7 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-#set -x
+set -x
 set -e
 set -o nounset
 set -o pipefail
@@ -44,10 +44,21 @@ process_file() {
   total_file_counter=$(( total_file_counter + 1))
   printf "%s\n" "$file_name" >/dev/null
 
+  ## Debugging.
+  ## TODO: remove
+  grep --version
+  ## Functional with:
+  #grep (GNU grep) 3.8
+  ##
+  ## TODO: fix
+  ## CI warning message:
+  #grep: PCRE2 does not support \F, \L, \l, \N{name}, \U, or \u
+
   ## grep-find-unicode-wrapper is similar like grep.
   ## - Exit code 0: if found.
   ## - Non-zero exit code: if not found.
-  if ! grep-find-unicode-wrapper "$file_name" >/dev/null ; then
+  ## TODO: remove debugging 'bash -x'
+  if ! bash -x grep-find-unicode-wrapper "$file_name" >/dev/null ; then
     printf "%s\n" "$0: ERROR: Failed to find unicode using 'grep-find-unicode-wrapper' in file '$file_name'." >&2
     exit 1
   fi
