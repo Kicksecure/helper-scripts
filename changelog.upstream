@@ -1,3 +1,26 @@
+commit 4955333f0cd5748b0545a7f71a2d077b582393c3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 16:15:41 2025 -0400
+
+    unicode:
+    
+    avoid warning message:
+    `grep: PCRE2 does not support \F, \L, \l, \N{name}, \U, or \u`
+    
+    by no longer using `--perl-regexp` for grep number three
+
+commit 0b716e4216868c7baa40cf18ef7cc6f73fd9ac40
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 16:05:52 2025 -0400
+
+    comment
+
+commit 8af7d0ee2cdce2fd5d78e38a5672736b6fd132b7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 19:14:35 2025 +0000
+
+    bumped changelog version
+
 commit 055ef5aec61fa5a47d0aff6f4c291f876a87a0f3
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 11 14:58:37 2025 -0400
