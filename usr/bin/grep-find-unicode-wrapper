@@ -16,6 +16,8 @@ two="$(LC_ALL=C grep $grep_args "[^[:ascii:]]" "$@")"
 
 ## https://access.redhat.com/security/vulnerabilities/RHSB-2021-007
 ## https://lintian.debian.org/tags/unicode-trojan
+## TODO BUG:
+# grep: PCRE2 does not support \F, \L, \l, \N{name}, \U, or \u
 three="$(LC_ALL=C grep $grep_args $'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]' "$@")"
 
 ## ASCII control characters.
