@@ -178,7 +178,7 @@ run_writable_fs_assert() {
 for (( item_idx = 0; item_idx < ${#gwfl_expect_result_table[@]}; \
   item_idx++ )); do
   if ! run_writable_fs_assert "${item_idx}"; then
-    rm -rf "${sysfs_prefix}"
+    rm -r -f -- "${sysfs_prefix}"
     exit 1
   else
     printf '%s\n' "run_writable_fs_assert: Assert $(( item_idx + 1 )) passed."
@@ -333,7 +333,7 @@ run_live_mode_assert() {
   fi
   additional_mount_entry="${lm_additional_mount_table[item_idx]}"
 
-  rm -rf -- "${sysfs_prefix}/sys"
+  rm -r -f -- "${sysfs_prefix}/sys"
   mkdir --parents -- "${sysfs_prefix}/sys/class/block"
   readarray -t phys_dev_state_list <<< "${lm_phys_dev_state_str}"
   for phys_dev_state_item in "${phys_dev_state_list[@]}"; do
@@ -375,11 +375,11 @@ run_live_mode_assert() {
 for (( item_idx = 0; item_idx < ${#lm_expect_result_table[@]}; \
   item_idx++ )); do
   if ! run_live_mode_assert "${item_idx}"; then
-    rm -rf "${sysfs_prefix}"
+    rm -r -f -- "${sysfs_prefix}"
     exit 1
   else
     printf '%s\n' "run_live_mode_assert: Assert $(( item_idx + 1 )) passed."
   fi
 done
 
-rm -rf "${sysfs_prefix}"
+rm -r -f -- "${sysfs_prefix}"
