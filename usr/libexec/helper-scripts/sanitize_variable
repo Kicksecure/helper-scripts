@@ -12,7 +12,7 @@ sanitize_variable() {
    fi
 
    sanitize_variable_output="$(stecho "$input")"
-   sanitize_variable_output="$(/usr/libexec/msgcollector/striphtml "$sanitize_variable_output")"
+   sanitize_variable_output="$(/usr/libexec/helper-scripts/strip-html "$sanitize_variable_output")"
 
    actual_string_length="${#sanitize_variable_output}"
 
