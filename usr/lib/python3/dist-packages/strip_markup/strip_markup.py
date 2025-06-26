@@ -24,6 +24,7 @@ def strip_markup(untrusted_string):
     markup_stripper = StripMarkupEngine()
     markup_stripper.feed(untrusted_string)
     strip_one_string = markup_stripper.get_data()
+    markup_stripper = StripMarkupEngine()
     markup_stripper.feed(strip_one_string)
     strip_two_string = markup_stripper.get_data()
     if strip_one_string == strip_two_string:
