@@ -1,3 +1,28 @@
+commit d6bc8658304cf204ed29580b6e514e18d2d2ed5d
+Merge: a64f29f 33bf736
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jul 2 13:56:56 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/sanitize-string'
+
+commit 33bf73641bd679b2f8ca7ef92e0f452631964599
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 29 18:59:22 2025 -0500
+
+    Remove obsolete sanitize_variable script
+
+commit 4f42a88eb87edb1c1a353470492ca956be8fd150
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 29 18:04:20 2025 -0500
+
+    Implement sanitize-string
+
+commit a64f29f9a60affec934392f4de008756728d1188
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 29 17:42:48 2025 +0000
+
+    bumped changelog version
+
 commit 1a5f68618b06e5c32ca547a40c75c3716acd8a53
 Merge: c0689fe 820431d
 Author: Patrick Schleizer <adrelanos@whonix.org>
