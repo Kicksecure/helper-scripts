@@ -427,10 +427,13 @@ fi
 
 ## Ensure that lightdm doesn't have a multi-seat configuration, we can't
 ## safely manage those
+## TODO: consider cases with leading spaces
+## TODO: ignore comments
 if grep --quiet --recrusive --ignore-case -- '^\[Seat:[^*]' /etc/lightdm; then
    echo "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
    exit 1
 fi
+
 readarray -t autologin_users_lightdm < <(
    grep --quiet --ignore-case -- '^autologin-user=' /etc/lightdm \
       | filter_out_sysmaint_maybe \
