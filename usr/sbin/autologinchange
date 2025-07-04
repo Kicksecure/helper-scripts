@@ -104,7 +104,7 @@ disable_autologin() {
       fi
 
       pattern="^autologin-user=[[:space:]]*${user}$"
-      match_count=$(grep -E -c -- "$pattern" "${file_name}") || true
+      match_count=$(grep --extended-regexp --count -- "$pattern" "${file_name}") || true
 
       sed -i -E "/$pattern/d" -- "${file_name}"
 
@@ -195,7 +195,7 @@ validate_username() {
 filter_out_sysmaint_maybe() {
    ## This function expects to have data piped to in on standard input.
    if [ "${special_sysmaint_handling}" = 'yes' ]; then
-      grep -v -- 'sysmaint'
+      grep --invert-match -- 'sysmaint'
    else
       cat
    fi
@@ -426,12 +426,12 @@ fi
 
 ## Ensure that lightdm doesn't have a multi-seat configuration, we can't
 ## safely manage those
-if grep -qri -- '^\[Seat:[^*]' /etc/lightdm; then
+if grep --quiet --recrusive --ignore-case -- '^\[Seat:[^*]' /etc/lightdm; then
    echo "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
    exit 1
 fi
 readarray -t autologin_users_lightdm < <(
-   grep -ri -- '^autologin-user=' /etc/lightdm \
+   grep --quiet --ignore-case -- '^autologin-user=' /etc/lightdm \
       | filter_out_sysmaint_maybe \
       | awk -F'=' '{ print $NF }' || true
 ) || true
