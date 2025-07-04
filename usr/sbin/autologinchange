@@ -52,6 +52,7 @@ remove_from_config_section() {
          fi
       elif [ "${filter_stage}" = '2' ]; then
          ## TODO: What if remove_line contains special characters?
+         ##       Use grep instead?
          if [[ "${line}" =~ ^${remove_line}$ ]]; then
             line_was_removed="true"
             continue
