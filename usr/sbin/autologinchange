@@ -429,7 +429,7 @@ fi
 ## safely manage those
 ## TODO: consider cases with leading spaces
 ## TODO: ignore comments
-if grep --quiet --recrusive --ignore-case -- '^\[Seat:[^*]' /etc/lightdm; then
+if grep --quiet --recursive --ignore-case -- '^\[Seat:[^*]' /etc/lightdm; then
    echo "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
    exit 1
 fi
