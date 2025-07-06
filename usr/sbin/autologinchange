@@ -435,7 +435,7 @@ if grep --quiet --recrusive --ignore-case -- '^\[Seat:[^*]' /etc/lightdm; then
 fi
 
 readarray -t autologin_users_lightdm < <(
-   grep --quiet --ignore-case -- '^autologin-user=' /etc/lightdm \
+   grep --recursive --ignore-case -- '^autologin-user=' /etc/lightdm \
       | filter_out_sysmaint_maybe \
       | awk -F'=' '{ print $NF }' || true
 ) || true
