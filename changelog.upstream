@@ -1,3 +1,28 @@
+commit 77dcd00c92a5f298bb63c84841b75beba754de1a
+Merge: f89a29c 5ee81b7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 11 08:05:32 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/root-login-check'
+
+commit 5ee81b71daaadec67a08f3006052f7bb02d95e7e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jul 6 17:09:36 2025 -0500
+
+    Typo fix
+
+commit e4b400cc87a06ea6ffbf13deb4d2183d04df803d
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jul 6 16:36:35 2025 -0500
+
+    Add root user to list returned by get-user-list
+
+commit f89a29c4257cdcd22a930cac030868512960baea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 6 16:16:29 2025 +0000
+
+    bumped changelog version
+
 commit fcfdfe9f8302dbbc7fbb72edf52c53d9bfa2b217
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jul 6 12:16:15 2025 -0400
