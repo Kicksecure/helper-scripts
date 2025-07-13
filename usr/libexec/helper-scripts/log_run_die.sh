@@ -1,13 +1,22 @@
 #!/bin/bash
 
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 source /usr/libexec/helper-scripts/get_colors.sh
 
 if ! command -v stecho &>/dev/null ; then
-  ## Fallback to printf in case stecho is unavailable.
+  ## Fallback to 'printf' in case 'stecho' is unavailable.
   stecho() {
-    printf "%s\n" "$@"
+    printf "%s\n" "$*"
   }
 fi
+
+re_enable_xtrace_maybe() {
+  if test "${xtrace:-}" = "1"; then
+    set -o xtrace
+  fi
+}
 
 ## Logging mechanism with easy customization of message format as well as
 ## standardization on how the messages are delivered.
@@ -57,6 +66,7 @@ log(){
       ;;
     *)
       log bug "Unsupported log type specified: '${log_type}'"
+      re_enable_xtrace_maybe
       die 1 "Please report this bug."
   esac
   ## uniform log format
@@ -71,6 +81,7 @@ log(){
   case "${log_type}" in
     bug|error)
       stecho "${log_full}" >&2
+      re_enable_xtrace_maybe
       return 0
       ;;
     null)
@@ -81,7 +92,7 @@ log(){
   all_log_levels="warn notice info debug echo null"
   # shellcheck disable=SC2154
   if printf '%s' " ${all_log_levels} " | grep -o ".* ${log_level} " \
-    | grep -q " ${log_type}"
+    | grep " ${log_type}" &>/dev/null
   then
     case "${log_type}" in
       null)
@@ -93,9 +104,9 @@ log(){
     esac
   fi
 
-  if test "${xtrace:-}" = "1"; then
-    set -o xtrace
-  fi
+  #sleep 0.1
+
+  re_enable_xtrace_maybe
 }
 
 

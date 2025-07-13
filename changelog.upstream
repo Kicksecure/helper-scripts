@@ -1,3 +1,625 @@
+commit 77dcd00c92a5f298bb63c84841b75beba754de1a
+Merge: f89a29c 5ee81b7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 11 08:05:32 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/root-login-check'
+
+commit 5ee81b71daaadec67a08f3006052f7bb02d95e7e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jul 6 17:09:36 2025 -0500
+
+    Typo fix
+
+commit e4b400cc87a06ea6ffbf13deb4d2183d04df803d
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jul 6 16:36:35 2025 -0500
+
+    Add root user to list returned by get-user-list
+
+commit f89a29c4257cdcd22a930cac030868512960baea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 6 16:16:29 2025 +0000
+
+    bumped changelog version
+
+commit fcfdfe9f8302dbbc7fbb72edf52c53d9bfa2b217
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 6 12:16:15 2025 -0400
+
+    fix
+
+commit aefe6b3a15886e82e31c961049a7309ff4818934
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 4 08:55:39 2025 +0000
+
+    bumped changelog version
+
+commit c4988db495bd7cb7008d58c0f174a2d974b76c6e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 4 04:54:27 2025 -0400
+
+    todo
+
+commit 3d8a1926e0f32c7d61a8328cb337849fa0d7382e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 4 04:03:02 2025 -0400
+
+    todo
+
+commit 86a67f6d7ee97591add2af948350672d3e8a170c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 4 03:50:45 2025 -0400
+
+    long options
+
+commit 4d4cb24ed847eeeb0b078ef338e0aaa31b58011b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 4 03:39:03 2025 -0400
+
+    local
+
+commit 614a24e4c21e86ebba29e863deb0b62366e55f39
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jul 2 20:48:59 2025 +0000
+
+    bumped changelog version
+
+commit d6bc8658304cf204ed29580b6e514e18d2d2ed5d
+Merge: a64f29f 33bf736
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jul 2 13:56:56 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/sanitize-string'
+
+commit 33bf73641bd679b2f8ca7ef92e0f452631964599
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 29 18:59:22 2025 -0500
+
+    Remove obsolete sanitize_variable script
+
+commit 4f42a88eb87edb1c1a353470492ca956be8fd150
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 29 18:04:20 2025 -0500
+
+    Implement sanitize-string
+
+commit a64f29f9a60affec934392f4de008756728d1188
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 29 17:42:48 2025 +0000
+
+    bumped changelog version
+
+commit 1a5f68618b06e5c32ca547a40c75c3716acd8a53
+Merge: c0689fe 820431d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 29 13:24:53 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/strip-html'
+
+commit 820431d68eceabd710984630d9e911a1e49a6e24
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jun 25 23:43:07 2025 -0500
+
+    Fix HTML stripper
+
+commit 0648531777616e3ccf136923da97791d1bba9c7c
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jun 25 23:37:17 2025 -0500
+
+    Port to helper-scripts strip-html
+
+commit 77fe1d1bdde24bce8d21ce623cf411558bba40aa
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jun 25 23:06:36 2025 -0500
+
+    Add HTML stripping utility
+
+commit c0689fec06fa7ab10b411761f0abdb89f1365115
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 14 11:50:35 2025 +0000
+
+    bumped changelog version
+
+commit b52c14a3ffaeec82d85d413ebb1fec7abbcb95b8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 13 15:30:58 2025 -0400
+
+    lower debugging
+
+commit 6615e9eed68ed24088b8ce3dc81ccd3749f80615
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 20:16:57 2025 +0000
+
+    bumped changelog version
+
+commit 4955333f0cd5748b0545a7f71a2d077b582393c3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 16:15:41 2025 -0400
+
+    unicode:
+    
+    avoid warning message:
+    `grep: PCRE2 does not support \F, \L, \l, \N{name}, \U, or \u`
+    
+    by no longer using `--perl-regexp` for grep number three
+
+commit 0b716e4216868c7baa40cf18ef7cc6f73fd9ac40
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 16:05:52 2025 -0400
+
+    comment
+
+commit 8af7d0ee2cdce2fd5d78e38a5672736b6fd132b7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 19:14:35 2025 +0000
+
+    bumped changelog version
+
+commit 055ef5aec61fa5a47d0aff6f4c291f876a87a0f3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 14:58:37 2025 -0400
+
+    safe-rm
+
+commit 7fb07fa8b609a556fff0666d8fc311afae72425c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 14:57:30 2025 -0400
+
+    end-of-options
+
+commit b7a8109b338b59515a273625544452b2829db96c
+Merge: 5c7395a b17ff9d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 14:56:32 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/livecheck'
+
+commit 5c7395ac378a4d65267e2d7c55335c2eadee7941
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 18:22:06 2025 +0000
+
+    bumped changelog version
+
+commit 53c570563fb68fff88a6245e622c02c497d75856
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 11 12:48:24 2025 -0400
+
+    debugging
+
+commit c094c49b9cc42e3e31093eae46676513edb8fd4c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 10 11:22:26 2025 +0000
+
+    bumped changelog version
+
+commit cd95cb0855bdd6ded129734b56632c61c74224ec
+Merge: 0eb65e7 d2d6c75
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 10 06:30:41 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/fix-stcatn'
+
+commit 0eb65e70eaedb26fb1a47cc705b7135c98e5234a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 10 06:29:27 2025 -0400
+
+    fix
+
+commit b17ff9d1974e2d22fd26328938b4e15dd1fdaf75
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 8 17:32:18 2025 -0500
+
+    Bring back read-only mode detection
+
+commit d2d6c75ae2b22a7c27037ed4af175e1b0f7ffa1b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 8 10:44:48 2025 -0500
+
+    Add unicode-testscript run to run-tests
+
+commit 13d6ec843a72cb3b904dec1863a0b4e3d799fb5b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 8 10:39:11 2025 -0500
+
+    Fix stcatn failing to trim whitespace from all but the last line of an input file
+
+commit 47ef6530fcc2a2a0c69dd95c732637225b395dcf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 8 07:55:34 2025 -0400
+
+    local
+
+commit 08ea7fbce0baf576304754ac9e1267014a81f42f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jun 6 20:23:08 2025 -0500
+
+    Improve get_writable_fs_lists.sh, add tests for get_writable_fs_lists.sh and live-mode.sh
+
+commit 1a69dd98815af5db5d7f417b18b50425828cbddd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 6 20:52:25 2025 +0000
+
+    bumped changelog version
+
+commit 04dd30b9fff7d68ef13b78fc9f08090b9173fb9b
+Merge: 4963ac8 58bc03d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 6 15:54:03 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/livecheck'
+
+commit 4963ac8598166144b68174b8ef58b54d7053530b
+Merge: f9bd0e4 d4c3045
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jun 5 06:22:15 2025 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit d4c3045a02846c2412be7b55c1c5c59cdd088bd6
+Merge: f9bd0e4 6bc3b5c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jun 5 06:03:42 2025 -0400
+
+    Merge pull request #27 from ben-grande/st-test
+    
+    Handle closed standard input gracefully
+
+commit 58bc03d48e4ccddf6b5c0df0d0565e1c13657e5f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jun 4 20:48:23 2025 -0500
+
+    Refactor live_mode.sh to allow reducing logic duplication with livecheck
+
+commit 836bb8ead95685f681224bdfc41c4a077834df27
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Jun 3 23:38:40 2025 -0500
+
+    Add better handling of removable media, NFS, and VM shared folders
+
+commit 6bc3b5cab5d8ce5d4902df8ce93b49759dca8717
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Jun 3 14:10:02 2025 +0200
+
+    Handle closed standard input gracefully
+    
+    For: https://github.com/Kicksecure/helper-scripts/issues/26
+
+commit e878cc6b1e1fbe3aebdd4a5163de3a7b9d56aa6b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Jun 3 01:02:25 2025 -0500
+
+    Rework live-mode.sh to provide more detailed info
+
+commit f9bd0e4b7e1d20199420d9757af2f38ee63024c1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 28 12:10:09 2025 +0000
+
+    bumped changelog version
+
+commit ce7c036bfb3724dbd4bfd1b402a78748189a23fc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 28 07:57:21 2025 -0400
+
+    fix
+
+commit 89ac5ad417986f44e42207474fc108406b0c44bb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 28 07:52:59 2025 -0400
+
+    fix
+
+commit cbe8d380774e72267b4d26b745b85fb3b47121f4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 28 07:52:28 2025 -0400
+
+    fix
+
+commit 0d0dab3726b934a697b68d626648b1d41ffd4df3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 19:40:52 2025 +0000
+
+    bumped changelog version
+
+commit 64cbca7476e3de2f851f5e14c4f65250b48c6761
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 15:37:20 2025 -0400
+
+    fix
+
+commit 84a8cc6f9f5feb21225569aae2ea20821c5b98c0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 15:51:22 2025 +0000
+
+    bumped changelog version
+
+commit d5739699742af00bf48413802a896613d328bb4a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:38:45 2025 -0400
+
+    fix
+
+commit 506df612d54a5001a5bfc0175a3fdd5ad4c52967
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:38:10 2025 -0400
+
+    fix
+
+commit 631d824105f2661575be339fef5004db0a358367
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:26:34 2025 -0400
+
+    fix: consider Debian 'trixie' still being 'testing'
+
+commit 6228e0d479965b3fe39c68f0a16cf2e363691a41
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:17:01 2025 -0400
+
+    output
+
+commit 313c5b5b593c88a756caf703e334b1ecfd16d226
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 27 11:15:08 2025 -0400
+
+    refactoring
+
+commit b68a5b03a99d20462c55d2348aace5a6ce89d651
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 19:31:53 2025 +0000
+
+    bumped changelog version
+
+commit bef2f48eaba5c09e03fa5b04f805e053e0ff54a6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:20:44 2025 -0400
+
+    comment
+
+commit 415367797e2d6fd985e91f4393ef02e705b915d9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:19:29 2025 -0400
+
+    protect against `printf`, `grep --quiet` broken pipe
+
+commit 064b6f745aec6c33e0b815c6309f70e654720d5e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:18:01 2025 -0400
+
+    refactoring
+
+commit 8f64fb2aa63179ee375e094577b7c9879e16367a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:16:36 2025 -0400
+
+    protect against `printf`, `grep --quiet` broken pipe
+
+commit 9e9dc751861c86709beed5b55653edf85f4c2844
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 15:14:37 2025 -0400
+
+    fix
+
+commit 0f13f4ed1b12f0bcf60565e310fc5b26a9d7be66
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:44:25 2025 -0400
+
+    output
+
+commit f550f73d9afb79dbe1fafd99b954c3bff72c4379
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:42:24 2025 -0400
+
+    `/usr/libexec/helper-scripts/root_cmd.sh`: fix error message in case no privilege escalation tool can be found
+
+commit 14561dd4267c58ed595f2982bdc011babc3f265e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:37:15 2025 -0400
+
+    copyright
+
+commit 5f1718ab429170b43dd47eae5c6647e16f3fbdec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:33:51 2025 -0400
+
+    output
+
+commit 8450c50db258c027f354977be187228b868333ee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 25 14:15:14 2025 -0400
+
+    output
+
+commit d9e5d265840f40832e1c2f4af9de5ef32fa9d4b0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 21 15:51:46 2025 +0000
+
+    bumped changelog version
+
+commit f5d0ebdd1874029e142e4377597af419580fb4eb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 21 11:50:44 2025 -0400
+
+    fix
+
+commit 685831b8e733a8f3f1b12ec4c7f14504b8be7f1e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 21 11:47:28 2025 -0400
+
+    shellcheck
+
+commit 2659d3c4fbb21419a62fd98223f9e1015519e003
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 21 11:23:10 2025 +0000
+
+    bumped changelog version
+
+commit 93152b9ab74e76719b8916bea3f75318f0261446
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 21 07:21:35 2025 -0400
+
+    add `usr/libexec/helper-scripts/wc-test.sh`
+
+commit f78bea57962a9a69285f480b850b7430f1930646
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 21 07:21:11 2025 -0400
+
+    test that `wc` is functional
+    
+    https://github.com/Kicksecure/security-misc/pull/305#issuecomment-2892378246
+
+commit 8c7fb9884398f638570d5c7afb92cd95cc446b37
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 18:50:33 2025 +0000
+
+    bumped changelog version
+
+commit 483907e0902eada87c1d529568df1f2cd724d828
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 14:50:18 2025 -0400
+
+    fix
+
+commit 480c0a672bbc93ac77026d7f64f8f59a5f8fd821
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 15:28:22 2025 +0000
+
+    bumped changelog version
+
+commit 50bf9fbd435da1d49383bce3e908a233562104b0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 11:27:28 2025 -0400
+
+    add `dev-root`: development mode
+
+commit dd20885031266562fb8c5e73bdba35c74b57a37d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 14:33:23 2025 +0000
+
+    bumped changelog version
+
+commit be407ed5daf5d6d5f784b719c43af3863295a267
+Merge: 3335c00 5607d7b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 10:32:45 2025 -0400
+
+    Merge remote-tracking branch 'ben/st-test'
+
+commit 3335c004d3683d36cf89450c4274d31aaf02792c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 12:03:42 2025 +0000
+
+    bumped changelog version
+
+commit 50a6b0b0015cc0895261367fadb50ea072e8a65d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 07:16:14 2025 -0400
+
+    add `usr/libexec/helper-scripts/sudo-tools-enable`
+
+commit 5b30da2f6fa144584ede4721a6e14a3bee4b0732
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 09:56:04 2025 +0000
+
+    bumped changelog version
+
+commit 78645c0b090578d2f649ff9fd879df1be6c6d3a7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 05:33:03 2025 -0400
+
+    fix
+
+commit bb38d359e75b4d6eec38ed96e0a07d27c496e159
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 04:34:23 2025 -0400
+
+    debugging
+
+commit 0d0d7261ee9d816b123476b82d5afd316b28ebb4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 04:34:08 2025 -0400
+
+    comment
+
+commit 53af311fc515b7c989bf082e6e81c46c8e3858c7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 08:09:06 2025 +0000
+
+    bumped changelog version
+
+commit 00ad2b24cb0159b02925c7a318fa3329cfafb424
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 03:39:12 2025 -0400
+
+    add live-status-detected
+
+commit 0503e736f76362a2fc538d82278629d09e6eee3f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 11 15:56:29 2025 +0000
+
+    bumped changelog version
+
+commit a46ee4d8e11b342f9af17e3a573367f6471b2e5f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 11 11:44:37 2025 -0400
+
+    fix
+
+commit b77f6a1c34c5b9684c23fe533aed4315429351be
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 11 15:18:18 2025 +0000
+
+    bumped changelog version
+
+commit 5367f54a441f0232ec41269c3fd87bdc8e212fc5
+Merge: 2879460 2fa5e6a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 11 11:14:17 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/live-mode'
+
+commit 2879460dea9f386c17f66b13620413a63fa09737
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 11 14:39:23 2025 +0000
+
+    bumped changelog version
+
+commit 5607d7ba97ca3a9e3fdf876511edddddb5624ee9
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Sun May 11 10:56:40 2025 +0200
+
+    Fix typos and cleaner code
+
+commit 707f2a9d926cb78b1844cb7aeb273ac56de512a1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 10 13:54:13 2025 -0400
+
+    fix
+
+commit 4857c28e1582f4d7796bf000c81bec3d8d364e1d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 10 13:51:34 2025 -0400
+
+    `append`(`-once`) / `overwrite`: self-identify program name in output
+
+commit 1f0acc137b931d550207c99db1b5c852735192ee
+Merge: 751bab6 acf3adf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 10 13:47:30 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/append-perms'
+
+commit acf3adf38ac502324b09cd8e0b6a343be3cac7f3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri May 9 14:48:50 2025 -0500
+
+    Fix permissions on files created or modified by append-shared
+
+commit 751bab69fbd59028ffdab1a9ebafdfec076cf093
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 7 16:36:19 2025 +0000
+
+    bumped changelog version
+
 commit 84ecb855811487dd7006d077b59ff4731bc8d4b4
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed May 7 12:25:43 2025 -0400
@@ -40,6 +662,50 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed May 7 00:31:41 2025 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/curl-prgrs'
+
+commit 11a7d0e8006afec6abde3448ead288f7c31c6550
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon May 5 17:04:32 2025 +0200
+
+    Add unicode trojan test
+
+commit ab5e5e45257100521f520ac6d5b7710ff883b728
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon May 5 13:01:59 2025 +0200
+
+    Test every safe terminal tool
+    
+    - Check output when no argument is provided;
+    - Check if stdin is ignored by default;
+    - Check if stdin is ignored if file is provided;
+    - Check how many arguments a utility accepts;
+    - Check how word splitting works on multiple arguments;
+    - Check if newline is present; and
+    - How it treats the argument '-'.
+
+commit 2fa5e6a72f148da1b3476615c26e7839dea0c4de
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun May 4 22:54:18 2025 -0500
+
+    Make live-mode.sh more robust and able to detect a semi-persistent state
+
+commit 748a3bedef7cf12df5dc6bdea154d165e8bb499d
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Sun May 4 16:27:58 2025 +0200
+
+    Add base test class
+
+commit d00ecab2c21d81e63145b6407b888544a8b683d4
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Sun May 4 15:26:25 2025 +0200
+
+    Test reading from files
+
+commit bc92fabb8bb657e52c5daf41ab7002a5612538f8
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Sun May 4 01:36:00 2025 +0200
+
+    Add tests
 
 commit e2b8ca090b8f84ab0613983bea7d6cbc9a2d8a4f
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>

@@ -1,7 +1,11 @@
 #!/bin/bash
 
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 ## TODO: how to handle installer specific code?
 
+source /usr/libexec/helper-scripts/has.sh
 source /usr/libexec/helper-scripts/log_run_die.sh
 source /usr/libexec/helper-scripts/ip_syntax.sh
 
@@ -15,17 +19,21 @@ get_os(){
   distro=""
   distro_version=""
   debian_testing_or_unstable_detected=""
+  distro_codename=""
   case "${os}" in
     Linux*)
       if has lsb_release; then
         distro="$(lsb_release --short --description || lsb_release -sd)"
         distro_version="$(lsb_release --short --release || lsb_release -sr)"
+        distro_codename="$(lsb_release --short --codename || lsb_release -sc)"
       elif test -f /etc/os-release; then
         while IFS='=' read -r key val; do
           case "${key}" in
             (PRETTY_NAME) distro="${val}"
               ;;
             (VERSION_ID) distro_version="${val}"
+              ;;
+            (VERSION_CODENAME) distro_codename="${val}"
               ;;
           esac
         done < /etc/os-release
@@ -51,7 +59,13 @@ get_os(){
   esac
 
   ## Debian 'testing' /etc/os-release does not contain VERSION_ID.
-  if printf '%s' "${distro}" | grep --quiet "/sid" ; then
+  if printf '%s' "${distro}" | grep "/sid" &>/dev/null ; then
+    log info "Debian 'testing' or 'unstable' detection: '/sid' matched"
+    debian_testing_or_unstable_detected=1
+  fi
+
+  if [ "$distro_codename" = "trixie" ]; then
+    log info "Debian 'testing' or 'unstable' detection: 'trixie' still considered 'testing' (hardcoded in this program)"
     debian_testing_or_unstable_detected=1
   fi
 
@@ -59,10 +73,10 @@ get_os(){
   distro_derivative_version="(No derivative detected.)"
   if test -f /usr/share/kicksecure/marker; then
     distro_derivative_name_pretty="Kicksecure"
-    distro_derivative_version="$(cat /etc/kicksecure_version)"
+    distro_derivative_version="$(cat -- /etc/kicksecure_version)"
   elif test -f /usr/share/whonix/marker; then
     distro_derivative_name_pretty="Whonix"
-    distro_derivative_version="$(cat /etc/whonix_version)"
+    distro_derivative_version="$(cat -- /etc/whonix_version)"
   fi
 
   log notice "Architecture detected: '${arch}'"
@@ -71,7 +85,7 @@ get_os(){
   log notice "Distribution/Derivative version detected: '${distro_version}' / '${distro_derivative_version}'"
 
   if [ "$debian_testing_or_unstable_detected" = "1" ]; then
-    log notice "Debian 'testing' or 'unstable' detection: 'success'"
+    log notice "Debian 'testing' or 'unstable' detection: 'yes', detected"
     if test "${oracle_repo}" = "1"; then
       log error "You are attempting to use '--oracle-repo' on Debian 'testing' or 'unstable'. This is impossible."
       if test "${ci}" = "1"; then
@@ -82,19 +96,19 @@ get_os(){
     fi
     log info "Not attempting to use '--oracle-repo' on Debian 'testing' or 'unstable', good."
     ## In Debian 'testing' distro_version was previously observed as 'n/a' or empty, because
-    ## Debian testing /etc/os-release does not contain VERSION_ID.
+    ## Debian 'testing' '/etc/os-release' does not contain VERSION_ID.
     return 0
   fi
-  log info "Debian 'testing' or 'unstable' detection: 'not detected'"
+  log info "Debian 'testing' or 'unstable' detection: 'no', not detected"
 
   ## This at last so the user can hopefully post his system info from the
   ## logs before the error below.
   if [ -z "${distro_version}" ]; then
     if test -f /etc/os-release; then
-      log notice "Contents of /etc/os-release:"
-      cat /etc/os-release || true
+      log notice "Contents of '/etc/os-release' file:"
+      cat -- /etc/os-release || true
     else
-      log notice "/etc/os-release file not found."
+      log notice "'/etc/os-release' file not found."
     fi
     die 101 "${underline}Distribution Check:${nounderline} Failed to find distribution version."
     ## it will fail later on get_host_pkgs if the system is not supported.
@@ -158,7 +172,7 @@ get_distro() {
   esac
 
   if test "${oracle_repo:-}" = "1" && test "${kali_derivative_detected:-}"; then
-    die 1 "Distribution Extended Check: Oracle repository does not work with Kali"
+    die 1 "Distribution Extended Check: Oracle repository does not work with Kali."
   fi
 
   if test ! "${fedora_derivative_detected:-}" = "1" ||

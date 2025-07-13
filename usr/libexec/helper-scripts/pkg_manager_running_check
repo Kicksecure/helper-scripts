@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 # shellcheck source=./use_leaprun.sh
 source /usr/libexec/helper-scripts/use_leaprun.sh
 
@@ -31,9 +34,12 @@ check_package_manager_running_helper() {
    ## sudo --non-interactive fuser /var/lib/dpkg/lock /var/cache/apt/archives/lock ; echo $?
    ## 1
 
+   true "fuser_exit_code: $fuser_exit_code"
    if [ "$fuser_exit_code" = "0" ]; then
+      true "package manager is running"
       check_apt_get_exit_code="1"
    else
+      true "no package manager is running"
       check_apt_get_exit_code="0"
    fi
 

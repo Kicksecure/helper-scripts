@@ -1,0 +1,23 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -x
+set -e
+
+file_list=(
+  /usr/bin/su
+  /usr/bin/sudo
+  /usr/bin/sudoedit
+  /usr/bin/pkexec
+  /usr/bin/doas
+)
+
+for file_item in "${file_list[@]}"; do
+  if test -f "$file_item"; then
+    if command -v "$file_item" &>/dev/null; then
+      chmod --verbose o+x -- "$file_item"
+    fi
+  fi
+done

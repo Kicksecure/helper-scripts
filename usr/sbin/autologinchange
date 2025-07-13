@@ -34,7 +34,7 @@ get_config_section() {
 }
 
 remove_from_config_section() {
-   local file_name section remove_line filter_stage lines output line_was_removed
+   local file_name section remove_line filter_stage line lines output line_was_removed
    file_name="$1"
    section="$2"
    remove_line="$3"
@@ -52,6 +52,7 @@ remove_from_config_section() {
          fi
       elif [ "${filter_stage}" = '2' ]; then
          ## TODO: What if remove_line contains special characters?
+         ##       Use grep instead?
          if [[ "${line}" =~ ^${remove_line}$ ]]; then
             line_was_removed="true"
             continue
@@ -104,7 +105,7 @@ disable_autologin() {
       fi
 
       pattern="^autologin-user=[[:space:]]*${user}$"
-      match_count=$(grep -E -c -- "$pattern" "${file_name}") || true
+      match_count=$(grep --extended-regexp --count -- "$pattern" "${file_name}") || true
 
       sed -i -E "/$pattern/d" -- "${file_name}"
 
@@ -166,7 +167,7 @@ disable_sysmaint_autologin() {
 }
 
 validate_username() {
-   local user
+   local user found_user user_entry
 
    user="${1:-}"
    if [ -z "${user}" ]; then
@@ -195,7 +196,7 @@ validate_username() {
 filter_out_sysmaint_maybe() {
    ## This function expects to have data piped to in on standard input.
    if [ "${special_sysmaint_handling}" = 'yes' ]; then
-      grep -v -- 'sysmaint'
+      grep --invert-match -- 'sysmaint'
    else
       cat
    fi
@@ -283,7 +284,7 @@ warn_on_empty_user_password() {
 }
 
 autologinchange() {
-   local user user_entry found_user autologin_user enable_yn disable_yn
+   local user user_entry autologin_user enable_yn disable_yn
 
    check_root
    create_dm_config_dirs
@@ -426,12 +427,15 @@ fi
 
 ## Ensure that lightdm doesn't have a multi-seat configuration, we can't
 ## safely manage those
-if grep -qri -- '^\[Seat:[^*]' /etc/lightdm; then
+## TODO: consider cases with leading spaces
+## TODO: ignore comments
+if grep --quiet --recursive --ignore-case -- '^\[Seat:[^*]' /etc/lightdm; then
    echo "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
    exit 1
 fi
+
 readarray -t autologin_users_lightdm < <(
-   grep -ri -- '^autologin-user=' /etc/lightdm \
+   grep --recursive --ignore-case -- '^autologin-user=' /etc/lightdm \
       | filter_out_sysmaint_maybe \
       | awk -F'=' '{ print $NF }' || true
 ) || true

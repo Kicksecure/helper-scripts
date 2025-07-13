@@ -34,6 +34,10 @@ def print_usage_and_bail():
     sys.exit(1)
 
 
+def print_info(info_msg):
+    print(f"{executable_name}: INFO: {info_msg}")
+
+
 def print_error_and_bail(error_msg):
     print(f"{executable_name}: ERROR: {error_msg}", file=sys.stderr)
     sys.exit(1)
@@ -72,13 +76,13 @@ def main():
                 )
         if executable_name == "append-once":
             if line_to_append in file_contents:
-                print(f"INFO: Line already exists in: '{orig_file_path}'")
+                print_info(f"Line already exists in: '{orig_file_path}'")
                 sys.exit(0)
         if not os.access(file_path, os.W_OK):
             print_error_and_bail(f"File '{orig_file_path}' not writable!")
     else:
         if not file_exists:
-            print(f"INFO: File does not exist yet: {orig_file_path}")
+            print_info(f"File does not exist yet: '{orig_file_path}'")
         if not os.access(file_path.parent, os.W_OK):
             print_error_and_bail(
                 f"Folder '{file_path.parent}' (where file '{file_path.name}' "
@@ -86,9 +90,9 @@ def main():
             )
 
     if executable_name == "overwrite":
-        print(f"INFO: Overwriting file: {orig_file_path}")
+        print_info(f"Overwriting file: '{orig_file_path}'")
     else:
-        print(f"INFO: Appending data to: {orig_file_path}")
+        print_info(f"Appending data to: '{orig_file_path}'")
 
     if file_contents != "" and file_contents[-1] != "\n":
         # Fix a missing terminating newline. Some text editors will fail to

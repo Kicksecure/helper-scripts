@@ -227,7 +227,7 @@ force_output() {
    ## If xtrace is set, calling force_output will have already shown the output.
    if ! test -o xtrace ; then
       ## xtrace is not set, therefore echo.
-      printf '%s\n' "$@"
+      printf '%s\n' "$*"
    fi
    [[ -v redisable_echo ]] || redisable_echo=""
    if [ "$redisable_echo" = "true" ]; then

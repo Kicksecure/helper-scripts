@@ -1,20 +1,51 @@
 #!/usr/bin/env python3
+# pylint: disable=missing-module-docstring
 
-"""
-Test the stprint module.
-"""
+## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+##
+## SPDX-License-Identifier: AGPL-3.0-or-later
 
 import os
-import unittest
 import subprocess
+import unittest
 from stdisplay.stdisplay import (
     get_sgr_support,
 )
+import stdisplay.tests
 
 
-class TestSTPrint(unittest.TestCase):
+class TestSTPrint(stdisplay.tests.TestSTBase):
     """
-    Test stprint
+    Test stprint.
+    """
+
+    def setUp(self) -> None:
+        self.module = "stprint"
+        super().setUp()
+
+    def test_stprint(self) -> None:
+        """
+        Test without argument.
+        """
+        self.assertEqual("", self._test_util())
+        self.assertEqual("", self._test_util(argv=[""]))
+        self.assertEqual("", self._test_util(stdin="no stdin"))
+        self.assertEqual(
+            "a b", self._test_util(stdin="no stdin", argv=["a b"])
+        )
+        self.assertEqual("ab", self._test_util(argv=["a", "b"]))
+        self.assertEqual(
+            self.text_dirty_sanitized, self._test_util(argv=[self.text_dirty])
+        )
+
+
+class TestSTPrintShell(unittest.TestCase):
+    """
+    Test stdisplay with environment variables using stprint.
+
+    This class only exists because the developer could not find a way to patch
+    the environment variables correctly on the base class functions.
     """
 
     # pylint: disable=too-many-arguments

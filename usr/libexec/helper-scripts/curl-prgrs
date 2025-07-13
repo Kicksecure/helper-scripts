@@ -325,6 +325,7 @@ curl_download() {
 }
 
 remove_argument_for_header_request() {
+    local arg
     local args=()
     local skip_next=false
 
@@ -358,7 +359,7 @@ remove_argument_for_header_request() {
 main() {
   local header_arguments header_file
 
-  header_arguments=($(remove_argument_for_header_request "$@"))
+  read -r -a header_arguments < <(remove_argument_for_header_request "$@")
   header_file="$temporary_directory/header"
 
   true "$BASH_SOURCE INFO: Download header..."
