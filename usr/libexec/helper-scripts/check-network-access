@@ -1,0 +1,13 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+network_ip_data="$(
+  ip -o addr show scope global \
+  | awk '{print $4}'
+)" || true
+if [ -n "${network_ip_data}" ]; then
+  exit 0
+fi
+exit 1
