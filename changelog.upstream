@@ -1,3 +1,22 @@
+commit 2914965dd1405ef74967834924afb71db514cfb7
+Merge: 3c1642f 3153822
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jul 19 03:00:12 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/network-check'
+
+commit 3153822ded8be0d9c8979c3ef6b5b7b536df3741
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jul 16 22:44:36 2025 -0500
+
+    Add basic network access checker (taken from updatecheck)
+
+commit 3c1642f2c5cb3051736d486f1dd94719e5ed8afe
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 11 12:07:12 2025 +0000
+
+    bumped changelog version
+
 commit 77dcd00c92a5f298bb63c84841b75beba754de1a
 Merge: f89a29c 5ee81b7
 Author: Patrick Schleizer <adrelanos@whonix.org>
