@@ -1,3 +1,28 @@
+commit 2c914a82da69d94c0a1518ea420a19741d1708da
+Merge: d91ebeb 85021de
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jul 26 04:53:25 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/login-locked-absent'
+
+commit 85021de1f07b824eb55422bc25cd35b57d550d7c
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jul 25 19:45:43 2025 -0500
+
+    get-password-status-list: Make it more obvious when an account has no password set
+
+commit 210ade2b81eab6f0b73c988dd3bd3b3101fc6679
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jul 25 19:24:41 2025 -0500
+
+    Don't lock the screen if the user's password would make this insecure or cause breakage
+
+commit d91ebeb87f427e4687a4ec368ab9f3a6539c935e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jul 19 09:46:38 2025 +0000
+
+    bumped changelog version
+
 commit 2914965dd1405ef74967834924afb71db514cfb7
 Merge: 3c1642f 3153822
 Author: Patrick Schleizer <adrelanos@whonix.org>
