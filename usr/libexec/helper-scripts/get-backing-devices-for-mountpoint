@@ -49,12 +49,12 @@ def find_backing_items(path):
                 output_objs.append(path_obj)
                 return output_objs
             else:
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 1)")
         elif path.startswith("/dev/loop"):
             if path.count("/") != 2:
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 2)")
             if " " in path:
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 3)")
             losetup_data = subprocess.run(
 	    		[
 		    		f"losetup -l | grep '^{path}' | awk '{{print $6}}'"
@@ -64,14 +64,14 @@ def find_backing_items(path):
 	    		text=True,
 		    ).stdout.strip()
             if losetup_data == "":
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 4)")
             output_objs.extend(find_backing_items(losetup_data))
             return output_objs
         elif path.startswith("/dev/dm"):
             if path.count("/") != 2:
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 5)")
             if " " in path:
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 6)")
             for dev_name in (
                 Path(f"/sys/class/block/{path_obj.name}/slaves").iterdir()
             ):
@@ -83,35 +83,35 @@ def find_backing_items(path):
             # like /dev/mapperabc, we're looking for a device named
             # something like /dev/mapper/luks-UUID
             if path.count("/") != 3:
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 7)")
             if " " in path:
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 8)")
             mapper_name = path.split("/")[3]
             if mapper_name == "":
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 9)")
             # need to be in /dev/mapper to properly resolve symlinks
             os.chdir("/dev/mapper")
             real_dev_path = str(path_obj.readlink().resolve())
             if real_dev_path == "":
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 10)")
             output_objs.extend(find_backing_items(real_dev_path))
             return output_objs
         else:
-            raise ValueError("Failed to look up backing item!")
+            raise ValueError("Failed to look up backing item! (code 11)")
     else:
         if not path_obj.exists():
-            raise ValueError("Failed to look up backing item!")
+            raise ValueError("Failed to look up backing item! (code 12)")
         # Walk up to the nearest mountpoint (which may be path_obj itself)
         while not path_obj.is_mount():
             temp_path_obj = path_obj.parent
             if str(temp_path_obj) == "/":
                 # don't allow looping back around to the root dir
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 13)")
             path_obj = temp_path_obj
         path = str(path_obj)
         mount_data = Path("/proc/self/mounts").read_text()
         if mount_data == "":
-            raise ValueError("Failed to look up backing item!")
+            raise ValueError("Failed to look up backing item! (code 14)")
         for mount_line in mount_data.splitlines():
             mount_parts = mount_line.split(" ")
             if mount_parts[1] != path:
@@ -130,15 +130,15 @@ def find_backing_items(path):
                         )
                         return output_objs
             else:
-                raise ValueError("Failed to look up backing item!")
+                raise ValueError("Failed to look up backing item! (code 15)")
 
     # If we get here, we weren't able to find the backing device.
-    raise ValueError("Failed to look up backing item!")
+    raise ValueError("Failed to look up backing item! (code 16)")
 
 try:
     path_list = find_backing_items(sys.argv[1])
 except Exception:
-    print("Could not find backing device(s)!", file=sys.stderr)
+    print("Could not find backing device(s)! (code 17)", file=sys.stderr)
     exit(1)
 
 for path in path_list:
