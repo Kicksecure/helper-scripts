@@ -34,8 +34,16 @@ def find_backing_items(path):
     #   dig for the nearest mountpoint and resolve its backing item
 
     path_obj = Path(path)
+
+    ## TODO: Good idea?
+    #path_obj = path_obj.resolve()
+    #path = str(path_obj)
+
+    print(f"path: {path}", file=sys.stderr)
+
     output_objs = []
     if path_obj.is_block_device():
+        print("is block device: yes", file=sys.stderr)
         if (
             path.startswith("/dev/mmc")
             or path.startswith("/dev/nvme")
@@ -94,11 +102,13 @@ def find_backing_items(path):
             real_dev_path = str(path_obj.readlink().resolve())
             if real_dev_path == "":
                 raise ValueError("Failed to look up backing item! (code 10)")
+            print(f"real_dev_path: {real_dev_path}", file=sys.stderr)
             output_objs.extend(find_backing_items(real_dev_path))
             return output_objs
         else:
             raise ValueError("Failed to look up backing item! (code 11)")
     else:
+        print("is block device: no", file=sys.stderr)
         if not path_obj.exists():
             raise ValueError("Failed to look up backing item! (code 12)")
         # Walk up to the nearest mountpoint (which may be path_obj itself)
@@ -137,8 +147,8 @@ def find_backing_items(path):
 
 try:
     path_list = find_backing_items(sys.argv[1])
-except Exception:
-    print("Could not find backing device(s)! (code 17)", file=sys.stderr)
+except Exception as e:
+    print(f"Could not find backing device(s)! reason: {e}", file=sys.stderr)
     exit(1)
 
 for path in path_list:
