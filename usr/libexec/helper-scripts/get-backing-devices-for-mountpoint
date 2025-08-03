@@ -1,0 +1,145 @@
+#!/usr/bin/python3 -u
+
+# Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+
+# TODO: This code can probably be expanded significantly to take more edge
+# cases into account. In particular:
+# - It can't reliably handle the case where two different filesystems have
+#   been mounted to the same mountpoint, with one hiding the other.
+# - It can't handle software RAID yet.
+
+from pathlib import Path
+import sys
+import subprocess
+import os
+
+def find_backing_items(path):
+    # Finds the device or devices that back a particular mountpoint or file.
+    # This uses a recursive algorithm to find the ultimate backing device. The
+    # algorithm is, roughly:
+    #
+    # - If the path is one of /dev/mmc*, /dev/nvme*, /dev/sd*, /dev/vd*,
+    #   /dev/xvd*, /dev/hd*, or /dev/sr*, we've found the final device, return
+    #   it
+    # - If the path starts with /dev/dm, we have a device-mapper device, find
+    #   the devices that compose it and resolve their backing items
+    # - If the path starts with /dev/loop*, we have a loop device, use
+    #   losetup -l and find the underlying file, then resolve its backing
+    #   item.
+    # - If the path starts with /dev/mapper, we have a device-mapper
+    #   symlink, resolve it to find the real device-mapper device and then
+    #   resolve its backing item
+    # - If the path is just to a normal file or directory on the file system,
+    #   dig for the nearest mountpoint and resolve its backing item
+
+    path_obj = Path(path)
+    output_objs = []
+    if path_obj.is_block_device():
+        if (
+            path.startswith("/dev/mmc")
+            or path.startswith("/dev/nvme")
+            or path.startswith("/dev/sd")
+            or path.startswith("/dev/vd")
+            or path.startswith("/dev/xvd")
+            or path.startswith("/dev/hd")
+            or path.startswith("/dev/sr")
+        ):
+            if path.count("/") == 2:
+                output_objs.append(path_obj)
+                return output_objs
+            else:
+                raise ValueError("Failed to look up backing item!")
+        elif path.startswith("/dev/loop"):
+            if path.count("/") != 2:
+                raise ValueError("Failed to look up backing item!")
+            if " " in path:
+                raise ValueError("Failed to look up backing item!")
+            losetup_data = subprocess.run(
+	    		[
+		    		f"losetup -l | grep '^{path}' | awk '{{print $6}}'"
+			    ],
+				shell=True,
+    			capture_output=True,
+	    		text=True,
+		    ).stdout.strip()
+            if losetup_data == "":
+                raise ValueError("Failed to look up backing item!")
+            output_objs.extend(find_backing_items(losetup_data))
+            return output_objs
+        elif path.startswith("/dev/dm"):
+            if path.count("/") != 2:
+                raise ValueError("Failed to look up backing item!")
+            if " " in path:
+                raise ValueError("Failed to look up backing item!")
+            for dev_name in (
+                Path(f"/sys/class/block/{path_obj.name}/slaves").iterdir()
+            ):
+                dev_path = "/dev/" + dev_name.name
+                output_objs.extend(find_backing_items(dev_path))
+            return output_objs
+        elif path.startswith("/dev/mapper"):
+            # make sure we aren't dealing with a device named something
+            # like /dev/mapperabc, we're looking for a device named
+            # something like /dev/mapper/luks-UUID
+            if path.count("/") != 3:
+                raise ValueError("Failed to look up backing item!")
+            if " " in path:
+                raise ValueError("Failed to look up backing item!")
+            mapper_name = path.split("/")[3]
+            if mapper_name == "":
+                raise ValueError("Failed to look up backing item!")
+            # need to be in /dev/mapper to properly resolve symlinks
+            os.chdir("/dev/mapper")
+            real_dev_path = str(path_obj.readlink().resolve())
+            if real_dev_path == "":
+                raise ValueError("Failed to look up backing item!")
+            output_objs.extend(find_backing_items(real_dev_path))
+            return output_objs
+        else:
+            raise ValueError("Failed to look up backing item!")
+    else:
+        if not path_obj.exists():
+            raise ValueError("Failed to look up backing item!")
+        # Walk up to the nearest mountpoint (which may be path_obj itself)
+        while not path_obj.is_mount():
+            temp_path_obj = path_obj.parent
+            if str(temp_path_obj) == "/":
+                # don't allow looping back around to the root dir
+                raise ValueError("Failed to look up backing item!")
+            path_obj = temp_path_obj
+        path = str(path_obj)
+        mount_data = Path("/proc/self/mounts").read_text()
+        if mount_data == "":
+            raise ValueError("Failed to look up backing item!")
+        for mount_line in mount_data.splitlines():
+            mount_parts = mount_line.split(" ")
+            if mount_parts[1] != path:
+                continue
+            if mount_parts[0].startswith("/dev"):
+                output_objs.extend(find_backing_items(mount_parts[0]))
+                return output_objs
+            elif mount_parts[2] == "overlay":
+                overlay_data_parts = mount_parts[3].split(",")
+                for overlay_data_part in overlay_data_parts:
+                    if overlay_data_part.startswith("lowerdir="):
+                        output_objs.extend(
+                            find_backing_items(
+                                overlay_data_part.split("=", maxsplit=1)[1]
+                            )
+                        )
+                        return output_objs
+            else:
+                raise ValueError("Failed to look up backing item!")
+
+    # If we get here, we weren't able to find the backing device.
+    raise ValueError("Failed to look up backing item!")
+
+try:
+    path_list = find_backing_items(sys.argv[1])
+except Exception:
+    print("Could not find backing device(s)!", file=sys.stderr)
+    exit(1)
+
+for path in path_list:
+    print(str(path))
