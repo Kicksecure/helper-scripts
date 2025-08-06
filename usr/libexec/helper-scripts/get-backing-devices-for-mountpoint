@@ -140,7 +140,12 @@ def find_backing_items(path):
                         )
                         return output_objs
             else:
-                raise ValueError("Failed to look up backing item! (code 15)")
+                ## Out-commented. This may happen if mutliple filesystems are
+                ## mounted to the same location and the mount we're looking
+                ## for is shadowing an earlier mount. This scenario occurs
+                ## when booting in live mode under at least Trixie.
+                #raise ValueError("Failed to look up backing item! (code 15)")
+                continue
 
     # If we get here, we weren't able to find the backing device.
     raise ValueError("Failed to look up backing item! (code 16)")
