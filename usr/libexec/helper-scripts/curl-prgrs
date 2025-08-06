@@ -370,7 +370,7 @@ main() {
   ## CURL_PRGRS_MAX_FILE_SIZE_BYTES are set to reasonable values.
   ##
   ## CURL_PRGRS_EXEC="" to avoid a progress bar for the header download.
-  ## That would confuse zenity.
+  ## That would confuse yad.
   ##
   ## CURL_OUT_FILE and
   ## --output "$header_file" to avoid overwriting files when using "--continue-at -".
