@@ -162,7 +162,7 @@ output_cmd "INFO: Attempting to determine Tor consensus time middle range..."
 #output_cmd "INFO: has Tor consensus, ok."
 ##
 ## Therefore use 'anondate --show-middle-range' to check if a Tor consensus is already available.
-if time_result="$(anondate --show-middle-range &>/dev/null)" ; then
+if time_result="$(anondate --show-middle-range 2>/dev/null)" ; then
    valid_after="$(anondate --show-valid-after)"
    ## example valid_after:
    ## 2021-01-21 15:00:00
