@@ -1,3 +1,35 @@
+commit 9625636272c66dafa4cd2288d45ab5aa82c12882
+Merge: 380de79 2292048
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 9 05:34:22 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/anondate-get-fix'
+
+commit 380de7921064250361a085b063ab6d48e8be3bf8
+Merge: 82ab134 ca7db8e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 9 05:33:29 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/emerg-shutdown'
+
+commit 22920489c4d261bb06d7a8462d00f9b74cf15656
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Aug 7 21:10:44 2025 -0500
+
+    Fix anondate-get so it actually uses anondate's output
+
+commit ca7db8e901cc9a805b5cfb07472ec5aa0ee5b6c4
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Aug 5 23:41:08 2025 -0500
+
+    Fix get-backing-devices-for-mountpoint bug causing it to fail in live mode
+
+commit 82ab1346825af82f2b36bfb863a4c5fa65a88f66
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 3 11:32:15 2025 +0000
+
+    bumped changelog version
+
 commit ef1db44e30d6b727a24691d9bd10238019da65a9
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Aug 3 06:49:31 2025 -0400
