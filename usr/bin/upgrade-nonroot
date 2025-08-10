@@ -1,0 +1,47 @@
+#!/bin/bash
+
+## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -e
+
+# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/package_installed_check.bsh
+source /usr/libexec/helper-scripts/package_installed_check.bsh
+
+if [ "$(id -un)" = 'root' ]; then
+  ## Avoid using 'sudo' if already using account 'root'. Reasons:
+  ## - Using 'sudo' is unnecessary in this case.
+  ## - Would work in case of a user-sysmaint-split or sudo bug.
+  exec /usr/bin/apt-get-update-plus dist-upgrade
+fi
+
+## This is never reached if using 'exec' above.
+
+## Check if 'sudo' is executable and use it, if so, irrespective of package
+## 'user-sysmaint-split' installation status. This could be the case if one
+## has run 'sudo chmod o+x /usr/bin/sudo' in sysmaint mode for debugging.
+##
+## 'command -v' cannot be used.
+#if command -v sudo &>/dev/null ; then
+## note:
+## zsh: exits non-zero if found but not exectuable.
+## bash: exits 0 if found but not executable
+if test -x /usr/bin/sudo ; then
+  exec /usr/bin/sudo /usr/bin/apt-get-update-plus dist-upgrade
+fi
+
+## This is never reached if using 'exec' above.
+
+if pkg_installed user-sysmaint-split; then
+  ## Example use cases for using account 'root' with user-sysmaint-split installed:
+  ## - root login
+  ## - Qubes root console.
+  if [ "$(id -un)" != 'sysmaint' ]; then
+    1>&2 echo "ERROR: upgrade-nonroot cannot be used by accounts other than"
+    1>&2 echo "'sysmaint' (or 'root') on this system. For more information, see"
+    1>&2 echo "https://www.kicksecure.com/wiki/Sysmaint"
+    exit 1
+  fi
+fi
+
+exec sudo /usr/bin/apt-get-update-plus dist-upgrade
