@@ -1,0 +1,39 @@
+apt-get-noninteractive(8) -- wrapper to run `apt-get` non-interactively
+=============================================
+
+<!--
+# Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+`apt-get-noninteractive` [option]s
+
+## Description
+Simple wrapper that sets environment variables and adds `--yes`,
+`-o Dpkg::Options::=--force-confask,confnew,confnew` then forwards all arguments to
+apt-get.
+
+Does not pass by default:
+
+* `--allow-downgrades`
+* `--allow-remove-essential`
+* `--allow-change-held-packages`
+
+If you like to keep old configuration files, add the following parameter.
+
+`-o Dpkg::Options::=--force-confold`
+
+## Examples
+`sudo apt-get-noninteractive dist-upgrade`
+
+`sudo apt-get-noninteractive -o Dpkg::Options::=--force-confold install dist-upgrade`
+
+`sudo apt-get-noninteractive install xfce4`
+
+`sudo apt-get-noninteractive install package-name`
+
+`sudo apt-get-noninteractive --allow-downgrades --allow-change-held-packages install package-name`
+
+## AUTHOR
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -e
+
+[ -n "$POLICYRCD" ] || POLICYRCD="/usr/share/helper-scripts/policy-rc.d"
+[ -n "$DEBIAN_FRONTEND" ] || DEBIAN_FRONTEND="noninteractive"
+[ -n "$DEBIAN_PRIORITY" ] || DEBIAN_PRIORITY="critical"
+[ -n "$DEBCONF_NOWARNINGS" ] || DEBCONF_NOWARNINGS="yes"
+[ -n "$APT_LISTCHANGES_FRONTEND" ] || APT_LISTCHANGES_FRONTEND="text"
+[ -n "$NEEDRESTART_MODE" ] || NEEDRESTART_MODE="l"
+
+export POLICYRCD DEBIAN_FRONTEND DEBIAN_PRIORITY DEBCONF_NOWARNINGS APT_LISTCHANGES_FRONTEND NEEDRESTART_MODE
+
+## Not using '--yes'. Reasons:
+## Some may want 'apt-get-noninteractive' to include '--yes' as the name suggests.
+## Using APT non-interactively is a bit of rocket science.
+## A plethora of options and environment variables must be set; nobody wants to do
+## that manually.
+## One way to use 'apt-get-noninteractive' is to run it and check if its output
+## indicates APT might destroy the system (e.g., due to broken packages removing
+## a critical package).
+## If all is OK, confirm with Enter. Easy.
+## If already sure, simply run 'apt-get-noninteractive --yes'.
+## If '--yes' were the default, one would need to check the outcome with 'apt-get',
+## first then Ctrl+C, then use 'apt-get-noninteractive' to actually proceed.
+## It is unknown if 'apt-get-noninteractive' might behave differently due to the
+## numerous options passed compared to 'apt-get'.
+## This is an opinionated choice.
+apt-get -o Dpkg::Options::="--force-confask,confnew,confmiss" "$@"

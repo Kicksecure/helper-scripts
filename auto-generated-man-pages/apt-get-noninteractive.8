@@ -1,0 +1,34 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "APT\-GET\-NONINTERACTIVE" "8" "January 2020" "usability-misc" "usability-misc Manual"
+.SH "NAME"
+\fBapt\-get\-noninteractive\fR \- wrapper to run \fBapt\-get\fR non\-interactively
+.SH "SYNOPSIS"
+\fBapt\-get\-noninteractive\fR [option]s
+.SH "Description"
+Simple wrapper that sets environment variables and adds \fB\-\-yes\fR, \fB\-o Dpkg::Options::=\-\-force\-confask,confnew,confnew\fR then forwards all arguments to apt\-get\.
+.P
+Does not pass by default:
+.IP "\[ci]" 4
+\fB\-\-allow\-downgrades\fR
+.IP "\[ci]" 4
+\fB\-\-allow\-remove\-essential\fR
+.IP "\[ci]" 4
+\fB\-\-allow\-change\-held\-packages\fR
+.IP "" 0
+.P
+If you like to keep old configuration files, add the following parameter\.
+.P
+\fB\-o Dpkg::Options::=\-\-force\-confold\fR
+.SH "Examples"
+\fBsudo apt\-get\-noninteractive dist\-upgrade\fR
+.P
+\fBsudo apt\-get\-noninteractive \-o Dpkg::Options::=\-\-force\-confold install dist\-upgrade\fR
+.P
+\fBsudo apt\-get\-noninteractive install xfce4\fR
+.P
+\fBsudo apt\-get\-noninteractive install package\-name\fR
+.P
+\fBsudo apt\-get\-noninteractive \-\-allow\-downgrades \-\-allow\-change\-held\-packages install package\-name\fR
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
