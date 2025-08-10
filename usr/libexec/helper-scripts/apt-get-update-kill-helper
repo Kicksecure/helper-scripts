@@ -10,7 +10,7 @@ set -o pipefail
 
 command -v start-stop-daemon >/dev/null
 
-pidfile="/run/helper-scripts/security-misc-apt-get-update-pid"
+pidfile="/run/helper-scripts/apt-get-update-pid"
 
 if ! test -f "$pidfile" ; then
   printf "%s\n" "$0: INFO: pidfile $pidfile does not exist, ok."
