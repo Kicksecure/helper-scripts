@@ -1,0 +1,13 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -e
+
+[ -n "$apt_get_update_wrapper" ] || apt_get_update_wrapper="apt-get update"
+[ -n "$apt_bin" ] || apt_bin=apt-get
+
+$apt_get_wrapper_pre $apt_get_update_wrapper $apt_get_wrapper_post
+
+$apt_get_pre $apt_bin $apt_get_post "$@"
