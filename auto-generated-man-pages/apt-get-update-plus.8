@@ -1,0 +1,55 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "APT\-GET\-UPDATE\-PLUS" "8" "January 2020" "usability-misc" "usability-misc Manual"
+.SH "NAME"
+\fBapt\-get\-update\-plus\fR \- secure combined apt\-get update and apt\-get command
+.SH "SYNOPSIS"
+\fBapt\-get\-update\-plus\fR \fB[option]s\fR
+.SH "Description"
+Runs two commands\. One after another:
+.P
+1) apt\-get \-\-error\-on=any
+.P
+2) \fBapt\-get [option]s\fR
+.P
+\fBapt\-get \-\-error\-on=any\fR would fail (exit non\-zero) in case of any apt sources are unavailable\. In such cases \fBapt\-get\-update\-plus\fR would stop\.
+.P
+In other words, \fBapt\-get [option]s\fR gets only run if the previously run \fBapt\-get update\fR was successsful\.
+.P
+No options are passed to \fBapt\-get \-\-error\-on=any\fR\. Use \fBapt_get_wrapper_pre\fR / \fBapt_get_wrapper_post\fR for that\. In other words, no options are passed to \fBapt\-get update\fR\.
+.P
+All \fB[option]s\fR are passed to \fBapt\-get\fR\.
+.SH "Environment Variables"
+\fBapt_get_update_wrapper\fR
+.P
+By setting apt_bin the user can use another program other than \fBapt\-get \-\-error\-on=any\fR\.
+.P
+\fBapt_get_wrapper_pre\fR
+.P
+Parameters before apt_get_wrapper_pre\.
+.P
+\fBapt_get_wrapper_post\fR
+.P
+Parameters after apt_get_wrapper_pre\.
+.P
+\fBapt_bin\fR
+.P
+By setting apt_bin the uer could use another program other than apt\-get\.
+.P
+\fBapt_get_pre\fR
+.P
+Parameters before apt_bin\.
+.P
+\fBapt_get_post\fR
+.P
+Parameters after apt_bin\.
+.SH "Examples"
+sudo apt\-get\-update\-plus dist\-upgrade
+.P
+sudo apt\-get\-update\-plus install xfce4
+.P
+sudo apt_bin=apt\-get\-noninteractive apt\-get\-update\-plus dist\-upgrade
+.P
+sudo apt_bin=apt\-get\-noninteractive apt\-get\-update\-plus dist\-upgrade \-o Dpkg::Options::=\-\-force\-confold
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.

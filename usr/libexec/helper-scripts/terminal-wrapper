@@ -48,7 +48,7 @@ $supported_terminal_emulator_apps
 PPID: $PPID
 $0 was called by: $(ps --no-headers -o command $PPID)" || true
    kdialog --sorry "$error_message" >/dev/null 2>&1 || true
-   zenity --error --text "$error_message" >/dev/null 2>&1 || true
+   yad --error --text "$error_message" >/dev/null 2>&1 || true
    printf '%s\n' "$error_message" >&2
 fi
 

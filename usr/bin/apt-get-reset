@@ -1,0 +1,8 @@
+#!/bin/bash
+
+## Copyright (C) 2021 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -e
+
+apt-get-noninteractive install --reinstall "$@"
