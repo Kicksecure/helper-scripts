@@ -51,9 +51,8 @@ remove_from_config_section() {
             filter_stage='2'
          fi
       elif [ "${filter_stage}" = '2' ]; then
-         ## TODO: What if remove_line contains special characters?
-         ##       Use grep instead?
-         if [[ "${line}" =~ ^${remove_line}$ ]]; then
+         ## TODO: Avoid a literal match here so we can use regex if needed?
+         if [[ "${line}" =~ ^"${remove_line}"$ ]]; then
             line_was_removed="true"
             continue
          fi
@@ -92,11 +91,27 @@ User=${user}" | sponge -- '/etc/sddm.conf.d/z-autologin.conf'
    echo "$delimiter" >&2
    cat -- '/etc/sddm.conf.d/z-autologin.conf' >&2
    echo "$delimiter" >&2
+
+   mkdir --parents -- /etc/greetd/config.toml.d
+   echo "[initial_session]
+command = \"/usr/libexec/desktop-config-dist/start-lxqt-session\"
+user = \"${user}\"" | sponge -- '/etc/greetd/config.toml.d/40_autologin.conf'
+   echo "INFO: Wrote file '/etc/greetd/config.toml.d/40_autologin.conf' to enable autologin for account '$user'." >&2
+   echo "$delimiter" >&2
+   cat -- '/etc/greetd/config.toml.d/40_autologin.conf'
+   echo "$delimiter" >&2
+   echo "INFO: Rebuilding greetd config."
+   build-config-file /etc/greetd/config.toml.d /etc/greetd/config.toml
 }
 
 disable_autologin() {
    local user lightdm_config_file_list file_name file_contents
    user="$1"
+
+   ## TODO: All of these routines may misbehave if the spacing around the =
+   ## sign in the respective configuration lines is different than what the
+   ## script assumes, or if one of the lines has an otherwise unexpected
+   ## value.
 
    readarray -t lightdm_config_file_list < <(find /etc/lightdm)
    for file_name in "${lightdm_config_file_list[@]}"; do
@@ -138,6 +153,23 @@ disable_autologin() {
          safe-rm --verbose -- "${file_name}"
       fi
    done
+
+   for file_name in /etc/greetd/config.toml.d/*; do
+      if ! [ -f "${file_name}" ]; then
+         continue
+      fi
+      remove_from_config_section "${file_name}" 'initial_session' "command = \"/usr/libexec/desktop-config-dist/start-lxqt-session\""
+      remove_from_config_section "${file_name}" 'initial_session' "user = \"${user}\""
+      true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
+      file_content="$(cat -- "${file_name}")"
+      if [ -z "${file_contents}" ] \
+         || [ "${file_contents}" = '[initial_session]' ]; then
+         echo "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
+         safe-rm --verbose -- "${file_name}"
+      fi
+   done
+   echo "INFO: Rebuilding greetd config."
+   build-config-file /etc/greetd/config.toml.d /etc/greetd/config.toml
 }
 
 enable_sysmaint_autologin() {

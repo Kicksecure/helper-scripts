@@ -30,6 +30,12 @@ fi
 
 live_state_str='live'
 live_mode_str='none'
+kernel_cmdline=''
+if [ -f /proc/cmdline ]; then
+  kernel_cmdline="$(cat /proc/cmdline)"
+elif [ -f /proc/1/cmdline ]; then
+  kernel_cmdline="$(cat /proc/1/cmdline)"
+fi
 
 writable_fs_lists_str="$(/usr/libexec/helper-scripts/get_writable_fs_lists.sh)"
 readarray -t writable_fs_lists <<< "${writable_fs_lists_str}"
@@ -63,7 +69,8 @@ fi
 
 if [ "${live_state_str}" != 'persistent' ]; then
   while read -r line; do
-    if [[ "${line}" =~ ^LiveOS_rootfs\ / ]]; then
+    if [[ "${line}" =~ ^LiveOS_rootfs\ / ]] \
+      && [[ "${kernel_cmdline}" =~ rd.live.image ]]; then
       if [ "${live_state_str}" = 'live' ]; then
         live_mode_str='iso-live'
       else
