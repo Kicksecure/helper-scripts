@@ -23,16 +23,16 @@ light_sleep() {
     ## Create a dangling file descriptor and save it
     exec {light_sleep_fd}<> <(true)
     ## Allow 'true' to exit by doing a read
-    read -r -t 0 -u "${light_sleep_fd}"
+    read -r -t 0 -u "${light_sleep_fd}" || true
   fi
 
   if [ "${sleep_seconds}" = 'inf' ] \
     || [ "${sleep_seconds}" = 'infinity' ]; then
     ## Hang forever
-    read -u "${light_sleep_fd}"
+    read -u "${light_sleep_fd}" || true
   elif [[ "${sleep_seconds}" =~ ^[0-9]+$ ]]; then
     ## Hang for the specified number of seconds
-    read -t "${sleep_seconds}" -u "${light_sleep_fd}"
+    read -t "${sleep_seconds}" -u "${light_sleep_fd}" || true
   else
     printf '%s\n' 'Sleep duration is not an integer or infinity!'
     return 1
