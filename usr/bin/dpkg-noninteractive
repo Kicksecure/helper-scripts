@@ -1,0 +1,16 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -e
+
+[ -n "$POLICYRCD" ] || POLICYRCD="/usr/share/helper-scripts/policy-rc.d"
+[ -n "$DEBIAN_FRONTEND" ] || DEBIAN_FRONTEND="noninteractive"
+[ -n "$DEBIAN_PRIORITY" ] || DEBIAN_PRIORITY="critical"
+[ -n "$DEBCONF_NOWARNINGS" ] || DEBCONF_NOWARNINGS="yes"
+[ -n "$APT_LISTCHANGES_FRONTEND" ] || APT_LISTCHANGES_FRONTEND="text"
+[ -n "$NEEDRESTART_MODE" ] || NEEDRESTART_MODE="l"
+export POLICYRCD DEBIAN_FRONTEND DEBIAN_PRIORITY DEBCONF_NOWARNINGS APT_LISTCHANGES_FRONTEND NEEDRESTART_MODE
+
+dpkg --force-confnew "$@"

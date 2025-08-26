@@ -1,0 +1,29 @@
+dpkg-noninteractive(8) -- wrapper to run `dpkg` non-interactively
+=============================================
+
+<!--
+# Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+`dpkg-noninteractive` [option]s
+
+## Description
+Simple wrapper that sets environment variables and adds
+--force-confnew then forwards all arguments to dpkg.
+Does not pass --force-all.
+
+If you like to keep old configuration files, add the following parameter.
+
+--force-confold
+
+## Examples
+sudo dpkg-noninteractive --configure -a
+
+sudo dpkg-noninteractive --force-confold --install /path/to/pkg-name.deb
+
+sudo dpkg-noninteractive --force-all --purge pkg-name
+
+## AUTHOR
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).

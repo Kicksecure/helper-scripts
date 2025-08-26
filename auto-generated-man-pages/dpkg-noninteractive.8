@@ -1,0 +1,21 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "DPKG\-NONINTERACTIVE" "8" "January 2020" "helper-scripts" "helper-scripts Manual"
+.SH "NAME"
+\fBdpkg\-noninteractive\fR \- wrapper to run \fBdpkg\fR non\-interactively
+.SH "SYNOPSIS"
+\fBdpkg\-noninteractive\fR [option]s
+.SH "Description"
+Simple wrapper that sets environment variables and adds \-\-force\-confnew then forwards all arguments to dpkg\. Does not pass \-\-force\-all\.
+.P
+If you like to keep old configuration files, add the following parameter\.
+.P
+\-\-force\-confold
+.SH "Examples"
+sudo dpkg\-noninteractive \-\-configure \-a
+.P
+sudo dpkg\-noninteractive \-\-force\-confold \-\-install /path/to/pkg\-name\.deb
+.P
+sudo dpkg\-noninteractive \-\-force\-all \-\-purge pkg\-name
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
