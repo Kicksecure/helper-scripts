@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
 .TH "CHMOD\-CALC" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
 .SH "NAME"
 \fBchmod\-calc\fR \- Comprehensive File and Directory Inspection Tool
@@ -7,42 +7,61 @@
 \fBchmod\-calc <file_path>\fR
 .SH "DESCRIPTION"
 \fBchmod\-calc\fR is a comprehensive file and directory inspection tool that consolidates various Linux command functionalities into a single utility\. It displays detailed information about a file or directory, including:
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Basic permissions (Owner, Group, Public)
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Octal representation of permissions
-.IP "\[ci]" 4
+.IP "\(bu" 4
 File type (Regular File, Directory, Symlink, Hardlink, etc\.)
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Owner and group information
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Access Control Lists (ACLs) status
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Extended attributes (xattr) status
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Linux capabilities (getcap)
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Immutable attribute (chattr +i)
-.IP "\[ci]" 4
+.IP "\(bu" 4
 File size and link count
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Special attributes (SUID, SGID, Sticky Bit)
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Hidden file detection
 .IP "" 0
 .SH "RETURN VALUES"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB0\fR Successfully retrieved and displayed file information\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB1\fR File not found or an error occurred\.
 .IP "" 0
 .SH "EXAMPLE"
 \fBchmod\-calc \./example_file\fR
-.P
-``` Permissions for: \./example_file Type: Regular File Owner: user Group: user Octal Permissions: 644 File Size: 123 bytes Link Count: 1 Hidden File: No ACLs: none Extended Attributes: none Capabilities: None Immutable (chattr +i): No
-.P
-Category Read Write Execute Owner Yes Yes No Group Yes No No Public Yes No No
-.P
-Special Attributes: SUID: Not Set SGID: Not Set Sticky Bit: Not Set ```
+.IP "" 4
+.nf
+Permissions for: \./example_file
+Type: Regular File
+Owner: user   Group: user
+Octal Permissions: 644
+File Size: 123 bytes
+Link Count: 1
+Hidden File: No
+ACLs: none
+Extended Attributes: none
+Capabilities: None
+Immutable (chattr +i): No
+
+Category   Read   Write   Execute
+Owner      Yes    Yes     No
+Group      Yes    No      No
+Public     Yes    No      No
+
+Special Attributes:
+SUID: Not Set
+SGID: Not Set
+Sticky Bit: Not Set
+.fi
+.IP "" 0
 .SH "AUTHOR"
 This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
