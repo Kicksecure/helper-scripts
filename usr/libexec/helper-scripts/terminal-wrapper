@@ -18,8 +18,9 @@ if [ -e "/etc/alternatives/x-terminal-emulator" ]; then
 fi
 
 supported_terminal_emulator_apps="
-   gnome-terminal
+   qterminal
    xfce4-terminal
+   gnome-terminal
    xterm
    konsole
 "
@@ -30,7 +31,9 @@ for terminal_emulator_app_supported in $supported_terminal_emulator_apps ; do
    fi
 done
 
-if command -v xfce4-terminal >/dev/null 2>&1; then
+if command -v qterminal >/dev/null 2>&1; then
+   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="qterminal"
+elif command -v xfce4-terminal >/dev/null 2>&1; then
    [ -n "$terminal_emulator_app" ] || terminal_emulator_app="xfce4-terminal"
 elif command -v gnome-terminal >/dev/null 2>&1; then
    [ -n "$terminal_emulator_app" ] || terminal_emulator_app="gnome-terminal"
@@ -50,6 +53,10 @@ $0 was called by: $(ps --no-headers -o command $PPID)" || true
    kdialog --sorry "$error_message" >/dev/null 2>&1 || true
    yad --error --text "$error_message" >/dev/null 2>&1 || true
    printf '%s\n' "$error_message" >&2
+fi
+
+if [ "$terminal_emulator_app" = "qterminal" ]; then
+   [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="-e ${terminal_wrapper_helper}"
 fi
 
 if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then

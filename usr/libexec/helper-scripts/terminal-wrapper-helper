@@ -23,4 +23,6 @@ fi
 
 ## Hide message by xfce4-terminal:
 ## > The child process exited normally with status code 127. [ ] Do not ask me again. Relaunch [*]
+## Also keeps terminals that do not support --hold from closing immediately
+## when the command finishes.
 sleep infinity

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Fully in-Bash replacement for 'sleep'. Doesn't fork, and doesn't consume
+## around 1.5 MB of RAM like 'sleep' does. Inspired by:
+## https://blog.dhampir.no/content/sleeping-without-a-subprocess-in-bash-and-how-to-sleep-forever
+
+declare light_sleep_fd
+light_sleep_fd=""
+
+light_sleep() {
+  local IFS sleep_seconds
+
+  sleep_seconds="${1:-}"
+  if [ -z "${sleep_seconds}" ]; then
+    printf '%s\n' 'No sleep duration provided!'
+    return 1
+  fi
+
+  if [ -z "${light_sleep_fd:-}" ]; then
+    ## Create a dangling file descriptor and save it
+    exec {light_sleep_fd}<> <(true)
+    ## Allow 'true' to exit by doing a read
+    read -r -t 0 -u "${light_sleep_fd}" || true
+  fi
+
+  if [ "${sleep_seconds}" = 'inf' ] \
+    || [ "${sleep_seconds}" = 'infinity' ]; then
+    ## Hang forever
+    read -u "${light_sleep_fd}" || true
+  elif [[ "${sleep_seconds}" =~ ^[0-9]+$ ]]; then
+    ## Hang for the specified number of seconds
+    read -t "${sleep_seconds}" -u "${light_sleep_fd}" || true
+  else
+    printf '%s\n' 'Sleep duration is not an integer or infinity!'
+    return 1
+  fi
+
+  return 0
+}

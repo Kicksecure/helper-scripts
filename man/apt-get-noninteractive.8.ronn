@@ -29,7 +29,7 @@ If you like to keep old configuration files, add the following parameter.
 
 `sudo apt-get-noninteractive -o Dpkg::Options::=--force-confold install dist-upgrade`
 
-`sudo apt-get-noninteractive install xfce4`
+`sudo apt-get-noninteractive install lxqt`
 
 `sudo apt-get-noninteractive install package-name`
 

@@ -58,7 +58,7 @@ Parameters after apt_bin.
 ## Examples
 sudo apt-get-update-plus dist-upgrade
 
-sudo apt-get-update-plus install xfce4
+sudo apt-get-update-plus install lxqt
 
 sudo apt_bin=apt-get-noninteractive apt-get-update-plus dist-upgrade
 
