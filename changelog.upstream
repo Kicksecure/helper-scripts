@@ -1,3 +1,29 @@
+commit 62741f7a7abec1fc1551a495b67979c285f00675
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 27 04:21:44 2025 -0400
+
+    genmkfile manpages
+
+commit 1eb2f3e6ea692a2bcba48e9e89fc1e92e3671897
+Merge: 82eb7d3 d51768b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 27 03:49:47 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit d51768b3f49e0ed232c0354060dd5b3e72a3c5e4
+Merge: 9364d0b 82eb7d3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Aug 26 19:19:42 2025 -0500
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 82eb7d302fad1dd1783762c0c465360b5a6f40e7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 26 09:06:14 2025 +0000
+
+    bumped changelog version
+
 commit 6e276f5c5aecda1f3797110f9b32c7347434bead
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Aug 26 05:06:13 2025 -0400
@@ -15,6 +41,43 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Aug 26 03:01:56 2025 -0400
 
     add str-replace-many
+
+commit 9364d0b9803e21219265b08a5ab1c84f4de8b7b9
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Aug 25 19:10:40 2025 -0500
+
+    Move dpkg-noninteractive from usability-misc to helper-scripts
+
+commit 32aa9da992b1567eee9e07d57e864d91e80c0223
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 24 00:08:13 2025 -0500
+
+    Prevent light_sleep from crashing scripts that use set -e
+
+commit 671418b54519aa9a9be4be4101180ca28ef6abb3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Aug 22 19:29:59 2025 -0500
+
+    Remove initramfs-tools-specific debug helper script
+
+commit 81d8eb6d502c80f089637a9dfd75f26db004a45e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Aug 22 17:23:59 2025 -0500
+
+    Add memory-efficient sleep alternative 'light_sleep'
+
+commit e8f68611ca14d93031af565e708e4a541410a14c
+Merge: 4159464 56a098a
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Aug 21 19:50:06 2025 -0500
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 41594643e7882586c34b181689865dce918dd119
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Aug 21 18:19:35 2025 -0500
+
+    LXQt porting, add configuration build utility, revise live mode detection for Trixie, make package_installed_check.bsh a callable script
 
 commit 56a098a0c0433bef6d904d88266b4833ba092a54
 Author: Patrick Schleizer <adrelanos@whonix.org>
