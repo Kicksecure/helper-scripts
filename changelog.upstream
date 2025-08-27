@@ -1,3 +1,89 @@
+commit 6e276f5c5aecda1f3797110f9b32c7347434bead
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 26 05:06:13 2025 -0400
+
+    re-generate man pages (generated using "genmkfile manpages")
+
+commit c830c8c08d931005ff7b11c1cbb6cfbe55c322aa
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 26 04:59:57 2025 -0400
+
+    comment
+
+commit 080210413c94cfba24ff141e1c7f7a477a4b9620
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 26 03:01:56 2025 -0400
+
+    add str-replace-many
+
+commit 56a098a0c0433bef6d904d88266b4833ba092a54
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 20 07:37:44 2025 -0400
+
+    genmkfile manpages
+
+commit 0a06a1a7655063e234498a4cff3a7370cb8d2227
+Merge: c412a65 006f9ea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 20 07:37:12 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit c412a6576f2f26291ce18519343763497a486c1a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 20 06:57:26 2025 -0400
+
+    bumped Standards-Version
+
+commit 17ecf75668bed59ed917e83ad02046cc530f4cc3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 20 06:25:32 2025 -0400
+
+    readme
+
+commit 006f9ea87d0ee0cfc7c16598b96b23dd0295b9ab
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 10 16:10:20 2025 -0500
+
+    Move upgrade-nonroot from usability-misc to helper-scripts
+
+commit 1c14985ee291096c1d0651bb3baf5ef718f38c95
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 10 16:07:15 2025 -0500
+
+    Move apt-get-reset from usability-misc to helper-scripts
+
+commit 05db770be82fb03b4e3815cb83f4c41e10e86431
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 10 16:05:46 2025 -0500
+
+    Move apt-get-noninteractive from usability-misc to helper-scripts
+
+commit 8285019daea0f45132d48dfb4a0306388df038dd
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 10 15:47:59 2025 -0500
+
+    Move apt-get-update-plus from usability-misc to helper-scripts
+
+commit ae6e026832e41d6e9664ba3c5ee3529df43a0047
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 10 15:23:35 2025 -0500
+
+    Move security-misc/apt-get-update* to helper-scripts
+
+commit acfc112c138526531ef2e0febb2fe231a80ab54b
+Merge: 0cc4226 3541096
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 9 21:33:32 2025 -0500
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 3541096b268da484b9481a06fa642d7a24f71089
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 9 09:45:08 2025 +0000
+
+    bumped changelog version
+
 commit 9625636272c66dafa4cd2288d45ab5aa82c12882
 Merge: 380de79 2292048
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -12,11 +98,24 @@ Date:   Sat Aug 9 05:33:29 2025 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/emerg-shutdown'
 
+commit 0cc4226a71b6fcfb68b72d55f16fac171f9a3e7d
+Merge: ca5c93c 2292048
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Aug 8 12:20:48 2025 -0500
+
+    Merge branch 'arraybolt3/anondate-get-fix' into arraybolt3/trixie
+
 commit 22920489c4d261bb06d7a8462d00f9b74cf15656
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
 Date:   Thu Aug 7 21:10:44 2025 -0500
 
     Fix anondate-get so it actually uses anondate's output
+
+commit ca5c93cb9aedbab169d8f968a4b85af438bb07b5
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Aug 5 23:41:33 2025 -0500
+
+    Port to Trixie.
 
 commit ca7db8e901cc9a805b5cfb07472ec5aa0ee5b6c4
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>

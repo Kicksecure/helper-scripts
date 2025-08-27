@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
 .TH "STDISPLAY" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
 .SH "NAME"
 \fBstdisplay\fR \- Sanitize text to be safely printed to the terminal
@@ -43,9 +43,9 @@ sttee	tee
 stsponge	sponge
 .TE
 .SH "RETURN VALUES"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB0\fR Successfully printed text\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Any other return value is an error\.
 .IP "" 0
 .SH "EXAMPLE: SGR CONTROL"
@@ -73,9 +73,7 @@ stcat < /untrusted/file
 .br
 untrusted\-cmd 2>&1 | stcat
 .br
-# Or with Bash/Zsh syntax:
-.br
-stcat < <(untrusted\-cmd 2>&1)\fR
+\fRstcat < <(untrusted\-cmd 2>&1)
 .P
 Concatenate files:
 .P
@@ -94,9 +92,9 @@ Print an ownership\-restricted file with external programs:
 \fR
 .P
 The tool \fBstcatn\fR differs by:
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Adding a newline at the end of each file in case it is not empty and does not end with a newline\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Trimming trailing whitespace\.
 .IP "" 0
 .SH "EXAMPLE: STTEE/STSPONGE"
@@ -142,15 +140,14 @@ Print a variable as\-is:
 .P
 \fBvar="$(stprint "${untrusted_string}")"
 .br
-## Or Bash/Zsh syntax:
-.br
+\fR
+.SH "Or Bash/Zsh syntax:<br>"
 printf \-v var '%s' "$(stprint "${red}Hey${nocolor}: ${untrusted_string}")"
 .br
 \&\.
 .br
-## Raw print:
-.br
-printf '%s' "${var}"\fR
+.SH "Raw print:<br>"
+printf '%s' "${var}" </code>
 .P
 Interpret wanted escapes before passing them:
 .P
@@ -158,17 +155,16 @@ Interpret wanted escapes before passing them:
 .br
 nocolor="$(printf '%b' "\e033[m")"
 .br
-## Or Bash/Zsh syntax:
-.br
+\fR
+.SH "Or Bash/Zsh syntax:<br>"
 red=$"\e033[31m"
 .br
 nocolor=$"\e033[m"
 .br
 \&\.
 .br
-## Raw assignment:
-.br
-var="$(stprint "${red}Hey${nocolor}: ${untrusted_string}")"\fR
+.SH "Raw assignment:<br>"
+var="$(stprint "${red}Hey${nocolor}: ${untrusted_string}")"
 .SS "EXAMPLE: STPRINT MISUSE"
 \fIWarning\fR: Reinterpreting the escapes from the data returned from \fBstprint\fR is insecure\. A stack of previously uninterpreted escape sequences will be evaluated\.
 .P
@@ -176,11 +172,9 @@ Do \fINOT\fR reinterpret the escape sequences on variable assignment (dangerous 
 .P
 \fBvar="$(stprint "${untrusted_string}")" # OK
 .br
-# Or with Bash/Zsh syntax:
+\fRprintf \-v var "$(stprint "${untrusted_string}")" # DANGER (format is '%b')
 .br
-printf \-v var "$(stprint "${untrusted_string}")" # DANGER (format is '%b')
-.br
-printf \-v var '%b' "$(stprint "${untrusted_string}")" # DANGER\fR
+printf \-v var '%b' "$(stprint "${untrusted_string}")" # DANGER
 .P
 Do \fINOT\fR reinterpret the escape sequences when printing a variable\. One more layer of escapes will be interpreted:
 .P

@@ -3,6 +3,8 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## NOTE: Must not include bashisms!
+
 ## NOTE: code duplication: Function pkg_installed is duplicated elsewhere in derivative-maker source code.
 pkg_installed() {
    local package_name dpkg_query_output

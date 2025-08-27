@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -x
+set -e
+
+search="$1"
+shift
+replace="$1"
+shift
+files_list="$@"
+
+for files_item in $files_list ; do
+   str_replace "$search" "$replace" "$files_item"
+done
