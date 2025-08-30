@@ -115,5 +115,5 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 fi
 
 #trim_collapse_split " aaa  bbb ccc ddd "
-#flavor_meta_packages_to_install='non-qubes-vm-enhancements-cli kicksecure-dependencies-cli whonix-shared-packages-dependencies-cli whonix-gateway-packages-dependencies-cli'
+#flavor_meta_packages_to_install='kicksecure-baremetal-gui-lxqt kicksecure-baremetal-server'
 #trim_collapse_split "$flavor_meta_packages_to_install"
