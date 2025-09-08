@@ -15,19 +15,19 @@ set -o nounset
 true "$0: INFO: START"
 
 show_usage() {
-   echo "Usage: $0 [--remove|--purge] [-y|--yes] 'package-name'" >&2
+   printf '%s\n' "Usage: $0 [--remove|--purge] [-y|--yes] 'package-name'" >&2
    exit 1
 }
 
 cleanup() {
    if [ -n "${TMPDIR_NEW:-}" ] && [ -d "${TMPDIR_NEW}" ]; then
-      safe-rm -r -f "${TMPDIR_NEW}"
+      safe-rm -r -f -- "${TMPDIR_NEW}"
    fi
 }
 
 root_check() {
    if [ "$(id -u)" -ne 0 ]; then
-      echo "$0: ERROR: This script must be run as root." >&2
+      printf '%s\n' "$0: ERROR: This script must be run as root." >&2
       exit 1
    fi
 }
@@ -49,40 +49,40 @@ Architecture: all
 Description: dummy-package for '${package_to_replace}'
  A metapackage that replaces '${package_to_replace}'."
 
-      echo "${equivs_content}" | sponge -- "${equivs_file}"
+      printf '%s\n' "${equivs_content}" | sponge -- "${equivs_file}"
 
       if ! equivs_build_log="$(equivs-build -- "${equivs_file}" 2>&1)" ; then
-         echo "$0: ERROR: 'equivs-build -- \"${equivs_file}\"' command failed!" >&2
-         echo "$0: Logs:" >&2
-         echo "${equivs_build_log}" >&2
+         printf '%s\n' "$0: ERROR: 'equivs-build -- \"${equivs_file}\"' command failed!" >&2
+         printf '%s\n' "$0: Logs:" >&2
+         printf '%s\n' "${equivs_build_log}" >&2
          exit 1
       fi
 
       ## Sanity test.
       test -r "${deb_file_original}"
 
-      mkdir --parents /var/lib/dummy-dependency
+      mkdir --parents -- /var/lib/dummy-dependency
       ## Avoid APT warning:
       ## N: Download is performed unsandboxed as root as file '/tmp/user/0/tmp.8O7ET4e1Bx/dummy-user-sysmaint-split_99_all.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
-      cp --verbose "${deb_file_original}" "${deb_file_copy}"
+      cp --verbose -- "${deb_file_original}" "${deb_file_copy}"
 
-      echo "$0: INFO: Dummy package created."
+      printf '%s\n' "$0: INFO: Dummy package created."
    }
 
-   # Validate package name, see
-   # https://www.debian.org/doc/debian-policy/ch-controlfields.html#source
+   ## Validate package name, see
+   ## https://www.debian.org/doc/debian-policy/ch-controlfields.html#source
    if ! grep --quiet '^[a-z0-9]\+[a-z0-9+-.]\+$' -- <<< "${package_to_replace}" ; then
-      echo "$0: ERROR: Package name is invalid, check for typos" >&2
+      printf '%s\n' "$0: ERROR: Package name is invalid, check for typos" >&2
       exit 1
    fi
 
    ## Not actually needed, mktemp can function perfectly well without TMPDIR
    # if [ -z "${TMPDIR:-}" ]; then
-   #    echo "$0: ERROR: TMPDIR is unset." >&2
+   #    printf '%s\n' "$0: ERROR: TMPDIR is unset." >&2
    #    exit 1
    # fi
 
-   ## Ensure $TMPDIR is set
+   ## Ensure ${TMPDIR} is set
    if [ ! -v TMPDIR ]; then
       TMPDIR=''
    fi
@@ -102,15 +102,15 @@ Description: dummy-package for '${package_to_replace}'
    deb_file_copy="/var/lib/dummy-dependency/dummy-${package_to_replace}_99_all.deb"
 
    if [ "${cached_option}" = "true" ]; then
-      echo "$0: INFO: '--cached' option detected: yes"
+      printf '%s\n' "$0: INFO: '--cached' option detected: yes"
       if test -e "${deb_file_copy}" ; then
-         echo "$0: INFO: Using already existing cached dummy replacement package for '${package_to_replace}'..."
+         printf '%s\n' "$0: INFO: Using already existing cached dummy replacement package for '${package_to_replace}'..."
       else
-         echo "$0: INFO: Cached dummy replacement package for '${package_to_replace}' does not exist yet, creating..."
+         printf '%s\n' "$0: INFO: Cached dummy replacement package for '${package_to_replace}' does not exist yet, creating..."
          create_dummy_dependency
       fi
    else
-      echo "$0: INFO: Creating dummy replacement package for '${package_to_replace}'..."
+      printf '%s\n' "$0: INFO: Creating dummy replacement package for '${package_to_replace}'..."
       create_dummy_dependency
    fi
 
@@ -120,25 +120,40 @@ Description: dummy-package for '${package_to_replace}'
    ## Sanity test.
    test -r "${deb_file_copy}"
 
-   echo "$0: INFO: Installing dummy package..."
+   printf '%s\n' "$0: INFO: Installing dummy package..."
 
    #lintian --pedantic --info --display-info "${deb_file_copy}"
 
-   echo "$0: Executing: apt-get $yes_option install -- ${deb_file_copy}"
-   if ! apt-get $yes_option install -- "${deb_file_copy}" ; then
-      echo "$0: ERROR: 'apt-get install' command failed!" >&2
+   printf '%s\n' "$0: Executing: apt-get $yes_option install -- ${deb_file_copy}"
+   if apt-get $yes_option install -- "${deb_file_copy}" ; then
+      printf '%s\n' "$0: INFO: Dummy package installed."
+   else
+      printf '%s\n' "$0: ERROR: 'apt-get install' command failed!" >&2
       exit 1
    fi
-   echo "$0: INFO: Dummy package installed."
 
-   if [ "${remove_option}" = '--purge' ]; then
-      echo "$0: INFO: Purging old package configuration files..."
-      echo "$0: INFO: Executing: apt-get $yes_option purge -- ${package_to_replace}"
+   printf '%s\n' "$0: INFO: Removing package: '${package_to_replace}'"
+   if [ "${remove_option}" = '--remove' ]; then
+      printf '%s\n' "$0: INFO: Not purging old package configuration files... (Because not using '--purge'.)"
+      printf '%s\n' "$0: INFO: Executing: apt-get $yes_option remove -- ${package_to_replace}"
+      if apt-get $yes_option remove -- "${package_to_replace}" ; then
+         printf '%s\n' "$0: INFO: Package removed."
+      else
+         printf '%s\n' "$0: ERROR: 'apt-get remove' command failed!" >&2
+      fi
+   elif [ "${remove_option}" = '--purge' ]; then
+      printf '%s\n' "$0: INFO: Purging old package configuration files..."
+      printf '%s\n' "$0: INFO: Executing: apt-get $yes_option purge -- ${package_to_replace}"
+      if apt-get $yes_option purge -- "${package_to_replace}" ; then
+         printf '%s\n' "$0: INFO: Package purged."
+      else
+         printf '%s\n' "$0: ERROR: 'apt-get purge' command failed!" >&2
+      fi
    fi
 
    cleanup
    trap '' EXIT
-   echo "$0: INFO: Done."
+   printf '%s\n' "$0: INFO: Done."
    exit 0
 }
 
