@@ -21,7 +21,7 @@ show_usage() {
 
 cleanup() {
    if [ -n "${TMPDIR_NEW:-}" ] && [ -d "${TMPDIR_NEW}" ]; then
-      safe-rm -r -f "${TMPDIR_NEW}"
+      safe-rm -r -f -- "${TMPDIR_NEW}"
    fi
 }
 
