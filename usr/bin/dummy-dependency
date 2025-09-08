@@ -62,10 +62,10 @@ Description: dummy-package for '${package_to_replace}'
       ## Sanity test.
       test -r "${deb_file_original}"
 
-      mkdir --parents /var/lib/dummy-dependency
+      mkdir --parents -- /var/lib/dummy-dependency
       ## Avoid APT warning:
       ## N: Download is performed unsandboxed as root as file '/tmp/user/0/tmp.8O7ET4e1Bx/dummy-user-sysmaint-split_99_all.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
-      cp --verbose "${deb_file_original}" "${deb_file_copy}"
+      cp --verbose -- "${deb_file_original}" "${deb_file_copy}"
 
       echo "$0: INFO: Dummy package created."
    }
