@@ -1,3 +1,33 @@
+commit 5caf5d39b6882b8641d1f1ee95f450d27430b900
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 8 11:23:36 2025 -0400
+
+    printf
+
+commit d4852a47e663277b7a0eeb9ffbafd0efabc2e989
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 8 11:22:59 2025 -0400
+
+    end-of-options
+
+commit e23a2da05b16f5018aeed9e8b8f680a3f71a5081
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 8 11:19:59 2025 -0400
+
+    dummy-dependency: fix, implement actual package remove or purge
+
+commit b70b5dd7fa2689be5e9ab799bb9028b1c8dd5ab1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 8 11:04:25 2025 -0400
+
+    end-of-options
+
+commit 38b131e8f1bcf814790b807e6b92c9100fe016db
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 2 15:16:05 2025 +0000
+
+    bumped changelog version
+
 commit 46bf631fdd10034a29df26d204cafc352d9a4591
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Sep 2 13:46:00 2025 +0000
