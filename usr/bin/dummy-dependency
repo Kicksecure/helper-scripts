@@ -15,7 +15,7 @@ set -o nounset
 true "$0: INFO: START"
 
 show_usage() {
-   printf '%s\n' "Usage: $0 [--remove|--purge] [--cached] [-y|--yes] 'package-name'" >&2
+   printf '%s\n' "Usage: $0 [--remove|--purge] [--cached|--cache-only] [-y|--yes] 'package-name'" >&2
    exit 1
 }
 
@@ -68,6 +68,11 @@ Description: dummy-package for '${package_to_replace}'
       cp --verbose -- "${deb_file_original}" "${deb_file_copy}"
 
       printf '%s\n' "$0: INFO: Dummy package created."
+
+      if [ "${cache_only_option}" = "true" ]; then
+         printf '%s\n' "$0: INFO: Stopping because using '--cache-only'."
+         exit 0
+      fi
    }
 
    ## Validate package name, see
@@ -165,6 +170,7 @@ package_to_replace=""
 yes_option=""
 remove_option="--remove"
 cached_option=""
+cache_only_option=""
 
 ## Main execution
 while [ "$#" -gt 0 ]; do
@@ -181,12 +187,23 @@ while [ "$#" -gt 0 ]; do
          cached_option="true"
          shift
          ;;
+      --cache-only)
+         cache_only_option="true"
+         shift
+         ;;
       *)
          package_to_replace="$1"
          shift
          ;;
    esac
 done
+
+if [ "$cached_option" = "true" ]; then
+   if [ "$cache_only_option" = "true" ]; then
+      printf '%s\n' "$0: ERROR: '--cached' option must not be combined with '--cache-only' option!" >&2
+      exit 1
+   fi
+fi
 
 [ -z "${package_to_replace}" ] && show_usage
 
