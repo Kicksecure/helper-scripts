@@ -1,3 +1,53 @@
+commit 437e948043de13314e820b4d1e2a1f518cb982ca
+Merge: d938255 a1692c2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 9 09:28:02 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit d938255d698bee5b4cc9f63acf4303dc934229b9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 9 09:23:52 2025 -0400
+
+    fix: exit non-zero on error
+
+commit 94a9e710f0f860f27bdd880f546ad25201fccb7f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 9 09:22:46 2025 -0400
+
+    dummy-dependency: add `--cache-only` option
+
+commit 76295f09b84fef49a32fa5ae0d6a9c8cfa5c9f67
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 9 09:15:50 2025 -0400
+
+    output
+
+commit 557c0175d54e3d162e1564bf6ccc1bb7920d81dd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 9 09:01:58 2025 -0400
+
+    minor
+
+commit a1692c2f1d2ad9a583a8866616d8e7651ef3d4e7
+Merge: 0c83434 8df07d6
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Sep 8 18:50:05 2025 -0500
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 8df07d6be5d3a915fbdcf2876b12eb831baba6c4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 8 12:07:19 2025 -0400
+
+    quotes
+
+commit ac442a1e574cfc0696a50ead409b87e8d7850ad6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 8 15:56:30 2025 +0000
+
+    bumped changelog version
+
 commit 5caf5d39b6882b8641d1f1ee95f450d27430b900
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Sep 8 11:23:36 2025 -0400
@@ -21,6 +71,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Sep 8 11:04:25 2025 -0400
 
     end-of-options
+
+commit 0c8343425a9f0cc3279dd4f8906d700c2ac1f9b5
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Sep 7 10:32:01 2025 -0500
+
+    Switch dummy-dependency from using Breaks/Replaces/Provides to using Conflicts/Provides
 
 commit 38b131e8f1bcf814790b807e6b92c9100fe016db
 Author: Patrick Schleizer <adrelanos@whonix.org>
