@@ -43,8 +43,7 @@ dummy_dependency() {
       equivs_content="Package: dummy-${package_to_replace}
 Version: 99:99
 Maintainer: dummy-dependency script <dummy-dependency@dummy-dependency.invalid>
-Breaks: ${package_to_replace}
-Replaces: ${package_to_replace}
+Conflicts: ${package_to_replace}
 Provides: ${package_to_replace}
 Architecture: all
 Description: dummy-package for '${package_to_replace}'
