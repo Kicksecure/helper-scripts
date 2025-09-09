@@ -146,6 +146,7 @@ Description: dummy-package for '${package_to_replace}'
          printf '%s\n' "$0: INFO: Package removed."
       else
          printf '%s\n' "$0: ERROR: 'apt-get remove' command failed!" >&2
+         exit 1
       fi
    elif [ "${remove_option}" = '--purge' ]; then
       printf '%s\n' "$0: INFO: Purging old package configuration files..."
@@ -154,6 +155,7 @@ Description: dummy-package for '${package_to_replace}'
          printf '%s\n' "$0: INFO: Package purged."
       else
          printf '%s\n' "$0: ERROR: 'apt-get purge' command failed!" >&2
+         exit 1
       fi
    fi
 
