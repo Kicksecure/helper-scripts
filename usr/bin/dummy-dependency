@@ -125,8 +125,8 @@ Description: dummy-package for '${package_to_replace}'
 
    #lintian --pedantic --info --display-info "${deb_file_copy}"
 
-   printf '%s\n' "$0: Executing: apt-get $yes_option install -- ${deb_file_copy}"
-   if apt-get $yes_option install -- "${deb_file_copy}" ; then
+   printf '%s\n' "$0: Executing: apt-get ${yes_option} install -- ${deb_file_copy}"
+   if apt-get ${yes_option} install -- "${deb_file_copy}" ; then
       printf '%s\n' "$0: INFO: Dummy package installed."
    else
       printf '%s\n' "$0: ERROR: 'apt-get install' command failed!" >&2
@@ -136,16 +136,16 @@ Description: dummy-package for '${package_to_replace}'
    printf '%s\n' "$0: INFO: Removing package: '${package_to_replace}'"
    if [ "${remove_option}" = '--remove' ]; then
       printf '%s\n' "$0: INFO: Not purging old package configuration files... (Because not using '--purge'.)"
-      printf '%s\n' "$0: INFO: Executing: apt-get $yes_option remove -- ${package_to_replace}"
-      if apt-get $yes_option remove -- "${package_to_replace}" ; then
+      printf '%s\n' "$0: INFO: Executing: apt-get ${yes_option} remove -- ${package_to_replace}"
+      if apt-get ${yes_option} remove -- "${package_to_replace}" ; then
          printf '%s\n' "$0: INFO: Package removed."
       else
          printf '%s\n' "$0: ERROR: 'apt-get remove' command failed!" >&2
       fi
    elif [ "${remove_option}" = '--purge' ]; then
       printf '%s\n' "$0: INFO: Purging old package configuration files..."
-      printf '%s\n' "$0: INFO: Executing: apt-get $yes_option purge -- ${package_to_replace}"
-      if apt-get $yes_option purge -- "${package_to_replace}" ; then
+      printf '%s\n' "$0: INFO: Executing: apt-get ${yes_option} purge -- ${package_to_replace}"
+      if apt-get ${yes_option} purge -- "${package_to_replace}" ; then
          printf '%s\n' "$0: INFO: Package purged."
       else
          printf '%s\n' "$0: ERROR: 'apt-get purge' command failed!" >&2
