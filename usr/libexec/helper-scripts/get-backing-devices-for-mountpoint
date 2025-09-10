@@ -64,13 +64,13 @@ def find_backing_items(path):
             if " " in path:
                 raise ValueError("Failed to look up backing item! (code 3)")
             losetup_data = subprocess.run(
-	    		[
-		    		f"losetup -l | grep '^{path}' | awk '{{print $6}}'"
-			    ],
-				shell=True,
-    			capture_output=True,
-	    		text=True,
-		    ).stdout.strip()
+                [
+                    f"losetup -l | grep '^{path}' | awk '{{print $6}}'"
+                ],
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
             if losetup_data == "":
                 raise ValueError("Failed to look up backing item! (code 4)")
             output_objs.extend(find_backing_items(losetup_data))
