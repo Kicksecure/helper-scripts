@@ -13,6 +13,7 @@ from pathlib import Path
 import sys
 import subprocess
 import os
+import shlex
 
 def find_backing_items(path):
     # Finds the device or devices that back a particular mountpoint or file.
@@ -63,14 +64,14 @@ def find_backing_items(path):
                 raise ValueError("Failed to look up backing item! (code 2)")
             if " " in path:
                 raise ValueError("Failed to look up backing item! (code 3)")
-            losetup_data = subprocess.run(
-                [
-                    f"losetup -l | grep '^{path}' | awk '{{print $6}}'"
-                ],
-                shell=True,
-                capture_output=True,
-                text=True,
-            ).stdout.strip()
+            cmd = shlex.split("losetup -l")
+            losetup_result = subprocess.run(cmd, capture_output=True, text=True)
+            losetup_data = ""
+            for line in losetup_result.stdout.splitlines():
+                parts = line.split()
+                if parts[0] == path:
+                    losetup_data = parts[5]
+                    break
             if losetup_data == "":
                 raise ValueError("Failed to look up backing item! (code 4)")
             output_objs.extend(find_backing_items(losetup_data))
