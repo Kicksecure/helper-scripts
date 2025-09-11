@@ -97,9 +97,12 @@ def find_backing_items(path):
                 raise ValueError("Failed to look up backing item! (code 9)")
             # need to be in /dev/mapper to properly resolve symlinks
             os.chdir("/dev/mapper")
-            real_dev_path = str(path_obj.readlink().resolve())
+            try:
+                real_dev_path = str(path_obj.resolve(strict=True))
+            except FileNotFoundError:
+                raise ValueError("Failed to look up backing item! (code 10.1)")
             if real_dev_path == "":
-                raise ValueError("Failed to look up backing item! (code 10)")
+                raise ValueError("Failed to look up backing item! (code 10.2)")
             print(f"real_dev_path: {real_dev_path}", file=sys.stderr)
             output_objs.extend(find_backing_items(real_dev_path))
             return output_objs
