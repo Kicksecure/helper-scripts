@@ -32,11 +32,14 @@ fi
 
 live_state_str='live'
 live_mode_str='none'
-kernel_cmdline=''
-if [ -f /proc/cmdline ]; then
-  kernel_cmdline="$(cat /proc/cmdline)"
-elif [ -f /proc/1/cmdline ]; then
-  kernel_cmdline="$(cat /proc/1/cmdline)"
+
+if [ -z "${kernel_cmdline+x}" ]; then
+  kernel_cmdline=''
+  if [ -f /proc/cmdline ]; then
+    kernel_cmdline="$(cat /proc/cmdline)"
+  elif [ -f /proc/1/cmdline ]; then
+    kernel_cmdline="$(cat /proc/1/cmdline)"
+  fi
 fi
 
 writable_fs_lists_str="$(/usr/libexec/helper-scripts/get_writable_fs_lists.sh)"
