@@ -3,6 +3,8 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+true "$0: START"
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   set -o errexit
   set -o nounset
@@ -172,3 +174,5 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     printf "%s='%s'\n" "$var_name" "${!var_name}"
   done
 fi
+
+true "$0: END: OK"

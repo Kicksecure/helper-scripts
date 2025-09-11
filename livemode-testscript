@@ -162,6 +162,7 @@ run_writable_fs_assert() {
   done
 
   proc_mount_contents="${gwfl_base_mount_str}${additional_mount_entry}"
+  true "$0: INFO: sourcing usr/libexec/helper-scripts/live-mode.sh (2)"
   result_str="$(source usr/libexec/helper-scripts/get_writable_fs_lists.sh)"
   if [ "${result_str}" != "${gwfl_expect_result_table[item_idx]}" ]; then
     printf '%s\n' 'ERROR: Expected:'
@@ -348,6 +349,7 @@ run_live_mode_assert() {
   done
 
   proc_mount_contents="${lm_base_mount_str}${additional_mount_entry}"
+  true "$0: INFO: sourcing usr/libexec/helper-scripts/live-mode.sh (1)"
   result_str="$(
     source usr/libexec/helper-scripts/live-mode.sh
     var_list=("live_status_detected_live_mode_environment_pretty"
