@@ -352,11 +352,13 @@ run_live_mode_assert() {
   true "$0: INFO: sourcing usr/libexec/helper-scripts/live-mode.sh (1)"
   result_str="$(
     source usr/libexec/helper-scripts/live-mode.sh
-    var_list=("live_status_detected_live_mode_environment_pretty"
+    var_list=(
+      "live_status_detected_live_mode_environment_pretty"
       "live_status_detected_live_mode_environment_machine"
       "live_status_word_pretty"
       "live_status_detected"
-      "live_status_maybe_iso_live_message")
+      "live_status_maybe_iso_live_message"
+    )
     for var_name in "${var_list[@]}"; do
       ## Single quotes. Do not change without reflecting this change by users of this script.
       printf "%s='%s'\n" "$var_name" "${!var_name}"
