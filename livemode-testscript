@@ -348,6 +348,9 @@ run_live_mode_assert() {
       > "${sysfs_prefix}/sys/class/block/${phys_dev}/removable"
   done
 
+  kernel_cmdline="rd.live.image"
+  export kernel_cmdline
+
   proc_mount_contents="${lm_base_mount_str}${additional_mount_entry}"
   true "$0: INFO: sourcing usr/libexec/helper-scripts/live-mode.sh (1)"
   result_str="$(
