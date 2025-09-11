@@ -61,6 +61,9 @@ for danger_writable_fs in "${danger_writable_fs_list[@]}"; do
     break
   fi
 done
+
+true "INFO: live_state_str: ${live_state_str}"
+
 if [ "${live_state_str}" = 'live' ] \
   && [ "${danger_writable_list_empty}" = 'false' ]; then
   live_state_str='semi-persistent-unsafe'
@@ -71,8 +74,10 @@ fi
 
 if [ "${live_state_str}" != 'persistent' ]; then
   while read -r line; do
+    true "$0: INFO: line: ${line}"
     if [[ "${line}" =~ ^LiveOS_rootfs\ / ]] \
       && [[ "${kernel_cmdline}" =~ rd.live.image ]]; then
+      true "$0: INFO: line contains LiveOS_rootfs and kernel_cmdline contains rd.live.image"
       if [ "${live_state_str}" = 'live' ]; then
         live_mode_str='iso-live'
       else
