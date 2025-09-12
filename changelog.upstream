@@ -1,3 +1,81 @@
+commit 1d21f2bebd072a9612aaf23b88b82618abf91ac8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 12 06:37:29 2025 -0400
+
+    avoid shell=True
+
+commit 8b8994ca800a3dff3379299663c56bc872c68896
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 12 06:06:16 2025 -0400
+
+    lower debugging
+
+commit d5d13d451e238406501e2e3acf24fd4a0ef2dbf7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 12 05:27:01 2025 -0400
+
+    get-backing-devices-for-mountpoint: improve parsing of `/dev/dm*` devices
+
+commit 2d4d5c5061edf0d6cdfb1ad183615571c2957ea9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 11 01:45:58 2025 -0400
+
+    get-backing-devices-for-mountpoint: more robust symlink resolution
+
+commit 2495e1a0b2110936349c54df030d44d96ef63f71
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 11 01:30:45 2025 -0400
+
+    get-backing-devices-for-mountpoint: more robust parsing of loop devices
+
+commit c564868f4a4f3c394302eb15d5c3913ece79f45a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 11 01:23:09 2025 -0400
+
+    fix live mode tests
+
+commit 9f238e86a216da91f91dd24d1056672b1fe08082
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 11 01:21:23 2025 -0400
+
+    refactoring
+
+commit 8fcf1d85572bba07e82b1a44b615d848b09f379e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 11 01:18:25 2025 -0400
+
+    allow overwriting kernel_cmdline for test mode
+
+commit bf3004d61fd382cf2f79e26514c78d4ccceea8a3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 11 01:14:22 2025 -0400
+
+    debugging
+
+commit 2bf6e62de0475842918eeaa34a13af2e0cedb17e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 11 01:03:47 2025 -0400
+
+    debugging
+
+commit 7ac593fb81c38f287d0cd94f22a69cb36637b09c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 10 11:13:08 2025 -0400
+
+    avoid shell=true
+
+commit cadbdb7f656e0760b2338bb7e68e4d1a3ee8b342
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 10 10:39:36 2025 -0400
+
+    remove tabs
+
+commit 4bb1fdfa89c83fc856d57870d81d3e68c7f4412a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 9 15:53:29 2025 +0000
+
+    bumped changelog version
+
 commit 437e948043de13314e820b4d1e2a1f518cb982ca
 Merge: d938255 a1692c2
 Author: Patrick Schleizer <adrelanos@whonix.org>
