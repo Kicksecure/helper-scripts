@@ -78,9 +78,12 @@ def find_backing_items(path):
                 raise ValueError("Failed to look up backing item! (code 5)")
             if " " in path:
                 raise ValueError("Failed to look up backing item! (code 6)")
-            for dev_name in (
-                Path(f"/sys/class/block/{path_obj.name}/slaves").iterdir()
-            ):
+            slaves_dir = Path(f"/sys/class/block/{path_obj.name}/slaves")
+            print(f"dm slaves_dir: {slaves_dir}", file=sys.stderr)
+            if not slaves_dir.exists():
+                print(f"dm slaves_dir does not exist, ok.", file=sys.stderr)
+                return output_objs
+            for dev_name in slaves_dir.iterdir():
                 dev_path = "/dev/" + dev_name.name
                 output_objs.extend(find_backing_items(dev_path))
             return output_objs
