@@ -1,3 +1,21 @@
+commit ba4580bf9089dc183fd50f724524aa5d61fbe568
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 12 07:28:41 2025 -0400
+
+    python3 -su
+
+commit 65d9616b4ae2e94174fef24456d152c9b1b7d233
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 12 07:12:28 2025 -0400
+
+    dummy-dependency: use single apt-get command to remove original package and install dummy package
+
+commit 6fef90bc79de1cd0789bee3e3f73b2066d677c47
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 12 10:42:41 2025 +0000
+
+    bumped changelog version
+
 commit 1d21f2bebd072a9612aaf23b88b82618abf91ac8
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Sep 12 06:37:29 2025 -0400
