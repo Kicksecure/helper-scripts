@@ -8,6 +8,7 @@
 
 import os
 import subprocess
+from pathlib import Path
 import unittest
 from stdisplay.stdisplay import (
     get_sgr_support,
@@ -63,12 +64,15 @@ class TestSTPrintShell(unittest.TestCase):
         """
         test_dir = os.path.dirname(os.path.abspath(__file__))
         script_dir = os.path.dirname(test_dir)
-        command = "../../../../bin/stprint"
+        stprint_absolute_path = "../../../../bin/stprint"
+        stprint_absolute_path = str(Path(stprint_absolute_path).resolve())
         input_data = ""
         if stdin:
+            command = [stprint_absolute_path]
             input_data = text
         else:
-            command += f" '{text}'"
+            command = [stprint_absolute_path, text]
+
         ## Avoid tester environment from affecting tests, such as CI having
         ## TERM=dumb, but also allow us testing if RegEx is correct
         ## depending on the terminal provided.
@@ -85,7 +89,6 @@ class TestSTPrintShell(unittest.TestCase):
             input=input_data,
             env=env,
             cwd=script_dir,
-            shell=True,
             capture_output=True,
             check=True,
             text=True,
