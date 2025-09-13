@@ -12,7 +12,7 @@ if [ "$(id -un)" = 'root' ]; then
   ## Avoid using 'sudo' if already using account 'root'. Reasons:
   ## - Using 'sudo' is unnecessary in this case.
   ## - Would work in case of a user-sysmaint-split or sudo bug.
-  exec /usr/bin/apt-get-update-plus dist-upgrade
+  exec /usr/bin/apt-get --update full-upgrade
 fi
 
 ## This is never reached if using 'exec' above.
@@ -27,7 +27,7 @@ fi
 ## zsh: exits non-zero if found but not exectuable.
 ## bash: exits 0 if found but not executable
 if test -x /usr/bin/sudo ; then
-  exec /usr/bin/sudo /usr/bin/apt-get-update-plus dist-upgrade
+  exec /usr/bin/sudo /usr/bin/apt-get --update full-upgrade
 fi
 
 ## This is never reached if using 'exec' above.
@@ -44,4 +44,4 @@ if pkg_installed user-sysmaint-split; then
   fi
 fi
 
-exec sudo /usr/bin/apt-get-update-plus dist-upgrade
+exec sudo /usr/bin/apt-get --update full-upgrade

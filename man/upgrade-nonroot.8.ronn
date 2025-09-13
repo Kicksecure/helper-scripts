@@ -1,4 +1,4 @@
-upgrade-nonroot(8) -- run /usr/bin/apt-get-update-plus dist-upgrade
+upgrade-nonroot(8) -- run /usr/bin/apt-get --update full-upgrade
 =============================================
 
 <!--
@@ -10,7 +10,7 @@ upgrade-nonroot(8) -- run /usr/bin/apt-get-update-plus dist-upgrade
 `upgrade-nonroot`
 
 ## Description
-Runs '/usr/bin/apt-get-update-plus dist-upgrade' as root.
+Runs '/usr/bin/apt-get --update full-upgrade' as root.
 
 If 'user-sysmaint-split' is not installed, this works passwordless for any
 user who is a member of group sudo, because of the
