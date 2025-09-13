@@ -1,3 +1,34 @@
+commit b4e316d053e704440a6d4b348d459ca06f381a3f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 03:58:24 2025 -0400
+
+    genmkfile manpages
+
+commit 708ce6931f00a26f06ac695221fc5a56ba2f6e55
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 03:58:07 2025 -0400
+
+    man
+
+commit 3f6cd13e6076042b8864676d6f96521c44c87c39
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 03:57:33 2025 -0400
+
+    comments
+
+commit 70a1d1f957e7b8ad9f02ec6b8ee7dd41d1850c4c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 03:55:42 2025 -0400
+
+    * remove no longer required `apt-get-update-plus`
+    * `upgrade-nonroot` is now using `/usr/bin/apt-get --update full-upgrade` instead
+
+commit 0e8712214da149f6640d06a5efb69c52a584ad0d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 12 12:03:23 2025 +0000
+
+    bumped changelog version
+
 commit 69f1cc7a4b2df36e5bfdcac7ecac38b1d75e42ed
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Sep 12 07:52:42 2025 -0400
