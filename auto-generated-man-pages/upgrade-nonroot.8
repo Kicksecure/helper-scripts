@@ -2,13 +2,13 @@
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1
 .TH "UPGRADE\-NONROOT" "8" "January 2020" "helper-scripts" "helper-scripts Manual"
 .SH "NAME"
-\fBupgrade\-nonroot\fR \- run /usr/bin/apt\-get\-update\-plus dist\-upgrade
+\fBupgrade\-nonroot\fR \- run /usr/bin/apt\-get \-\-update full\-upgrade
 .SH "SYNOPSIS"
 \fBupgrade\-nonroot\fR
 .SH "Description"
-Runs '/usr/bin/apt\-get\-update\-plus dist\-upgrade' as root\.
+Runs '/usr/bin/apt\-get \-\-update full\-upgrade' as 'root'\.
 .P
-If 'user\-sysmaint\-split' is not installed, this works passwordless for any user who is a member of group sudo, because of the /etc/privleap/conf\.d/usability\-misc\.conf and /etc/sudoers\.d/upgrade\-passwordless configuration snippets\.
+If 'user\-sysmaint\-split' is not installed, this works passwordless for any user who is a member of group 'sudo', because of the '/etc/privleap/conf\.d/usability\-misc\.conf' and '/etc/sudoers\.d/upgrade\-passwordless' configuration snippets\.
 .P
 If 'user\-sysmaint\-split' is installed, this works passwordless only if the system is booted in 'sysmaint' mode\.
 .SH "Examples"
