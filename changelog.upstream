@@ -1,3 +1,25 @@
+commit 565b54c324382017b8c1528e4b3f9df8adc5cff5
+Merge: 046951c 209c3b3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 06:39:56 2025 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 209c3b3e04776b79a482dcb972fcda35ef864d37
+Merge: 046951c 76f9585
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 05:04:58 2025 -0400
+
+    Merge pull request #10 from DanWin/ipv6
+    
+    Add GATEWAY_IP6 variable
+
+commit 046951cf32b7916326eaef0e5f4dc433695c8974
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 08:30:09 2025 +0000
+
+    bumped changelog version
+
 commit b4e316d053e704440a6d4b348d459ca06f381a3f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Sep 13 03:58:24 2025 -0400
@@ -3812,6 +3834,12 @@ Date:   Fri Nov 1 11:14:54 2024 -0400
     Merge pull request #11 from ArrayBolt3/arraybolt3/append-once-fix
     
     Make append-once work even with multi-line strings
+
+commit 76f9585deca024886e787ec54d9f0b8515bf29d0
+Author: Daniel Winzen <daniel@danwin1210.de>
+Date:   Thu Oct 31 16:07:20 2024 +0100
+
+    Add GATEWAY_IP6 variable
 
 commit 93bbe2081ab5d140a3353f6f8a383d088b2b4581
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
