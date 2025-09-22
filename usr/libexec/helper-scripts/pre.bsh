@@ -35,12 +35,12 @@
 ##
 ## The SKIP_SCRIPTS environment variable to skip scripts by name
 ## For example:
-##    sudo DEBDEBUG=1 SKIP_SCRIPTS=" security-misc.postinst " dpkg -i /path/to/package.deb
+##    sudo DEBDEBUG=1 SKIP_SCRIPTS=" security-misc-shared.postinst " dpkg -i /path/to/package.deb
 ##
 ## another example:
 ##
 ##    export DEBDEBUG=1
-##     export SKIP_SCRIPTS+=" security-misc.postinst "
+##     export SKIP_SCRIPTS+=" security-misc-shared.postinst "
 ##     sudo --preserve-env dpkg -i /path/to/package.deb
 
 ## Colorful output: provides color function
@@ -49,9 +49,9 @@
 
 ## Configuration Folders
 ##
-## For example if the name of the package is 'security-misc':
-## - /etc/security-misc_maint.d/*.conf
-## - /usr/local/etc/security-misc_maint.d/*.conf
+## For example if the name of the package is 'security-misc-shared':
+## - /etc/security-misc-shared_maint.d/*.conf
+## - /usr/local/etc/security-misc-shared_maint.d/*.conf
 ##
 ## For example if the name of the script is 'panic-on-oops':
 ## - /etc/panic-on-oops_pre.d/*.conf
@@ -149,7 +149,7 @@ colors() {
 source_config_folder() {
    ## dpkg sets environment variables
    ## example:
-   ## DPKG_MAINTSCRIPT_PACKAGE=security-misc
+   ## DPKG_MAINTSCRIPT_PACKAGE=security-misc-shared
 
    [[ -v DPKG_MAINTSCRIPT_PACKAGE ]] || DPKG_MAINTSCRIPT_PACKAGE=""
    if [ "$DPKG_MAINTSCRIPT_PACKAGE" = "" ]; then
@@ -159,7 +159,7 @@ source_config_folder() {
    fi
 
    ## example:
-   ## pre_bsh_settings_folder=security-misc_maint.d
+   ## pre_bsh_settings_folder=security-misc-shared_maint.d
 
    shopt -s nullglob
    local i
