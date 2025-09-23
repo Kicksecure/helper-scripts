@@ -3,11 +3,22 @@
 ## Copyright (C) 2021 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+true "$0: START"
+
+dpkg_origins_filename=""
+if test -r /etc/dpkg/origins/kicksecure; then
+  dpkg_origins_filename=/etc/dpkg/origins/kicksecure
+elif test -r /etc/dpkg/origins/whonix; then
+  dpkg_origins_filename=/etc/dpkg/origins/whonix
+elif test -r /etc/dpkg/origins/default; then
+  dpkg_origins_filename=/etc/dpkg/origins/default
+fi
+
 PROJECT_NAME=""
 PROJECT_HOMEPAGE=""
-if test -r /etc/dpkg/origins/default; then
-  PROJECT_NAME="$(cat -- /etc/dpkg/origins/default | grep -- "Vendor:" | awk -- '{print $2}')"
-  PROJECT_HOMEPAGE="$(cat -- /etc/dpkg/origins/default | grep -- "Vendor-URL:" | awk -- '{print $2}')"
+if test -r "$dpkg_origins_filename"; then
+  PROJECT_NAME="$(cat -- "$dpkg_origins_filename" | grep -- "Vendor:" | awk -- '{print $2}')"
+  PROJECT_HOMEPAGE="$(cat -- "$dpkg_origins_filename" | grep -- "Vendor-URL:" | awk -- '{print $2}')"
 fi
 
 derivative_major_release_version=""
@@ -16,3 +27,8 @@ if test -r /etc/whonix_version ; then
 elif test -r /etc/kicksecure_version ; then
   derivative_major_release_version="$(cat -- "/etc/kicksecure_version")"
 fi
+
+true "$0: PROJECT_NAME: $PROJECT_NAME"
+true "$0: PROJECT_HOMEPAGE: $PROJECT_HOMEPAGE"
+true "$0: derivative_major_release_version: $derivative_major_release_version"
+true "$0: END"
