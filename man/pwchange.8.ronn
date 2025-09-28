@@ -1,0 +1,22 @@
+pwchange(8) -- user friendly account password change utility
+=============================================
+
+<!--
+# Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+`pwchange`
+
+## Description
+Similar to the chpasswd(8) utility but showing the asterisk ("*") symbol while
+typing the password for better usability.
+
+Internally using chpasswd(8) to actually change the password.
+
+Designed for interactive use using command line. For non-interactive use in
+scripts use chpasswd(8) directly.
+
+## AUTHOR
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).
