@@ -1,3 +1,22 @@
+commit 9f044c3ed880b57f1dcf5397cd947a62518dae2f
+Merge: 791df21 97316ea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Sep 28 16:58:47 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 97316ea83e39004b6f19f06658056c05d94c5e2e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Sep 28 12:14:30 2025 -0500
+
+    Add Wayland screen locker support to lock-screen script
+
+commit 791df21e1b740bcbed4bbaa61809a83868d55afc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Sep 28 13:46:56 2025 +0000
+
+    bumped changelog version
+
 commit bddbb9a8503d29d1b3069e33128c65d38b00f998
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Sep 28 09:46:42 2025 -0400
