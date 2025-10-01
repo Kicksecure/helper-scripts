@@ -1,3 +1,29 @@
+commit bd4a5ee82d0cf72515a5bbd4552608d090c7864d
+Merge: a426187 fcf41df
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 1 05:38:50 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit fcf41dfcb51a1a6f25cf90f2916fcc9aaf04e47a
+Merge: 80ef7dd a426187
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Sep 29 17:10:21 2025 -0500
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 80ef7dd834dc4cf079db3cd25a17f45ba47fc5de
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Sep 28 19:53:23 2025 -0500
+
+    Fix backing device detection for live ISO root filesystem
+
+commit a426187934e611cda1f536c7857e4f992ab5e1a0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Sep 28 21:08:27 2025 +0000
+
+    bumped changelog version
+
 commit 9f044c3ed880b57f1dcf5397cd947a62518dae2f
 Merge: 791df21 97316ea
 Author: Patrick Schleizer <adrelanos@whonix.org>
