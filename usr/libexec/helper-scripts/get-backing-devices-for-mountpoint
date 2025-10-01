@@ -42,6 +42,28 @@ def find_backing_items(path):
     print(f"path: {path}", file=sys.stderr)
 
     output_objs = []
+
+    ## Special-case looking for the backing device for the root partition when
+    ## running in ISO live mode. In this instance, we want to look for the
+    ## backing device of /run/initramfs/live, because both / and
+    ## /run/rootfsbase go back to /dev/loop0, which goes to
+    ## /live/filesystem.squashfs, which no longer exists at this point because
+    ## the root filesystem has pivoted and /live is now /run/initramfs/live.
+    ##
+    ## NOTE: The missing single quote in the below string is intentional, to
+    ## match iso-live, iso-live-semi-persistent, etc.
+    if (
+        "live_status_detected_live_mode_environment_machine='iso-live"
+        in subprocess.run(
+            "/usr/libexec/helper-scripts/live-mode.sh",
+            capture_output=True,
+            encoding="utf-8",
+        ).stdout
+        and path == "/"
+    ):
+        output_objs.extend(find_backing_items("/run/initramfs/live"))
+        return output_objs
+
     if path_obj.is_block_device():
         print("is block device: yes", file=sys.stderr)
         if (
