@@ -1,3 +1,22 @@
+commit 45f941d31e42efc592107a979547508621d882e2
+Merge: a2a61d2 cb512e6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 3 15:27:15 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit cb512e6347a6cdcd57d7f12a4a9a0bf852a3ef29
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Oct 3 13:41:18 2025 -0500
+
+    Only include abstractions/tor AppArmor file if it exists
+
+commit a2a61d2185bd04d95ebcf41db1b903b2d886abce
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 1 09:42:04 2025 +0000
+
+    bumped changelog version
+
 commit bd4a5ee82d0cf72515a5bbd4552608d090c7864d
 Merge: a426187 fcf41df
 Author: Patrick Schleizer <adrelanos@whonix.org>
