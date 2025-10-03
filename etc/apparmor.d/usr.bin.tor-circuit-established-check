@@ -9,6 +9,6 @@ include <tunables/global>
   include <abstractions/consoles>
   include <abstractions/gstreamer>
   include <abstractions/tor-circuit-established-check>
-  include <abstractions/tor>
+  include if exists <abstractions/tor>
   include <local/usr.bin.tor-circuit-established-check>
 }
