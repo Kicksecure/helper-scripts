@@ -64,8 +64,8 @@ get_os(){
     debian_testing_or_unstable_detected=1
   fi
 
-  if [ "$distro_codename" = "trixie" ]; then
-    log info "Debian 'testing' or 'unstable' detection: 'trixie' still considered 'testing' (hardcoded in this program)"
+  if [ "$distro_codename" = "forky" ]; then
+    log info "Debian 'testing' or 'unstable' detection: 'forky' still considered 'testing' (hardcoded in this program)"
     debian_testing_or_unstable_detected=1
   fi
 
