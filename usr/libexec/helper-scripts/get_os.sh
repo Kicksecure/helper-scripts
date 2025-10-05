@@ -64,6 +64,7 @@ get_os(){
     debian_testing_or_unstable_detected=1
   fi
 
+  ## TODO: Debian 'forky' - change this from 'forky' to 'duke'.
   if [ "$distro_codename" = "forky" ]; then
     log info "Debian 'testing' or 'unstable' detection: 'forky' still considered 'testing' (hardcoded in this program)"
     debian_testing_or_unstable_detected=1
