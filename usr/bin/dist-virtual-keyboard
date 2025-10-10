@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -e
+set -o errtrace
+set -o pipefail
+set -o nounset
+
+true "$0: INFO: START"
+
+kb_pid_file="/run/user/$(id -u)/dist-virtual-keyboard.pid"
+
+terminate_wvkbd() {
+  if [ -f "${kb_pid_file}" ]; then
+    kb_pid="$(cat "${kb_pid_file}")"
+    if kill -0 -- "${kb_pid}" ; then
+      kill -s SIGTERM "${kb_pid}" || true
+    fi
+    safe-rm -f "${kb_pid_file}"
+  fi
+}
+
+launch_wvkbd() {
+  if [ -f "${kb_pid_file}" ]; then
+    terminate_wvkbd
+  fi
+  /usr/bin/wvkbd-mobintl &
+  kb_pid="$!"
+  printf '%s\n' "${kb_pid}" | sponge "${kb_pid_file}"
+}
+
+if (( $# > 0 )) && [ "$1" = '--terminate' ]; then
+  terminate_wvkbd
+  exit
+fi
+
+launch_wvkbd
