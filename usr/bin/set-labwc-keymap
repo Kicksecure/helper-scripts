@@ -14,6 +14,7 @@ command -v safe-rm >/dev/null
 command -v localectl >/dev/null
 command -v mktemp >/dev/null
 command -v mv >/dev/null
+command -v mkdir >/dev/null
 
 xkb_variable_names=(
   'XKB_DEFAULT_LAYOUT'
@@ -121,7 +122,7 @@ set_labwc_keymap() {
   fi
 
   ## Ensure the labwc configuration directory exists.
-  mkdir -p "$(dirname "${labwc_config_path}")" || {
+  mkdir --parents -- "$(dirname "${labwc_config_path}")" || {
     printf '%s\n' "$0: ERROR: Cannot create labwc config directory!"
     return 1
   }
@@ -139,7 +140,7 @@ set_labwc_keymap() {
     ## existing configuration to a temporary backup location.
     if [ "${do_persist}" = 'false' ]; then
       labwc_config_bak_path="$(mktemp)"
-      mv "${labwc_config_path}" "${labwc_config_bak_path}" || {
+      mv -- "${labwc_config_path}" "${labwc_config_bak_path}" || {
         printf '%s\n' "$0: ERROR: Cannot move existing labwc environment config to backup location!"
         return 1
       }
