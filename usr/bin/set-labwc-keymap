@@ -203,12 +203,12 @@ set_labwc_keymap() {
   ## configuration back (or just delete the new config file if there wasn't an
   ## old config file).
   if [ -n "${labwc_config_bak_path}" ]; then
-    mv "${labwc_config_bak_path}" "${labwc_config_path}" || {
+    mv -- "${labwc_config_bak_path}" "${labwc_config_path}" || {
       printf '%s\n' "$0: ERROR: Cannot move backup labwc environment config to original location!"
       return 1
     }
   elif [ "${do_persist}" = 'false' ]; then
-    safe-rm "${labwc_config_path}" || {
+    safe-rm -- "${labwc_config_path}" || {
       printf '%s\n' "$0: ERROR: Cannot remove temporary labwc environment config!"
       return 1
     }
