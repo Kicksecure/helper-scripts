@@ -15,7 +15,6 @@ command -v localectl >/dev/null
 command -v mktemp >/dev/null
 command -v mv >/dev/null
 command -v mkdir >/dev/null
-command -v labwc >/dev/null
 command -v overwrite >/dev/null
 
 xkb_variable_names=(
@@ -197,8 +196,13 @@ set_labwc_keymap() {
     printf '%s\n' "$0: ERROR: Cannot write new labwc environment config!"
     return 1
   }
-  labwc --reconfigure \
-    || printf '%s\n' "$0: WARNING: labwc reconfiguration failed!"
+
+  if ! command -v labwc >/dev/null; then
+    printf '%s\n' "$0: WARNING: labwc not available in PATH or not installed."
+  else
+    labwc --reconfigure \
+      || printf '%s\n' "$0: WARNING: labwc reconfiguration failed!"
+  fi
 
   ## If we do not want to persist the new configuration, put the old
   ## configuration back (or just delete the new config file if there wasn't an
