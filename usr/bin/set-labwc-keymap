@@ -15,6 +15,7 @@ command -v localectl >/dev/null
 command -v mktemp >/dev/null
 command -v mv >/dev/null
 command -v mkdir >/dev/null
+command -v labwc >/dev/null
 
 xkb_variable_names=(
   'XKB_DEFAULT_LAYOUT'
