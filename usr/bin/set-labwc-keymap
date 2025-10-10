@@ -195,7 +195,7 @@ set_labwc_keymap() {
     )
   done
 
-  labwc_env_file_string="$(printf '%s\n' ${labwc_env_file_lines[*]})"
+  labwc_env_file_string="$(printf '%s\n' "${labwc_env_file_lines[@]}")"
 
   ## Write the new config file contents and load them into labwc.
   overwrite "${labwc_config_path}" "${labwc_env_file_string}" || {
