@@ -216,6 +216,7 @@ set_labwc_keymap() {
   ## If we do not want to persist the new configuration, put the old
   ## configuration back (or just delete the new config file if there wasn't an
   ## old config file).
+  true "labwc_config_bak_path: ${labwc_config_bak_path-}"
   if [ -n "${labwc_config_bak_path}" ]; then
     mv -- "${labwc_config_bak_path}" "${labwc_config_path}" || {
       printf '%s\n' "$0: ERROR: Cannot move backup labwc environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!"
