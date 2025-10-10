@@ -222,7 +222,7 @@ print_usage() {
   printf '%s\n' 'Options:'
   printf '%s\n' '--help     Print this help message'
   printf '%s\n' '--persist  Make layout change persistent'
-  printf '\n'
+  printf '%s\n' ''
   printf '%s\n' 'Examples:'
   printf '%s\n' '  set-labwc-keymap de'
   printf '%s\n' '  set-labwc-keymap --persist us colemak'
