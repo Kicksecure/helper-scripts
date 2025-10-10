@@ -207,8 +207,11 @@ set_labwc_keymap() {
   if ! command -v labwc >/dev/null; then
     printf '%s\n' "$0: WARNING: 'labwc' not available in PATH or not installed."
   else
-    labwc --reconfigure \
-      || printf '%s\n' "$0: WARNING: 'labwc' reconfiguration failed!"
+    if labwc --reconfigure; then
+      printf '%s\n' "$0: INFO: OK."
+    else
+      printf '%s\n' "$0: WARNING: 'labwc' reconfiguration failed!"
+    fi
   fi
 
   ## If we do not want to persist the new configuration, put the old
@@ -227,8 +230,6 @@ set_labwc_keymap() {
       return 1
     }
   fi
-
-  printf '%s\n' "$0: INFO: OK."
 }
 
 print_usage() {
