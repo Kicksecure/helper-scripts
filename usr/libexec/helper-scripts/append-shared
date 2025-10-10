@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 ## Usage:
-## (append|append-once|overwrite) /path/to/file 'line to append'
+## (append|append-once|overwrite) /path/to/file 'content'
 ##
 ## This is a multicall executable, its behavior changes depending on its name.
 ## The following modes are implemented:
@@ -28,7 +28,7 @@ executable_name = Path(sys.argv[1]).name
 
 def print_usage_and_bail():
     print(
-        f"Usage: {executable_name} /path/to/file 'line to append'",
+        f"Usage: {executable_name} /path/to/file 'content'",
         file=sys.stderr,
     )
     sys.exit(1)
