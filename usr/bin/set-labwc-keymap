@@ -11,6 +11,9 @@ set -o pipefail
 true "$0: START"
 
 command -v safe-rm >/dev/null
+command -v localectl >/dev/null
+command -v mktemp >/dev/null
+command -v mv >/dev/null
 
 xkb_variable_names=(
   'XKB_DEFAULT_LAYOUT'
