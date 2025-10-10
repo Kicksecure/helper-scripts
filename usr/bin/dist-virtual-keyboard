@@ -7,25 +7,23 @@ set -o nounset
 
 true "$0: INFO: START"
 
-kb_pid_file="/run/user/$(id -u)/dist-virtual-keyboard.pid"
+command -v start-stop-daemon >/dev/null
+
+pidfile="/run/user/$(id -u)/dist-virtual-keyboard.pid"
 
 terminate_wvkbd() {
-  if [ -f "${kb_pid_file}" ]; then
-    kb_pid="$(cat "${kb_pid_file}")"
-    if kill -0 -- "${kb_pid}" ; then
-      kill -s SIGTERM "${kb_pid}" || true
-    fi
-    safe-rm -f "${kb_pid_file}"
-  fi
+  start-stop-daemon --stop --quiet --retry=TERM/5/KILL/5 --pidfile "$pidfile" &>/dev/null || true
 }
 
 launch_wvkbd() {
-  if [ -f "${kb_pid_file}" ]; then
-    terminate_wvkbd
-  fi
-  /usr/bin/wvkbd-mobintl &
-  kb_pid="$!"
-  printf '%s\n' "${kb_pid}" | sponge "${kb_pid_file}"
+  program="/usr/bin/wvkbd-mobintl"
+
+  start-stop-daemon \
+    --background \
+    --make-pidfile \
+    --pidfile "$pidfile" \
+    --exec "$program" \
+    --start
 }
 
 if (( $# > 0 )) && [ "$1" = '--terminate' ]; then
