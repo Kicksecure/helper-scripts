@@ -10,6 +10,8 @@ set -o pipefail
 
 true "$0: START"
 
+command -v safe-rm >/dev/null
+
 xkb_variable_names=(
   'XKB_DEFAULT_LAYOUT'
   'XKB_DEFAULT_VARIANT'
