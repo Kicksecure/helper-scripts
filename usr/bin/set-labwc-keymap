@@ -105,8 +105,8 @@ set_labwc_keymap() {
       if [ -z "${kb_variant_list[kb_idx]}" ]; then continue; fi
       if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
         localectl list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
-        printf '%s\n' "$0: ERROR: Specified keyboard layout variant for layout ${kb_layout_list[kb_idx]} is not valid!"
-        printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the ${kb_layout_list[kb_idx]} layout."
+        printf '%s\n' "$0: ERROR: Specified keyboard layout variant for layout '${kb_layout_list[kb_idx]}' is not valid!"
+        printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants '${kb_layout_list[kb_idx]}'' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout."
         return 1
       fi
     done
@@ -203,10 +203,10 @@ set_labwc_keymap() {
   stcat "${labwc_config_path}"
 
   if ! command -v labwc >/dev/null; then
-    printf '%s\n' "$0: WARNING: labwc not available in PATH or not installed."
+    printf '%s\n' "$0: WARNING: 'labwc' not available in PATH or not installed."
   else
     labwc --reconfigure \
-      || printf '%s\n' "$0: WARNING: labwc reconfiguration failed!"
+      || printf '%s\n' "$0: WARNING: 'labwc' reconfiguration failed!"
   fi
 
   ## If we do not want to persist the new configuration, put the old
