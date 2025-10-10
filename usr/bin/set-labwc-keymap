@@ -208,9 +208,9 @@ set_labwc_keymap() {
     printf '%s\n' "$0: WARNING: 'labwc' not available in PATH or not installed."
   else
     if labwc --reconfigure; then
-      printf '%s\n' "$0: INFO: OK."
+      printf '%s\n' "$0: INFO: 'labwc --reconfigure' OK."
     else
-      printf '%s\n' "$0: WARNING: 'labwc' reconfiguration failed!"
+      printf '%s\n' "$0: WARNING: 'labwc --reconfigure' reconfiguration failed!"
     fi
   fi
 
