@@ -226,6 +226,7 @@ set_labwc_keymap() {
       return 1
     }
   fi
+  printf '%s\n' "$0: INFO: OK."
 }
 
 print_usage() {
