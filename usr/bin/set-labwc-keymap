@@ -65,7 +65,7 @@ is_layout_data_valid() {
 set_labwc_keymap() {
   local labwc_config_path labwc_config_bak_path labwc_env_file_lines \
     did_replace_var var_idx conf_idx kb_layout_list kb_variant_list \
-    kb_idx args labwc_env_file_string labwc_cofig_directory
+    kb_idx args labwc_env_file_string labwc_config_directory
 
   labwc_config_path="${HOME}/.config/labwc/environment"
   labwc_config_bak_path=''
@@ -124,11 +124,11 @@ set_labwc_keymap() {
     fi
   fi
 
-  labwc_cofig_directory="$(dirname -- "${labwc_config_path}")"
+  labwc_config_directory="$(dirname -- "${labwc_config_path}")"
 
   ## Ensure the labwc configuration directory exists.
-  mkdir --parents -- "${labwc_cofig_directory}" || {
-    printf '%s\n' "$0: ERROR: Cannot create labwc config directory '${labwc_cofig_directory}!"
+  mkdir --parents -- "${labwc_config_directory}" || {
+    printf '%s\n' "$0: ERROR: Cannot create labwc config directory '${labwc_config_directory}!"
     return 1
   }
 
