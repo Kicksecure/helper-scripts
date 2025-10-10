@@ -203,7 +203,6 @@ set_labwc_keymap() {
     return 1
   }
 
-
   if ! command -v labwc >/dev/null; then
     printf '%s\n' "$0: WARNING: 'labwc' not available in PATH or not installed."
   else
