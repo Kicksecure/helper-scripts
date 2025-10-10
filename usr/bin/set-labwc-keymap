@@ -14,6 +14,7 @@ command -v safe-rm >/dev/null
 command -v localectl >/dev/null
 command -v mktemp >/dev/null
 command -v mv >/dev/null
+command -v dirname >/dev/null
 command -v mkdir >/dev/null
 command -v overwrite >/dev/null
 
@@ -123,7 +124,7 @@ set_labwc_keymap() {
   fi
 
   ## Ensure the labwc configuration directory exists.
-  mkdir --parents -- "$(dirname "${labwc_config_path}")" || {
+  mkdir --parents -- "$(dirname -- "${labwc_config_path}")" || {
     printf '%s\n' "$0: ERROR: Cannot create labwc config directory!"
     return 1
   }
