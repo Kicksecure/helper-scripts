@@ -1,3 +1,105 @@
+commit bb1608417a6eefc71508b1a81123ed0ecefc5385
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:47:13 2025 -0400
+
+    output
+
+commit 459a804af640db3bc5235e0f4ccbf6575e35d6fe
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:46:29 2025 -0400
+
+    improvements
+
+commit d7f58f0ca495baef5a32167e1d8b9a288567ff15
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:43:48 2025 -0400
+
+    improvements
+
+commit f4482f62cf139d2ba932743d9aaf78af8cb5c5a1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:42:59 2025 -0400
+
+    output
+
+commit 956a7f5868557707d97727f5ac8433d4da8ae20a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:40:38 2025 -0400
+
+    `set-labwc-keymap`: use `overwrite` and show contents of created `~/.config/labwc/environment` file
+
+commit 62d15bcf621655f3fc1eff879d9100aa98760be7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:28:46 2025 -0400
+
+    output
+
+commit af1d6178989d03f5764931cbe84f74804f27c60f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:24:46 2025 -0400
+
+    fix
+
+commit 3062f694cf848a1d8ba2d54125346e373ad1af4a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:21:33 2025 -0400
+
+    minor
+
+commit 810a97a47242bbd468efd54759ba30a3d8e09e93
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:18:29 2025 -0400
+
+    use overwrite
+
+commit b60ae1fafd1362445fa449984a9d8a9bb30fcbd1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:16:51 2025 -0400
+
+    end-of-options
+
+commit c176f60c4b5c919c02a4c2162d6d4498f1dd2597
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:16:18 2025 -0400
+
+    improvements
+
+commit 6cce0f2a4a58047b89d011c7bd2772cf0377cdd2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:15:11 2025 -0400
+
+    improvements
+
+commit ba2af0b10acbc501dbe80384ea23018e209afb3d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:14:33 2025 -0400
+
+    sanity test
+
+commit 91fe4b2d80bb56d11744a49908f1ef96ccf7de61
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:08:44 2025 -0400
+
+    chmod +x
+
+commit d948a7bab6a3b6d89dbcc1daa8f52f5b2d961301
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:08:36 2025 -0400
+
+    local
+
+commit 20b63810613c25ec71c6a202eb32b78542fcb6c8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 06:06:50 2025 -0400
+
+    sanity test
+
+commit 99ea7a7a8c3f80f22caafb4638ca41483350e7b1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 08:02:37 2025 +0000
+
+    bumped changelog version
+
 commit 124a66ea3fc303481f02c65079ca86d8d7282f93
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 10 03:52:45 2025 -0400
