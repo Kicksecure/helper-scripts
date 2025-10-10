@@ -1,3 +1,46 @@
+commit 124a66ea3fc303481f02c65079ca86d8d7282f93
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 03:52:45 2025 -0400
+
+    `dist-virtual-keyboard`: port to `start-stop-daemon`
+
+commit 0a283d293712e92abcbbfbc26429391b110f09d8
+Merge: 2dc9a8c 41ae1e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 03:47:26 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 41ae1e120672b94351a4c3889181bb9be2991eb0
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Oct 9 22:46:21 2025 -0500
+
+    Create set-labwc-keymap script
+
+commit 59d568feb017b381c51727654cc7057fe865aa43
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Oct 9 18:46:23 2025 -0500
+
+    Move dist-virtual-keyboard from usability-misc to helper-scripts
+
+commit 2dc9a8c9b1a0a9e71ccd3236b8095565d0df5175
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 9 12:11:25 2025 -0400
+
+    add `env-sorted`
+    
+    (`env -0 | sort -z | tr '\0' '\n'`)
+    
+    Thanks to Iguananaut!
+    
+    https://stackoverflow.com/questions/60756020/print-environment-variables-sorted-by-name-including-variables-with-newlines
+
+commit 6c1562ef44bcc6ff1f35db0ed9b6990064856083
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 5 19:14:45 2025 +0000
+
+    bumped changelog version
+
 commit d279907d2bdd2731b3cd32a32b896672d84bca80
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 5 15:01:54 2025 -0400
