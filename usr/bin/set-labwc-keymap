@@ -17,6 +17,7 @@ command -v mv >/dev/null
 command -v dirname >/dev/null
 command -v mkdir >/dev/null
 command -v overwrite >/dev/null
+command -v stcat >/dev/null
 
 xkb_variable_names=(
   'XKB_DEFAULT_LAYOUT'
