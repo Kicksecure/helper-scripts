@@ -64,7 +64,7 @@ is_layout_data_valid() {
 set_labwc_keymap() {
   local labwc_config_path labwc_config_bak_path labwc_env_file_lines \
     did_replace_var var_idx conf_idx kb_layout_list kb_variant_list \
-    kb_idx args labwc_env_file_string
+    kb_idx args labwc_env_file_string labwc_cofig_directory
 
   labwc_config_path="${HOME}/.config/labwc/environment"
   labwc_config_bak_path=''
@@ -123,16 +123,18 @@ set_labwc_keymap() {
     fi
   fi
 
+  labwc_cofig_directory="$(dirname -- "${labwc_config_path}")"
+
   ## Ensure the labwc configuration directory exists.
-  mkdir --parents -- "$(dirname -- "${labwc_config_path}")" || {
-    printf '%s\n' "$0: ERROR: Cannot create labwc config directory!"
+  mkdir --parents -- "${labwc_cofig_directory}" || {
+    printf '%s\n' "$0: ERROR: Cannot create labwc config directory '${labwc_cofig_directory}!"
     return 1
   }
 
   ## If labwc's environment config file exists, read it.
   if [ -f "${labwc_config_path}" ]; then
     if ! [ -r "${labwc_config_path}" ]; then
-      printf '%s\n' "$0: ERROR: Cannot read existing labwc environment config!"
+      printf '%s\n' "$0: ERROR: Cannot read existing labwc environment config '${labwc_config_path}'!"
       return 1
     fi
 
@@ -143,7 +145,7 @@ set_labwc_keymap() {
     if [ "${do_persist}" = 'false' ]; then
       labwc_config_bak_path="$(mktemp)"
       mv -- "${labwc_config_path}" "${labwc_config_bak_path}" || {
-        printf '%s\n' "$0: ERROR: Cannot move existing labwc environment config to backup location!"
+        printf '%s\n' "$0: ERROR: Cannot move existing labwc environment config '${labwc_config_path}' to backup location '${labwc_config_bak_path}'!"
         return 1
       }
     fi
@@ -196,7 +198,7 @@ set_labwc_keymap() {
 
   ## Write the new config file contents and load them into labwc.
   overwrite "${labwc_config_path}" "${labwc_env_file_string}" || {
-    printf '%s\n' "$0: ERROR: Cannot write new labwc environment config!"
+    printf '%s\n' "$0: ERROR: Cannot write new labwc environment config '${labwc_config_path}'!"
     return 1
   }
 
@@ -215,12 +217,12 @@ set_labwc_keymap() {
   ## old config file).
   if [ -n "${labwc_config_bak_path}" ]; then
     mv -- "${labwc_config_bak_path}" "${labwc_config_path}" || {
-      printf '%s\n' "$0: ERROR: Cannot move backup labwc environment config to original location!"
+      printf '%s\n' "$0: ERROR: Cannot move backup labwc environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!"
       return 1
     }
   elif [ "${do_persist}" = 'false' ]; then
     safe-rm -- "${labwc_config_path}" || {
-      printf '%s\n' "$0: ERROR: Cannot remove temporary labwc environment config!"
+      printf '%s\n' "$0: ERROR: Cannot remove temporary labwc environment config '${labwc_config_path}'!"
       return 1
     }
   fi
