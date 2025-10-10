@@ -58,7 +58,7 @@ is_layout_data_valid() {
 set_labwc_keymap() {
   local labwc_config_path labwc_config_bak_path labwc_env_file_lines \
     did_replace_var var_idx conf_idx kb_layout_list kb_variant_list \
-    kb_idx
+    kb_idx args
 
   labwc_config_path="${HOME}/.config/labwc/environment"
   labwc_config_bak_path=''
