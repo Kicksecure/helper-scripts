@@ -1,3 +1,46 @@
+commit 5a37534a5f2f77168ec5df24f942f9a8b8cc4ec0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 13 09:19:54 2025 -0400
+
+    refactoring
+
+commit 87eaed6631747b1af8c929520f07d8e694fe64a6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 13 09:17:42 2025 -0400
+
+    fix
+
+commit 260258dd80ea5196ce59af89cef072298753211b
+Merge: ecb1ec6 3ff521d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 13 09:16:02 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 3ff521de95abe363778def38344ce70e8ba32092
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Oct 12 09:32:24 2025 -0500
+
+    Fix usage of start-stop-daemon in dist-virtual-keyboard
+
+commit d6dd4f62a98f1440848da387dee8d956ac6762e1
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Oct 12 01:03:11 2025 -0500
+
+    Allow deleting config entries in config_builder
+
+commit aee26139baba134c29b0add0466f2538f58935be
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Oct 11 22:41:08 2025 -0500
+
+    Polish set-labwc-keymap argument parsing, write messages to stderr, add --no-reload, --config, and end-of-options arguments
+
+commit ecb1ec6c374b712ef4724ee9f5b240f644490396
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 10 12:44:47 2025 +0000
+
+    bumped changelog version
+
 commit 1eef68a22eadeace760e2537116c950aeac7e252
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 10 08:40:43 2025 -0400
