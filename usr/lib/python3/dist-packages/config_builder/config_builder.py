@@ -24,7 +24,7 @@ def config_file_to_config_state(
     detect_comment_regex: re.Pattern[str] = re.compile(r"\s*#")
     detect_header_regex: re.Pattern[str] = re.compile(r"\[.*]\Z")
     ## We don't use None here since an empty string is a valid header value
-    ## (this is used to deal with the annoying fact that toml allow
+    ## (this is used to deal with the annoying fact that toml allows
     ## configuration values outside of sections). We could technically use
     ## None here but then we'd have to do gymnastics with the type checker to
     ## get it to understand the data structure. This is clearer and easier.
@@ -47,7 +47,7 @@ def config_file_to_config_state(
                     config_state[current_header_str] = {}
                 continue
 
-            if current_header_str == "" and not "" in config_state:
+            if current_header_str == "" and "" not in config_state:
                 config_state[""] = {}
 
             if not "=" in config_line:
@@ -67,12 +67,37 @@ def merge_down_config_state(
 ) -> None:
     """
     Merges one config state dictionary into another one.
+
+    NOTE: Sections and keys that start with a tilde ('~') are REMOVED from the
+    base state, not merged. This allows later config files to delete sections
+    and keys from earlier files, which is required to properly configure
+    greetd. If you need to actually start a config key with a tilde, use a
+    double-tilde and it will be compressed down to a single tilde.
     """
 
     for key, value in add_config_state.items():
+        if key.startswith("~") and not key.startswith("~~"):
+            key = key[1:]
+            if key in base_config_state:
+                del base_config_state[key]
+            continue
+
+        if key.startswith("~~"):
+            key = key[1:]
+
         if not key in base_config_state:
             base_config_state[key] = {}
+
         for nest_key, nest_value in value.items():
+            if nest_key.startswith("~") and not nest_key.startswith("~~"):
+                nest_key = nest_key[1:]
+                if nest_key in base_config_state[key]:
+                    del base_config_state[key][nest_key]
+                continue
+
+            if nest_key.startswith("~~"):
+                nest_key = nest_key[1:]
+
             base_config_state[key][nest_key] = nest_value
 
 

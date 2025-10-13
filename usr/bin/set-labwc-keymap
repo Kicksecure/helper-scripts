@@ -25,6 +25,8 @@ xkb_variable_names=(
   'XKB_DEFAULT_OPTIONS'
 )
 do_persist='false'
+no_reload='false'
+labwc_config_path="${HOME}/.config/labwc/environment"
 
 ## Checks to see if all items in "check_str" are present in the output of a
 ## command that lists valid items.
@@ -63,16 +65,15 @@ is_layout_data_valid() {
 ## Sets the XKB layout(s), variant(s), and option(s) in labwc, either for just
 ## this session or persistently.
 set_labwc_keymap() {
-  local labwc_config_path labwc_config_bak_path labwc_env_file_lines \
-    did_replace_var var_idx conf_idx kb_layout_list kb_variant_list \
-    kb_idx args labwc_env_file_string labwc_config_directory
+  local labwc_config_bak_path labwc_env_file_lines did_replace_var var_idx \
+    conf_idx kb_layout_list kb_variant_list kb_idx args \
+    labwc_env_file_string labwc_config_directory
 
-  labwc_config_path="${HOME}/.config/labwc/environment"
   labwc_config_bak_path=''
   labwc_env_file_lines=()
   args=( "$@" )
   if [ "${#args[@]}" != '3' ]; then
-    printf '%s\n' "$0: ERROR: Argument handling failure!"
+    printf '%s\n' "$0: ERROR: Argument handling failure!" >&2
     return 1
   fi
 
@@ -82,15 +83,15 @@ set_labwc_keymap() {
   ## the maximum number labwc appears to support).
   readarray -t kb_layout_list < <(printf '%s\n' "${args[0]}" | tr ',' '\n')
   if (( ${#kb_layout_list[@]} > 4 )); then
-    printf '%s\n' "$0: ERROR: Too many keyboard layouts specified, must specify 4 or less!"
+    printf '%s\n' "$0: ERROR: Too many keyboard layouts specified, must specify 4 or less!" >&2
     return 1
   fi
 
   ## Ensure the specified keyboard layout(s) are valid.
   if ! is_layout_data_valid "${args[0]}" \
     localectl list-x11-keymap-layouts ; then
-    printf '%s\n' "$0: ERROR: Specified keyboard layout(s) are not all valid!"
-    printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-layouts' to get a list of valid layouts."
+    printf '%s\n' "$0: ERROR: Specified keyboard layout(s) are not all valid!" >&2
+    printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-layouts' to get a list of valid layouts." >&2
     return 1
   fi
 
@@ -99,7 +100,7 @@ set_labwc_keymap() {
     readarray -t kb_variant_list < <(printf '%s\n' "${args[1]}" | tr ',' '\n')
 
     if (( ${#kb_layout_list[@]} < ${#kb_variant_list[@]} )); then
-      printf '%s\n' "$0: ERROR: Insufficient number of keyboard layouts specified for number of variants!"
+      printf '%s\n' "$0: ERROR: Insufficient number of keyboard layouts specified for number of variants!" >&2
       return 1
     fi
 
@@ -107,8 +108,8 @@ set_labwc_keymap() {
       if [ -z "${kb_variant_list[kb_idx]}" ]; then continue; fi
       if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
         localectl list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
-        printf '%s\n' "$0: ERROR: Specified keyboard layout variant for layout '${kb_layout_list[kb_idx]}' is not valid!"
-        printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants '${kb_layout_list[kb_idx]}'' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout."
+        printf '%s\n' "$0: ERROR: Specified keyboard layout variant for layout '${kb_layout_list[kb_idx]}' is not valid!" >&2
+        printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants '${kb_layout_list[kb_idx]}'' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout." >&2
         return 1
       fi
     done
@@ -118,8 +119,8 @@ set_labwc_keymap() {
   if [ -n "${args[2]:-}" ]; then
     if ! is_layout_data_valid "${args[2]}" \
       localectl list-x11-keymap-options ; then
-      printf '%s\n' "$0: ERROR: Specified keyboard layout option(s) are not valid!"
-      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-options' to get a list of valid layout options."
+      printf '%s\n' "$0: ERROR: Specified keyboard layout option(s) are not valid!" >&2
+      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-options' to get a list of valid layout options." >&2
       return 1
     fi
   fi
@@ -128,14 +129,14 @@ set_labwc_keymap() {
 
   ## Ensure the labwc configuration directory exists.
   mkdir --parents -- "${labwc_config_directory}" || {
-    printf '%s\n' "$0: ERROR: Cannot create labwc config directory '${labwc_config_directory}!"
+    printf '%s\n' "$0: ERROR: Cannot create labwc config directory '${labwc_config_directory}!" >&2
     return 1
   }
 
   ## If labwc's environment config file exists, read it.
   if [ -f "${labwc_config_path}" ]; then
     if ! [ -r "${labwc_config_path}" ]; then
-      printf '%s\n' "$0: ERROR: Cannot read existing labwc environment config '${labwc_config_path}'!"
+      printf '%s\n' "$0: ERROR: Cannot read existing labwc environment config '${labwc_config_path}'!" >&2
       return 1
     fi
 
@@ -146,7 +147,7 @@ set_labwc_keymap() {
     if [ "${do_persist}" = 'false' ]; then
       labwc_config_bak_path="$(mktemp)"
       mv -- "${labwc_config_path}" "${labwc_config_bak_path}" || {
-        printf '%s\n' "$0: ERROR: Cannot move existing labwc environment config '${labwc_config_path}' to backup location '${labwc_config_bak_path}'!"
+        printf '%s\n' "$0: ERROR: Cannot move existing labwc environment config '${labwc_config_path}' to backup location '${labwc_config_bak_path}'!" >&2
         return 1
       }
     fi
@@ -199,17 +200,19 @@ set_labwc_keymap() {
 
   ## Write the new config file contents and load them into labwc.
   overwrite "${labwc_config_path}" "${labwc_env_file_string}" >/dev/null || {
-    printf '%s\n' "$0: ERROR: Cannot write new labwc environment config '${labwc_config_path}'!"
+    printf '%s\n' "$0: ERROR: Cannot write new labwc environment config '${labwc_config_path}'!" >&2
     return 1
   }
 
-  if ! command -v labwc >/dev/null; then
-    printf '%s\n' "$0: WARNING: 'labwc' not available in PATH or not installed."
-  else
-    if labwc --reconfigure; then
-      printf '%s\n' "$0: INFO: 'labwc --reconfigure' OK."
+  if [ "${no_reload}" = 'false' ]; then
+    if ! command -v labwc >/dev/null; then
+      printf '%s\n' "$0: WARNING: 'labwc' not available in PATH or not installed." >&2
     else
-      printf '%s\n' "$0: WARNING: 'labwc --reconfigure' reconfiguration failed!"
+      if labwc --reconfigure; then
+        printf '%s\n' "$0: INFO: 'labwc --reconfigure' OK." >&2
+      else
+        printf '%s\n' "$0: WARNING: 'labwc --reconfigure' reconfiguration failed!" >&2
+      fi
     fi
   fi
 
@@ -218,43 +221,68 @@ set_labwc_keymap() {
   ## old config file).
   if [ -n "${labwc_config_bak_path}" ]; then
     mv -- "${labwc_config_bak_path}" "${labwc_config_path}" || {
-      printf '%s\n' "$0: ERROR: Cannot move backup labwc environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!"
+      printf '%s\n' "$0: ERROR: Cannot move backup labwc environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!" >&2
       return 1
     }
-    printf '%s\n' "INFO: new '${labwc_config_path}' contents:"
-    stcat "${labwc_config_path}"
+    printf '%s\n' "INFO: new '${labwc_config_path}' contents:" >&2
+    stcat "${labwc_config_path}" >&2
   elif [ "${do_persist}" = 'true' ]; then
-    printf '%s\n' "INFO: new '${labwc_config_path}' contents:"
-    stcat "${labwc_config_path}"
+    printf '%s\n' "INFO: new '${labwc_config_path}' contents:" >&2
+    stcat "${labwc_config_path}" >&2
   elif [ "${do_persist}" = 'false' ]; then
     safe-rm -- "${labwc_config_path}" || {
-      printf '%s\n' "$0: ERROR: Cannot remove temporary labwc environment config '${labwc_config_path}'!"
+      printf '%s\n' "$0: ERROR: Cannot remove temporary labwc environment config '${labwc_config_path}'!" >&2
       return 1
     }
   fi
 }
 
 print_usage() {
-  printf '%s\n' "$0: Set keyboard layout for labwc"
-  printf '%s\n' "Usage: $0 [--help] [--persist] [layout [variant [option]]]"
-  printf '%s\n' 'Options:'
-  printf '%s\n' '--help     Print this help message'
-  printf '%s\n' '--persist  Make layout change persistent'
-  printf '%s\n' ''
-  printf '%s\n' 'Examples:'
-  printf '%s\n' '  set-labwc-keymap de'
-  printf '%s\n' '  set-labwc-keymap --persist us colemak'
-  printf '%s\n' '  set-labwc-keymap us,cz,de "" grp:alt_shift_toggle'
+  printf '%s\n' "$0: Set keyboard layout for labwc" >&2
+  printf '%s\n' "Usage: $0 [--help] [--persist] [--no-reload] [--config <path>] -- [layout [variant [option]]]" >&2
+  printf '%s\n' 'Options:' >&2
+  printf '%s\n' '--help           Print this help message.' >&2
+  printf '%s\n' '--persist        Make layout change persistent.' >&2
+  printf '%s\n' '--no-reload      Skip reloading labwc config. Only makes sense with --persist.' >&2
+  printf '%s\n' '--config <path>  Specify an alternative config file path.' >&2
+  printf '%s\n' '' >&2
+  printf '%s\n' 'Examples:' >&2
+  printf '%s\n' '  set-labwc-keymap de' >&2
+  printf '%s\n' '  set-labwc-keymap --persist us colemak' >&2
+  printf '%s\n' '  set-labwc-keymap us,cz,de "" grp:alt_shift_toggle' >&2
 }
 
-if [ "${1:-}" = '--persist' ]; then
-  do_persist='true'
-  shift
-fi
-if [ "${1:-}" = '--help' ] || [ "${1:-}" = '-h' ]; then
-  print_usage
-  exit 0
-fi
+while [ -n "${1:-}" ]; do
+  case "${1:-}" in
+    '--persist')
+      do_persist='true'
+      shift
+      ;;
+    '--help'|'-h')
+      print_usage
+      exit 0
+      ;;
+    '--no-reload')
+      no_reload='true'
+      shift
+      ;;
+    '--config')
+      if [ -z "${2:-}" ]; then
+        printf '%s\n' "$0: ERROR: No config path specified!" >&2
+        exit 1
+      fi
+      labwc_config_path="${2:-}"
+      shift 2
+      ;;
+    '--')
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 
 args=( "$@" )
 ## We must have at least one, but no more than three, arguments specifying the

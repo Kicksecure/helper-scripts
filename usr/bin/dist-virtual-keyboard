@@ -7,18 +7,21 @@ set -o nounset
 
 true "$0: INFO: START"
 
-command -v start-stop-daemon >/dev/null
-
+# start-stop-daemon is in /usr/sbin, but the caller might not have /usr/sbin
+# in its PATH variable, so we need to locate it ourselves.
+ssd="$(command -v /usr/sbin/start-stop-daemon)"
 pidfile="/run/user/$(id -u)/dist-virtual-keyboard.pid"
 
 terminate_wvkbd() {
-  start-stop-daemon --stop --quiet --retry=TERM/5/KILL/5 --pidfile "$pidfile" &>/dev/null || true
+  "$ssd" --stop --quiet --retry=TERM/5/KILL/5 --pidfile "$pidfile" &>/dev/null || true
+  # start-stop-daemon doesn't clean up the PID file for us.
+  safe-rm "$pidfile"
 }
 
 launch_wvkbd() {
   program="/usr/bin/wvkbd-mobintl"
 
-  start-stop-daemon \
+  "$ssd" \
     --background \
     --make-pidfile \
     --pidfile "$pidfile" \
