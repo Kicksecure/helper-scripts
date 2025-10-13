@@ -13,9 +13,7 @@ ssd="$(command -v /usr/sbin/start-stop-daemon)"
 pidfile="/run/user/$(id -u)/dist-virtual-keyboard.pid"
 
 terminate_wvkbd() {
-  "$ssd" --stop --quiet --retry=TERM/5/KILL/5 --pidfile "$pidfile" &>/dev/null || true
-  # start-stop-daemon doesn't clean up the PID file for us.
-  safe-rm --force -- "$pidfile"
+  "$ssd" --remove-pidfile --stop --quiet --retry=TERM/5/KILL/5 --pidfile "$pidfile" &>/dev/null || true
 }
 
 launch_wvkbd() {
