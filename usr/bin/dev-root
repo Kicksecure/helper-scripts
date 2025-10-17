@@ -24,7 +24,11 @@ $0: ERROR: Either:
   exit 1
 fi
 
-sudo passwordless-root
+if [ -f /usr/share/qubes/marker-vm ]; then
+  sudo passwordless-root --qubes-rw
+else
+  sudo passwordless-root
+fi
 
 privleapd --check-config
 
