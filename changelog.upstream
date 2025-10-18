@@ -1,3 +1,40 @@
+commit e813f96cb18380fd80cb2377b9b15952be758636
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 18 05:02:24 2025 -0400
+
+    bump
+
+commit cf52ffad6e41888c72ffb2ac1b072041a546012a
+Merge: 8995a93 4750dba
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 18 04:42:59 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 4750dba56777fa1f157b72a3fc76b149c255932e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Oct 17 14:59:54 2025 -0500
+
+    Use 'passwordless-root --qubes-rw' in dev-root when necessary
+
+commit 166fa110eba85b96207e1444061fa9c0e2921080
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Oct 17 14:57:52 2025 -0500
+
+    Use /etc-based sudo enablement in passwordless-root under Qubes by default, require --qubes-rw for persistent-in-AppVM mechanism
+
+commit ef2f3da4f00e1429f31424a13ae16865cf0470e9
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Oct 17 14:52:45 2025 -0500
+
+    Move passwordless-root from usability-misc to helper-scripts
+
+commit 8995a934e1cdd3c9b8c205fb20ba02e3970678c4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 13 13:46:37 2025 +0000
+
+    bumped changelog version
+
 commit 5a37534a5f2f77168ec5df24f942f9a8b8cc4ec0
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Oct 13 09:19:54 2025 -0400
