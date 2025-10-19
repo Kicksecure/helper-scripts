@@ -24,8 +24,8 @@ if ! mkdir --parents -- "$LOCKDIR"; then
 fi
 
 if [ -d "$LOCKDIR" ]; then
-  if ! [ -r "$LOCKDIR" ] || ! [ -w "$LOCKDIR" ]; then
-    printf '%s\n' "$0: ERROR: No read/write access to lock directory '$LOCKDIR'. Check permissions."
+  if [[ ! -r "$LOCKDIR" || ! -w "$LOCKDIR" || ! -x "$LOCKDIR" ]]; then
+    printf '%s\n' "$0: ERROR: No rwx access to lock directory '$LOCKDIR'. Check permissions."
     exit 1
   fi
 fi
