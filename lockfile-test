@@ -1,0 +1,14 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -x
+set -o errexit
+set -o errtrace
+set -o nounset
+set -o pipefail
+
+source ./usr/libexec/helper-scripts/lockfile.sh
+
+sleep 10
