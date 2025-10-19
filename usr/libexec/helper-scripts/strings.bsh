@@ -70,6 +70,12 @@ is_whole_number() {
    [[ "$1" =~ ^[0-9]+$ ]]
 }
 
+## NOTE: Duplicated in package 'uwt' file 'curl.anondist'.
+random_alpha_numeric() {
+  local n="${1:-43}"
+  LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head -c "$n"; echo
+}
+
 run_test() {
    local test_name varname value expected_exit_code
    test_name="$1"
