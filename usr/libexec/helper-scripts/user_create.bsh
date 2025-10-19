@@ -103,7 +103,9 @@ password_empty_for_user_account() {
 add_groups_to_linux_user_account() {
   local group_item
   for group_item in "${USER_CREATE_GROUP_ADD_LIST[@]}"; do
-    if ! is_group "$group_item"; then
+    ## Use '&>/dev/null' to suppress error from 'is_group'.
+    #log error "Group does not exist: '${group}'"
+    if ! is_group "$group_item" &>/dev/null; then
       addgroup --system "$group_item"
     fi
 
