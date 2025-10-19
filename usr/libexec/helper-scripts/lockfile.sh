@@ -59,7 +59,7 @@ fi
 
 trap cleanup_lockfile EXIT
 
-if ! flock --nonblock "$LOCKFILE" overwrite "$PIDFILE" "$$" >/dev/null ; then
+if ! flock --nonblock --exclusive "$LOCKFILE" overwrite "$PIDFILE" "$$" >/dev/null ; then
   trap '' EXIT
   exit 1
 fi
