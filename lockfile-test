@@ -9,12 +9,12 @@ set -o errtrace
 set -o nounset
 set -o pipefail
 
-true "${BASH_SOURCE[0]} - $$ - $SHLVL: START"
+true "${BASH_SOURCE[0]}: START"
 
 source ./usr/libexec/helper-scripts/lockfile.sh
 
-true "${BASH_SOURCE[0]} - $$ - $SHLVL: continuing execution..."
+true "${BASH_SOURCE[0]}: continuing execution..."
 
 sleep 10
 
-true "${BASH_SOURCE[0]} - $$ - $SHLVL: END"
+true "${BASH_SOURCE[0]}: END"
