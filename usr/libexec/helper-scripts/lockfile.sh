@@ -30,11 +30,6 @@ if [ -d "$LOCKDIR" ]; then
   fi
 fi
 
-if ! mkdir --parents -- "$LOCKDIR"; then
-  printf '%s\n' "$0: ERROR: Could not create lock directory '$LOCKDIR'."
-  exit 1
-fi
-
 if [ -e "$LOCKFILE" ]; then
   if ! [ -r "$LOCKFILE" ] || ! [ -w "$LOCKFILE" ]; then
     printf '%s\n' "$0: ERROR: Cannot read/write to lock file '$LOCKFILE'. Check permissions."
