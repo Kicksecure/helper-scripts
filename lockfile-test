@@ -13,6 +13,8 @@ true "${BASH_SOURCE[0]}: START"
 
 source ./usr/libexec/helper-scripts/lockfile.sh
 
+true "${BASH_SOURCE[0]}: continuing execution..."
+
 sleep 10
 
 true "${BASH_SOURCE[0]}: END"
