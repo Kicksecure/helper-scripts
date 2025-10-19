@@ -12,7 +12,7 @@ true "${BASH_SOURCE[0]}: START"
 true "${BASH_SOURCE[0]}: INFO: FLOCKER: ${FLOCKER-}"
 
 if [ "${FLOCKER-}" != "$0" ]; then
-  exec env FLOCKER="$0" flock --verbose --exclusive --nonblock "$0" "$0" "$@"
+  exec env FLOCKER="$0" flock --verbose --exclusive --nonblock "$0" "$0" "$@" >/dev/null
 fi
 
 true "${BASH_SOURCE[0]}: END"
