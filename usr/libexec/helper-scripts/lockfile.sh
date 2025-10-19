@@ -17,6 +17,7 @@ cleanup_lockfile() {
 
 command -v safe-rm >/dev/null
 command -v stcat >/dev/null
+command -v overwrite >/dev/null
 
 if ! mkdir --parents -- "$LOCKDIR"; then
   printf '%s\n' "$0: ERROR: Failed to create lock directory '$LOCKDIR'. Check permissions."
@@ -36,7 +37,7 @@ if [ -e "$LOCKFILE" ]; then
     exit 1
   fi
 
-  LOCK_PID=$(stcat -- "$LOCKFILE" 2>/dev/null)
+  LOCK_PID=$(stcat "$LOCKFILE" 2>/dev/null)
   if [ -z "$LOCK_PID" ]; then
     printf '%s\n' "$0: WARNING: Lock file exists but is empty. Removing stale lock file."
     safe-rm -f -- "$LOCKFILE"
@@ -53,4 +54,4 @@ if [ -e "$LOCKFILE" ]; then
 fi
 
 trap cleanup_lockfile EXIT
-printf '%s\n' "$$" | sponge -- "$LOCKFILE"
+flock --nonblock "$LOCKFILE" overwrite "$LOCKFILE" "$$" >/dev/null
