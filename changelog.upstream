@@ -1,3 +1,95 @@
+commit 40dbff6de0b2b88419cba7070472a3472254c470
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 20 12:44:51 2025 -0400
+
+    dev
+
+commit 64d5d8bd98c1b1cc0ac4b844fb9c67a66780ba23
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 20 14:51:33 2025 +0000
+
+    bumped changelog version
+
+commit c14a4ba1026f230f489dca519c9bc9a1176982f2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 18:18:29 2025 -0400
+
+    output
+
+commit 88f5d5e3de6599c9d4583c16c8964aae3e42a2e0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 18:15:33 2025 -0400
+
+    Revert "lockfile.sh: custom error message version"
+    
+    This reverts commit e09cb422750489e6a8f2ec57504b22075e3d52bc.
+
+commit e09cb422750489e6a8f2ec57504b22075e3d52bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 18:14:15 2025 -0400
+
+    lockfile.sh: custom error message version
+
+commit 03a8a09de546bff84a4bc0088838a8f3fad5c106
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 18:04:03 2025 -0400
+
+    minor
+
+commit feaea0c4cd856eb5d5c44a68cea7a9541048efb8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 17:49:32 2025 -0400
+
+    fix
+
+commit f3d3bc1354fc28dc3476796b817fd0d4f0e28635
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 17:17:56 2025 -0400
+
+    fix
+
+commit 0a156a3c636a0aadeda308a1404656fdd5381218
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 17:13:09 2025 -0400
+
+    fix
+
+commit 072a63c9c9706acd852d6195acecbe457f9ee163
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 16:52:43 2025 -0400
+
+    add lockfile-test
+
+commit 703a8fdc0a9b0b5a886c37c43b8860888b7326d5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 16:52:33 2025 -0400
+
+    fix
+
+commit 68666fb6119a6eb51194f9ae4529407c1c85855a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 16:38:11 2025 -0400
+
+    fix
+
+commit 9d4c386ad164ee30e4aba4eec1f53fcc3eaee87f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 16:32:22 2025 -0400
+
+    fix
+
+commit 637f47e5aa91b8ae5d2a00a31c28c6c81a3275fd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 16:26:29 2025 -0400
+
+    add `usr/libexec/helper-scripts/lockfile.sh`
+
+commit c6ef7c08fa3d29755289dbad464812666cc42cf8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 19 10:43:39 2025 +0000
+
+    bumped changelog version
+
 commit e777d6c55ff7e23938b977e89dea16d6bcd6531c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 19 06:30:33 2025 -0400

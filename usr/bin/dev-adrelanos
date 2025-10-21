@@ -11,20 +11,17 @@ true "$0: START"
 true "$0: INFO: This script is for developers-only."
 
 if [ ! "$1" = "force" ]; then
-   true "$0: ERROR: No argument given!" >&2
-   exit 1
+  true "$0: ERROR: No argument given!" >&2
+  exit 1
 fi
 
 dev-root force
 
-setxkbmap de || true
 sudo loadkeys de || true
 
-## TODO: if folder does not exist yet
-sudo -u user append-once /home/user/.bashrc "setxkbmap de" || true
-sudo -u sysmaint append-once /home/sysmaint/.bashrc "setxkbmap de" || true
-sudo -u user append-once /home/user/.zshrc "setxkbmap de" || true
-sudo -u sysmaint append-once /home/sysmaint/.zshrc "setxkbmap de" || true
+set-labwc-keymap --persist de || true
+
+sudo --non-interactive -u user set-labwc-keymap --no-reload --persist de || true
 
 sudo repository-dist --enable --repository developers
 
