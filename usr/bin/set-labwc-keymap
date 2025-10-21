@@ -26,6 +26,7 @@ xkb_variable_names=(
 )
 do_persist='false'
 no_reload='false'
+interactive='false'
 labwc_config_path="${HOME}/.config/labwc/environment"
 
 ## Checks to see if all items in "check_str" are present in the output of a
@@ -62,12 +63,99 @@ is_layout_data_valid() {
   return 0
 }
 
+check_keyboard_layouts() {
+  local layout_str kb_layout_list
+
+  layout_str="${1:-}"
+  if [ -z "${layout_str}" ]; then
+    printf '%s\n' "$0: ERROR: Empty keyboard layout string provided!" >&2
+    return 1
+  fi
+
+  ## Ensure the user has no more than four keyboard layouts specified (this
+  ## is the maximum number supported by XKB under X11 according to
+  ## https://www.x.org/archive/X11R7.5/doc/input/XKB-Config.html, and it is
+  ## the maximum number labwc appears to support).
+  readarray -t kb_layout_list < <(printf '%s\n' "${layout_str}" | tr ',' '\n')
+  if (( ${#kb_layout_list[@]} > 4 )); then
+    printf '%s\n' "$0: ERROR: Too many keyboard layouts specified, must specify 4 or less!" >&2
+    return 1
+  fi
+
+  ## Ensure the specified keyboard layout(s) are valid.
+  if ! is_layout_data_valid "${layout_str}" \
+    localectl list-x11-keymap-layouts ; then
+    printf '%s\n' "$0: ERROR: Specified keyboard layout(s) are not all valid!" >&2
+    if [ "${interactive}" = 'false' ]; then
+      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-layouts' to get a list of valid layouts." >&2
+    fi
+    return 1
+  fi
+
+  return 0
+}
+
+check_keyboard_layout_variants() {
+  local layout_str variant_str kb_layout_list kb_variant_list kb_idx
+
+  layout_str="${1:-}"
+  variant_str="${2:-}"
+  if [ -z "${layout_str}" ]; then
+    printf '%s\n' "$0: ERROR: Empty keyboard layout string provided!" >&2
+    return 1
+  fi
+  if [ -z "${variant_str}" ]; then
+    printf '%s\n' "$0: ERROR: Empty keyboard layout variant string provided!" >&2
+    return 1
+  fi
+
+  readarray -t kb_layout_list < <(printf '%s\n' "${layout_str}" | tr ',' '\n')
+  ## Don't redo the keyboard layout count check, that's been done by
+  ## check_keyboard_layouts already
+  readarray -t kb_variant_list < <(printf '%s\n' "${variant_str}" | tr ',' '\n')
+
+  if (( ${#kb_layout_list[@]} < ${#kb_variant_list[@]} )); then
+    printf '%s\n' "$0: ERROR: Insufficient number of keyboard layouts specified for number of variants!" >&2
+    return 1
+  fi
+
+  for kb_idx in "${!kb_layout_list[@]}"; do
+    if [ -z "${kb_variant_list[kb_idx]}" ]; then continue; fi
+    if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
+      localectl list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
+      printf '%s\n' "$0: ERROR: Specified keyboard layout variant for layout '${kb_layout_list[kb_idx]}' is not valid!" >&2
+      if [ "${interactive}" = 'false' ]; then
+        printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout." >&2
+      fi
+      return 1
+    fi
+  done
+}
+
+check_keyboard_layout_options() {
+  local option_str
+
+  option_str="${1:-}"
+  if [ -z "${option_str}" ]; then
+    printf '%s\n' "$0: ERROR: Empty keyboard layout options string provided!" >&2
+    return 1
+  fi
+
+  if ! is_layout_data_valid "${option_str}" \
+    localectl list-x11-keymap-options ; then
+    printf '%s\n' "$0: ERROR: Specified keyboard layout option(s) are not valid!" >&2
+    if [ "${interactive}" = 'false' ]; then
+      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-options' to get a list of valid layout options." >&2
+    fi
+    return 1
+  fi
+}
+
 ## Sets the XKB layout(s), variant(s), and option(s) in labwc, either for just
 ## this session or persistently.
 set_labwc_keymap() {
   local labwc_config_bak_path labwc_env_file_lines did_replace_var var_idx \
-    conf_idx kb_layout_list kb_variant_list kb_idx args \
-    labwc_env_file_string labwc_config_directory
+    conf_idx args labwc_env_file_string labwc_config_directory
 
   labwc_config_bak_path=''
   labwc_env_file_lines=()
@@ -77,51 +165,15 @@ set_labwc_keymap() {
     return 1
   fi
 
-  ## Ensure the user has no more than four keyboard layouts specified (this
-  ## is the maximum number supported by XKB under X11 according to
-  ## https://www.x.org/archive/X11R7.5/doc/input/XKB-Config.html, and it is
-  ## the maximum number labwc appears to support).
-  readarray -t kb_layout_list < <(printf '%s\n' "${args[0]}" | tr ',' '\n')
-  if (( ${#kb_layout_list[@]} > 4 )); then
-    printf '%s\n' "$0: ERROR: Too many keyboard layouts specified, must specify 4 or less!" >&2
-    return 1
-  fi
-
-  ## Ensure the specified keyboard layout(s) are valid.
-  if ! is_layout_data_valid "${args[0]}" \
-    localectl list-x11-keymap-layouts ; then
-    printf '%s\n' "$0: ERROR: Specified keyboard layout(s) are not all valid!" >&2
-    printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-layouts' to get a list of valid layouts." >&2
-    return 1
-  fi
-
-  ## Ensure the specified keyboard layout variant(s) are valid.
-  if [ -n "${args[1]:-}" ]; then
-    readarray -t kb_variant_list < <(printf '%s\n' "${args[1]}" | tr ',' '\n')
-
-    if (( ${#kb_layout_list[@]} < ${#kb_variant_list[@]} )); then
-      printf '%s\n' "$0: ERROR: Insufficient number of keyboard layouts specified for number of variants!" >&2
-      return 1
+  ## Interactive mode checks the layouts for us already, no need to do it
+  ## twice.
+  if [ "${interactive}" = 'false' ]; then
+    check_keyboard_layouts "${args[0]}" || return 1
+    if [ -n "${args[1]:-}" ]; then
+      check_keyboard_layout_variants "${args[0]}" "${args[1]}" || return 1
     fi
-
-    for kb_idx in "${!kb_layout_list[@]}"; do
-      if [ -z "${kb_variant_list[kb_idx]}" ]; then continue; fi
-      if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
-        localectl list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
-        printf '%s\n' "$0: ERROR: Specified keyboard layout variant for layout '${kb_layout_list[kb_idx]}' is not valid!" >&2
-        printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants '${kb_layout_list[kb_idx]}'' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout." >&2
-        return 1
-      fi
-    done
-  fi
-
-  ## Ensure the specified keyboard option(s) are valid.
-  if [ -n "${args[2]:-}" ]; then
-    if ! is_layout_data_valid "${args[2]}" \
-      localectl list-x11-keymap-options ; then
-      printf '%s\n' "$0: ERROR: Specified keyboard layout option(s) are not valid!" >&2
-      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-options' to get a list of valid layout options." >&2
-      return 1
+    if [ -n "${args[2]:-}" ]; then
+      check_keyboard_layout_options "${args[2]}"
     fi
   fi
 
@@ -237,14 +289,183 @@ set_labwc_keymap() {
   fi
 }
 
+interactive_ui_help_layout() {
+  printf '%s\n' 'Each keyboard layout supported by the system has a short, usually two-letter'
+  printf '%s\n' 'code associated with it. The code generally corresponds to the nation the'
+  printf '%s\n' 'layout is most commonly used in. Some common layouts, in alphabetical order:'
+  printf '%s\n' '- cz -> Czech (QWERTZ)'
+  printf '%s\n' '- de -> German (QWERTZ)'
+  printf '%s\n' '- es -> Spanish (QWERTY)'
+  printf '%s\n' '- us -> English (US QWERTY)'
+  printf '\n'
+  printf '%s\n' 'Multiple keyboard layouts may be specified at once if you intend to switch'
+  printf '%s\n' 'between layouts frequently. Layouts must be comma-separated. A maximum of'
+  printf '%s\n' 'four may be set at any one time.'
+  printf '\n'
+  printf '%s\n' 'For instance, to set US English, German, and Czech as the keyboard layouts,'
+  printf '%s\n' 'specify "us,de,cz".'
+  printf '\n'
+}
+
+interactive_ui_help_variant() {
+  printf '%s\n' 'Each keyboard layout may optionally have a variant associated with it.'
+  printf '%s\n' 'Variants are used to select alternate keyboard layouts for the same'
+  printf '%s\n' 'language, such as Dvorak and Colemak. You should only use variants if you'
+  printf '%s\n' 'know they are useful to you.'
+  printf '\n'
+  printf '%s\n' 'If you choose to specify keyboard layout variants, you must specify one'
+  printf '%s\n' 'variant per layout chosen earlier. Similar to layouts, variants must be'
+  printf '%s\n' 'comma-separated. If you wish to skip setting the layout for a variant, omit'
+  printf '%s\n' 'the variant from the list, but do not omit the comma that would have been.'
+  printf '%s\n' 'typed if you had specified a variant.'
+  printf '\n'
+  printf '%s\n' 'For instance, to set English (US Dvorak) and English (US Colemak) layouts,'
+  printf '%s\n' 'specify "us,us" as the keyboard layouts and "dvorak,colemak" as the'
+  printf '%s\n' 'variants. To set English (US QWERTY), English (US Dvorak), and German'
+  printf '%s\n' '(QWERTZ) layouts, specify "us,us,de" as the keyboard layouts and ",dvorak,"'
+  printf '%s\n' 'as the variants.'
+  printf '\n'
+}
+
+interactive_ui_help_option() {
+  printf '%s\n' 'A number of keyboard layout customizations may be applied using options.'
+  printf '%s\n' 'Some common options:'
+  printf '%s\n' '- compose:ralt -> Sets the right Alt key as the Compose key, useful for'
+  printf '%s\n' '  typing accent marks and other characters not ofentimes typed with the'
+  printf '%s\n' '  chosen layout'
+  printf '%s\n' '- grp:alt_shift_toggle -> Toggles between keyboard layouts any time'
+  printf '%s\n' '  Alt+Shift is pressed.'
+  printf '%s\n' '- caps:backspace -> Makes the Caps Lock key act as a second backspace key.'
+  printf '\n'
+  printf '%s\n' 'Multiple keyboard options may be specified at once. Options must be'
+  printf '%s\n' 'comma-separated.'
+  printf '\n'
+  printf '%s\n' 'For instance, to set the right Alt key as the Compose key, and make'
+  printf '%s\n' 'Alt+Shift the keyboard layout switch shortcut, specify'
+  printf '%s\n' '"compose:ralt,grp:alt_shift_toggle" as the keyboard layout options.'
+}
+
+interactive_ui() {
+  local layout_str variant_str option_str variant_key_str
+
+  printf '%s\n' 'Type "list" at any prompt to see a list of valid options.'
+  printf '%s\n' 'If the list is longer than will fit on the screen, use arrow keys to scroll.'
+  printf '%s\n' 'Press "q" to exit the scrollable list.'
+  printf '\n'
+  printf '%s\n' 'Type "help" for help.'
+  printf '\n'
+  printf '%s\n' 'Type "exit" to quit without changing keyboard layout settings.'
+  printf '\n'
+
+  while true; do
+    read -r -p 'Enter the keyboard layout(s) you would like to use: ' -- layout_str
+    printf '\n'
+    if [ -z "${layout_str}" ]; then
+      printf '%s\n' 'No keyboard layouts specified. Exiting.'
+      return 0
+    fi
+    ## Normalize the layout string so it is all lowercase and has no spaces in
+    ## it. This way whether the user specifies "us,de" or "us, de" or 'US, DE'
+    ## or even "U   s,de     ,    eS", it works. No XKB keyboard layouts
+    ## contain spaces or capital letters.
+    layout_str="$(tr -d ' ' <<< "${layout_str,,}")"
+    if [ "${layout_str}" = 'list' ]; then
+      localectl list-x11-keymap-layouts
+      continue
+    fi
+    if [ "${layout_str}" = 'help' ]; then
+      interactive_ui_help_layout
+      continue
+    fi
+    if [ "${layout_str}" = 'exit' ]; then
+      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout."
+      exit 0
+    fi
+    if check_keyboard_layouts "${layout_str}"; then
+      break
+    fi
+  done
+
+  while true; do
+    read -r -p 'Enter the keyboard layout variant(s) if desired, leave empty otherwise: ' -- variant_str
+    printf '\n'
+    if [ -z "${variant_str}" ]; then
+      break
+    fi
+    ## Normalize the variant string similar to how we normalize the layout
+    ## string. Unfortunately, some variants like "UnicodeExpert" contain
+    ## capitals, so we can't normalize everything to lowercase.
+    variant_str="$(tr -d ' ' <<< "${variant_str}")"
+    if [ "${variant_str,,}" = 'list' ]; then
+      if ! grep -q ',' <<< "${layout_str}"; then
+        localectl list-x11-keymap-variants "${layout_str}"
+      else
+        read -r -p 'Enter the keyboard layout to view variants for: ' -- variant_key_str
+        variant_key_str="$(tr -d ' ' <<< "${variant_key_str,,}")"
+        if grep -q ',' <<< "${variant_key_str}" ; then
+          printf '%s\n' "$0: ERROR: Only one layout may be specified to view the variants of!"
+          continue
+        fi
+        if ! [[ "${layout_str}" =~ (^|,)"${variant_key_str}"(,|$) ]]; then
+          printf '%s\n' "$0: ERROR: Specified layout is not in the previously specified layout list!"
+          continue
+        fi
+        localectl list-x11-keymap-variants "${variant_key_str}"
+      fi
+      continue
+    fi
+    if [ "${variant_str,,}" = 'help' ]; then
+      interactive_ui_help_variant
+      continue
+    fi
+    if [ "${variant_str}" = 'exit' ]; then
+      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout."
+      exit 0
+    fi
+    if check_keyboard_layout_variants "${layout_str}" "${variant_str}"; then
+      break
+    fi
+  done
+
+  while true; do
+    read -r -p 'Enter the keyboard layout option(s) if desired, leave empty otherwise: ' -- option_str
+    printf '\n'
+    if [ -z "${option_str}" ]; then
+      break
+    fi
+    ## More normalizing, again we can't normalize everything to lowercase
+    ## because some options like "eurosign:E" contain capital letters.
+    option_str="$(tr -d ' ' <<< "${option_str}")"
+    if [ "${option_str,,}" = 'list' ]; then
+      localectl list-x11-keymap-options
+      continue
+    fi
+    if [ "${option_str,,}" = 'help' ]; then
+      interactive_ui_help_option
+      continue
+    fi
+    if [ "${option_str}" = 'exit' ]; then
+      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout."
+      exit 0
+    fi
+    if check_keyboard_layout_options "${option_str}"; then
+      break
+    fi
+  done
+
+  set_labwc_keymap "${layout_str}" "${variant_str}" "${option_str}" || exit 1
+  printf '%s\n' "$0: INFO: Keyboard layout change successful."
+}
+
 print_usage() {
   printf '%s\n' "$0: Set keyboard layout for labwc" >&2
-  printf '%s\n' "Usage: $0 [--help] [--persist] [--no-reload] [--config <path>] -- [layout [variant [option]]]" >&2
+  printf '%s\n' "Usage: $0 [--help] [--persist] [--no-reload] [--config <path>] [--interactive] -- [layout [variant [option]]]" >&2
   printf '%s\n' 'Options:' >&2
   printf '%s\n' '--help           Print this help message.' >&2
   printf '%s\n' '--persist        Make layout change persistent.' >&2
   printf '%s\n' '--no-reload      Skip reloading labwc config. Only makes sense with --persist.' >&2
   printf '%s\n' '--config <path>  Specify an alternative config file path.' >&2
+  printf '%s\n' '--interactive    Show an interactive user interface.' >&2
   printf '%s\n' '' >&2
   printf '%s\n' 'Examples:' >&2
   printf '%s\n' '  set-labwc-keymap de' >&2
@@ -274,6 +495,10 @@ while [ -n "${1:-}" ]; do
       labwc_config_path="${2:-}"
       shift 2
       ;;
+    '--interactive')
+      interactive='true'
+      shift
+      ;;
     '--')
       shift
       break
@@ -284,6 +509,13 @@ while [ -n "${1:-}" ]; do
   esac
 done
 
+## Enter interactive mode if requested.
+if [ "${interactive}" = 'true' ]; then
+  interactive_ui || exit 1
+  exit 0
+fi
+
+## Parse command line arguments otherwise
 args=( "$@" )
 ## We must have at least one, but no more than three, arguments specifying the
 ## keyboard layout(s).
@@ -303,6 +535,6 @@ while (( ${#args[@]} < 3 )); do
   args+=( '' )
 done
 
-set_labwc_keymap "${args[@]}" || exit
+set_labwc_keymap "${args[@]}" || exit 1
 
 true "$0: END"

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Keyboard Layout
+Comment=Set the keyboard layout for the current user
+Keywords=keyboard;layout;keymap;
+Exec=/usr/libexec/helper-scripts/terminal-wrapper /usr/bin/set-labwc-keymap --interactive
+Terminal=false
+Type=Application
+Categories=System;Settings;DesktopSettings;
+Icon=input-keyboard
