@@ -244,7 +244,7 @@ replace_file_variables() {
 set_labwc_keymap() {
   local labwc_config_bak_path var_idx args labwc_env_file_string \
     labwc_config_directory do_persist no_reload labwc_config_path \
-    calc_replace_args
+    calc_replace_args labwc_existing_config
 
   ## Parse command line arguments
   do_persist='false'
@@ -329,8 +329,14 @@ set_labwc_keymap() {
   fi
 
   ## If labwc's environment config file exists, read it.
+  labwc_existing_config=''
   if [ -f "${labwc_config_path}" ]; then
     if ! [ -r "${labwc_config_path}" ]; then
+      printf '%s\n' "$0: ERROR: No read permissions on labwc environment config '${labwc_config_path}'!" >&2
+      return 1
+    fi
+
+    if ! labwc_existing_config="$(cat -- "${labwc_config_path}")" ; then
       printf '%s\n' "$0: ERROR: Cannot read existing labwc environment config '${labwc_config_path}'!" >&2
       return 1
     fi
@@ -344,13 +350,12 @@ set_labwc_keymap() {
         return 1
       fi
     fi
-  fi
 
-  if [ -f "${labwc_config_path}" ]; then
-    calc_replace_args=( "$(cat -- "${labwc_config_path}")" ) || return 1
+    calc_replace_args=( "${labwc_existing_config}" )
   else
     calc_replace_args=( '' )
   fi
+
   for var_idx in "${!args[@]}"; do
     calc_replace_args+=(
       "${skl_xkb_env_var_names[var_idx]}"
