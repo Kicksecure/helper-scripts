@@ -324,7 +324,7 @@ set_labwc_keymap() {
 
   ## Ensure the labwc configuration directory exists.
   if ! mkdir --parents -- "${labwc_config_directory}" ; then
-    printf '%s\n' "$0: ERROR: Cannot create labwc config directory '${labwc_config_directory}!" >&2
+    printf '%s\n' "$0: ERROR: Cannot create labwc config directory '${labwc_config_directory}'!" >&2
     return 1
   fi
 
