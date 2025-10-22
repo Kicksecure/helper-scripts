@@ -1,3 +1,35 @@
+commit a7ed67874f9769e52d1ee6cd0c3a2e72f919a0f7
+Merge: 1f715a1 b8faba3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 22 00:32:11 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit b8faba359f46aabb00f5db950aaba42aee4243f1
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Oct 21 18:44:42 2025 -0500
+
+    Add interactive UI option and start menu entry for set-labwc-keymap
+
+commit 8a31d91183918fe0dcdca5bd5bf01d8901a95a28
+Merge: 1e7fc0e 1f715a1
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Oct 20 20:31:14 2025 -0500
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 1e7fc0e26cb761189f744cd1ca3b2491d46d6135
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Oct 20 20:25:24 2025 -0500
+
+    Fix several autologinchange issues (collapsing lines in greetd incorrectly, failing to remove effectively empty greetd config files, use of echo rather than printf)
+
+commit 1f715a1b6ef8db4bf59598783658b0a2cd3b8bf3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 20 16:49:59 2025 +0000
+
+    bumped changelog version
+
 commit 40dbff6de0b2b88419cba7070472a3472254c470
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Oct 20 12:44:51 2025 -0400
