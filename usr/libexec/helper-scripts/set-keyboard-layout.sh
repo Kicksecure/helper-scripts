@@ -95,7 +95,7 @@ check_keyboard_layouts() {
   if ! is_layout_data_valid "${layout_str}" \
     localectl list-x11-keymap-layouts ; then
     printf '%s\n' "$0: ERROR: Specified keyboard layout(s) are not all valid!" >&2
-    if [ "${interactive}" = 'false' ]; then
+    if [ "${skl_interactive}" = 'false' ]; then
       printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-layouts' to get a list of valid layouts." >&2
     fi
     return 1
@@ -138,7 +138,7 @@ check_keyboard_layout_variants() {
     if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
       localectl list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
       printf '%s\n' "$0: ERROR: Specified keyboard layout variant for layout '${kb_layout_list[kb_idx]}' is not valid!" >&2
-      if [ "${interactive}" = 'false' ]; then
+      if [ "${skl_interactive}" = 'false' ]; then
         printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout." >&2
       fi
       return 1
@@ -165,7 +165,7 @@ check_keyboard_layout_options() {
   if ! is_layout_data_valid "${option_str}" \
     localectl list-x11-keymap-options ; then
     printf '%s\n' "$0: ERROR: Specified keyboard layout option(s) are not valid!" >&2
-    if [ "${interactive}" = 'false' ]; then
+    if [ "${skl_interactive}" = 'false' ]; then
       printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-options' to get a list of valid layout options." >&2
     fi
     return 1
