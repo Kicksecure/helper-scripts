@@ -347,7 +347,7 @@ set_labwc_keymap() {
   fi
 
   if [ -f "${labwc_config_path}" ]; then
-    calc_replace_args=( "$(cat "${labwc_config_path}")" ) || return 1
+    calc_replace_args=( "$(cat -- "${labwc_config_path}")" ) || return 1
   else
     calc_replace_args=( '' )
   fi
@@ -459,21 +459,21 @@ set_system_keymap() {
     args+=( '' )
   done
 
-  if ! mkdir --parents "${kb_conf_dir}" ; then
+  if ! mkdir --parents -- "${kb_conf_dir}" ; then
     printf '%s\n' "$0: ERROR: Cannot ensure the existence of '${kb_conf_dir}'!" >&2
     return 1
   fi
-  if ! mkdir --parents "${labwc_system_wide_config_dir}" ; then
+  if ! mkdir --parents -- "${labwc_system_wide_config_dir}" ; then
     printf '%s\n' "$0: ERROR: Cannot ensure the existence of '${labwc_system_wide_config_dir}'!" >&2
     return 1
   fi
-  if ! mkdir --parents "${labwc_greeter_config_dir}" ; then
+  if ! mkdir --parents -- "${labwc_greeter_config_dir}" ; then
     printf '%s\n' "$0: ERROR: Cannot ensure the existence of '${labwc_greeter_config_dir}'!" >&2
     return 1
   fi
 
   if [ -f "${kb_conf_path}" ]; then
-    calc_replace_args=( "$(cat "${kb_conf_path}")" ) || return 1
+    calc_replace_args=( "$(cat -- "${kb_conf_path}")" ) || return 1
   else
     calc_replace_args=( '' )
   fi
