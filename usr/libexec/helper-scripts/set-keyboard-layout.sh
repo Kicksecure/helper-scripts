@@ -686,7 +686,7 @@ Type 'exit' to quit without changing keyboard layout settings.
       continue
     fi
     if [ "${option_str}" = 'exit' ]; then
-      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout."
+      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout." >&2
       return 0
     fi
     if check_keyboard_layout_options "${option_str}"; then
