@@ -76,7 +76,7 @@ check_keyboard_layouts() {
   readarray -t layout_arr < <(printf '%s\n' "${layout_str}" | tr ',' '\n')
   for layout in "${layout_arr[@]}"; do
     if [ -z "${layout}" ]; then
-      printf '%s\n' "$0: ERROR: Empty element found in keyboard layouts!"
+      printf '%s\n' "$0: ERROR: Empty element found in keyboard layouts!" >&2
       return 1
     fi
   done
@@ -157,7 +157,7 @@ check_keyboard_layout_options() {
   readarray -t option_arr < <(printf '%s\n' "${option_str}" | tr ',' '\n')
   for option in "${option_arr[@]}"; do
     if [ -z "${option}" ]; then
-      printf '%s\n' "$0: ERROR: Empty element found in keyboard layout options!"
+      printf '%s\n' "$0: ERROR: Empty element found in keyboard layout options!" >&2
       return 1
     fi
   done
