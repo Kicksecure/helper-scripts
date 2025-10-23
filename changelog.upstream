@@ -1,3 +1,96 @@
+commit d52bd94f8e49815a2be3a06d27fa5b76874537d6
+Merge: b2a9b45 e63f412
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 23 01:41:13 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit b2a9b45c4e70dcf8254407cb1f4ed8f167a5ec03
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 23 01:37:22 2025 -0400
+
+    end-of-options
+
+commit 49b7d2535a79e3213c7e80c88e033108d2a5bf98
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 23 01:33:32 2025 -0400
+
+    refactoring
+
+commit 7daac0df8d5ba5d39f44c0fd98f49c0249441f69
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 23 01:30:24 2025 -0400
+
+    refactoring
+
+commit 97981ed593b868e230ff9bd32bb22b778bc4a872
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 23 01:29:10 2025 -0400
+
+    add `/usr/libexec/helper-scripts/boot-session-detection.sh`;
+    refactoring
+
+commit e63f4120cc0a5210c2cfdffcdca9656f58cf0f49
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Oct 22 19:41:21 2025 -0500
+
+    set-keyboard-layout.sh fixes
+
+commit 880ae05f46a601cfb1775720b675f5757164dbef
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Oct 22 18:47:33 2025 -0500
+
+    Apply ephemeral keyboard layout change fix from ChatGPT Codex with minor changes, set executable bit on set-keyboard-layout.sh
+
+commit 55c67485f84bc3807461303615035240613e9f99
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 22 06:23:30 2025 -0400
+
+    end-of-options
+
+commit 7ae68242626fe54f2b150e05be5b6d6dcaa8e1ba
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 22 06:20:53 2025 -0400
+
+    fix
+
+commit 1ba00c47df2332d5945fee5e159ee60c59f97dc1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 22 06:17:39 2025 -0400
+
+    fix
+
+commit 28e1c1cc67cbcafe27461cb7bc984b4a309582cb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 22 06:17:07 2025 -0400
+
+    fix
+
+commit c982ca2b50f23a9fa6d0659b2129d939d088e3d2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 22 06:12:58 2025 -0400
+
+    fix
+
+commit 1e03b07461f9bebb4c787e01a63e9f1a4b68c08c
+Merge: b431596 00e02a4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 22 03:24:14 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 00e02a4cf8e0181325b552a0cf9dc275a74def24
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Oct 22 00:02:19 2025 -0500
+
+    Refactor set-labwc-keymap into a library and two frontends
+
+commit b43159600a25a4cb17418b04d9848db214e75715
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 22 04:38:48 2025 +0000
+
+    bumped changelog version
+
 commit a7ed67874f9769e52d1ee6cd0c3a2e72f919a0f7
 Merge: 1f715a1 b8faba3
 Author: Patrick Schleizer <adrelanos@whonix.org>
