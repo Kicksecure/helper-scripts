@@ -137,7 +137,7 @@ check_keyboard_layout_variants() {
     if [ -z "${kb_variant_list[kb_idx]}" ]; then continue; fi
     if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
       localectl list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
-      printf '%s\n' "$0: ERROR: Specified keyboard layout variant for layout '${kb_layout_list[kb_idx]}' is not valid!" >&2
+      printf '%s\n' "$0: ERROR: Specified keyboard layout variant '${kb_variant_list[kb_idx]}' for layout '${kb_layout_list[kb_idx]}' is not valid!" >&2
       if [ "${skl_interactive}" = 'false' ]; then
         printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout." >&2
       fi
@@ -316,7 +316,7 @@ set_labwc_keymap() {
       check_keyboard_layout_variants "${args[0]}" "${args[1]}" || return 1
     fi
     if [ -n "${args[2]:-}" ]; then
-      check_keyboard_layout_options "${args[2]}"
+      check_keyboard_layout_options "${args[2]}" || return 1
     fi
   fi
 
@@ -464,6 +464,18 @@ set_system_keymap() {
     args+=( '' )
   done
 
+  ## Interactive mode checks the layouts for us already, no need to do it
+  ## twice.
+  if [ "${skl_interactive}" = 'false' ]; then
+    check_keyboard_layouts "${args[0]}" || return 1
+    if [ -n "${args[1]:-}" ]; then
+      check_keyboard_layout_variants "${args[0]}" "${args[1]}" || return 1
+    fi
+    if [ -n "${args[2]:-}" ]; then
+      check_keyboard_layout_options "${args[2]}" || return 1
+    fi
+  fi
+
   if ! mkdir --parents -- "${kb_conf_dir}" ; then
     printf '%s\n' "$0: ERROR: Cannot ensure the existence of '${kb_conf_dir}'!" >&2
     return 1
@@ -496,12 +508,12 @@ set_system_keymap() {
     printf '%s\n' "$0: ERROR: Cannot write new keyboard config file '${kb_conf_path}'!" >&2
     return 1
   fi
-  printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:" >&2
-  stcat "${kb_conf_path}" >&2
 
   ## Apply the changes to the config file to the system.
   dpkg-reconfigure --frontend=noninteractive keyboard-configuration \
     || return 1
+  printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:" >&2
+  stcat "${kb_conf_path}" >&2
 
   ## Set the specified keyboard layout for labwc both system-wide and for the
   ## greeter.
@@ -548,9 +560,9 @@ language, such as Dvorak and Colemak. You should only use variants if you
 know they are useful to you.
 
 If you choose to specify keyboard layout variants, you must specify one
-variant per layout chosen earlier. Similar to layouts, variants must be
+variant per layout chosen previously. Similar to layouts, variants must be
 comma-separated. If you wish to skip setting the layout for a variant, omit
-the variant from the list, but do not omit the comma that would have been.
+the variant from the list, but do not omit the comma that would have been
 typed if you had specified a variant.
 
 For instance, to set English (US Dvorak) and English (US Colemak) layouts,
@@ -567,7 +579,7 @@ A number of keyboard layout customizations may be applied using options.
 Some common options:
 - compose:ralt -> Sets the right Alt key as the Compose key, useful for
   typing accent marks and other characters not often typed with the chosen
-  layout
+  layout.
 - grp:alt_shift_toggle -> Toggles between keyboard layouts any time
   Alt+Shift is pressed.
 - caps:backspace -> Makes the Caps Lock key act as a second backspace key.
@@ -585,6 +597,7 @@ interactive_ui() {
   local kb_set_func kb_set_opts layout_str variant_str option_str \
     variant_key_str
 
+  skl_interactive='true'
   kb_set_func="${1:-}"
   if [ -z "${kb_set_func}" ]; then
     printf '%s\n' "$0: ERROR: No keyboard layout set function provided!"

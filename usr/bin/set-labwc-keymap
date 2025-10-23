@@ -18,7 +18,7 @@ print_usage() {
   printf '%s\n' 'Options:' >&2
   printf '%s\n' '--help           Print this help message.' >&2
   printf '%s\n' '--persist        Make layout change persistent.' >&2
-  printf '%s\n' '--no-reload      Skip reloading labwc config. Only makes sense with --persist.' >&2
+  printf '%s\n' '--no-reload      Skip reloading labwc config. Only useful with --persist.' >&2
   printf '%s\n' '--config <path>  Specify an alternative config file path.' >&2
   printf '%s\n' '--interactive    Show an interactive user interface.' >&2
   printf '\n' >&2
