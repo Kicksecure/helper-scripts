@@ -19,15 +19,7 @@ source /usr/libexec/helper-scripts/use_sudo.sh
 source /usr/libexec/helper-scripts/use_pkexec.sh
 source /usr/libexec/helper-scripts/boot-session-detection.sh
 
-if ! printf '%s\n' "" | wc -l >/dev/null ; then
-  printf '%s\n' "\
-$0: ERROR: command 'wc' test failed! Do not ignore this!
-
-'wc' can core dump. Example:
-zsh: illegal hardware instruction (core dumped) wc -l
-https://github.com/rspamd/rspamd/issues/5137" >&2
-  exit 1
-fi
+source /usr/libexec/helper-scripts/wc-test.sh
 
 folder_list="Assembly  Bash  C  C#  C++  Go  Java  JavaScript  Python  RegEx  Rust  Solidity"
 
