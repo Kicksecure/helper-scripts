@@ -1,0 +1,253 @@
+* [ ] set-labwc-keymap ephemeral tests
+  * [ ] Ensure `~/.config/labwc` does not exist. `rm -rf` it if it does.
+  * [ ] Run `set-labwc-keymap us`. Keyboard layout is set to `us`?
+  * [ ] Run `set-labwc-keymap de`. Keyboard layout is set to `de`?
+  * [ ] Run `set-labwc-keymap cz`. Keyboard layout is set to `cz`?
+  * [ ] Run `set-labwc-keymap us,de,cz '' grp:alt_shift_toggle`. Keyboard layout is set to `us`, can switch to `de`, `cz`, then back to `us` using Alt+Shift?
+  * [ ] Run `set-labwc-keymap us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Keyboard layout is set to `us`, can switch to Dvorak, Colemak, `de`, then back to `us` using Alt+Shift, caps lock acts as backspace?
+  * [ ] Run `set-labwc-keymap jj`. Complains that the specified keyboard layouts are not all valid?
+  * [ ] Run `set-labwc-keymap us,jj,cz`. Complains that the specified keyboard layouts are not all valid?
+  * [ ] Run `set-labwc-keymap us,de,jj`. Complains that the specified keyboard layouts are not all valid?
+  * [ ] Run `set-labwc-keymap ,`. Complains that an empty keymap element was found?
+  * [ ] Run `set-labwc-keymap us,`. Complains that an empty keymap element was found?
+  * [ ] Run `set-labwc-keymap ,us`. Complains that an empty keymap element was found?
+  * [ ] Run `set-labwc-keymap ,us,`. Complains that an empty keymap element was found?
+  * [ ] Run `set-labwc-keymap us,,de`. Complains that an empty keymap element was found?
+  * [ ] Run `set-labwc-keymap us ,`. Complains that an insufficient number of keyboard layouts are specified for the number of variants?
+  * [ ] Run `set-labwc-keymap us,us ,`. Accepts it?
+  * [ ] Run `set-labwc-keymap us,us colemak`. Complains that an insufficient number of keyboard variants are specified for the number of layouts?
+  * [ ] Run `set-labwc-keymap us,us ,colemak ,`. Complains that empty keyboard layout option was found?
+  * [ ] Run `set-labwc-keymap us,us ,colemak grp:alt_shift_toggle,`. Complains that empty keyboard layout option was found?
+  * [ ] Run `set-labwc-keymap us,us ,colemak ,grp:alt_shift_toggle`. Complains that empty keyboard layout option was found?
+  * [ ] Run `set-labwc-keymap us,us ,colemak ,grp:alt_shift_toggle,`. Complains that empty keyboard layout option was found?
+  * [ ] Run `set-labwc-keymap us,us ,colemak grp:alt_shift_toggle,,caps:backspace`. Complains that empty keyboard layout option was found?
+* [ ] set-labwc-keymap persistent tests
+  * [ ] Run `set-labwc-keymap --persist us`. Environment file is created with the following contents?
+    * XKB_DEFAULT_LAYOUT=us
+    * XKB_DEFAULT_VARIANT=
+    * XKB_DEFAULT_OPTIONS=
+  * [ ] Run `set-labwc-keymap --persist de`. Environment file is created with the following contents?
+    * XKB_DEFAULT_LAYOUT=de
+    * XKB_DEFAULT_VARIANT=
+    * XKB_DEFAULT_OPTIONS=
+  * [ ] Run `set-labwc-keymap --persist cz`. Environment file is created with the following contents?
+    * XKB_DEFAULT_LAYOUT=cz
+    * XKB_DEFAULT_VARIANT=
+    * XKB_DEFAULT_OPTIONS=
+  * [ ] Run `set-labwc-keymap --persist us,de,cz '' grp:alt_shift_toggle`. Environment file is created with the following contents?
+    * XKB_DEFAULT_LAYOUT=us,de,cz
+    * XKB_DEFAULT_VARIANT=
+    * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle
+  * [ ] Run `set-labwc-keymap --persist us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
+    * XKB_DEFAULT_LAYOUT=us,us,us,de
+    * XKB_DEFAULT_VARIANT=,dvorak,colemak,
+    * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle,caps:backspace
+  * [ ] Edit ~/.config/labwc/environment to have the following contents:
+    * XKB_DEFAULT_LAYOUT=us,us,us,de
+    * XKB_DEFAULT_LAYOUT=us
+    * XKB_DEFAULT_VARIANT=,dvorak,colemak,
+    * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle,caps:backspace
+  * [ ] Run `set-labwc-keymap --persist us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
+    * XKB_DEFAULT_LAYOUT=us,us,us,de
+    * XKB_DEFAULT_VARIANT=,dvorak,colemak,
+    * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle,caps:backspace
+  * [ ] Edit ~/.config/labwc/environment to have the following contents:
+    * A=B
+    * XKB_DEFAULT_LAYOUT=us,us,us,de
+    * C=D
+    * XKB_DEFAULT_VARIANT=,dvorak,colemak,
+    * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle,caps:backspace
+    * E=F
+  * [ ] Run `set-labwc-keymap --persist es`. Environment file is created with the following contents?
+    * A=B
+    * XKB_DEFAULT_LAYOUT=es
+    * C=D
+    * XKB_DEFAULT_VARIANT=
+    * XKB_DEFAULT_OPTIONS=
+    * E=F
+  * [ ] Edit ~/.config/labwc/environment to have the following contents:
+    * A=B
+    * XKB_DEFAULT_LAYOUT=es
+    *   C=D
+    *   XKB_DEFAULT_VARIANT=
+    * XKB_DEFAULT_OPTIONS=
+    * E=F
+  * [ ] Run `set-labwc-keymap --persist us,us colemak,`. Environment file is created with the following contents?
+    * A=B
+    * XKB_DEFAULT_LAYOUT=us,us
+    *   C=D
+    *   XKB_DEFAULT_VARIANT=colemak,
+    * XKB_DEFAULT_OPTIONS=
+    * E=F
+  * [ ] Edit ~/.config/labwc/environment to have the following contents:
+    * A=B
+    * #XKB_DEFAULT_LAYOUT=us
+    *  XKB_DEFAULT_LAYOUT=es
+    *   #XKB_DEFAULT_LAYOUT=de
+    *   C=D
+    *   XKB_DEFAULT_VARIANT=
+    * XKB_DEFAULT_OPTIONS=
+    * XKB_DEFAULT_OPTIONS=caps:backspace
+    * E=F
+  * [ ] Run `set-labwc-keymap --persist us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
+    * A=B
+    * #XKB_DEFAULT_LAYOUT=us
+    *  XKB_DEFAULT_LAYOUT=us,us,us,de
+    *   #XKB_DEFAULT_LAYOUT=de
+    *   C=D
+    *   XKB_DEFAULT_VARIANT=,dvorak,colemak,
+    * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle,caps:backspace
+    * E=F
+* [ ] set-labwc-keymap misc options
+  * [ ] Run `set-labwc-keymap --help`. Displays help?
+  * [ ] Run `set-labwc-keymap --config ./test --no-reload --persist us colemak`. Creates a file ~/.test with the following contents?
+    * XKB_DEFAULT_LAYOUT=us
+    * XKB_DEFAULT_VARIANT=colemak
+    * XKB_DEFAULT_OPTIONS=
+* [ ] set-labwc-keymap interactive TUI test
+  * [ ] Ensure `~/.config/labwc` does not exist. `rm -rf` it if it does.
+  * [ ] Run `set-labwc-keymap --interactive`. Displays an interactive prompt for selecting a keyboard layout?
+  * [ ] Type `help`. Shows help for picking a keyboard layout?
+  * [ ] Type `list`. Displays a list of keyboard layouts?
+  * [ ] Scroll the list with the arrow keys, then press `q` to exit. Returns to interactive prompt?
+  * [ ] Type `de`. Displays a prompt for selecting a layout variant?
+  * [ ] Type `help`. Shows help for picking a layout variant?
+  * [ ] Type `list`. Displays a list of variants for the `us` keyboard layout?
+  * [ ] Press Enter without typing any particular variant. Displays an interactive prompt for selecting layout options?
+  * [ ] Type `help`. Shows help for picking layout options?
+  * [ ] Type `list`. Displays a list of layout options?
+  * [ ] Press Enter without typing any particular option. Exits, and keyboard layout is now `de`?
+  * [ ] `~/.config/labwc/environment` has the following contents?
+    * XKB_DEFAULT_LAYOUT=de
+    * XKB_DEFAULT_VARIANT=
+    * XKB_DEFAULT_OPTIONS=
+  * [ ] Run `set-labwc-keymap --interactive`. Displays an interactive prompt for selecting a keyboard layout?
+  * [ ] Type `,`. Rejects because of empty elements?
+  * [ ] Type `us,`. Rejects because of empty elements?
+  * [ ] Type `,us`. Rejects because of empty elements?
+  * [ ] Type `,us,`. Rejects because of empty elements?
+  * [ ] Type `us,,de`. Rejects because of empty elements?
+  * [ ] Type `jj`. Rejects because of an invalid layout?
+  * [ ] Type `us,jj`. Rejects because of an invalid layout?
+  * [ ] Type `jj,us`. Rejects because of an invalid layout?
+  * [ ] Type `us,jj,de`. Rejects because of an invalid layout?
+  * [ ] Type `us,us,de`. Accepts and displays a prompt for selecting variants?
+  * [ ] Type `colemak`. Rejects because of too few variants specified?
+  * [ ] Type `colemak,dvorak,neo,workman`. Rejects because of too many variants specified?
+  * [ ] Type `,`. Rejects because of too few variants specified?
+  * [ ] Type `qwerty,,`. Rejects because of no qwerty variant existing for us?
+  * [ ] Type `,colemak,qwertz`. Rejects because of no qwertz variant existing for de?
+  * [ ] Type `,colemak,`. Accepts and displays a prompt for selectiong options?
+  * [ ] Type `,`. Rejects because of empty elements?
+  * [ ] Type `,caps:backspace`. Rejects because of empty elements?
+  * [ ] Type `caps:backspace,`. Rejects because of empty elements?
+  * [ ] Type `,caps:backspace,`. Rejects because of empty elements?
+  * [ ] Type `caps:backspace,,grp:alt_shift_toggle`. Rejects because of empty elements?
+  * [ ] Type `grp:alt_shift_toggle`. Accepts?
+  * [ ] `~/.config/labwc/environment` has the following contents?
+    * XKB_DEFAULT_LAYOUT=us,us,de
+    * XKB_DEFAULT_VARIANT=,colemak,
+    * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle
+  * [ ] Can switch between layouts with Alt+Shift, layouts behave as expected?
+  * [ ] Run `set-labwc-keymap --interactive`. Displays an interactive prompt for selecting a keyboard layout?
+  * [ ] Type `exit`. Exits without setting a layout?
+  * [ ] Run `set-labwc-keymap --interactive`. Displays an interactive prompt for selecting a keyboard layout?
+  * [ ] Type `us`. Accepts and displays a prompt for setting variants?
+  * [ ] Type `exit`. Exits without setting a layout?
+  * [ ] Run `set-labwc-keymap --interactive`. Displays an interactive prompt for selecting a keyboard layout?
+  * [ ] Type `us`. Accepts and displays a prompt for setting variants?
+  * [ ] Press Enter without typing anything. Accepts and displays a prompt for setting options?
+  * [ ] Type `exit`. Exits without setting a layout?
+* [ ] set-system-keymap tests
+  * [ ] Run `sudo set-system-keymap us`. /etc/default/keyboard contains the following contents besides other lines?
+    * XKBLAYOUT="us"
+    * XKBVARIANT=""
+    * XKBOPTIONS=""
+  * [ ] Run `sudo set-system-keymap de`. /etc/default/keyboard contains the following contents besides other lines?
+    * XKBLAYOUT="de"
+    * XKBVARIANT=""
+    * XKBOPTIONS=""
+  * [ ] Run `sudo set-system-keymap cz`. /etc/default/keyboard contains the following contents besides other lines?
+    * XKBLAYOUT="cz"
+    * XKBVARIANT=""
+    * XKBOPTIONS=""
+  * [ ] Run `sudo set-system-keymap us,de,cz '' grp:alt_shift_toggle`. /etc/default/keyboard contains the following contents besides other lines? (Note: Options may contain some extras, make sure they don't look suspicious)
+    * XKBLAYOUT="us,de,cz"
+    * XKBVARIANT=""
+    * XKBOPTIONS="grp:alt_shift_toggle"
+  * [ ] Run `sudo set-system-keymap us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. /etc/default/keyboard contains the following contents besides other lines? (Note: Options may contain some extras, make sure they don't look suspicious)
+    * XKBLAYOUT="us,us,us,de"
+    * XKBVARIANT=",dvorak,colemak,"
+    * XKBOPTIONS="grp:alt_shift_toggle,caps:backspace"
+  * [ ] Run `sudo set-system-keymap jj`. Complains that the specified keyboard layouts are not all valid?
+  * [ ] Run `sudo set-system-keymap us,jj,cz`. Complains that the specified keyboard layouts are not all valid?
+  * [ ] Run `sudo set-system-keymap us,de,jj`. Complains that the specified keyboard layouts are not all valid?
+  * [ ] Run `sudo set-system-keymap ,`. Complains that an empty keymap element was found?
+  * [ ] Run `sudo set-system-keymap us,`. Complains that an empty keymap element was found?
+  * [ ] Run `sudo set-system-keymap ,us`. Complains that an empty keymap element was found?
+  * [ ] Run `sudo set-system-keymap ,us,`. Complains that an empty keymap element was found?
+  * [ ] Run `sudo set-system-keymap us,,de`. Complains that an empty keymap element was found?
+  * [ ] Run `sudo set-system-keymap us ,`. Complains that an insufficient number of keyboard layouts are specified for the number of variants?
+  * [ ] Run `sudo set-system-keymap us,us ,`. Accepts it?
+  * [ ] Run `sudo set-system-keymap us,us colemak`. Complains that an insufficient number of keyboard variants are specified for the number of layouts?
+  * [ ] Run `sudo set-system-keymap us,us ,colemak ,`. Complains that empty keyboard layout option was found?
+  * [ ] Run `sudo set-system-keymap us,us ,colemak grp:alt_shift_toggle,`. Complains that empty keyboard layout option was found?
+  * [ ] Run `sudo set-system-keymap us,us ,colemak ,grp:alt_shift_toggle`. Complains that empty keyboard layout option was found?
+  * [ ] Run `sudo set-system-keymap us,us ,colemak ,grp:alt_shift_toggle,`. Complains that empty keyboard layout option was found?
+  * [ ] Run `sudo set-system-keymap us,us ,colemak grp:alt_shift_toggle,,caps:backspace`. Complains that empty keyboard layout option was found?
+  * [ ] Edit /etc/default/keyboard to have the following contents:
+    * XKBLAYOUT="us,us,us,de"
+    * XKBLAYOUT="us"
+    * XKBVARIANT=",dvorak,colemak,"
+    * XKBOPTIONS="grp:alt_shift_toggle,caps:backspace"
+  * [ ] Run `sudo set-system-keymap us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. /etc/default/keyboard is created with the following contents?
+    * XKBLAYOUT="us,us,us,de"
+    * XKBVARIANT=",dvorak,colemak,"
+    * XKBOPTIONS="grp:alt_shift_toggle,caps:backspace"
+  * [ ] Edit /etc/default/keyboard to have the following contents:
+    * A=B
+    * XKBLAYOUT="us,us,us,de"
+    * C=D
+    * XKBVARIANT=",dvorak,colemak,"
+    * XKBOPTIONS="grp:alt_shift_toggle,caps:backspace"
+    * E=F
+  * [ ] Run `sudo set-system-keymap es`. /etc/default/keyboard is created with the following contents?
+    * A=B
+    * XKBLAYOUT="es"
+    * C=D
+    * XKBVARIANT=""
+    * XKBOPTIONS=""
+    * E=F
+  * [ ] Edit /etc/default/keyboard to have the following contents:
+    * A=B
+    * XKBLAYOUT="es"
+    *   C=D
+    *   XKBVARIANT=""
+    * XKBOPTIONS=""
+    * E=F
+  * [ ] Run `sudo set-system-keymap us,us colemak,`. /etc/default/keyboardfile is created with the following contents?
+    * A=B
+    * XKBLAYOUT="us,us"
+    *   C=D
+    *   XKBVARIANT="colemak,"
+    * XKBOPTIONS=""
+    * E=F
+  * [ ] Edit /etc/default/keyboard to have the following contents:
+    * A=B
+    * #XKBLAYOUT="us"
+    *  XKBLAYOUT="es"
+    *   #XKBLAYOUT="de"
+    *   C=D
+    *   XKBVARIANT=""
+    * XKB_DEFAULT_OPTIONS=""
+    * XKB_DEFAULT_OPTIONS="caps:backspace"
+    * E=F
+  * [ ] Run `sudo set-system-keymap us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
+    * A=B
+    * #XKBLAYOUT="us"
+    *  XKBLAYOUT="us,us,us,de"
+    *   #XKBLAYOUT="de"
+    *   C=D
+    *   XKBVARIANT=",dvorak,colemak,"
+    * XKBOPTIONS="grp:alt_shift_toggle,caps:backspace"
+    * E=F
