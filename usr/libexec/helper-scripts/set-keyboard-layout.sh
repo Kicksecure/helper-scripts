@@ -320,6 +320,11 @@ set_labwc_keymap() {
     fi
   fi
 
+  if test -d "${labwc_config_path}"; then
+    printf '%s\n' "$0: ERROR: --config '${labwc_config_path}' is a folder but should be a file!" >&2
+    return 1
+  fi
+
   labwc_config_directory="$(dirname -- "${labwc_config_path}")"
 
   ## Ensure the labwc configuration directory exists.
