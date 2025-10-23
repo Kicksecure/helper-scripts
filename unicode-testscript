@@ -126,7 +126,7 @@ if [ ! "$(printf "%s\n\n" "test" | stcatn | wc -l)" = "2" ]; then
   exit 1
 fi
 
-mkdir --parents "$HOME/suspicious-unicode-tests-temp-folder/suspicious-whitespace-test"
+mkdir --parents -- "$HOME/suspicious-unicode-tests-temp-folder/suspicious-whitespace-test"
 printf "\n \n " | sponge -- "$HOME/suspicious-unicode-tests-temp-folder/suspicious-whitespace-test/1.txt"
 
 if ! stcatn "$HOME/suspicious-unicode-tests-temp-folder/suspicious-whitespace-test/1.txt" | unicode-show ; then
