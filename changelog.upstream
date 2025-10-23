@@ -1,3 +1,17 @@
+commit 65d41469d79cf4e04abf600d77dc5c4bc35f1a67
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 23 02:27:45 2025 -0400
+
+    add set-keymap-test-plan
+    
+    thanks to @ArrayBolt3
+
+commit bfa7e84c2a1231d8c5d72c0bdc67e92103fa82bb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 23 06:02:23 2025 +0000
+
+    bumped changelog version
+
 commit d52bd94f8e49815a2be3a06d27fa5b76874537d6
 Merge: b2a9b45 e63f412
 Author: Patrick Schleizer <adrelanos@whonix.org>
