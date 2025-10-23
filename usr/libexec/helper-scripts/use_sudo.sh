@@ -4,8 +4,6 @@
 ## See the file COPYING for copying conditions.
 
 sudo_useable_test() {
-   local kernel_cmdline
-
    use_sudo='no'
 
 #    local id_user
@@ -24,15 +22,9 @@ sudo_useable_test() {
       return 0
    fi
 
-   kernel_cmdline="$(cat -- /proc/cmdline)"
-
-   if ! [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]]; then
-      true "INFO: USER Session detected."
-      true "INFO: (kernel parameter 'boot-role=sysmaint' is not present, ok.)"
-   else
-      true "INFO: SYSMAINT Session detected."
-      true "INFO: (kernel parameter 'boot-role=sysmaint' present, ok.)"
-   fi
+   ## Debugging.
+   ## sets: boot_session
+   source /usr/libexec/helper-scripts/boot-session-detection.sh
 
    if ! test -x "$sudo_exe"; then
       true "$0: INFO: sudo is not executable. Cannot use sudo."

@@ -14,6 +14,11 @@ if [ "$(id -u)" = 0 ] && [ -z "${GITHUB_WORKSPACE:-}" ]; then
     exit 1
 fi
 
+## XXX: Unrelated unit test. Non-ideal location but OK.
+source /usr/libexec/helper-scripts/use_sudo.sh
+source /usr/libexec/helper-scripts/use_pkexec.sh
+source /usr/libexec/helper-scripts/boot-session-detection.sh
+
 if ! printf '%s\n' "" | wc -l >/dev/null ; then
   printf '%s\n' "\
 $0: ERROR: command 'wc' test failed! Do not ignore this!

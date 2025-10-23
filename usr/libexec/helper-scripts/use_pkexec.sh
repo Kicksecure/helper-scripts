@@ -15,13 +15,9 @@ pkexec_useable_test() {
 
    kernel_cmdline="$(cat -- /proc/cmdline)"
 
-   if ! [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]]; then
-      true "INFO: USER Session detected."
-      true "INFO: (kernel parameter 'boot-role=sysmaint' is not present, ok.)"
-   else
-      true "INFO: SYSMAINT Session detected."
-      true "INFO: (kernel parameter 'boot-role=sysmaint' present, ok.)"
-   fi
+   ## Debugging.
+   ## sets: boot_session
+   source /usr/libexec/helper-scripts/boot-session-detection.sh
 
    if ! test -x "$pkexec_exe"; then
       true "$0: INFO: pkexec is not executable. Cannot use pkexec."
