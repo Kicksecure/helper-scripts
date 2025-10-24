@@ -32,7 +32,7 @@ if [ "${FLOCKER-}" != "$0" ]; then
     ## XXX: Might add a superfluous ':xtrace'.
     exec env SHELLOPTS="${SHELLOPTS-}:xtrace" FLOCKER="$0" flock --verbose --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}" >/dev/null
   else
-    exec FLOCKER="$0" flock --verbose --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}" >/dev/null
+    exec env FLOCKER="$0" flock --verbose --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}" >/dev/null
   fi
 fi
 
