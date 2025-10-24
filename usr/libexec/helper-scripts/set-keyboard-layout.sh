@@ -418,14 +418,15 @@ set_labwc_keymap() {
 }
 
 dpkg_reconfigure_function() {
-  local dpkg_reconfigure_output
+  local dpkg_reconfigure_output_original
   printf '%s\n' "$0: EXECUTING: '${*}'" >&2
-  dpkg_reconfigure_output="$("${@}" 2>&1)"
+  dpkg_reconfigure_output_original="$("${@}" 2>&1)"
   ## dpkg-reconfigure can cause the following error message:
   #cat: '/sys/bus/usb/devices/*:*/bInterfaceClass': No such file or directory
   #cat: '/sys/bus/usb/devices/*:*/bInterfaceSubClass': No such file or directory
   #cat: '/sys/bus/usb/devices/*:*/bInterfaceProtocol': No such file or directory
-  printf '%s\n' "${dpkg_reconfigure_output}" | grep --invert-match --fixed-strings -- "cat: '/sys/bus/usb/devices/*:*/"
+  ## This however does not cause a non-zero exit code.
+  dpkg_reconfigure_output_filtered="$(printf '%s\n' "${dpkg_reconfigure_output_original}" | grep --invert-match --fixed-strings -- "cat: '/sys/bus/usb/devices/*:*/")" || true
 }
 
 ## Sets the XKB layout(s), variant(s), and option(s) for the entire system.

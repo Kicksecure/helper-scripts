@@ -36,10 +36,10 @@ for opt in "$@"; do
     break
   fi
   if [ "${opt}" = '--interactive' ]; then
-    interactive_ui 'set_labwc_keymap' --persist || exit 1
+    interactive_ui 'set_labwc_keymap' --persist
     exit 0
   fi
 done
-set_labwc_keymap "$@" || exit 1
+set_labwc_keymap "$@"
 
 true "$0: END"
