@@ -518,6 +518,12 @@ set_system_keymap() {
   stcat "${kb_conf_path}" >&2
 
   printf '%s\n' "$0: EXECUTING: dpkg-reconfigure --frontend=noninteractive keyboard-configuration" >&2
+
+  ## dpkg-reconfigure can cause the following error message:
+  #cat: '/sys/bus/usb/devices/*:*/bInterfaceClass': No such file or directory
+  #cat: '/sys/bus/usb/devices/*:*/bInterfaceSubClass': No such file or directory
+  #cat: '/sys/bus/usb/devices/*:*/bInterfaceProtocol': No such file or directory
+
   ## Apply the changes to the config file to the system.
   dpkg-reconfigure --frontend=noninteractive keyboard-configuration \
     || return 1
