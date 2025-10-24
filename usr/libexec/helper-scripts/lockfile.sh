@@ -30,7 +30,7 @@ fi
 if [ "${FLOCKER-}" != "$0" ]; then
   if [ -o xtrace ]; then
     true "${BASH_SOURCE[0]}: xtrace (set -x) is set."
-    FLOCKER="$0" flock --verbose --exclusive --nonblock "${flocker_lockfile}" bash -x "${0}" "${@}" >/dev/null
+    env SHELLOPTS=xtrace FLOCKER="$0" flock --verbose --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}" >/dev/null
   else
     true "${BASH_SOURCE[0]}: xtrace (set -x) is not set."
     exec env FLOCKER="$0" flock --verbose --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}" >/dev/null
