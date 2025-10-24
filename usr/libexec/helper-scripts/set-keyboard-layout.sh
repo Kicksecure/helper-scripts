@@ -514,11 +514,13 @@ set_system_keymap() {
     return 1
   fi
 
+  printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:" >&2
+  stcat "${kb_conf_path}" >&2
+
+  printf '%s\n' "$0: EXECUTING: dpkg-reconfigure --frontend=noninteractive keyboard-configuration" >&2
   ## Apply the changes to the config file to the system.
   dpkg-reconfigure --frontend=noninteractive keyboard-configuration \
     || return 1
-  printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:" >&2
-  stcat "${kb_conf_path}" >&2
 
   ## Set the specified keyboard layout for labwc both system-wide and for the
   ## greeter.
