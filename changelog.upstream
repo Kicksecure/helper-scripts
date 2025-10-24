@@ -1,3 +1,75 @@
+commit d3c2b9a2a1d24c556f7543fef030cd02dd61cb37
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 01:58:45 2025 -0400
+
+    comment
+
+commit 0115f45a7e955d74535ee5f158be9de536138f5d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 01:56:49 2025 -0400
+
+    output
+
+commit 1042ae2fe6b0c347f037ff71976cdcfc7b4876d2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 01:52:48 2025 -0400
+
+    reload labwc if running; output
+
+commit 5e118cce320e8d55374be4c523a554003e92054a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 01:41:39 2025 -0400
+
+    add root check / non-root check
+
+commit 3c35c377a5a9179ea15cd7bd85766aa4abe4596d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 01:26:28 2025 -0400
+
+    improve error handling
+
+commit e17e17d2397414af4dd53d2048d082afca0a8a6e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 01:09:26 2025 -0400
+
+    fix error handling
+
+commit c8c38756dbfb088d52adc586c14af7e801f42460
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 01:01:42 2025 -0400
+
+    add error handler
+
+commit 6028c5d414387ee69ed487312e5af5723d0434b1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 00:55:37 2025 -0400
+
+    set-system-keymap: filter spurious error messages:
+    
+    ```
+    cat: '/sys/bus/usb/devices/*:*/bInterfaceClass': No such file or directory
+    cat: '/sys/bus/usb/devices/*:*/bInterfaceSubClass': No such file or directory
+    cat: '/sys/bus/usb/devices/*:*/bInterfaceProtocol': No such file or directory
+    ```
+
+commit b33e446a218937ad65aefb8a9853177d1af5f102
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 00:42:17 2025 -0400
+
+    comment
+
+commit 4f1dbe72bb8b04c637eec7e6d1c13010ea7ba3e2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 00:39:52 2025 -0400
+
+    show /etc/default/keyboard contents before executing dpkg-reconfigure --frontend=noninteractive keyboard-configuration
+
+commit 140a5dcbc7428fbeca082bba402a4752edef34d9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 23 08:40:42 2025 +0000
+
+    bumped changelog version
+
 commit 13f41955954903df752414826d8fa4e9db9ea34a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Oct 23 04:27:00 2025 -0400
