@@ -30,6 +30,8 @@ fi
 if [ "${FLOCKER-}" != "$0" ]; then
   if [ -o xtrace ]; then
     true "${BASH_SOURCE[0]}: xtrace (set -x) is set."
+    ## NOTE: 'bash -x' is a bad idea as it might disable AppArmor for that process.
+    ## TODO: Do not overwrite SHELLOPTS unconditionally.
     env SHELLOPTS=xtrace FLOCKER="$0" flock --verbose --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}" >/dev/null
   else
     true "${BASH_SOURCE[0]}: xtrace (set -x) is not set."
