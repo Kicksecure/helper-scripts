@@ -1,0 +1,14 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Simple test program that is not supposed to get started.
+## For the purpose of testing AppArmor.
+
+set -x
+set -e
+
+true "$0: START"
+
+exit 1
