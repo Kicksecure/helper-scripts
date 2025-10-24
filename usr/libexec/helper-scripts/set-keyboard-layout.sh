@@ -409,6 +409,17 @@ set_labwc_keymap() {
   fi
 }
 
+dpkg_reconfigure_function() {
+  local dpkg_reconfigure_output
+  printf '%s\n' "$0: EXECUTING: '${*}'" >&2
+  dpkg_reconfigure_output="$("${@}" 2>&1)"
+  ## dpkg-reconfigure can cause the following error message:
+  #cat: '/sys/bus/usb/devices/*:*/bInterfaceClass': No such file or directory
+  #cat: '/sys/bus/usb/devices/*:*/bInterfaceSubClass': No such file or directory
+  #cat: '/sys/bus/usb/devices/*:*/bInterfaceProtocol': No such file or directory
+  printf '%s\n' "${dpkg_reconfigure_output}" | grep --invert-match --fixed-strings -- "cat: '/sys/bus/usb/devices/*:*/"
+}
+
 ## Sets the XKB layout(s), variant(s), and option(s) for the entire system.
 ## NOTE: Changes will take effect after a reboot. This is because CLI keyboard
 ## layout changes would need to be applied with setupcon, but setupcon may not
@@ -423,7 +434,7 @@ set_system_keymap() {
   local args var_idx kb_conf_file_string kb_conf_path kb_conf_dir \
     calc_replace_args labwc_system_wide_config_path \
     labwc_system_wide_config_dir labwc_greeter_config_path \
-    labwc_greeter_config_dir
+    labwc_greeter_config_dir dpkg_reconfigure_command
 
   ## Parse command line arguments
   kb_conf_dir='/etc/default'
@@ -517,16 +528,11 @@ set_system_keymap() {
   printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:" >&2
   stcat "${kb_conf_path}" >&2
 
-  printf '%s\n' "$0: EXECUTING: dpkg-reconfigure --frontend=noninteractive keyboard-configuration" >&2
-
-  ## dpkg-reconfigure can cause the following error message:
-  #cat: '/sys/bus/usb/devices/*:*/bInterfaceClass': No such file or directory
-  #cat: '/sys/bus/usb/devices/*:*/bInterfaceSubClass': No such file or directory
-  #cat: '/sys/bus/usb/devices/*:*/bInterfaceProtocol': No such file or directory
-
+  dpkg_reconfigure_command=( "dpkg-reconfigure" "--frontend=noninteractive" "keyboard-configuration" )
+  ## Test error handling.
+  #dpkg_reconfigure_command=( "dpkg-reconfigure" )
   ## Apply the changes to the config file to the system.
-  dpkg-reconfigure --frontend=noninteractive keyboard-configuration \
-    || return 1
+  dpkg_reconfigure_function "${dpkg_reconfigure_command[@]}"
 
   ## Set the specified keyboard layout for labwc both system-wide and for the
   ## greeter.
