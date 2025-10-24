@@ -563,7 +563,7 @@ set_system_keymap() {
 
   ## Set the specified keyboard layout for labwc both system-wide and for the
   ## greeter.
-  printf '%s\n' "$0: INFO: 'labwc' console configuration..." >&2
+  printf '%s\n' "$0: INFO: 'labwc' configuration..." >&2
 
   set_labwc_keymap \
     --persist \
@@ -574,7 +574,7 @@ set_system_keymap() {
   printf '%s\n' "$0: INFO: 'labwc' configuration success." >&2
   printf '%s\n' "" >&2
 
-  printf '%s\n' "$0: INFO: 'greetd' console configuration..." >&2
+  printf '%s\n' "$0: INFO: 'greetd' configuration..." >&2
   set_labwc_keymap \
     --persist \
     --no-reload \
