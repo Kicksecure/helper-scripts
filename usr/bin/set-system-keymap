@@ -12,6 +12,8 @@ true "$0: START"
 
 source /usr/libexec/helper-scripts/set-keyboard-layout.sh
 
+trap "error_handler" ERR
+
 print_usage() {
   printf '%s\n' "$0: Set system-wide keyboard layout for next boot" >&2
   printf '%s\n' "Usage: $0 [--help] [--interactive] -- [layout [variant [option]]]" >&2

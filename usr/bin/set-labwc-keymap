@@ -12,6 +12,8 @@ true "$0: START"
 
 source /usr/libexec/helper-scripts/set-keyboard-layout.sh
 
+trap "error_handler" ERR
+
 print_usage() {
   printf '%s\n' "$0: Set keyboard layout for labwc" >&2
   printf '%s\n' "Usage: $0 [--help] [--persist] [--no-reload] [--config <path>] [--interactive] -- [layout [variant [option]]]" >&2

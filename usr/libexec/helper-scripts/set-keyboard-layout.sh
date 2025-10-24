@@ -31,6 +31,14 @@ skl_default_keyboard_var_names=(
   'XKBOPTIONS'
 )
 
+error_handler() {
+  exit_code="${?}"
+  printf '%s\n' "\
+BASH_COMMAND: ${BASH_COMMAND}
+exit_code: ${exit_code}"
+  exit "${exit_code}"
+}
+
 ## Checks to see if all items in "check_str" are present in the output of a
 ## command that lists valid items.
 is_layout_data_valid() {
