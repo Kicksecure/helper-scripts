@@ -1,3 +1,51 @@
+commit b8f4a1fbb3051a17c457ebf74f51f7efc99fd498
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 03:59:42 2025 -0400
+
+    improve lockfile
+
+commit 4822c1c7f3be9e18ea6401a5fa0116e00f0fddf7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 03:58:08 2025 -0400
+
+    improve lockfile
+
+commit 00e0a4cdcddc845aed7609fe40f8d154333c4e94
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 03:55:54 2025 -0400
+
+    improve lockfile
+
+commit f700befed53692616e0e0fa8645129f37d0bcd4d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 03:40:29 2025 -0400
+
+    add disallowed-test
+
+commit be2f34f61508051f64e844f49b06f9c43bce8cd1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 03:40:19 2025 -0400
+
+    comments
+
+commit 6b7eeb7a8c6655aca65fa4dcf5469f43cd26cf80
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 03:39:32 2025 -0400
+
+    improve lockfile
+
+commit 053fe61e8ff854d83eca27a9c261693d0bc538bd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 03:12:33 2025 -0400
+
+    improve lockfile
+
+commit 0a3b795c9d5f79de1010e230579b7ca6cbf721ce
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 06:12:09 2025 +0000
+
+    bumped changelog version
+
 commit d3c2b9a2a1d24c556f7543fef030cd02dd61cb37
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 24 01:58:45 2025 -0400
