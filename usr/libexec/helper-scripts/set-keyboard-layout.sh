@@ -386,9 +386,13 @@ set_labwc_keymap() {
 
   if [ "${no_reload}" = 'false' ]; then
     if pgrep labwc >/dev/null; then
+      ## labwc is running. So the user most likely wishes the change to instantly apply.
+      ## Therefore let's run 'labwc --reconfigure'.
       if ! command -v labwc >/dev/null; then
+        ## This would be weird. 'labwc' is running but unavailable in PATH.
         printf '%s\n' "$0: ERROR: 'labwc' not available in PATH or not installed." >&2
       else
+        ## 'labwc' is running and available in PATH.
         if labwc --reconfigure; then
           printf '%s\n' "$0: INFO: 'labwc --reconfigure' OK." >&2
         else
