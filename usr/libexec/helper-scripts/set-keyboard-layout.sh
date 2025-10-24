@@ -10,6 +10,8 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   #  set -o pipefail
 fi
 
+source /usr/libexec/helper-scripts/in-chroot.sh
+
 command -v safe-rm >/dev/null
 command -v localectl >/dev/null
 command -v mktemp >/dev/null
@@ -99,6 +101,12 @@ check_keyboard_layouts() {
     return 1
   fi
 
+  ## localectl cannot be run within a chroot to get lists of valid values.
+  ## Assume data is correct if it passed the previous sanity checks.
+  if in_chroot; then
+    return 0
+  fi
+
   ## Ensure the specified keyboard layout(s) are valid.
   if ! is_layout_data_valid "${layout_str}" \
     localectl list-x11-keymap-layouts ; then
@@ -141,6 +149,12 @@ check_keyboard_layout_variants() {
     return 1
   fi
 
+  ## localectl cannot be run within a chroot to get lists of valid values.
+  ## Assume data is correct if it passed the previous sanity checks.
+  if in_chroot; then
+    return 0
+  fi
+
   for kb_idx in "${!kb_layout_list[@]}"; do
     if [ -z "${kb_variant_list[kb_idx]}" ]; then continue; fi
     if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
@@ -169,6 +183,12 @@ check_keyboard_layout_options() {
       return 1
     fi
   done
+
+  ## localectl cannot be run within a chroot to get lists of valid values.
+  ## Assume data is correct if it passed the previous sanity checks.
+  if in_chroot; then
+    return 0
+  fi
 
   if ! is_layout_data_valid "${option_str}" \
     localectl list-x11-keymap-options ; then
@@ -690,6 +710,10 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## contain spaces or capital letters.
     layout_str="$(tr -d ' ' <<< "${layout_str,,}")"
     if [ "${layout_str}" = 'list' ]; then
+      if in_chroot; then
+        printf '%s\n' 'Running in chroot, cannot list possible keyboard layouts.';
+        continue
+      fi
       localectl list-x11-keymap-layouts
       continue
     fi
@@ -717,6 +741,10 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## capitals, so we can't normalize everything to lowercase.
     variant_str="$(tr -d ' ' <<< "${variant_str}")"
     if [ "${variant_str,,}" = 'list' ]; then
+      if in_chroot; then
+        printf '%s\n' 'Running in chroot, cannot list possible keyboard layout variants.';
+        continue
+      fi
       if ! grep -q ',' <<< "${layout_str}"; then
         localectl list-x11-keymap-variants "${layout_str}"
       else
@@ -757,6 +785,10 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## because some options like "eurosign:E" contain capital letters.
     option_str="$(tr -d ' ' <<< "${option_str}")"
     if [ "${option_str,,}" = 'list' ]; then
+      if in_chroot; then
+        printf '%s\n' 'Running in chroot, cannot list possible keyboard layout options.'
+        continue
+      fi
       localectl list-x11-keymap-options
       continue
     fi
