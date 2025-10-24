@@ -385,14 +385,18 @@ set_labwc_keymap() {
   fi
 
   if [ "${no_reload}" = 'false' ]; then
-    if ! command -v labwc >/dev/null; then
-      printf '%s\n' "$0: WARNING: 'labwc' not available in PATH or not installed." >&2
-    else
-      if labwc --reconfigure; then
-        printf '%s\n' "$0: INFO: 'labwc --reconfigure' OK." >&2
+    if pgrep labwc >/dev/null; then
+      if ! command -v labwc >/dev/null; then
+        printf '%s\n' "$0: ERROR: 'labwc' not available in PATH or not installed." >&2
       else
-        printf '%s\n' "$0: WARNING: 'labwc --reconfigure' reconfiguration failed!" >&2
+        if labwc --reconfigure; then
+          printf '%s\n' "$0: INFO: 'labwc --reconfigure' OK." >&2
+        else
+          printf '%s\n' "$0: WARNING: 'labwc --reconfigure' reconfiguration failed!" >&2
+        fi
       fi
+    else
+      printf '%s\n' "$0: INFO: 'labwc' not running, no need to execute 'labwc --reconfigure', OK." >&2
     fi
   fi
 
@@ -432,7 +436,7 @@ dpkg_reconfigure_function() {
       sed "\|^cat: '/sys/bus/usb/devices/\*:\*/bInterface|d"
   )"
   if [ "${dpkg_reconfigure_output_filtered}" = "" ]; then
-    printf '%s\n' "$0: INFO: Ok." >&2
+    printf '%s\n' "$0: INFO: OK." >&2
   else
     printf '%s\n' "${dpkg_reconfigure_output_filtered}" >&2
   fi
@@ -544,6 +548,7 @@ set_system_keymap() {
     return 1
   fi
 
+  printf '%s\n' "$0: INFO: system console configuration..." >&2
   printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:" >&2
   stcat "${kb_conf_path}" >&2
 
@@ -553,15 +558,23 @@ set_system_keymap() {
   ## Apply the changes to the config file to the system.
   dpkg_reconfigure_function "${dpkg_reconfigure_command[@]}"
 
+  printf '%s\n' "$0: INFO: system console configuration success." >&2
+  printf '%s\n' "" >&2
+
   ## Set the specified keyboard layout for labwc both system-wide and for the
   ## greeter.
+  printf '%s\n' "$0: INFO: 'labwc' console configuration..." >&2
+
   set_labwc_keymap \
     --persist \
-    --no-reload \
     --config \
     "${labwc_system_wide_config_path}" \
     "${args[@]}" \
     || return 1
+  printf '%s\n' "$0: INFO: 'labwc' configuration success." >&2
+  printf '%s\n' "" >&2
+
+  printf '%s\n' "$0: INFO: 'greetd' console configuration..." >&2
   set_labwc_keymap \
     --persist \
     --no-reload \
@@ -569,6 +582,8 @@ set_system_keymap() {
     "${labwc_greeter_config_path}" \
     "${args[@]}" \
     || return 1
+  printf '%s\n' "$0: INFO: 'greetd' configuration success." >&2
+  printf '%s\n' "" >&2
 }
 
 interactive_ui_help_layout() {
