@@ -423,6 +423,8 @@ set_labwc_keymap() {
       return 1
     fi
   fi
+
+  printf '%s\n' "$0: INFO: Keyboard layout change successful." >&2
 }
 
 dpkg_reconfigure_function() {
@@ -588,6 +590,8 @@ set_system_keymap() {
     || return 1
   printf '%s\n' "$0: INFO: 'greetd' configuration success." >&2
   printf '%s\n' "" >&2
+
+  printf '%s\n' "$0: INFO: Keyboard layout change successful." >&2
 }
 
 interactive_ui_help_layout() {
@@ -776,5 +780,4 @@ Type 'exit' to quit without changing keyboard layout settings.
     "${variant_str}" \
     "${option_str}" \
     || return 1
-  printf '%s\n' "$0: INFO: Keyboard layout change successful." >&2
 }
