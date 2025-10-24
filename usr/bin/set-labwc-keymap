@@ -30,6 +30,11 @@ print_usage() {
   printf '%s\n' '  set-labwc-keymap us,cz,de "" grp:alt_shift_toggle' >&2
 }
 
+if [ "$(id -u)" = "0" ]; then
+  printf '%s\n' "$0: ERROR: This must NOT be run as root (sudo)!" >&2
+  exit 1
+fi
+
 ## Enter interactive mode if requested.
 for opt in "$@"; do
   if [ "${opt}" = '--' ]; then
