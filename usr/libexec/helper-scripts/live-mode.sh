@@ -36,9 +36,9 @@ live_mode_str='none'
 if [ -z "${kernel_cmdline+x}" ]; then
   kernel_cmdline=''
   if [ -f /proc/cmdline ]; then
-    kernel_cmdline="$(cat /proc/cmdline)"
+    kernel_cmdline="$(cat -- /proc/cmdline)"
   elif [ -f /proc/1/cmdline ]; then
-    kernel_cmdline="$(cat /proc/1/cmdline)"
+    kernel_cmdline="$(cat -- /proc/1/cmdline)"
   fi
 fi
 

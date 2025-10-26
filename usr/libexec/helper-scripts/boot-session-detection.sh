@@ -6,7 +6,12 @@
 boot_session_detection() {
   local kernel_cmdline
 
-  kernel_cmdline="$(cat -- /proc/cmdline)"
+  kernel_cmdline=''
+  if [ -f /proc/cmdline ]; then
+    kernel_cmdline="$(cat -- /proc/cmdline)"
+  elif [ -f /proc/1/cmdline ]; then
+    kernel_cmdline="$(cat -- /proc/1/cmdline)"
+  fi
 
   if [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]]; then
     true "INFO: SYSMAINT Session detected."
