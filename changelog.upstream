@@ -1,3 +1,58 @@
+commit 39210e9c52b62289526651d6b6605eb9099df9af
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 05:58:05 2025 -0400
+
+    use ischroot
+
+commit 479c70ec49a321b360069444533456007a21dbfb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 05:46:27 2025 -0400
+
+    end-of-options
+
+commit 43c619e4a3c3bebb20306e09b3a64252c28c2528
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 05:44:37 2025 -0400
+
+    chmod +x
+
+commit 4f631a071ccbd824faec767cada443c49dc66bb7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 05:44:20 2025 -0400
+
+    debugging
+
+commit 50bd3d3b3ce594818b471ba288b2b12883d8f310
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 05:43:08 2025 -0400
+
+    comment
+
+commit 422c95417a085897c868ce101a514cb9086760a0
+Merge: 16b9434 6e837e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 05:42:00 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 6e837e1001afaefd61a829979a44eeadd64f8351
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Oct 24 17:41:39 2025 -0500
+
+    Add in-chroot.sh library, avoid calling localectl in a chroot in set-keyboard-layout.sh
+
+commit ac36b64fff50f9fd7f8f3a015f4ff17a8e66c973
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Oct 24 16:27:18 2025 -0500
+
+    Display keyboard layout change success message in both interactive and non-interactive modes
+
+commit 16b9434c04b6fc3233e8ec412652216180fc72a2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 24 08:07:11 2025 +0000
+
+    bumped changelog version
+
 commit b8f4a1fbb3051a17c457ebf74f51f7efc99fd498
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 24 03:59:42 2025 -0400
