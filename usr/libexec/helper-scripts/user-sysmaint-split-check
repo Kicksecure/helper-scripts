@@ -1,0 +1,29 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+source /usr/libexec/helper-scripts/package_installed_check.bsh
+
+mode="${1:-needs-sysmaint}"
+
+kernel_cmdline=""
+if [ -r '/proc/cmdline' ]; then
+  kernel_cmdline="$(cat /proc/cmdline)"
+elif [ -r '/proc/1/cmdline' ]; then
+  kernel_cmdline="$(cat /proc/1/cmdline)"
+fi
+
+if pkg_installed user-sysmaint-split; then
+  if [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]]; then
+    if [ "${mode}" = 'needs-user' ]; then
+      exit 1
+    fi
+  else
+    if [ "${mode}" = 'needs-sysmaint' ]; then
+      exit 1
+    fi
+  fi
+fi
+
+exit 0
