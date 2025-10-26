@@ -445,11 +445,12 @@ set_labwc_keymap() {
     fi
   fi
 
-  printf '%s\n' "$0: INFO: Keyboard layout change successful." >&2
+  printf '%s\n' "$0: INFO: 'labwc' configuration success." >&2
 }
 
 dpkg_reconfigure_function() {
-  local dpkg_reconfigure_exit_code dpkg_reconfigure_output_original
+  local dpkg_reconfigure_exit_code dpkg_reconfigure_output_original \
+    dpkg_reconfigure_output_filtered
   printf '%s\n' "$0: EXECUTING: '${*}'" >&2
   dpkg_reconfigure_exit_code=0
   dpkg_reconfigure_output_original="$("${@}" 2>&1)" || { dpkg_reconfigure_exit_code="$?"; true; }
@@ -470,7 +471,8 @@ dpkg_reconfigure_function() {
   return "${dpkg_reconfigure_exit_code}"
 }
 
-## Sets the XKB layout(s), variant(s), and option(s) for the entire system.
+## Sets the XKB layout(s), variant(s), and option(s) for the console. Due to
+## limitations in Linux, this is a system-wide setting only.
 ## NOTE: Changes will take effect after a reboot. This is because CLI keyboard
 ## layout changes would need to be applied with setupcon, but setupcon may not
 ## be safe to use to apply CLI keyboard layout changes while a graphical
@@ -480,19 +482,13 @@ dpkg_reconfigure_function() {
 ##     Do not check whether we are on the console. Notice that you can be
 ##     forced to hard-reboot your computer if you run setupcon with this
 ##     option and the screen is controlled by a X server.
-set_system_keymap() {
+set_console_keymap() {
   local args var_idx kb_conf_file_string kb_conf_path kb_conf_dir \
-    calc_replace_args labwc_system_wide_config_path \
-    labwc_system_wide_config_dir labwc_greeter_config_path \
-    labwc_greeter_config_dir dpkg_reconfigure_command
+    calc_replace_args dpkg_reconfigure_command
 
   ## Parse command line arguments
   kb_conf_dir='/etc/default'
   kb_conf_path="${kb_conf_dir}/keyboard"
-  labwc_system_wide_config_dir='/etc/xdg/labwc'
-  labwc_system_wide_config_path="${labwc_system_wide_config_dir}/environment"
-  labwc_greeter_config_dir='/etc/greetd/labwc-config'
-  labwc_greeter_config_path="${labwc_greeter_config_dir}/environment"
   while [ -n "${1:-}" ]; do
     case "${1:-}" in
       '--help')
@@ -546,14 +542,6 @@ set_system_keymap() {
     printf '%s\n' "$0: ERROR: Cannot ensure the existence of '${kb_conf_dir}'!" >&2
     return 1
   fi
-  if ! mkdir --parents -- "${labwc_system_wide_config_dir}" ; then
-    printf '%s\n' "$0: ERROR: Cannot ensure the existence of '${labwc_system_wide_config_dir}'!" >&2
-    return 1
-  fi
-  if ! mkdir --parents -- "${labwc_greeter_config_dir}" ; then
-    printf '%s\n' "$0: ERROR: Cannot ensure the existence of '${labwc_greeter_config_dir}'!" >&2
-    return 1
-  fi
 
   if [ -f "${kb_conf_path}" ]; then
     calc_replace_args=( "$(cat -- "${kb_conf_path}")" ) || return 1
@@ -575,7 +563,6 @@ set_system_keymap() {
     return 1
   fi
 
-  printf '%s\n' "$0: INFO: system console configuration..." >&2
   printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:" >&2
   stcat "${kb_conf_path}" >&2
 
@@ -586,6 +573,70 @@ set_system_keymap() {
   dpkg_reconfigure_function "${dpkg_reconfigure_command[@]}"
 
   printf '%s\n' "$0: INFO: system console configuration success." >&2
+}
+
+## Sets the system-wide keyboard layout for the console, greeter, and labwc
+## sessions all at once.
+set_system_keymap() {
+  local args labwc_system_wide_config_dir labwc_system_wide_config_path \
+    labwc_greeter_config_dir labwc_greeter_config_path
+
+  while [ -n "${1:-}" ]; do
+    case "${1:-}" in
+      '--help')
+        print_usage
+        return 0
+        ;;
+      '--interactive')
+        skl_interactive='true'
+        shift
+        ;;
+      '--')
+        shift
+        break
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+  args=( "$@" )
+
+  ## We must have at least one, but no more than three, arguments specifying the
+  ## keyboard layout(s).
+  if [ "${#args[@]}" = '0' ] || [ -z "${args[0]:-}" ] \
+    || (( ${#args[@]} > 3 )); then
+    ## The print_usage function is provided by the script that sources this
+    ## library.
+    print_usage
+    return 1
+  fi
+
+  ## If we have less than three arguments, populate the `args` array with empty
+  ## strings for the remaining arguments.
+  while (( ${#args[@]} < 3 )); do
+    args+=( '' )
+  done
+
+  labwc_system_wide_config_dir='/etc/xdg/labwc'
+  labwc_system_wide_config_path="${labwc_system_wide_config_dir}/environment"
+  labwc_greeter_config_dir='/etc/greetd/labwc-config'
+  labwc_greeter_config_path="${labwc_greeter_config_dir}/environment"
+
+  if ! mkdir --parents -- "${labwc_system_wide_config_dir}" ; then
+    printf '%s\n' "$0: ERROR: Cannot ensure the existence of '${labwc_system_wide_config_dir}'!" >&2
+    return 1
+  fi
+  if ! mkdir --parents -- "${labwc_greeter_config_dir}" ; then
+    printf '%s\n' "$0: ERROR: Cannot ensure the existence of '${labwc_greeter_config_dir}'!" >&2
+    return 1
+  fi
+
+  printf '%s\n' "$0: INFO: Console keymap configuration..." >&2
+
+  set_console_keymap \
+    "${args[@]}" \
+    || return 1
   printf '%s\n' "" >&2
 
   ## Set the specified keyboard layout for labwc both system-wide and for the
@@ -594,11 +645,11 @@ set_system_keymap() {
 
   set_labwc_keymap \
     --persist \
+    --no-reload \
     --config \
     "${labwc_system_wide_config_path}" \
     "${args[@]}" \
     || return 1
-  printf '%s\n' "$0: INFO: 'labwc' configuration success." >&2
   printf '%s\n' "" >&2
 
   printf '%s\n' "$0: INFO: 'greetd' configuration..." >&2
@@ -609,9 +660,7 @@ set_system_keymap() {
     "${labwc_greeter_config_path}" \
     "${args[@]}" \
     || return 1
-  printf '%s\n' "$0: INFO: 'greetd' configuration success." >&2
   printf '%s\n' "" >&2
-
   printf '%s\n' "$0: INFO: Keyboard layout change successful." >&2
 }
 
