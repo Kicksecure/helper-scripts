@@ -3,6 +3,14 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  set -o xtrace
+  set -o errexit
+  set -o nounset
+  set -o errtrace
+  set -o pipefail
+fi
+
 command -v mountpoint >/dev/null
 command -v id >/dev/null
 command -v grep >/dev/null
@@ -32,3 +40,7 @@ in_chroot() {
 
   return 1
 }
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  in_chroot
+fi
