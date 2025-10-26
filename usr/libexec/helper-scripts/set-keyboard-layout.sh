@@ -7,7 +7,8 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   set -o errexit
   set -o nounset
   set -o errtrace
-  #  set -o pipefail
+  ## TODO: Why not?
+  #set -o pipefail
 fi
 
 source /usr/libexec/helper-scripts/in-chroot.sh
