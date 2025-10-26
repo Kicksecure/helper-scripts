@@ -1,3 +1,15 @@
+commit 901b3f98a17e0fa343e33eedb75779eb0cf222fb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 07:25:16 2025 -0400
+
+    new function sudo_error_exit_if_unavailable
+
+commit 429e0e89cf7c8c84719dc813112e6a924fe0021e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 10:16:43 2025 +0000
+
+    bumped changelog version
+
 commit 39210e9c52b62289526651d6b6605eb9099df9af
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 26 05:58:05 2025 -0400
