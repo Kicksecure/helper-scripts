@@ -15,15 +15,15 @@ elif [ -r '/proc/1/cmdline' ]; then
 fi
 
 if pkg_installed user-sysmaint-split; then
-  if [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]]; then
-    if [ "${mode}" = 'needs-user' ]; then
-      exit 1
-    fi
-  else
-    if [ "${mode}" = 'needs-sysmaint' ]; then
-      exit 1
-    fi
-  fi
+  exit 0
 fi
 
-exit 0
+if [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]]; then
+  if [ "${mode}" = 'needs-user' ]; then
+    exit 1
+  fi
+else
+  if [ "${mode}" = 'needs-sysmaint' ]; then
+    exit 1
+  fi
+fi
