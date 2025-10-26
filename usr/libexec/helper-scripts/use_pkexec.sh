@@ -4,27 +4,27 @@
 ## See the file COPYING for copying conditions.
 
 pkexec_useable_test() {
-   local kernel_cmdline
+  local kernel_cmdline
 
-   use_pkexec='no'
+  use_pkexec='no'
 
-   if ! pkexec_exe="$(command -v pkexec)"; then
-      true "$0: INFO: pkexec executable cannot be found. Cannot use pkexec."
-      return 0
-   fi
+  if ! pkexec_exe="$(command -v pkexec)"; then
+    true "$0: INFO: pkexec executable cannot be found. Cannot use pkexec."
+    return 0
+  fi
 
-   kernel_cmdline="$(cat -- /proc/cmdline)"
+  kernel_cmdline="$(cat -- /proc/cmdline)"
 
-   ## Debugging.
-   ## sets: boot_session
-   source /usr/libexec/helper-scripts/boot-session-detection.sh
+  ## Debugging.
+  ## sets: boot_session
+  source /usr/libexec/helper-scripts/boot-session-detection.sh
 
-   if ! test -x "$pkexec_exe"; then
-      true "$0: INFO: pkexec is not executable. Cannot use pkexec."
-      return 0
-   fi
+  if ! test -x "$pkexec_exe"; then
+    true "$0: INFO: pkexec is not executable. Cannot use pkexec."
+    return 0
+  fi
 
-   use_pkexec='yes'
+  use_pkexec='yes'
 }
 
 pkexec_useable_test
