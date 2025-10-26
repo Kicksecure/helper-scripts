@@ -1,3 +1,15 @@
+commit b2fb1685d52d6eb2dec7da97072f4bd32fdb2e7a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 09:03:55 2025 -0400
+
+    add git.sh
+
+commit e95872807712c0c389fb2dbb6cb2ca78754ce772
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 12:28:55 2025 +0000
+
+    bumped changelog version
+
 commit 0257e8c67258ba9996acfde3be0c4dd381adad97
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 26 08:04:23 2025 -0400
