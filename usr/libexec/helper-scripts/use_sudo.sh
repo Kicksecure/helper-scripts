@@ -34,4 +34,11 @@ sudo_useable_test() {
    use_sudo='yes'
 }
 
+sudo_error_exit_if_unavailable() {
+   if [ "$use_sudo" = "no" ]; then
+      printf '%s\n' "ERROR: sudo unavailable. Boot into sysmaint session?"
+      exit 1
+   fi
+}
+
 sudo_useable_test
