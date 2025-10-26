@@ -1,3 +1,39 @@
+commit 0257e8c67258ba9996acfde3be0c4dd381adad97
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 08:04:23 2025 -0400
+
+    more robust, standardized kernel_cmdline variable detection
+
+commit 1bf6ce659c7ba1048f02c45e87c8468631d7468b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 07:55:55 2025 -0400
+
+    indent
+
+commit c76a21ae1aa3eb824dca8741d47f16de880df406
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 07:45:52 2025 -0400
+
+    refactoring
+
+commit 3105943892f8018cf273fe4bb57943b491e273e6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 07:44:57 2025 -0400
+
+    refactoring
+
+commit 688cd31b76bf446a78fc0d4ffd2d49fae4b91ce4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 07:44:10 2025 -0400
+
+    import user-sysmaint-split-check from browser-choice
+
+commit cfeb249c52ff5d8e3c24a2bd23691f91fed53bdb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 11:31:03 2025 +0000
+
+    bumped changelog version
+
 commit 901b3f98a17e0fa343e33eedb75779eb0cf222fb
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 26 07:25:16 2025 -0400
