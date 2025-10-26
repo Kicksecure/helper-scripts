@@ -5,13 +5,13 @@
 
 source /usr/libexec/helper-scripts/package_installed_check.bsh
 
-mode="${1:-needs-sysmaint}"
+sysmaint_need_mode="${1:-needs-sysmaint}"
 
 kernel_cmdline=""
 if [ -r '/proc/cmdline' ]; then
-  kernel_cmdline="$(cat /proc/cmdline)"
+  kernel_cmdline="$(cat -- /proc/cmdline)"
 elif [ -r '/proc/1/cmdline' ]; then
-  kernel_cmdline="$(cat /proc/1/cmdline)"
+  kernel_cmdline="$(cat -- /proc/1/cmdline)"
 fi
 
 if pkg_installed user-sysmaint-split; then
@@ -19,11 +19,11 @@ if pkg_installed user-sysmaint-split; then
 fi
 
 if [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]]; then
-  if [ "${mode}" = 'needs-user' ]; then
+  if [ "${sysmaint_need_mode}" = 'needs-user' ]; then
     exit 1
   fi
 else
-  if [ "${mode}" = 'needs-sysmaint' ]; then
+  if [ "${sysmaint_need_mode}" = 'needs-sysmaint' ]; then
     exit 1
   fi
 fi
