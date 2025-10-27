@@ -11,8 +11,6 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   #set -o pipefail
 fi
 
-source /usr/libexec/helper-scripts/in-chroot.sh
-
 command -v safe-rm >/dev/null
 command -v localectl >/dev/null
 command -v mktemp >/dev/null
@@ -104,7 +102,7 @@ check_keyboard_layouts() {
 
   ## localectl cannot be run within a chroot to get lists of valid values.
   ## Assume data is correct if it passed the previous sanity checks.
-  if in_chroot; then
+  if ischroot --default-false; then
     return 0
   fi
 
@@ -152,7 +150,7 @@ check_keyboard_layout_variants() {
 
   ## localectl cannot be run within a chroot to get lists of valid values.
   ## Assume data is correct if it passed the previous sanity checks.
-  if in_chroot; then
+  if ischroot --default-false; then
     return 0
   fi
 
@@ -187,7 +185,7 @@ check_keyboard_layout_options() {
 
   ## localectl cannot be run within a chroot to get lists of valid values.
   ## Assume data is correct if it passed the previous sanity checks.
-  if in_chroot; then
+  if ischroot --default-false; then
     return 0
   fi
 
@@ -760,7 +758,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## contain spaces or capital letters.
     layout_str="$(tr -d ' ' <<< "${layout_str,,}")"
     if [ "${layout_str}" = 'list' ]; then
-      if in_chroot; then
+      if ischroot --default-false; then
         printf '%s\n' 'Running in chroot, cannot list possible keyboard layouts.';
         continue
       fi
@@ -791,7 +789,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## capitals, so we can't normalize everything to lowercase.
     variant_str="$(tr -d ' ' <<< "${variant_str}")"
     if [ "${variant_str,,}" = 'list' ]; then
-      if in_chroot; then
+      if ischroot --default-false; then
         printf '%s\n' 'Running in chroot, cannot list possible keyboard layout variants.';
         continue
       fi
@@ -835,7 +833,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## because some options like "eurosign:E" contain capital letters.
     option_str="$(tr -d ' ' <<< "${option_str}")"
     if [ "${option_str,,}" = 'list' ]; then
-      if in_chroot; then
+      if ischroot --default-false; then
         printf '%s\n' 'Running in chroot, cannot list possible keyboard layout options.'
         continue
       fi
