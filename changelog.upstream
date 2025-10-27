@@ -1,3 +1,29 @@
+commit 1f1b646bd51ba33bac3521ce6d73335462bb47ec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 07:05:53 2025 -0400
+
+    readme
+
+commit 0a9b2f730fe471b03ff432171a795c2bc2e3a526
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 06:19:02 2025 -0400
+
+    code simplification: use `ischroot`
+    
+    deleted: `/usr/libexec/helper-scripts/in-chroot.sh`
+
+commit 7d490a8a964f732d48fc1e0c6524624ba78333d8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 06:18:17 2025 -0400
+
+    code simplification: use `ischroot`
+
+commit 0719b24e0dab1fc7ceed1a688f4e8f1d42dba64e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 08:41:28 2025 +0000
+
+    bumped changelog version
+
 commit 69e457531aed8195463e80376e5348539f214eea
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Oct 27 04:38:32 2025 -0400
