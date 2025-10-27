@@ -1,0 +1,47 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+true "$0: START"
+
+source /usr/libexec/helper-scripts/set-keyboard-layout.sh
+
+trap "error_handler" ERR
+
+print_usage() {
+  printf '%s\n' "$0: Set console keyboard layout for next boot" >&2
+  printf '%s\n' "Usage: $0 [--help] [--interactive] -- [layout [variant [option]]]" >&2
+  printf '%s\n' 'Options:' >&2
+  printf '%s\n' '--help         Print this help message.' >&2
+  printf '%s\n' '--interactive  Show an interactive user interface.' >&2
+  printf '\n' >&2
+  printf '%s\n' 'Examples:' >&2
+  printf '%s\n' '  set-console-keymap de' >&2
+  printf '%s\n' '  set-console-keymap us colemak' >&2
+  printf '%s\n' '  set-console-keymap us,cz,de "" grp:alt_shift_toggle' >&2
+}
+
+if [ "$(id -u)" != "0" ]; then
+  printf '%s\n' "$0: ERROR: This must be run as root (sudo)!" >&2
+  exit 1
+fi
+
+## Enter interactive mode if requested.
+for opt in "$@"; do
+  if [ "${opt}" = '--' ]; then
+    break
+  fi
+  if [ "${opt}" = '--interactive' ]; then
+    interactive_ui 'set_console_keymap'
+    exit 0
+  fi
+done
+set_console_keymap "$@"
+
+true "$0: END"
