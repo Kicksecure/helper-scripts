@@ -8,7 +8,7 @@
 ## Lock file mechanism to prevent duplicate script instances across users
 
 ## Based on flock man page.
-## > [ "${FLOCKER}" != "$0" ] && exec env FLOCKER="$0" flock -en "$0" "$0" "$@" || :
+## > [ "${FLOCKER}" != "${0}" ] && exec env FLOCKER="${0}" flock -en "${0}" "${0}" "$@" || :
 
 true "${BASH_SOURCE[0]}: START"
 
@@ -27,13 +27,22 @@ if ! test -f "${flocker_lockfile}"; then
   touch -- "${flocker_lockfile}"
 fi
 
-if [ "${FLOCKER-}" != "$0" ]; then
+if [ "${FLOCKER-}" != "${0}" ]; then
+  true "${BASH_SOURCE[0]}: INFO: FLOCKER set to self: no"
+
+  ## Using 'flock' with option '--verbose' but hiding stdout for the purpose of showing
+  ## 'flock: failed to get lock' error message, if applicable.
+  flock --verbose --exclusive --nonblock "${flocker_lockfile}" /usr/bin/true >/dev/null
+
   if test -o xtrace; then
     ## XXX: Might add a superfluous ':xtrace'.
-    exec env SHELLOPTS="${SHELLOPTS-}:xtrace" FLOCKER="$0" flock --verbose --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}" >/dev/null
+    exec env SHELLOPTS="${SHELLOPTS-}:xtrace" FLOCKER="${0}" flock --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}"
   else
-    exec env FLOCKER="$0" flock --verbose --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}" >/dev/null
+    exec env FLOCKER="${0}" flock --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}"
   fi
+  ## Never reached due to 'exec' above.
 fi
+
+true "${BASH_SOURCE[0]}: INFO: FLOCKER set to self: yes"
 
 true "${BASH_SOURCE[0]}: END"
