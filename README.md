@@ -25,6 +25,10 @@ preloaded and needs to be disabled for some applications.
 Provides the dummy-dependency script for quickly creating and installing
 dummy packages for working around package dependencies.
 
+Provides apt-get-noninteractive that is a simple wrapper around apt-get, that
+sets all required environment variables to make it interactive as well as to
+prevent systemd service starts and restarts during apt-get.
+
 ## How to install `helper-scripts` using apt-get ##
 
 1\. Download the APT Signing Key.
