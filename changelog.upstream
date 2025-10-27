@@ -1,3 +1,40 @@
+commit 69e457531aed8195463e80376e5348539f214eea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 04:38:32 2025 -0400
+
+    comment
+
+commit 9f66a07daaf6c950aa96e3b3ed8744060f4831ad
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 04:34:04 2025 -0400
+
+    fix
+
+commit 5be2d1b0d29feb8da3e378ba91f5807e36c9e52d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 02:21:43 2025 -0400
+
+    chmod +x
+
+commit 1af1bef2ccd26fa7825f86e7a93e3b9cc0a6dfde
+Merge: 9428d68 2a55d3f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 02:21:07 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 2a55d3faf16556ccf7149c8cd85d86c62e19790a
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Oct 26 15:52:45 2025 -0500
+
+    Add set-console-keymap script
+
+commit 9428d6832f00d3fa9fa3c342cc2343529b861a44
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 13:09:47 2025 +0000
+
+    bumped changelog version
+
 commit b2fb1685d52d6eb2dec7da97072f4bd32fdb2e7a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 26 09:03:55 2025 -0400
