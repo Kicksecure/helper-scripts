@@ -1,3 +1,15 @@
+commit 7595ac742ad4b292ce82629bdacfc2c4e2ab469b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 10:11:37 2025 -0400
+
+    add `leaprun system-ready-check`
+
+commit 270c316b3a056908d46e5fe9e2b5c0d3c49ca8f0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 27 11:43:34 2025 +0000
+
+    bumped changelog version
+
 commit 1f1b646bd51ba33bac3521ce6d73335462bb47ec
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Oct 27 07:05:53 2025 -0400
