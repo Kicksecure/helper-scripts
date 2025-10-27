@@ -32,7 +32,10 @@ if [ "${FLOCKER-}" != "${0}" ]; then
 
   ## Using 'flock' with option '--verbose' but hiding stdout for the purpose of showing
   ## 'flock: failed to get lock' error message, if applicable.
+  ## The error message is not perfectly atomic.
   flock --verbose --exclusive --nonblock "${flocker_lockfile}" /usr/bin/true >/dev/null
+  ## But if we were to use '--verbose' below, then 'flock' would always add verbose
+  ## output even in case it was possible to acquire a lock.
 
   if test -o xtrace; then
     ## XXX: Might add a superfluous ':xtrace'.
