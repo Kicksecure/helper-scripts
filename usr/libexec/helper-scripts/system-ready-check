@@ -1,0 +1,16 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+targets=( "multi-user.target" "sysmaint.target" )
+
+## Debugging.
+#targets=( "not-existing-test-1.target" "not-existing-test-2.target" )
+
+systemctl is-enabled "${targets[@]}" &>/dev/null
