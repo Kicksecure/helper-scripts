@@ -8,9 +8,4 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-targets=( "multi-user.target" "sysmaint.target" )
-
-## Debugging.
-#targets=( "not-existing-test-1.target" "not-existing-test-2.target" )
-
-systemctl is-enabled "${targets[@]}" &>/dev/null
+systemctl --wait is-system-running
