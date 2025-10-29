@@ -1,3 +1,34 @@
+commit 189dfda6085e75ea345d7b5ab2e8db1ae26d55cf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 29 03:33:18 2025 -0400
+
+    systemctl --no-pager --no-block
+
+commit bda3e01bcd52d1e8343391d56217603ee5b727a3
+Merge: a72e12b f7f771e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 29 01:59:09 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit f7f771e9f311818a43194bc91a8197a2f7635637
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Oct 28 22:34:36 2025 -0500
+
+    Split tor service wait logic from qubes.UpdatesProxy.anondist into try-wait-for-tor-service-running
+
+commit a72e12bdc5850852d129de6e6de44055d9512833
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 28 04:51:17 2025 -0400
+
+    improvement
+
+commit 6f5f87d3714e287eecf929473c98675b23ebeb31
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 28 08:31:49 2025 +0000
+
+    bumped changelog version
+
 commit a8dd66f400e74bf6cc894ec8a65b8734453f3f19
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Oct 28 04:28:57 2025 -0400
