@@ -6,7 +6,7 @@
 delay_ctr=0
 
 while (( delay_ctr < 120 )); do
-  tor_active_state="$(systemctl show tor@default.service \
+  tor_active_state="$(systemctl --no-pager --no-block show tor@default.service \
     --property ActiveState)"
   case "${tor_active_state}" in
     'ActiveState=active') break;;
