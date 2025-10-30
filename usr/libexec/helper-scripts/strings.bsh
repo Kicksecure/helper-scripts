@@ -23,31 +23,31 @@ read_integer_file() {
   fi
 
   if ! test -f "$target_file" ; then
-    printf '%s\n' "$0: ERROR: Target file does not exist!" >&2
+    printf '%s\n' "$0: ERROR: Target file '$target_file' does not exist!" >&2
     return 1
   fi
   if ! test -r "$target_file" ; then
-    printf '%s\n' "$0: ERROR: Target file not readable!" >&2
+    printf '%s\n' "$0: ERROR: Target file '$target_file' not readable!" >&2
     return 1
   fi
   if ! file_contents="$(stcat "$target_file")" ; then
-    printf '%s\n' "$0: ERROR: Cannot stcat target file!" >&2
+    printf '%s\n' "$0: ERROR: Cannot stcat target file '$target_file'!" >&2
     return 1
   fi
   if [ -z "$file_contents" ]; then
-    printf '%s\n' "$0: ERROR: Empty target file!" >&2
+    printf '%s\n' "$0: ERROR: Empty target file '$target_file'!" >&2
     return 1
   fi
   if ! [[ "$file_contents" =~ ^[0-9]+$ ]]; then
-    printf '%s\n' "$0: ERROR: Non-numeric value in target file!" >&2
+    printf '%s\n' "$0: ERROR: Non-numeric value in target file '$target_file'!" >&2
     return 1
   fi
   if [ -n "$lower_bound" ] && (( file_contents < lower_bound )); then
-    printf '%s\n' "$0: ERROR: Target file's value '$file_contents' is below the lower bound '$lower_bound'!" >&2
+    printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is below the lower bound '$lower_bound'!" >&2
     return 1
   fi
   if [ -n "$upper_bound" ] && (( file_contents > upper_bound )); then
-    printf '%s\n' "$0: ERROR: Target file's value '$file_contents' is above the upper bound '$upper_bound'!" >&2
+    printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is above the upper bound '$upper_bound'!" >&2
     return 1
   fi
 
