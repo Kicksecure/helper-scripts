@@ -50,7 +50,7 @@ read_integer_file() {
     printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is above the upper bound '$upper_bound'!" >&2
     return 1
   fi
-
+  printf '%s\n' "$0: INFO: Target file '$target_file' file_contents: '$file_contents'" >/dev/null
   printf '%s\n' "$file_contents"
 }
 
