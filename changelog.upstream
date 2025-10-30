@@ -1,3 +1,28 @@
+commit ba717f9426c6237b4d64983a58e0775d01ed086c
+Merge: 82ca64e 299d109
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 30 01:42:10 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 299d109bbdf7f1e95ebfe592e6e1ce578c5d928f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Oct 30 00:15:22 2025 -0500
+
+    Improve lock-screen notifications, integration with LXQt
+
+commit c16c9d29d7830442b61571d7a55b3f373feb80c1
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Oct 29 20:23:49 2025 -0500
+
+    Move lock-screen to /usr/bin/
+
+commit 82ca64e9ee247c2b8e03b64c811d18b346a033bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 29 07:36:06 2025 +0000
+
+    bumped changelog version
+
 commit 189dfda6085e75ea345d7b5ab2e8db1ae26d55cf
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Oct 29 03:33:18 2025 -0400
