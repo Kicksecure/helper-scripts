@@ -3,6 +3,49 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+read_integer_file() {
+  local target_file lower_bound upper_bound file_contents
+
+  target_file="${1:-}"
+  lower_bound="${2:-}"
+  upper_bound="${3:-}"
+  if [ -z "$target_file" ]; then
+    printf '%s\n' "$0: ERROR: No target file specified!" >&2
+    return 1
+  fi
+  if [ -n "$lower_bound" ] && ! [[ "$lower_bound" =~ ^[0-9]+$ ]]; then
+    printf '%s\n' "$0: ERROR: Non-numeric lower bound specified!" >&2
+    return 1
+  fi
+  if [ -n "$upper_bound" ] && ! [[ "$upper_bound" =~ ^[0-9]+$ ]]; then
+    printf '%s\n' "$0: ERROR: Non-numeric upper bound specified!" >&2
+    return 1
+  fi
+
+  if ! file_contents="$(cat "$target_file")" ; then
+    printf '%s\n' "$0: ERROR: Cannot read target file!" >&2
+    return 1
+  fi
+  if [ -z "$file_contents" ]; then
+    printf '%s\n' "$0: ERROR: Empty target file!" >&2
+    return 1
+  fi
+  if ! [[ "$file_contents" =~ ^[0-9]+$ ]]; then
+    printf '%s\n' "$0: ERROR: Non-numeric value in target file!" >&2
+    return 1
+  fi
+  if [ -n "$lower_bound" ] && (( file_contents < lower_bound )); then
+    printf '%s\n' "$0: ERROR: Target file's value '$file_contents' is below the lower bound '$lower_bound'!" >&2
+    return 1
+  fi
+  if [ -n "$upper_bound" ] && (( file_contents > upper_bound )); then
+    printf '%s\n' "$0: ERROR: Target file's value '$file_contents' is above the upper bound '$upper_bound'!" >&2
+    return 1
+  fi
+
+  printf '%s\n' "$file_contents"
+}
+
 check_is_not_empty_and_only_one_line() {
    local varname value number_of_lines
 
