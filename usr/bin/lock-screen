@@ -1,0 +1,201 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+title="Screen Locker"
+active_user_name="$(id -nu)"
+message_level="noisy"
+exit_zero_on_error='false'
+
+while [ -n "${1:-}" ]; do
+  case "$1" in
+    '--quiet')
+      message_level='quiet'
+      shift
+      ;;
+    '--less-noisy')
+      message_level='less-noisy'
+      shift
+      ;;
+    '--exit-zero-on-error')
+      exit_zero_on_error='true'
+      shift
+      ;;
+    '--')
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+error_exit() {
+  exit_code="${1:-}"
+
+  if [ -z "$exit_code" ]; then
+    printf '%s\n' 'WARNING: No exit code provided to error_exit!'
+    exit_code='1'
+  fi
+
+  if ! [[ "$exit_code" =~ ^[0-9]*$ ]]; then
+    printf '%s\n' 'WARNING: Non-numeric exit code provided to error_exit!'
+    exit_code='1'
+  fi
+
+  if [ "$exit_zero_on_error" = 'true' ]; then
+    exit 0
+  fi
+  exit "$exit_code"
+}
+
+lock_failure_warn() {
+  local short_msg long_msg_args
+  short_msg="${1:-}"
+  shift
+  long_msg_args=( "$@" )
+  case "$message_level" in
+    'noisy')
+      /usr/libexec/msgcollector/generic_gui_message "${long_msg_args[@]}"
+      ;;
+    'less-noisy')
+      if [ "$(notify-send --action=MORE='More info...' --app-name="$title" 'Cannot lock screen!' "$short_msg")" = 'MORE' ]; then
+        /usr/libexec/msgcollector/generic_gui_message "${long_msg_args[@]}"
+      fi
+      ;;
+    'quiet')
+      true
+      ;;
+    *)
+      printf '%s\n' "ERROR: Unrecognized message level '$message_level' encountered!"
+      error_exit 1
+      ;;
+  esac
+}
+
+user_list_str="$(/usr/libexec/helper-scripts/get-user-list)" || {
+  short_msg='Failed to get user list!'
+  question=""
+  button="ok"
+  msg="<p>Failed to get user list, cannot lock screen!</p>"
+  lock_failure_warn "$short_msg" "error" "$title" "$msg" "$question" "$button"
+  error_exit 1
+}
+readarray -t user_list <<< "$user_list_str"
+
+password_status_list_str="$(leaprun get-password-status-list)" || {
+  short_msg='Failed to check user password status!'
+  question=""
+  button="ok"
+  msg="<p>Failed to check user password status, cannot lock screen!</p>"
+  lock_failure_warn "$short_msg" "error" "$title" "$msg" "$question" "$button"
+  error_exit 1
+}
+readarray -t password_status_list <<< "$password_status_list_str"
+
+for (( user_idx = 0; user_idx < ${#user_list[@]}; user_idx++ )); do
+  if [ "${user_list[user_idx]}" = "${active_user_name}" ]; then
+    break
+  fi
+done
+
+if [[ "${password_status_list[user_idx]}" =~ ^Locked ]]; then
+  short_msg="Account '$active_user_name' has a locked password!"
+  question=""
+  button="ok"
+  msg="Refusing to lock screen, because current account '$active_user_name' has a locked password.
+
+If the screen was locked, it would be impossible to unlock it. Please unlock the password (and if needed, set a password) to enable screen locking."
+  msg="$(/usr/libexec/msgcollector/br_add "$msg")"
+  lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+  error_exit 1
+fi
+
+if [[ "${password_status_list[user_idx]}" =~ ^Restricted ]]; then
+  short_msg="Account '$active_user_name' has a locked password!"
+  question=""
+  button="ok"
+  msg="Refusing to lock screen, because current account '$active_user_name' has a locked password.
+
+If the screen was locked, it would be impossible to unlock it. Please set a password to enable screen locking."
+  msg="$(/usr/libexec/msgcollector/br_add "$msg")"
+  lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+  error_exit 1
+fi
+
+if [[ "${password_status_list[user_idx]}" =~ ^Absent ]]; then
+  short_msg="Account '$active_user_name' has no password set!"
+  question=""
+  button="ok"
+  msg="Refusing to lock screen, because current account '$active_user_name' has no password set.
+
+If the screen was locked, it would automatically unlock the moment any user input was received. Please set a password to enable screen locking."
+  msg="$(/usr/libexec/msgcollector/br_add "$msg")"
+  lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+  error_exit 1
+fi
+
+case "$XDG_SESSION_TYPE" in
+   x11)
+      xscreensaver-command --lock
+      ;;
+   wayland)
+      swaylock_exit_code='0'
+      if [ -f /usr/share/kicksecure/marker ]; then
+         if ! swaylock_output="$(swaylock --color 000000 --image /usr/share/kicksecure/lock-screen-background.png --scaling fit 2>&1)"; then
+            swaylock_exit_code="$?"
+         fi
+      elif [ -f /usr/share/anon-gw-base-files/gateway ]; then
+         if ! swaylock_output="$(swaylock --color 77767b --image /usr/share/anon-gw-base-files/lock-screen-background.png --scaling fit 2>&1)"; then
+            swaylock_exit_code="$?"
+         fi
+      elif [ -f /usr/share/anon-ws-base-files/workstation ]; then
+         if ! swaylock_output="$(swaylock --color 4098bf --image /usr/share/anon-ws-base-files/lock-screen-background.png --scaling fit 2>&1)"; then
+            swaylock_exit_code="$?"
+         fi
+      else
+         if ! swaylock_output="$(swaylock --color 000000 --image /usr/share/desktop-config-dist/lock-screen-background.png --scaling fit 2>&1)"; then
+            swaylock_exit_code="$?"
+         fi
+      fi
+      if [ "$swaylock_exit_code" != '0' ]; then
+         short_msg='swaylock encountered an error!'
+         question=""
+         button="ok"
+         msg="Error encountered while locking screen!
+
+The screen locker ('swaylock') exited with code '$swaylock_exit_code'. Non-zero exit codes generally indicate something has gone wrong.
+
+Please report this bug!
+
+Information from 'swaylock':
+
+<pre>
+$swaylock_output
+</pre>"
+         lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+         error_exit 1
+      fi
+      ;;
+   *)
+      short_msg='Correct screen locker cannot be determined!'
+      question=""
+      button="ok"
+      msg="Refusing to lock screen, because the correct screen locker cannot be determined.
+
+The XDG_SESSION_TYPE environment variable must be set to 'x11' or 'wayland' to determine the proper screen locker to use.
+
+However, XDG_SESSION_TYPE is currently set to '$XDG_SESSION_TYPE'.
+
+Please report this bug!"
+      lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+      error_exit 1
+      ;;
+esac
