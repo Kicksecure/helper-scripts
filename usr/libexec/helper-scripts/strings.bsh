@@ -22,8 +22,16 @@ read_integer_file() {
     return 1
   fi
 
+  if ! test -f "$target_file" ; then
+    printf '%s\n' "$0: ERROR: Target file does not exist!" >&2
+    return 1
+  fi
+  if ! test -r "$target_file" ; then
+    printf '%s\n' "$0: ERROR: Target file not readable!" >&2
+    return 1
+  fi
   if ! file_contents="$(stcat "$target_file")" ; then
-    printf '%s\n' "$0: ERROR: Cannot read target file!" >&2
+    printf '%s\n' "$0: ERROR: Cannot stcat target file!" >&2
     return 1
   fi
   if [ -z "$file_contents" ]; then
