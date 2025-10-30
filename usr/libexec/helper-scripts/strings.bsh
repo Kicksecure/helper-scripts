@@ -22,7 +22,7 @@ read_integer_file() {
     return 1
   fi
 
-  if ! file_contents="$(cat "$target_file")" ; then
+  if ! file_contents="$(stcat "$target_file")" ; then
     printf '%s\n' "$0: ERROR: Cannot read target file!" >&2
     return 1
   fi
