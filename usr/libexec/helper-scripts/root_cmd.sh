@@ -96,6 +96,16 @@ get_su_cmd(){
 }
 
 
+test_run_as_target_user() {
+  local root_output
+  root_output="$(run_as_target_user timeout --kill-after 5 5 test -d /usr 2>&1)"
+  if test -n "${root_output}"; then
+    log error "'run_as_target_user' output: '${root_output}'"
+    die 1 "${underline}run_as_target_user:${nounderline} Unexpected non-empty output for 'sudo -u ${target_user}' test."
+  fi
+}
+
+
 run_as_target_user() {
   if [ -z "${target_user}" ]; then
     "${@}"
