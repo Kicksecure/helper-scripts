@@ -94,3 +94,22 @@ get_su_cmd(){
     fi
   fi
 }
+
+
+run_as_target_user() {
+  if [ -z "${target_user}" ]; then
+    "${@}"
+  else
+    ROOT_CMD_TARGET_USER="${target_user}" root_cmd "${@}"
+  fi
+}
+
+
+run_as_target_user_and_dir() {
+  local target_dir
+  target_dir="${1:-}"
+  [ -z "${target_dir}" ] && die 1 "Failed to provide directory name to 'run_as_target_user_and_dir'!"
+  [ -z "${target_user}" ] && die 1 "Cannot use 'run_as_target_user_and_dir' if 'set_target_user_account' is not used first!"
+  shift
+  ROOT_CMD_TARGET_USER="${target_user}" ROOT_CMD_TARGET_DIR="${target_dir}" root_cmd "${@}"
+}
