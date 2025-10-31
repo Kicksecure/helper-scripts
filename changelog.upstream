@@ -1,3 +1,21 @@
+commit e47112129e953140bd93c4bd86449c2d4c79907e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 14:18:29 2025 -0400
+
+    test function run_as_target_user
+
+commit 8f65a5fd3c7ce05c9cbcdc2cb1b99e09828aad45
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 13:59:34 2025 -0400
+
+    import from dist-installer-cli
+
+commit 989f4ae880988c9b278b1ac5b6b3e0907045f3ed
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 16:57:00 2025 +0000
+
+    bumped changelog version
+
 commit 0b84f4050ce6457bf2e25a75548fde78498b3de8
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 31 12:24:26 2025 -0400
