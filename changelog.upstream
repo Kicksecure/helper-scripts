@@ -1,3 +1,33 @@
+commit 0b84f4050ce6457bf2e25a75548fde78498b3de8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 12:24:26 2025 -0400
+
+    apt-get-noninteractive
+
+commit 0cfcb0e6070677ac4b6e1f6c518cdee286dc3e6c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 12:20:12 2025 -0400
+
+    comment
+
+commit b5d3be1807c1be763c0f896bb6208a70eb25f763
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 12:19:46 2025 -0400
+
+    remove unneeded TMP=/tmp
+
+commit 4f59f9230f97f72cfd78e1e60d25b3acb279e6ff
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 12:09:54 2025 -0400
+
+    `tor-circuit-established-check`: fix: exit `0` if circuit established. Otherwise non-zero.
+
+commit 0f2169ac358d7fd726d820aee206582913d0a7c1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 14:37:46 2025 +0000
+
+    bumped changelog version
+
 commit 16faff182803d4c44b2572614f6ee494c3e0ded1
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 31 10:25:05 2025 -0400
