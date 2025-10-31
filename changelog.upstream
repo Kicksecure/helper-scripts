@@ -1,3 +1,36 @@
+commit 16faff182803d4c44b2572614f6ee494c3e0ded1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 10:25:05 2025 -0400
+
+    Revert "Move apparmor-info, apparmor-watch to security-misc"
+    
+    This reverts commit b1040c613752c2d0df3bb6b29f22a3da0346a399.
+
+commit df81180537b38c486c7ca0219ba0fbf6f055e0cd
+Merge: bb00abb b1040c6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 31 10:17:01 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit b1040c613752c2d0df3bb6b29f22a3da0346a399
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Oct 30 23:01:05 2025 -0500
+
+    Move apparmor-info, apparmor-watch to security-misc
+
+commit ec58864118159c02aea662dab3c7678e9c37128e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Oct 30 21:15:11 2025 -0500
+
+    Create query-sock-pid script and library
+
+commit bb00abbeb202cc2bc718fc10c5c5fffce048816d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 30 08:25:12 2025 +0000
+
+    bumped changelog version
+
 commit 1d2aacf8b05f8de3f9fff7640268f214dd192cf6
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Oct 30 04:24:14 2025 -0400
