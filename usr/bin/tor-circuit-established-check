@@ -23,4 +23,7 @@ print(format(circuit_established))
 
 controller.close()
 
-sys.exit(0)
+if circuit_established == "1":
+    sys.exit(0)
+
+sys.exit(1)
