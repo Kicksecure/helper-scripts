@@ -1,0 +1,62 @@
+#!/usr/bin/python3 -su
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+# pylint: disable=invalid-name
+
+"""
+query-sock-pid: Commandline wrapper around query_sock_pid library. Allows
+determining the PID of the process acting as a server for a particular UNIX
+socket.
+"""
+
+import sys
+from pathlib import Path
+from typing import NoReturn
+from query_sock_pid.query_sock_pid import query_sock_pid
+
+
+def print_usage_and_bail() -> NoReturn:
+    """
+    Print usage information and exit non-zero.
+    """
+
+    print(
+        "Usage: query-sock-pid /path/to/UNIX/socket",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+
+def main() -> NoReturn:
+    """
+    Main function.
+    """
+
+    if len(sys.argv) != 2:
+        print_usage_and_bail()
+
+    socket_path_str: str = sys.argv[1]
+    if not Path(socket_path_str).is_socket():
+        print(
+            f"ERROR: Socket path '{socket_path_str}' does not exist or is "
+            "not a UNIX socket!",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    sock_pid_str: str | None = query_sock_pid(socket_path_str)
+    if sock_pid_str is None:
+        print(
+            f"ERROR: Could not get PID for socket '{socket_path_str}'!",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    print(sock_pid_str)
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
