@@ -36,7 +36,7 @@ start-stop-daemon \
   -- \
     --kill-after="$kill_after" \
     "$timeout_after" \
-      apt-get update --error-on=any "$@" &
+      apt-get-noninteractive update --error-on=any "$@" &
 
 lastpid="$!"
 wait "$lastpid"
