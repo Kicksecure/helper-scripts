@@ -12,6 +12,19 @@ if ! command -v stecho &>/dev/null ; then
   }
 fi
 
+disable_xtrace() {
+  if test "${xtrace:-}" = "1"; then
+    set +o xtrace
+  else
+    case "${-}" in
+      *x*)
+        xtrace=1
+        set +o xtrace
+        ;;
+    esac
+  fi
+}
+
 re_enable_xtrace_maybe() {
   if test "${xtrace:-}" = "1"; then
     set -o xtrace
@@ -25,16 +38,7 @@ re_enable_xtrace_maybe() {
 log(){
   : "${log_level:="notice"}"
   ## Avoid clogging output if log() is working alright.
-  if test "${xtrace:-}" = "1"; then
-    set +o xtrace
-  else
-    case "${-}" in
-      *x*)
-        xtrace=1
-        set +o xtrace
-        ;;
-    esac
-  fi
+  disable_xtrace
   log_type="${1:-notice}"
   ## capitalize log level
   log_type_up="$(printf '%s' "${log_type}" | tr "[:lower:]" "[:upper:]")"

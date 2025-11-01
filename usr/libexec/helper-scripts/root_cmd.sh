@@ -98,10 +98,11 @@ get_su_cmd(){
 
 test_run_as_target_user() {
   local root_output
-  ## Catches xtrace and hence variable root_output would be non-empty.
-  #root_output="$(run_as_target_user timeout --kill-after 5 5 test -d /usr 2>&1)"
-  ## Therefore use a subshell and disable xtrace.
-  root_output="$( ( set +x; run_as_target_user timeout --kill-after 5 5 test -d /usr ) 2>&1 )"
+  ## root_output would catch xtrace and hence variable root_output would be non-empty.
+  ## Therefore disabling xtrace.
+  disable_xtrace
+  root_output="$(run_as_target_user timeout --kill-after 5 5 test -d /usr 2>&1)"
+  re_enable_xtrace_maybe
   if test -n "${root_output}"; then
     die 1 "${underline}run_as_target_user:${nounderline} 'sudo -u ${target_user}' test produced unexpected output: '${root_output}'"
   fi
