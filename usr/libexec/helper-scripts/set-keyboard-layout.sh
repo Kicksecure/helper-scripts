@@ -573,6 +573,59 @@ set_console_keymap() {
   printf '%s\n' "$0: INFO: system console configuration success." >&2
 }
 
+## NOTE: This function assumes it is run as root.
+kb_reload_root() {
+  local user_list uid_list user_name uid wl_sock wl_pid wl_comm
+
+  ## The only easily machine-readable format loginctl can output the user list
+  ## in is json. We could also use
+  ## `loginctl list-users --no-pager | tail -n+2 | head -n+2 | cut -d' ' -f2`
+  ## if the dependency on jq is undesirable, but this will probably break if a
+  ## future systemd update changes the output format.
+  readarray -t user_list < <(loginctl -j list-users | jq -r '.[] | .user')
+  uid_list=()
+  for user_name in "${user_list[@]}"; do
+    uid_list+=( "$(id -u "${user_name}")" )
+  done
+
+  for uid in "${uid_list[@]}"; do
+    for wl_sock in "/run/user/${uid}/wayland-"*; do
+      if ! [ -S "${wl_sock}" ]; then
+        continue
+      fi
+
+      wl_pid="$(/usr/libexec/helper-scripts/query-sock-pid "${wl_sock}")" || true
+      if [ -z "${wl_pid:-}" ]; then
+        continue
+      fi
+
+      wl_comm="$(cat "/proc/${wl_pid}/comm")" || true
+      if [ -z "${wl_comm:-}" ]; then
+        continue
+      fi
+
+      if [ "${wl_comm}" = 'labwc' ]; then
+        ## From the labwc manpage:
+        ##
+        ## -r, --reconfigure
+        ##     Reload the compositor configuration by sending SIGHUP to
+        ##     `$LABWC_PID`
+        ##
+        ## Therefore, `kill -s SIGHUP "${wl_pid}"` is the same as
+        ## `LABWC_PID="${wl_pid}" labwc --reconfigure`, but shorter, probably
+        ## faster, and doesn't require environment variables.
+        ##
+        ## Unfortunately, this will not reconfigure all running labwc
+        ## instances, it will only reconfigure the one running on the active
+        ## TTY. See:
+        ## https://github.com/labwc/labwc/issues/3184
+        printf '%s\n' "Sending SIGHUP to labwc process '${wl_pid}' to trigger configuration reload..."
+        kill -s SIGHUP "${wl_pid}"
+      fi
+    done
+  done
+}
+
 ## Sets the system-wide keyboard layout for the console, greeter, and labwc
 ## sessions all at once.
 set_system_keymap() {
@@ -659,6 +712,10 @@ set_system_keymap() {
     "${args[@]}" \
     || return 1
   printf '%s\n' "" >&2
+
+  printf '%s\n' "$0: INFO: Reloading keyboard layout..." >&2
+  kb_reload_root
+
   printf '%s\n' "$0: INFO: Keyboard layout change successful." >&2
 }
 
