@@ -35,7 +35,7 @@ If you like to keep old configuration files, add the following parameter.
 
 `sudo apt-get-noninteractive --allow-downgrades --allow-change-held-packages install package-name`
 
-## Why we are not using the `apt-get` option `--yes`?
+## Why we are not using the 'apt-get' option '--yes'?
 Using APT (the package manager) in automatic, non-interactive mode is tricky. It's not as simple as just adding `--yes` to make everything work smoothly.
 
 Some people might think that `apt-get-noninteractive` should automatically include `--yes` because of the name, but it doesn’t, and for good reason.
