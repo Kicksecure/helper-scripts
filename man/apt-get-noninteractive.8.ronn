@@ -50,7 +50,7 @@ The proper way to use `apt-get-noninteractive` is to:
 2. Check the output to see if something dangerous might happen (like removing a critical package).
 3. If everything looks fine, press Enter to continue.
 
-If you’re already confident about the outcome, you can run it again with `--yes` to skip confirmation.
+If you are already confident about the outcome, you can run it again with `--yes` to skip confirmation.
 
 If `--yes` were included by default, users would have to:
 
