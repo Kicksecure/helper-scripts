@@ -10,9 +10,9 @@ apt-get-noninteractive(8) -- wrapper to run `apt-get` non-interactively
 `apt-get-noninteractive` [option]s
 
 ## Description
-Simple wrapper that sets environment variables and adds `--yes`,
+Simple wrapper that sets environment variables for non-interactive use,
 `-o Dpkg::Options::=--force-confask,confnew,confnew` then forwards all arguments to
-apt-get.
+`apt-get`.
 
 Does not pass by default:
 
