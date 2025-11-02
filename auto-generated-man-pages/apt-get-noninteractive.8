@@ -6,7 +6,7 @@
 .SH "SYNOPSIS"
 \fBapt\-get\-noninteractive\fR [option]s
 .SH "Description"
-Simple wrapper that sets environment variables and adds \fB\-\-yes\fR, \fB\-o Dpkg::Options::=\-\-force\-confask,confnew,confnew\fR then forwards all arguments to apt\-get\.
+Simple wrapper that sets environment variables for non\-interactive use, \fB\-o Dpkg::Options::=\-\-force\-confask,confnew,confnew\fR then forwards all arguments to \fBapt\-get\fR\.
 .P
 Does not pass by default:
 .IP "\(bu" 4
@@ -30,5 +30,38 @@ If you like to keep old configuration files, add the following parameter\.
 \fBsudo apt\-get\-noninteractive install package\-name\fR
 .P
 \fBsudo apt\-get\-noninteractive \-\-allow\-downgrades \-\-allow\-change\-held\-packages install package\-name\fR
+.SH "Why we are not using the 'apt\-get' option '\-\-yes'?"
+Using APT (the package manager) in automatic, non\-interactive mode is tricky\. It's not as simple as just adding \fB\-\-yes\fR to make everything work smoothly\.
+.P
+Some people might think that \fBapt\-get\-noninteractive\fR should automatically include \fB\-\-yes\fR because of the name, but it doesn’t, and for good reason\.
+.P
+The proper way to use \fBapt\-get\-noninteractive\fR is to:
+.IP "1." 4
+Run it without \fB\-\-yes\fR\.
+.IP "2." 4
+Check the output to see if something dangerous might happen (like removing a critical package)\.
+.IP "3." 4
+If everything looks fine, press Enter to continue\.
+.IP "" 0
+.P
+If you’re already confident about the outcome, you can run it again with \fB\-\-yes\fR to skip confirmation\.
+.P
+If \fB\-\-yes\fR were included by default, users would have to:
+.IP "1." 4
+Run plain \fBapt\-get\fR to preview what would happen\.
+.IP "2." 4
+Cancel it with Ctrl+C\.
+.IP "3." 4
+Then run \fBapt\-get\-noninteractive\fR to actually apply the changes\.
+.IP "" 0
+.P
+Advanced notes:
+.IP "\(bu" 4
+APT non\-interactive mode requires setting many options and environment variables; no one wants to do that manually\.
+.IP "\(bu" 4
+It's unclear if \fBapt\-get\-noninteractive\fR behaves differently from \fBapt\-get\fR because of the extra options it passes\.
+.IP "\(bu" 4
+This design is intentional and opinionated, aiming for both safety and usability\.
+.IP "" 0
 .SH "AUTHOR"
 This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
