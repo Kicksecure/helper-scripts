@@ -10,9 +10,13 @@ apt-get-noninteractive(8) -- wrapper to run `apt-get` non-interactively
 `apt-get-noninteractive` [option]s
 
 ## Description
-Simple wrapper that sets environment variables for non-interactive use,
-`-o Dpkg::Options::=--force-confask,confnew,confnew` then forwards all arguments to
-`apt-get`.
+Simple wrapper that
+
+* sets environment variables for non-interactive use,
+* prevents daemons from restarting during upgrades,
+* forces new package configuration files installation without user prompts. (Through option `-o Dpkg::Options::=--force-confask,confnew,confnew`)
+
+then forwards all arguments to `apt-get`.
 
 Does not pass by default:
 
@@ -35,7 +39,7 @@ If you like to keep old configuration files, add the following parameter.
 
 `sudo apt-get-noninteractive --allow-downgrades --allow-change-held-packages install package-name`
 
-## Why we are not using the 'apt-get' option '--yes'?
+## Why is 'apt-get-noninteractive' not using the 'apt-get' option '--yes'?
 Using APT (the package manager) in automatic, non-interactive mode is tricky. It's not as simple as just adding `--yes` to make everything work smoothly.
 
 Some people might think that `apt-get-noninteractive` should automatically include `--yes` because of the name, but it doesn’t, and for good reason.
@@ -59,6 +63,12 @@ Advanced notes:
 * APT non-interactive mode requires setting many options and environment variables; no one wants to do that manually.
 * It's unclear if `apt-get-noninteractive` behaves differently from `apt-get` because of the extra options it passes.
 * This design is intentional and opinionated, aiming for both safety and usability.
+
+## Why does 'apt-get-noninteractive' prevent daemon restarts during upgrade?
+Because daemon restarts can cause APT upgrade failures and `apt-get-noninteractive` is designed as a tool to easily fix broken APT.
+
+## WWW
+https://www.kicksecure.com/wiki/Operating_System_Software_and_Updates#Broken_APT
 
 ## AUTHOR
 This man page has been written by Patrick Schleizer (adrelanos@whonix.org).
