@@ -8,11 +8,11 @@ source /usr/libexec/helper-scripts/use_leaprun.sh
 
 check_package_manager_running_helper() {
    if [ -f "/run/package_manager_lock" ]; then
-      check_apt_get_exit_code="/run/package_manager_lock exists."
+      check_apt_get_exit_code="2"
       package_manager_waiting_msg="Lock file \
 /run/package_manager_lock exists. Waiting for it to be removed..."
       package_manager_waiting_msg_x="$package_manager_waiting_msg"
-      return 0
+      return 1
    fi
 
    local fuser_exit_code
@@ -68,4 +68,6 @@ Technical Info:
       package_manager_waiting_msg="No package manger currently running."
       package_manager_waiting_msg_x="$package_manager_waiting_msg"
    fi
+
+   return "$check_apt_get_exit_code"
 }
