@@ -14,7 +14,7 @@ set -e
 
 export POLICYRCD DEBIAN_FRONTEND DEBIAN_PRIORITY DEBCONF_NOWARNINGS APT_LISTCHANGES_FRONTEND NEEDRESTART_MODE
 
-## Not using '--yes'. Reasons:
+## Not using 'apt-get' option '--yes'. Reasons:
 ## Some may want 'apt-get-noninteractive' to include '--yes' as the name suggests.
 ## Using APT non-interactively is a bit of rocket science.
 ## A plethora of options and environment variables must be set; nobody wants to do
