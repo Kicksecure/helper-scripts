@@ -14,28 +14,29 @@ set -e
 
 export POLICYRCD DEBIAN_FRONTEND DEBIAN_PRIORITY DEBCONF_NOWARNINGS APT_LISTCHANGES_FRONTEND NEEDRESTART_MODE
 
-## Not using the 'apt-get' option '--yes'. Reasons:
+## Why we are not using the 'apt-get' option '--yes':
 ##
-## * Some may expect 'apt-get-noninteractive' to include '--yes', as the name suggests.
+## Using APT (the package manager) in automatic, non-interactive mode is tricky.
+## It's not as simple as just adding '--yes' to make everything work smoothly.
 ##
-## * However, using APT non-interactively is a bit of rocket science.
+## Some people might think that 'apt-get-noninteractive' should automatically include '--yes'
+## because of the name, but it doesn’t, and for good reason.
 ##
-## * A plethora of options and environment variables must be set; nobody wants to do
-##   that manually.
+## The proper way to use 'apt-get-noninteractive' is to:
+##  1. Run it without '--yes'.
+##  2. Check the output to see if something dangerous might happen (like removing a critical package).
+##  3. If everything looks fine, press Enter to continue.
 ##
-## * One way to use 'apt-get-noninteractive' is to run it and check whether its output
-##   indicates APT might break the system (e.g., by removing a critical package due to
-##   broken dependencies).
+## If you’re already confident about the outcome, you can run it again with '--yes' to skip confirmation.
 ##
-## * If all looks OK, confirm with Enter. Easy.
+## If '--yes' were included by default, users would have to:
+##  1. Run plain 'apt-get' to preview what would happen.
+##  2. Cancel it with Ctrl+C.
+##  3. Then run 'apt-get-noninteractive' to actually apply the changes.
 ##
-## * If already sure, simply run 'apt-get-noninteractive --yes'.
+## Advanced notes:
 ##
-## * If '--yes' were the default, one would need to first check the outcome with 'apt-get',
-##   then Ctrl+C, and then use 'apt-get-noninteractive' to actually proceed.
-##
-## * It is unknown whether 'apt-get-noninteractive' might behave differently due to the
-##   numerous options passed, compared to plain 'apt-get'.
-##
-## * This is an opinionated choice.
+## * APT non-interactive mode requires setting many options and environment variables; no one wants to do that manually.
+## * It's unclear if 'apt-get-noninteractive' behaves differently from 'apt-get' because of the extra options it passes.
+## * This design is intentional and opinionated, aiming for both safety and usability.
 apt-get -o Dpkg::Options::="--force-confask,confnew,confmiss" "$@"
