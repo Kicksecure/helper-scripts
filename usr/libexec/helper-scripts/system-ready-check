@@ -8,6 +8,18 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-output="$(timeout --kill-after="1" "5" systemctl --wait is-system-running 2>&1)"
+if output="$(timeout --kill-after="1" "5" systemctl --wait is-system-running 2>&1)" ; then
+  printf '%s\n' "$output"
+  exit_code=0
+else
+  printf '%s\n' "$output" >&2
+  exit_code=1
+fi
 
-overwrite /run/helper-scripts/system-ready-check "$output" >/dev/null
+if test -w /run/helper-scripts; then
+  overwrite /run/helper-scripts/system-ready-check "$output" >/dev/null
+else
+  exit_code=1
+fi
+
+exit "$exit_code"
