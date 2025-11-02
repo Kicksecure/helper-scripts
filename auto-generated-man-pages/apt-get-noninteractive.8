@@ -6,7 +6,16 @@
 .SH "SYNOPSIS"
 \fBapt\-get\-noninteractive\fR [option]s
 .SH "Description"
-Simple wrapper that sets environment variables for non\-interactive use, \fB\-o Dpkg::Options::=\-\-force\-confask,confnew,confnew\fR then forwards all arguments to \fBapt\-get\fR\.
+Simple wrapper that
+.IP "\(bu" 4
+sets environment variables for non\-interactive use,
+.IP "\(bu" 4
+prevents daemons from restarting during upgrades,
+.IP "\(bu" 4
+forces new package configuration files installation without user prompts\. (Through option \fB\-o Dpkg::Options::=\-\-force\-confask,confnew,confnew\fR)
+.IP "" 0
+.P
+then forwards all arguments to \fBapt\-get\fR\.
 .P
 Does not pass by default:
 .IP "\(bu" 4
@@ -30,7 +39,7 @@ If you like to keep old configuration files, add the following parameter\.
 \fBsudo apt\-get\-noninteractive install package\-name\fR
 .P
 \fBsudo apt\-get\-noninteractive \-\-allow\-downgrades \-\-allow\-change\-held\-packages install package\-name\fR
-.SH "Why we are not using the 'apt\-get' option '\-\-yes'?"
+.SH "Why is 'apt\-get\-noninteractive' not using the 'apt\-get' option '\-\-yes'?"
 Using APT (the package manager) in automatic, non\-interactive mode is tricky\. It's not as simple as just adding \fB\-\-yes\fR to make everything work smoothly\.
 .P
 Some people might think that \fBapt\-get\-noninteractive\fR should automatically include \fB\-\-yes\fR because of the name, but it doesn’t, and for good reason\.
@@ -63,5 +72,9 @@ It's unclear if \fBapt\-get\-noninteractive\fR behaves differently from \fBapt\-
 .IP "\(bu" 4
 This design is intentional and opinionated, aiming for both safety and usability\.
 .IP "" 0
+.SH "Why does 'apt\-get\-noninteractive' prevent daemon restarts during upgrade?"
+Because daemon restarts can cause APT upgrade failures and \fBapt\-get\-noninteractive\fR is designed as a tool to easily fix broken APT\.
+.SH "WWW"
+https://www\.kicksecure\.com/wiki/Operating_System_Software_and_Updates#Broken_APT
 .SH "AUTHOR"
 This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
