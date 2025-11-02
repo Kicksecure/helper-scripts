@@ -14,19 +14,19 @@ set -e
 
 export POLICYRCD DEBIAN_FRONTEND DEBIAN_PRIORITY DEBCONF_NOWARNINGS APT_LISTCHANGES_FRONTEND NEEDRESTART_MODE
 
-## Not using 'apt-get' option '--yes'. Reasons:
-## Some may want 'apt-get-noninteractive' to include '--yes' as the name suggests.
-## Using APT non-interactively is a bit of rocket science.
+## Not using the 'apt-get' option '--yes'. Reasons:
+## Some may expect 'apt-get-noninteractive' to include '--yes', as the name suggests.
+## However, using APT non-interactively is a bit of rocket science.
 ## A plethora of options and environment variables must be set; nobody wants to do
 ## that manually.
-## One way to use 'apt-get-noninteractive' is to run it and check if its output
-## indicates APT might destroy the system (e.g., due to broken packages removing
-## a critical package).
-## If all is OK, confirm with Enter. Easy.
+## One way to use 'apt-get-noninteractive' is to run it and check whether its output
+## indicates APT might break the system (e.g., by removing a critical package due to
+## broken dependencies).
+## If all looks OK, confirm with Enter. Easy.
 ## If already sure, simply run 'apt-get-noninteractive --yes'.
-## If '--yes' were the default, one would need to check the outcome with 'apt-get',
-## first then Ctrl+C, then use 'apt-get-noninteractive' to actually proceed.
-## It is unknown if 'apt-get-noninteractive' might behave differently due to the
-## numerous options passed compared to 'apt-get'.
+## If '--yes' were the default, one would need to first check the outcome with 'apt-get',
+## then Ctrl+C, and then use 'apt-get-noninteractive' to actually proceed.
+## It is unknown whether 'apt-get-noninteractive' might behave differently due to the
+## numerous options passed, compared to plain 'apt-get'.
 ## This is an opinionated choice.
 apt-get -o Dpkg::Options::="--force-confask,confnew,confmiss" "$@"
