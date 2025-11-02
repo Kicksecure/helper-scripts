@@ -1,3 +1,129 @@
+commit 7b86a99c46ff3413f50b6474db9729609cb3a6bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 06:06:51 2025 -0500
+
+    genmkfile manpages
+
+commit 96b18f4f8304ab20ed39dccfb71dc70d292cf6cf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 06:05:22 2025 -0500
+
+    man
+
+commit dd36472e632defe9ad598bf2d6f7b5b58b8896fe
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 06:04:43 2025 -0500
+
+    genmkfile manpages
+
+commit ca1e7c6b2688e427edfb76784e0e6b3bce29601b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 06:04:26 2025 -0500
+
+    man
+
+commit f18687dda52d6f3a2fa3828b0249c5113d4b38d6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 05:07:22 2025 -0500
+
+    genmkfile manpages
+
+commit cb6a20b13f58784cc2b2e861b6155b7e2ca6d1b3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:31:51 2025 -0500
+
+    man
+
+commit a65dc1a20331ab0a03dd5f34fed8a869e3e706f0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:24:50 2025 -0500
+
+    genmkfile manpages
+
+commit 945d645db4b0ab7b5633c05b4e5c4abb43a381e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:24:40 2025 -0500
+
+    man
+
+commit 02ffdacaf466d0e80fa3a3d8f0845874d0fd391c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:21:04 2025 -0500
+
+    move comment to man page
+
+commit e7ef340845d19bbfd624f7003ab106424f640341
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:18:06 2025 -0500
+
+    man
+
+commit dcd92579da1515e5ccc8a7fd5c48d5e5a7522f73
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:14:44 2025 -0500
+
+    comments
+
+commit 8d4e95e8c07fbea00d3b421fb55d25215d0195ef
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:14:05 2025 -0500
+
+    comments
+
+commit 09f6949ecb7db0c874960eab9146a5ff77666b6a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:12:10 2025 -0500
+
+    comments
+
+commit b76cbda02335c4fd8b50c27c9a7fa4bf221f173a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:11:29 2025 -0500
+
+    comments
+
+commit e271c2a5082d288ff254a42ad68f945ad0834e13
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:09:30 2025 -0500
+
+    comments
+
+commit 057e40e433a7e7e62ddcfe363e18c61f54124dc1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:08:25 2025 -0500
+
+    comments
+
+commit 2b4a9b739fda1a279b8810e7e1324e32f29400aa
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:05:43 2025 -0500
+
+    comments
+
+commit b85c89d6b8d571d6ed9a0b7aae124a9ee3d42c64
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 04:04:43 2025 -0500
+
+    comments
+
+commit 490e90d3acafb5e72e133edb9f7405278851847c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 02:23:13 2025 -0500
+
+    improve system-ready-check
+
+commit be9e17df7118152bb6a9b2842038765026243270
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 02:22:11 2025 -0500
+
+    `/usr/libexec/helper-scripts/pkg_manager_running_check` function `check_package_manager_running_helper`: API change. `return 0` on success. Non-zero otherwise.
+
+commit e5b8ce7e9cc00c5f090e2c9c57ddebde94b150a3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 1 08:16:24 2025 +0000
+
+    bumped changelog version
+
 commit 339a859625b303697db67500872e7aed9acec5b0
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Nov 1 03:35:35 2025 -0400
