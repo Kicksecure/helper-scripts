@@ -619,7 +619,7 @@ kb_reload_root() {
         ## instances, it will only reconfigure the one running on the active
         ## TTY. See:
         ## https://github.com/labwc/labwc/issues/3184
-        printf '%s\n' "Sending SIGHUP to labwc process '${wl_pid}' to trigger configuration reload..."
+        printf '%s\n' "$0: INFO: Sending SIGHUP to labwc process '${wl_pid}' to trigger configuration reload..."
         kill -s SIGHUP -- "${wl_pid}"
       fi
     done
