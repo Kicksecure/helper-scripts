@@ -1,3 +1,46 @@
+commit 9393458e6f0dd89317f8a9fa34ef8bccf9cbea9d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 3 06:10:58 2025 -0500
+
+    output
+
+commit 0b4db6de94f2afb74504cf1514028deb233ad62a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 3 03:41:56 2025 -0500
+
+    set-system-keymap: improved error handling
+
+commit df312bc516ffb7d117bf8cf17cb30939d694907c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 3 03:32:52 2025 -0500
+
+    output
+
+commit 5a8b6ecb80e5b58136fdc47da3c574d651abb108
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 3 03:32:09 2025 -0500
+
+    end-of-options
+
+commit 8d17e95ffdd5f8af4994b02867ae1bfe099fa3b2
+Merge: 16652e6 9b3df3c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 3 03:30:01 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 9b3df3c4073878a5f163dc75391d09a05390f55f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Nov 2 17:55:40 2025 -0600
+
+    Reload labwc keyboard layout after setting the system keyboard layout
+
+commit 16652e65b8049fd870d0c4d01f5c2b9b220767ac
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 2 11:40:33 2025 +0000
+
+    bumped changelog version
+
 commit 7b86a99c46ff3413f50b6474db9729609cb3a6bc
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 2 06:06:51 2025 -0500
