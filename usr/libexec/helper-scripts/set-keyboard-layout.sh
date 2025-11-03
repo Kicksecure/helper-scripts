@@ -585,7 +585,7 @@ kb_reload_root() {
   readarray -t user_list < <(loginctl -j list-users | jq -r '.[] | .user')
   uid_list=()
   for user_name in "${user_list[@]}"; do
-    uid_list+=( "$(id -u "${user_name}")" )
+    uid_list+=( "$(id -u -- "${user_name}")" )
   done
 
   for uid in "${uid_list[@]}"; do
@@ -599,7 +599,7 @@ kb_reload_root() {
         continue
       fi
 
-      wl_comm="$(cat "/proc/${wl_pid}/comm")" || true
+      wl_comm="$(cat -- "/proc/${wl_pid}/comm")" || true
       if [ -z "${wl_comm:-}" ]; then
         continue
       fi
@@ -620,7 +620,7 @@ kb_reload_root() {
         ## TTY. See:
         ## https://github.com/labwc/labwc/issues/3184
         printf '%s\n' "Sending SIGHUP to labwc process '${wl_pid}' to trigger configuration reload..."
-        kill -s SIGHUP "${wl_pid}"
+        kill -s SIGHUP -- "${wl_pid}"
       fi
     done
   done
