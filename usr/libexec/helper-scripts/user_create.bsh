@@ -12,24 +12,24 @@ USER_CREATE_GROUP_ADD_LIST=()
 zsh_yes_or_no() {
    zsh_enable=""
    if [ -f "/etc/nozsh" ]; then
-      echo "$0: INFO: No shell change because file /etc/nozsh exists, ok."
+      printf '%s\n' "$0: INFO: No shell change because file /etc/nozsh exists, ok."
       zsh_enable=no
       return 0
    fi
    if [ -f "/usr/local/etc/nozsh" ]; then
-      echo "$0: INFO: No shell change because file /usr/local/etc/nozsh exists, ok."
+      printf '%s\n' "$0: INFO: No shell change because file /usr/local/etc/nozsh exists, ok."
       zsh_enable=no
       return 0
    fi
 
    if grep -q 'nozsh' /proc/cmdline; then
-      echo "$0: INFO: No shell change because nozsh in kernel command line, ok."
+      printf '%s\n' "$0: INFO: No shell change because nozsh in kernel command line, ok."
       zsh_enable=no
       return 0
    fi
 
    if ! test -x /usr/bin/zsh ; then
-      echo "$0: INFO: No shell change because /usr/bin/zsh does not exist or is not executable, ok."
+      printf '%s\n' "$0: INFO: No shell change because /usr/bin/zsh does not exist or is not executable, ok."
       zsh_enable=no
       return 0
    fi
@@ -88,13 +88,13 @@ password_empty_for_user_account() {
 
   ## No longer in use.
   ## Use --encrypted to be able to use a static, precalculated hash for reproducible builds.
-  #echo "${user_to_be_created}:${password}" | chpasswd --encrypted
+  #printf '%s\n' "${user_to_be_created}:${password}" | chpasswd --encrypted
 
   ## adduser '--disabled-password' is not the same as 'passwd --delete user'.
   ## /etc/shadow:
   #user:!:19932:0:99999:7:::
 
-  echo "INFO: Set empty password for account '$USER_CREATE_USERNAME'..."
+  printf '%s\n' "INFO: Set empty password for account '$USER_CREATE_USERNAME'..."
   passwd --delete "$USER_CREATE_USERNAME"
   ## /etc/shadow:
   #user::19932:0:99999:7:::
@@ -120,31 +120,38 @@ linux_user_account_shell_to_zsh() {
     return 0
   fi
 
-  echo "$0: INFO: For more information, see: https://www.kicksecure.com/shell#default"
+  printf '%s\n' "$0: INFO: For more information, see: https://www.kicksecure.com/shell#default"
 
-  if ! id "$USER_CREATE_USERNAME" &>/dev/null ; then
-    echo "$0: INFO: account '$USER_CREATE_USERNAME' does not exist. Not setting shell to zsh."
-    return
+  if ! id -- "$USER_CREATE_USERNAME" &>/dev/null ; then
+    printf '%s\n' "$0: INFO: account '$USER_CREATE_USERNAME' does not exist. Not setting shell to 'zsh'."
+    return 0
   fi
 
   ## Use getent to retrieve the account's entry from /etc/passwd
   user_passwd_entry=$(getent passwd "$USER_CREATE_USERNAME")
 
   ## Extract the shell field (the last field) from the account's entry
-  user_default_shell=$(echo "$user_passwd_entry" | awk -F: '{print $NF}')
+  user_default_shell=$(printf '%s\n' "$user_passwd_entry" | awk -F: '{print $NF}')
 
   if [ "$user_default_shell" = "/usr/bin/zsh" ]; then
+    true "INFO: user_default_shell is already /usr/bin/zsh. Skipping. Ok."
     return 0
   fi
 
-  echo "$0: INFO: Setting shell for account '$USER_CREATE_USERNAME' to zsh."
-  ## Use timeout to prevent unexplained bug password prompt caused by chsh.
-  if ! timeout --kill-after 5 5 chsh --shell /usr/bin/zsh "$USER_CREATE_USERNAME" ; then
-     if [ ! "$derivative_maker" = "true" ] && ! [ -f '/var/lib/dist-base-files/live_build' ]; then
-        echo "$0: ERROR: Command 'chsh --shell /usr/bin/zsh $USER_CREATE_USERNAME' failed during the build process."
-        exit 1
-     else
-        echo "$0: ERROR: Command 'chsh --shell /usr/bin/zsh $USER_CREATE_USERNAME' failed. This is only a minor issue."
-     fi
+  printf '%s\n' "$0: INFO: Setting shell for account '$USER_CREATE_USERNAME' to 'zsh'..."
+  ## Use 'timeout' to prevent unexplained bug password prompt caused by 'chsh'.
+  if timeout --kill-after 5 5 chsh --shell /usr/bin/zsh "$USER_CREATE_USERNAME" ; then
+     printf '%s\n' "$0: INFO: Shell for account '$USER_CREATE_USERNAME' has been set to 'zsh', ok."
+  else
+    if [ "$derivative_maker" = "true" ]; then
+      printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh $USER_CREATE_USERNAME' failed during the build process. (return 1 because derivative_maker=true)"
+      return 1
+    fi
+    if [ -f '/var/lib/dist-base-files/live_build' ]; then
+      printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh $USER_CREATE_USERNAME' failed during the build process. (return 1 because /var/lib/dist-base-files/live_build exists)"
+      return 1
+    fi
+    printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh $USER_CREATE_USERNAME' failed. This is only a minor issue."
+    return 0
   fi
 }
