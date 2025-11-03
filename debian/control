@@ -15,7 +15,7 @@ Rules-Requires-Root: no
 Package: helper-scripts
 Architecture: all
 Depends: python3, python3-stem, python3-scapy, python3-yaml,
- bubblewrap, moreutils, equivs, safe-rm, ${misc:Depends}
+ bubblewrap, moreutils, equivs, safe-rm, jq, ${misc:Depends}
 Breaks: usability-misc (<< 3:31.7-1)
 Replaces: usability-misc (<< 3:31.7-1), anon-shared-helper-scripts,
  curl-scripts, anon-ws-leaktest, python-guimessages, python3-guimessages
