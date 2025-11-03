@@ -575,7 +575,7 @@ set_console_keymap() {
 
 ## NOTE: This function assumes it is run as root.
 kb_reload_root() {
-  local user_list uid_list user_name uid wl_sock wl_pid wl_comm
+  local user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
 
   ## The only easily machine-readable format loginctl can output the user list
   ## in is json. We could also use
@@ -604,6 +604,8 @@ kb_reload_root() {
         continue
       fi
 
+      account_name="$(id --name --user -- "${uid}")"
+
       if [ "${wl_comm}" = 'labwc' ]; then
         ## From the labwc manpage:
         ##
@@ -619,8 +621,16 @@ kb_reload_root() {
         ## instances, it will only reconfigure the one running on the active
         ## TTY. See:
         ## https://github.com/labwc/labwc/issues/3184
-        printf '%s\n' "$0: INFO: Sending SIGHUP to labwc process '${wl_pid}' to trigger configuration reload..."
-        kill -s SIGHUP -- "${wl_pid}"
+        if kill -0 -- "${wl_pid}"; then
+          printf '%s\n' "$0: INFO: Sending SIGHUP to for account '${account_name}' to labwc process '${wl_pid}' to trigger configuration reload..."
+          if kill -s SIGHUP -- "${wl_pid}"; then
+            printf '%s\n' "$0: INFO: SIGHUP ok."
+          else
+            printf '%s\n' "$0: WARNING: Minor issue. SIGHUP failed. Reboot may be required to change keyboard layout."
+          fi
+        else
+          printf '%s\n' "$0: WARNING: Minor issue. Not sending SIGHUP for account '${account_name}' to labwc process '${wl_pid}' to trigger configuration reload because not running. Reboot may be required to change keyboard layout."
+        fi
       fi
     done
   done
