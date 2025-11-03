@@ -1,3 +1,16 @@
+commit 72b3c7558c3f966bea0083e500fe662fddceadf3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 3 07:56:08 2025 -0500
+
+    fix return codes of `linux_user_account_shell_to_zsh`; refactoring
+    This fixes a bug when installing user-sysmaint-split.
+
+commit 9bba0230dab6766fe9ea1db603015249bda8f08f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 3 11:21:39 2025 +0000
+
+    bumped changelog version
+
 commit 9393458e6f0dd89317f8a9fa34ef8bccf9cbea9d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Nov 3 06:10:58 2025 -0500
