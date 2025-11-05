@@ -3,6 +3,19 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+br_add_to_file() {
+   local file_name="$1"
+
+   test -f "${file_name}"
+   safe-rm -f -- "${file_name}_br"
+   touch -- "${file_name}_br"
+
+   local line
+   while IFS= read -r line ; do
+      printf '%s\n' "$line<br />" | tee -a -- "${file_name}_br" >/dev/null
+   done < "${file_name}"
+}
+
 read_integer_file() {
   local target_file lower_bound upper_bound file_contents
 
