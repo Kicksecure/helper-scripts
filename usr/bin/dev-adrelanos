@@ -17,11 +17,7 @@ fi
 
 dev-root force
 
-sudo loadkeys de || true
-
-set-labwc-keymap --persist de || true
-
-sudo --non-interactive -u user set-labwc-keymap --no-reload --persist de || true
+sudo set-system-keymap de || true
 
 sudo repository-dist --enable --repository developers
 
