@@ -12,6 +12,7 @@ file_list=(
   /usr/bin/sudoedit
   /usr/bin/pkexec
   /usr/bin/doas
+  /usr/bin/su-to-root
 )
 
 for file_item in "${file_list[@]}"; do
