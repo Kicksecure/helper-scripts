@@ -1,3 +1,21 @@
+commit 3c585bd9f29137e7971c764bf3dec03b6cddf8f5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 9 01:45:50 2025 -0500
+
+    `/usr/libexec/helper-scripts/sudo-tools-enable`: add `su-to-root`
+
+commit 9dea5c3228bf5b677c216f6c6a02f4ad73c3913e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 9 01:04:15 2025 -0500
+
+    dev-adrelanos
+
+commit 88a3f9df311c5335adba4403a55c461f07a4f2d4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 5 11:27:47 2025 +0000
+
+    bumped changelog version
+
 commit 2bb6485c356888ccb8596d04cfac09b6d904069e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Nov 5 06:10:53 2025 -0500
