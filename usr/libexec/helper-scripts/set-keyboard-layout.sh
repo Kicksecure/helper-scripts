@@ -78,7 +78,7 @@ is_layout_data_valid() {
   if [ -z "${check_str}" ]; then return 1; fi
 
   readarray -t check_list < <(printf '%s\n' "${check_str}" | tr ',' '\n')
-  readarray -t valid_item_list < <("${valid_list_cmd[@]}")
+  readarray -t valid_item_list < <("${timeout_command[@]}" "${valid_list_cmd[@]}")
 
   for check_item in "${check_list[@]}"; do
     if [ -z "${check_item}" ]; then continue; fi
@@ -853,7 +853,7 @@ Type 'exit' to quit without changing keyboard layout settings.
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
-      localectl list-x11-keymap-layouts
+      "${timeout_command[@]}" localectl list-x11-keymap-layouts
       continue
     fi
     if [ "${layout_str}" = 'help' ]; then
@@ -885,7 +885,7 @@ Type 'exit' to quit without changing keyboard layout settings.
         continue
       fi
       if ! grep -q ',' <<< "${layout_str}"; then
-        localectl list-x11-keymap-variants "${layout_str}"
+        "${timeout_command[@]}" localectl list-x11-keymap-variants "${layout_str}"
       else
         read -r -p 'Enter the keyboard layout to view variants for: ' -- variant_key_str
         variant_key_str="$(tr -d ' ' <<< "${variant_key_str,,}")"
@@ -897,7 +897,7 @@ Type 'exit' to quit without changing keyboard layout settings.
           printf '%s\n' "$0: ERROR: Specified layout is not in the previously specified layout list!" >&2
           continue
         fi
-        localectl list-x11-keymap-variants "${variant_key_str}"
+        "${timeout_command[@]}" localectl list-x11-keymap-variants "${variant_key_str}"
       fi
       continue
     fi
@@ -928,7 +928,7 @@ Type 'exit' to quit without changing keyboard layout settings.
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
-      localectl list-x11-keymap-options
+      "${timeout_command[@]}" localectl list-x11-keymap-options
       continue
     fi
     if [ "${option_str,,}" = 'help' ]; then
