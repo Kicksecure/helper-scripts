@@ -587,6 +587,11 @@ set_console_keymap() {
 kb_reload_root() {
   local loginctl_users user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
 
+  if [ "$localctl_available" = "false" ]; then
+    printf '%s\n' "$0: WARNING: Minor issue. 'localectl' unavailable. Reboot may be required to change keyboard layout."
+    return 0
+  fi
+
   ## The only easily machine-readable format 'loginctl' can output the user list
   ## in is json. We could also use
   ## `loginctl list-users --no-pager | tail -n+2 | head -n+2 | cut -d' ' -f2`
