@@ -592,6 +592,8 @@ kb_reload_root() {
   ## `loginctl list-users --no-pager | tail -n+2 | head -n+2 | cut -d' ' -f2`
   ## if the dependency on jq is undesirable, but this will probably break if a
   ## future systemd update changes the output format.
+
+  ## Avoid subshell for better error handling.
   #readarray -t user_list < <(loginctl -j list-users | jq -r '.[] | .user')
 
   loginctl_users="$("${timeout_command[@]}" loginctl -j list-users | jq -r '.[] | .user')" || true
