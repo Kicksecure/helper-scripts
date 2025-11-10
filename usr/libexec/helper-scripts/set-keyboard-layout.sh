@@ -46,6 +46,12 @@ is_layout_data_valid() {
   local valid_list_cmd check_str check_list check_item valid_item_list \
     valid_item is_item_valid
 
+  [[ -v localctl_available ]] || localctl_available=""
+
+  if [ "$localctl_available" = "false" ]; then
+    return 0
+  fi
+
   ## localectl cannot be run within a chroot to get lists of valid values.
   ## Assume data is correct if it passed the previous sanity checks.
   if ischroot --default-false; then
