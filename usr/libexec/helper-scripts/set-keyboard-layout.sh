@@ -589,10 +589,17 @@ kb_reload_root() {
   ## future systemd update changes the output format.
   #readarray -t user_list < <(loginctl -j list-users | jq -r '.[] | .user')
 
-  loginctl_users="$(loginctl -j list-users | jq -r '.[] | .user')"
+  loginctl_users="$(timeout --kill-after 5 5 loginctl -j list-users | jq -r '.[] | .user')" || true
   readarray -t user_list <<< "$loginctl_users"
 
   true "user_list: $user_list"
+  user_list=()
+
+  if ((${#user_list[@]} == 0)); then
+    printf '%s\n' "$0: WARNING: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change keyboard layout."
+    return 0
+  fi
+
   uid_list=()
   for user_name in "${user_list[@]}"; do
     uid_list+=( "$(id --user -- "${user_name}")" )
