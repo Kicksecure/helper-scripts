@@ -426,7 +426,7 @@ set_labwc_keymap() {
     printf '%s\n' "$0: INFO: ephemeral '${labwc_config_path}' contents:" >&2
     stcat "${labwc_config_path}" >&2
     if ! mv -- "${labwc_config_bak_path}" "${labwc_config_path}" ; then
-      printf '%s\n' "$0: ERROR: Cannot move backup labwc environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!" >&2
+      printf '%s\n' "$0: ERROR: Cannot move backup 'labwc' environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!" >&2
       return 1
     fi
   elif [ "${do_persist}" = 'true' ]; then
@@ -435,7 +435,7 @@ set_labwc_keymap() {
   elif [ "${do_persist}" = 'false' ]; then
     printf '%s\n' "$0: INFO: Non-persistent configuration done. To persist, use option: --persist" >&2
     if ! safe-rm -- "${labwc_config_path}" ; then
-      printf '%s\n' "$0: ERROR: Cannot remove temporary labwc environment config '${labwc_config_path}'!" >&2
+      printf '%s\n' "$0: ERROR: Cannot remove temporary 'labwc' environment config '${labwc_config_path}'!" >&2
       return 1
     fi
   fi
