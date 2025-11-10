@@ -793,6 +793,13 @@ interactive_ui() {
   local kb_set_func kb_set_opts layout_str variant_str option_str \
     variant_key_str
 
+  if localectl >/dev/null; then
+    localctl_available=true
+  else
+    printf '%s\n' "$0: INFO: Failed to run 'localectl'. Is dbus running?"
+    localctl_available=false
+  fi
+
   skl_interactive='true'
   kb_set_func="${1:-}"
   if [ -z "${kb_set_func}" ]; then
@@ -825,8 +832,8 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## contain spaces or capital letters.
     layout_str="$(tr -d ' ' <<< "${layout_str,,}")"
     if [ "${layout_str}" = 'list' ]; then
-      if ischroot --default-false; then
-        printf '%s\n' 'Running in chroot, cannot list possible keyboard layouts.';
+      if [ "${localctl_available}" = "false" ]; then
+        printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
       localectl list-x11-keymap-layouts
@@ -856,8 +863,8 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## capitals, so we can't normalize everything to lowercase.
     variant_str="$(tr -d ' ' <<< "${variant_str}")"
     if [ "${variant_str,,}" = 'list' ]; then
-      if ischroot --default-false; then
-        printf '%s\n' 'Running in chroot, cannot list possible keyboard layout variants.';
+      if [ "${localctl_available}" = "false" ]; then
+        printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
       if ! grep -q ',' <<< "${layout_str}"; then
@@ -900,8 +907,8 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## because some options like "eurosign:E" contain capital letters.
     option_str="$(tr -d ' ' <<< "${option_str}")"
     if [ "${option_str,,}" = 'list' ]; then
-      if ischroot --default-false; then
-        printf '%s\n' 'Running in chroot, cannot list possible keyboard layout options.'
+      if [ "${localctl_available}" = "false" ]; then
+        printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
       localectl list-x11-keymap-options
