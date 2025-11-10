@@ -590,7 +590,7 @@ kb_reload_root() {
   readarray -t user_list < <(loginctl -j list-users | jq -r '.[] | .user')
   uid_list=()
   for user_name in "${user_list[@]}"; do
-    uid_list+=( "$(id -u -- "${user_name}")" )
+    uid_list+=( "$(id --user -- "${user_name}")" )
   done
 
   for uid in "${uid_list[@]}"; do
