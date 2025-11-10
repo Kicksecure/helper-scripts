@@ -791,7 +791,7 @@ interactive_ui() {
 
   ## Test run.
   ## sets: localctl_available
-  is_layout_data_valid us
+  is_layout_data_valid us localectl list-x11-keymap-layouts
 
   skl_interactive='true'
   kb_set_func="${1:-}"
