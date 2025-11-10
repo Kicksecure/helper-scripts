@@ -1,3 +1,69 @@
+commit 9c23cf93e1301831d684f0834248e67750a4fe56
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 09:25:36 2025 -0500
+
+    output
+
+commit 78ba5365e55fa59a904553e2c54264b5c69b3156
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 09:18:41 2025 -0500
+
+    output
+
+commit 3ad8aee2eb689fd541bc36670c7f37544072f561
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 09:12:52 2025 -0500
+
+    long option names
+
+commit 1480c74fdcfde55e3991586434c0b82be2ba632c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 09:11:43 2025 -0500
+
+    long option names
+
+commit 118d42357837dafbc420b6c66626b5c32da222a7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 09:09:21 2025 -0500
+
+    output
+
+commit 107dc1eba87cbbf5b3e719feffc5fdc01117b90b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 09:07:00 2025 -0500
+
+    end-of-options
+
+commit 6e6333c358f2eab991f3ac606b7ffab2651b2712
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 09:01:06 2025 -0500
+
+    fix
+
+commit 95fbb580670114326b1a682eb8b11f18be0d007d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 08:56:06 2025 -0500
+
+    handle more cases where 'localectl' is unavailable
+
+commit d9a43650e6891ed6bdff224854015409b3a2f4e8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 08:53:29 2025 -0500
+
+    refactoring
+
+commit 2606ce34e8f1ef2cd25644c49fca1c1738bfd0a6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 08:49:27 2025 -0500
+
+    handle more cases where 'localectl' is unavailable
+
+commit dd1b3b1f7d641b276d889c5e8edf1ec71763408d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 9 08:10:38 2025 +0000
+
+    bumped changelog version
+
 commit 3c585bd9f29137e7971c764bf3dec03b6cddf8f5
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 9 01:45:50 2025 -0500
