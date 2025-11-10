@@ -618,14 +618,14 @@ kb_reload_root() {
         ## TTY. See:
         ## https://github.com/labwc/labwc/issues/3184
         if kill -0 -- "${wl_pid}"; then
-          printf '%s\n' "$0: INFO: Sending SIGHUP for account '${account_name}' to labwc process '${wl_pid}' to trigger configuration reload..."
+          printf '%s\n' "$0: INFO: Sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' to trigger configuration reload..."
           if kill -s SIGHUP -- "${wl_pid}"; then
-            printf '%s\n' "$0: INFO: SIGHUP ok."
+            printf '%s\n' "$0: INFO: Signal SIGHUP ok."
           else
-            printf '%s\n' "$0: WARNING: Minor issue. SIGHUP failed. Reboot may be required to change keyboard layout."
+            printf '%s\n' "$0: WARNING: Minor issue. Sending signal SIGHUP failed. Reboot may be required to change keyboard layout."
           fi
         else
-          printf '%s\n' "$0: WARNING: Minor issue. Not sending SIGHUP for account '${account_name}' to labwc process '${wl_pid}' because it is not running. Reboot may be required to change keyboard layout."
+          printf '%s\n' "$0: WARNING: Minor issue. Not sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' because it is not running. Reboot may be required to change keyboard layout."
         fi
       fi
     done
