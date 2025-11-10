@@ -45,8 +45,8 @@ exit_code: ${exit_code}"
 ## Checks to see if all items in "check_str" are present in the output of a
 ## command that lists valid items.
 is_layout_data_valid() {
-  local valid_list_cmd check_str check_list check_item valid_item_list \
-    valid_item is_item_valid
+  local valid_list_cmd check_str check_lines check_list check_item \
+    valid_output valid_item_list valid_item is_item_valid
 
   [[ -v localctl_available ]] || localctl_available=""
 
@@ -77,8 +77,11 @@ is_layout_data_valid() {
   fi
   if [ -z "${check_str}" ]; then return 1; fi
 
-  readarray -t check_list < <(printf '%s\n' "${check_str}" | tr ',' '\n')
-  readarray -t valid_item_list < <("${timeout_command[@]}" "${valid_list_cmd[@]}")
+  check_lines=$(printf '%s\n' "${check_str}" | tr ',' '\n')
+  readarray -t check_list <<< "${check_lines}"
+
+  valid_output=$("${timeout_command[@]}" "${valid_list_cmd[@]}")
+  readarray -t valid_item_list <<< "${valid_output}"
 
   for check_item in "${check_list[@]}"; do
     if [ -z "${check_item}" ]; then continue; fi
