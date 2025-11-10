@@ -46,6 +46,12 @@ is_layout_data_valid() {
   local valid_list_cmd check_str check_list check_item valid_item_list \
     valid_item is_item_valid
 
+  ## localectl cannot be run within a chroot to get lists of valid values.
+  ## Assume data is correct if it passed the previous sanity checks.
+  if ischroot --default-false; then
+    return 0
+  fi
+
   check_str="${1:-}"
   shift
   valid_list_cmd=( "$@" )
@@ -100,12 +106,6 @@ check_keyboard_layouts() {
     return 1
   fi
 
-  ## localectl cannot be run within a chroot to get lists of valid values.
-  ## Assume data is correct if it passed the previous sanity checks.
-  if ischroot --default-false; then
-    return 0
-  fi
-
   ## Ensure the specified keyboard layout(s) are valid.
   if ! is_layout_data_valid "${layout_str}" \
     localectl list-x11-keymap-layouts ; then
@@ -148,12 +148,6 @@ check_keyboard_layout_variants() {
     return 1
   fi
 
-  ## localectl cannot be run within a chroot to get lists of valid values.
-  ## Assume data is correct if it passed the previous sanity checks.
-  if ischroot --default-false; then
-    return 0
-  fi
-
   for kb_idx in "${!kb_layout_list[@]}"; do
     if [ -z "${kb_variant_list[kb_idx]}" ]; then continue; fi
     if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
@@ -182,12 +176,6 @@ check_keyboard_layout_options() {
       return 1
     fi
   done
-
-  ## localectl cannot be run within a chroot to get lists of valid values.
-  ## Assume data is correct if it passed the previous sanity checks.
-  if ischroot --default-false; then
-    return 0
-  fi
 
   if ! is_layout_data_valid "${option_str}" \
     localectl list-x11-keymap-options ; then
