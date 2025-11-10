@@ -400,7 +400,7 @@ set_labwc_keymap() {
   fi
 
   if [ "${no_reload}" = 'false' ]; then
-    if pgrep labwc >/dev/null; then
+    if pgrep -- labwc >/dev/null; then
       ## labwc is running. So the user most likely wishes the change to instantly apply.
       ## Therefore let's run 'labwc --reconfigure'.
       if ! command -v labwc >/dev/null; then
