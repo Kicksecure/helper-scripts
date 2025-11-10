@@ -580,14 +580,19 @@ set_console_keymap() {
 
 ## NOTE: This function assumes it is run as root.
 kb_reload_root() {
-  local user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
+  local loginctl_users user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
 
   ## The only easily machine-readable format loginctl can output the user list
   ## in is json. We could also use
   ## `loginctl list-users --no-pager | tail -n+2 | head -n+2 | cut -d' ' -f2`
   ## if the dependency on jq is undesirable, but this will probably break if a
   ## future systemd update changes the output format.
-  readarray -t user_list < <(loginctl -j list-users | jq -r '.[] | .user')
+  #readarray -t user_list < <(loginctl -j list-users | jq -r '.[] | .user')
+
+  loginctl_users="$(loginctl -j list-users | jq -r '.[] | .user')"
+  readarray -t user_list <<< "$loginctl_users"
+
+  true "user_list: $user_list"
   uid_list=()
   for user_name in "${user_list[@]}"; do
     uid_list+=( "$(id --user -- "${user_name}")" )
