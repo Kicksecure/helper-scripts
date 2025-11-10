@@ -49,7 +49,15 @@ is_layout_data_valid() {
   ## localectl cannot be run within a chroot to get lists of valid values.
   ## Assume data is correct if it passed the previous sanity checks.
   if ischroot --default-false; then
+    localctl_available=false
     return 0
+  fi
+
+  if localectl >/dev/null; then
+    localctl_available=true
+  else
+    printf '%s\n' "$0: INFO: Failed to run 'localectl'. Is dbus running?"
+    localctl_available=false
   fi
 
   check_str="${1:-}"
@@ -781,12 +789,9 @@ interactive_ui() {
   local kb_set_func kb_set_opts layout_str variant_str option_str \
     variant_key_str
 
-  if localectl >/dev/null; then
-    localctl_available=true
-  else
-    printf '%s\n' "$0: INFO: Failed to run 'localectl'. Is dbus running?"
-    localctl_available=false
-  fi
+  ## Test run.
+  ## sets: localctl_available
+  is_layout_data_valid us
 
   skl_interactive='true'
   kb_set_func="${1:-}"
