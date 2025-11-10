@@ -20,6 +20,8 @@ command -v mkdir >/dev/null
 command -v overwrite >/dev/null
 command -v stcat >/dev/null
 
+timeout_command=("timeout" "--kill-after" "5" "5")
+
 skl_interactive='false'
 skl_xkb_env_var_names=(
   'XKB_DEFAULT_LAYOUT'
@@ -589,7 +591,7 @@ kb_reload_root() {
   ## future systemd update changes the output format.
   #readarray -t user_list < <(loginctl -j list-users | jq -r '.[] | .user')
 
-  loginctl_users="$(timeout --kill-after 5 5 loginctl -j list-users | jq -r '.[] | .user')" || true
+  loginctl_users="$("${timeout_command[@]}" loginctl -j list-users | jq -r '.[] | .user')" || true
   readarray -t user_list <<< "$loginctl_users"
 
   true "user_list: $user_list"
