@@ -262,7 +262,7 @@ replace_file_variables() {
   printf '%s\n' "${file_lines[@]}"
 }
 
-## Sets the XKB layout(s), variant(s), and option(s) in labwc, either for just
+## Sets the XKB layout(s), variant(s), and option(s) in 'labwc', either for just
 ## this session or persistently.
 set_labwc_keymap() {
   local labwc_config_bak_path var_idx args labwc_env_file_string \
@@ -322,7 +322,7 @@ set_labwc_keymap() {
   fi
 
   ## If we have less than three arguments, populate the `args` array with empty
-  ## strings for the remaining arguments. This will make labwc unset the
+  ## strings for the remaining arguments. This will make 'labwc' unset the
   ## corresponding XKB environment variables internally, allowing the user to
   ## run something like `set-labwc-keymap us colemak`, then
   ## `set-labwc-keymap us` and have their keyboard not stuck in the Colemak
@@ -350,22 +350,22 @@ set_labwc_keymap() {
 
   labwc_config_directory="$(dirname -- "${labwc_config_path}")"
 
-  ## Ensure the labwc configuration directory exists.
+  ## Ensure the 'labwc' configuration directory exists.
   if ! mkdir --parents -- "${labwc_config_directory}" ; then
-    printf '%s\n' "$0: ERROR: Cannot create labwc config directory '${labwc_config_directory}'!" >&2
+    printf '%s\n' "$0: ERROR: Cannot create 'labwc' config directory '${labwc_config_directory}'!" >&2
     return 1
   fi
 
-  ## If labwc's environment config file exists, read it.
+  ## If 'labwc's environment config file exists, read it.
   labwc_existing_config=''
   if [ -f "${labwc_config_path}" ]; then
     if ! [ -r "${labwc_config_path}" ]; then
-      printf '%s\n' "$0: ERROR: No read permissions on labwc environment config '${labwc_config_path}'!" >&2
+      printf '%s\n' "$0: ERROR: No read permissions on 'labwc' environment config '${labwc_config_path}'!" >&2
       return 1
     fi
 
     if ! labwc_existing_config="$(cat -- "${labwc_config_path}")" ; then
-      printf '%s\n' "$0: ERROR: Cannot read existing labwc environment config '${labwc_config_path}'!" >&2
+      printf '%s\n' "$0: ERROR: Cannot read existing 'labwc' environment config '${labwc_config_path}'!" >&2
       return 1
     fi
 
@@ -374,7 +374,7 @@ set_labwc_keymap() {
     if [ "${do_persist}" = 'false' ]; then
       labwc_config_bak_path="$(mktemp)"
       if ! mv -- "${labwc_config_path}" "${labwc_config_bak_path}" ; then
-        printf '%s\n' "$0: ERROR: Cannot move existing labwc environment config '${labwc_config_path}' to backup location '${labwc_config_bak_path}'!" >&2
+        printf '%s\n' "$0: ERROR: Cannot move existing 'labwc' environment config '${labwc_config_path}' to backup location '${labwc_config_bak_path}'!" >&2
         return 1
       fi
     fi
@@ -393,15 +393,15 @@ set_labwc_keymap() {
 
   labwc_env_file_string="$(replace_file_variables "${calc_replace_args[@]}")"
 
-  ## Write the new config file contents and load them into labwc.
+  ## Write the new config file contents and load them into 'labwc'.
   if ! overwrite "${labwc_config_path}" "${labwc_env_file_string}" >/dev/null ; then
-    printf '%s\n' "$0: ERROR: Cannot write new labwc environment config '${labwc_config_path}'!" >&2
+    printf '%s\n' "$0: ERROR: Cannot write new 'labwc' environment config '${labwc_config_path}'!" >&2
     return 1
   fi
 
   if [ "${no_reload}" = 'false' ]; then
     if pgrep -- labwc >/dev/null; then
-      ## labwc is running. So the user most likely wishes the change to instantly apply.
+      ## 'labwc' is running. So the user most likely wishes the change to instantly apply.
       ## Therefore let's run 'labwc --reconfigure'.
       if ! command -v labwc >/dev/null; then
         ## This would be weird. 'labwc' is running but unavailable in PATH.
@@ -440,7 +440,8 @@ set_labwc_keymap() {
     fi
   fi
 
-  printf '%s\n' "$0: INFO: 'labwc' configuration success." >&2
+  ## Can be for 'labwc' or 'greetd'.
+  printf '%s\n' "$0: INFO: Configuration success." >&2
 }
 
 dpkg_reconfigure_function() {
