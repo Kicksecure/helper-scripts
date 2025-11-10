@@ -58,6 +58,7 @@ is_layout_data_valid() {
   else
     printf '%s\n' "$0: INFO: Failed to run 'localectl'. Is dbus running?"
     localctl_available=false
+    return 0
   fi
 
   check_str="${1:-}"
