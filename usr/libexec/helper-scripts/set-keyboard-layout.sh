@@ -580,6 +580,17 @@ set_console_keymap() {
   ## Apply the changes to the config file to the system.
   dpkg_reconfigure_function "${dpkg_reconfigure_command[@]}"
 
+  if "${timeout_command[@]}" systemctl --no-block --no-pager status keyboard-setup.service &>/dev/null; then
+    printf '%s\n' "$0: EXECUTING: 'systemctl --no-block --no-pager restart keyboard-setup.service'" >&2
+    if "${timeout_command[@]}" systemctl --no-block --no-pager restart keyboard-setup.service; then
+      printf '%s\n' "$0: INFO: Restart of systemd unit 'keyboard-setup.service' success." >&2
+    else
+      printf '%s\n' "$0: WARNING: Restart of systemd unit 'keyboard-setup.service' failed. Reboot may be required to change keyboard layout." >&2
+    fi
+  else
+    printf '%s\n' "$0: WARNING: Systemd unit 'keyboard-setup.service' is not running or does not exist. Reboot may be required to change keyboard layout." >&2
+  fi
+
   printf '%s\n' "$0: INFO: system console configuration success." >&2
 }
 
