@@ -494,6 +494,9 @@ set_console_keymap() {
   local args var_idx kb_conf_file_string kb_conf_path kb_conf_dir \
     calc_replace_args dpkg_reconfigure_command
 
+  ## TODO: Add support for running as non-root by supporting file: '~/.keyboard'
+  ##       (See 'man setupcon'.)
+
   ## Parse command line arguments
   kb_conf_dir='/etc/default'
   kb_conf_path="${kb_conf_dir}/keyboard"
@@ -580,6 +583,7 @@ set_console_keymap() {
   ## Apply the changes to the config file to the system.
   dpkg_reconfigure_function "${dpkg_reconfigure_command[@]}"
 
+  ## TODO: Do not try this if not running as root.
   if "${timeout_command[@]}" systemctl --no-block --no-pager status keyboard-setup.service &>/dev/null; then
     printf '%s\n' "$0: EXECUTING: 'systemctl --no-block --no-pager restart keyboard-setup.service'" >&2
     if "${timeout_command[@]}" systemctl --no-block --no-pager restart keyboard-setup.service; then
