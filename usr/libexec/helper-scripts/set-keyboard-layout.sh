@@ -595,7 +595,6 @@ kb_reload_root() {
   readarray -t user_list <<< "$loginctl_users"
 
   true "user_list: $user_list"
-  user_list=()
 
   if ((${#user_list[@]} == 0)); then
     printf '%s\n' "$0: WARNING: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change keyboard layout."
