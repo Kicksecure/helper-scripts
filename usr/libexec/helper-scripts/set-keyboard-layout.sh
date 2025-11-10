@@ -610,7 +610,7 @@ kb_reload_root() {
         ##     Reload the compositor configuration by sending SIGHUP to
         ##     `$LABWC_PID`
         ##
-        ## Therefore, `kill --signal SIGHUP -- "${wl_pid}"` is the same as
+        ## Therefore, `kill -s SIGHUP -- "${wl_pid}"` is the same as
         ## `LABWC_PID="${wl_pid}" labwc --reconfigure`, but shorter, probably
         ## faster, and doesn't require environment variables.
         ##
@@ -618,9 +618,11 @@ kb_reload_root() {
         ## instances, it will only reconfigure the one running on the active
         ## TTY. See:
         ## https://github.com/labwc/labwc/issues/3184
-        if kill --signal 0 -- "${wl_pid}"; then
+        ##
+        ## 'kill' is a shell built-in and does not support long option '--signal'.
+        if kill -s 0 -- "${wl_pid}"; then
           printf '%s\n' "$0: INFO: Sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' to trigger configuration reload..."
-          if kill --signal SIGHUP -- "${wl_pid}"; then
+          if kill -s SIGHUP -- "${wl_pid}"; then
             printf '%s\n' "$0: INFO: Signal SIGHUP ok."
           else
             printf '%s\n' "$0: WARNING: Minor issue. Sending signal SIGHUP failed. Reboot may be required to change keyboard layout."
