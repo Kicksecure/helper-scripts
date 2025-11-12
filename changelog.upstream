@@ -1,3 +1,27 @@
+commit 60d9650582d68218b3e2e66ac139fad34197663e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 00:59:07 2025 -0500
+
+    `dummy-dependency`: use `apt-get-noninteractive` (but `--yes` remains optional)
+
+commit 022f31b014f5f228739380ba91e5f1c5be77c25b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 11:26:51 2025 -0500
+
+    comments
+
+commit 8d8abfbecf388a2e62611771f722faf932f19fb6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 11:24:33 2025 -0500
+
+    `set-console-keymap`: restart keyboard-setup.service
+
+commit 076d4538bd523af8519940ae4248d57371b95681
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 10 16:08:49 2025 +0000
+
+    bumped changelog version
+
 commit e302bc2cf6ef0ab439d70dfc398fa40acbdfe243
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Nov 10 10:35:37 2025 -0500
