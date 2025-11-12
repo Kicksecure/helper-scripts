@@ -81,4 +81,6 @@ bail_if_not_on_luks() {
    exit_function 0
 }
 
+[ $# -ge 1 ] || { printf '%s\n' "usage: $0 FILE" >&2; exit 1; }
+
 bail_if_not_on_luks "$1"
