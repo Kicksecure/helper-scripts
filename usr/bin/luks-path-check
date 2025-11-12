@@ -16,15 +16,15 @@ exit_function() {
   exit "$1"
 }
 
-bail_if_swap_not_on_luks() {
+bail_if_not_on_luks() {
    local swap_mount_device swap_mount_real_device swap_mount_slave_dev \
       blkid_swap_mount_fs
 
-   swap_mount_device="$(findmnt --noheadings --output=SOURCE --target "$dirname_swapfile")" || true
+   swap_mount_device="$(findmnt --noheadings --output=SOURCE --target "$dirname_file")" || true
    ## example:
    #swap_mount_device="/dev/mapper/dmroot"
    if [ -z "$swap_mount_device" ]; then
-      printf '%s\n' "ERROR: No mountpoint source device found for swapfile '$SWAPFILE'!" >&2
+      printf '%s\n' "ERROR: No mountpoint source device found for file '$SWAPFILE'!" >&2
       exit 1
    fi
    if ! [[ "$swap_mount_device" = '/dev/mapper/'* ]]; then
@@ -34,7 +34,7 @@ bail_if_swap_not_on_luks() {
 
    swap_mount_real_device="$(readlink -f -- "$swap_mount_device")" || true
    if [ -z "$swap_mount_real_device" ]; then
-      printf '%s\n' "ERROR: Cannot find true source device for swapfile mountpoint device '$swap_mount_device'!" >&2
+      printf '%s\n' "ERROR: Cannot find true source device for file mountpoint device '$swap_mount_device'!" >&2
       exit_function 1
    fi
    #swap_mount_real_device="$(basename -- "$swap_mount_real_device")"
@@ -65,7 +65,7 @@ bail_if_swap_not_on_luks() {
 
    blkid_swap_mount_fs="$(blkid -s TYPE -o value "/dev/$swap_mount_slave_dev")" || true
    if [ -z "$blkid_swap_mount_fs" ]; then
-      printf '%s\n' "INFO: 'blkid' did not return the filesystem on swapfile mountpoint underlying device '/dev/$swap_mount_slave_dev', exiting, ok."
+      printf '%s\n' "INFO: 'blkid' did not return the filesystem on file mountpoint underlying device '/dev/$swap_mount_slave_dev', exiting, ok."
       exit_function 0
    fi
    if [ "$blkid_swap_mount_fs" != 'crypto_LUKS' ]; then
@@ -73,3 +73,5 @@ bail_if_swap_not_on_luks() {
       exit_function 0
    fi
 }
+
+bail_if_not_on_luks
