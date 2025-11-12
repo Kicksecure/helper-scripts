@@ -69,12 +69,12 @@ bail_if_not_on_luks() {
 
    blkid_file_mount_fs="$(blkid -s TYPE -o value "/dev/$file_mount_slave_dev")" || true
    if [ -z "$blkid_file_mount_fs" ]; then
-      printf '%s\n' "INFO: 'blkid' did not return the filesystem on file mountpoint underlying device '/dev/$file_mount_slave_dev'."
-      exit_function 0
+      printf '%s\n' "ERROR: 'blkid' did not return the filesystem on file mountpoint underlying device '/dev/$file_mount_slave_dev'."
+      exit_function 1
    fi
    if [ "$blkid_file_mount_fs" != 'crypto_LUKS' ]; then
       printf '%s\n' "INFO: File mountpoint underlying device '/dev/$file_mount_slave_dev' is not a LUKS device."
-      exit_function 0
+      exit_function 1
    fi
 }
 
