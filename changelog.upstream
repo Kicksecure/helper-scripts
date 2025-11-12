@@ -1,3 +1,75 @@
+commit b9e473ccf8878729370c5f76c55f8633fdc07cad
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:57:16 2025 -0500
+
+    fix
+
+commit de87b9501fb488675915992fcf6ed25a87861aa4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:54:42 2025 -0500
+
+    fix
+
+commit 7f633a45c412b3234024f6ef1cd3249cbcd451e3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:52:47 2025 -0500
+
+    fix
+
+commit bb4623b595bf58665d1ec846f7124b9c00ce41d5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:52:26 2025 -0500
+
+    fix
+
+commit 13cb119fb765437aee9171136710d79423719b8c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:49:42 2025 -0500
+
+    fix
+
+commit 5a548a49ba5424a8c38fbbded50684ff5996a646
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:46:34 2025 -0500
+
+    fix
+
+commit b4a5efc3826f24b047e89d01a0c297ec71731753
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:45:43 2025 -0500
+
+    output
+
+commit 2b1630213f865d978e3bf724cdf814490e40a932
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:38:07 2025 -0500
+
+    add `luks-path-check`
+
+commit 0c33761b402f9e150fe5328e942c9f391090bc18
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:35:48 2025 -0500
+
+    refactoring
+
+commit 0cb264411f6b614c0e177f983ec78083e81dcb29
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:33:31 2025 -0500
+
+    refactoring
+
+commit c11e848b018d66e7415710db24371c618b77a37c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 02:31:43 2025 -0500
+
+    import from swap-file-creator
+
+commit 07fafc8c54ccb7d5a59f2b28b0c9e55a4c6f2dfe
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 06:11:33 2025 +0000
+
+    bumped changelog version
+
 commit 60d9650582d68218b3e2e66ac139fad34197663e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Nov 12 00:59:07 2025 -0500
