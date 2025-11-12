@@ -135,11 +135,11 @@ Description: dummy-package for '${package_to_replace}'
    fi
 
    printf '%s\n' "$0: INFO: '${remove_action}'ing package '${package_to_replace}' and installing 'dummy-${package_to_replace}'..."
-   printf '%s\n' "$0: EXECUTING: apt-get ${yes_option} ${remove_action} -- ${package_to_replace} ${deb_file_copy}"
-   if apt-get ${yes_option} "${remove_action}" -- "${package_to_replace}" "${deb_file_copy}" ; then
+   printf '%s\n' "$0: EXECUTING: apt-get-noninteractive ${yes_option} ${remove_action} -- ${package_to_replace} ${deb_file_copy}"
+   if apt-get-noninteractive ${yes_option} "${remove_action}" -- "${package_to_replace}" "${deb_file_copy}" ; then
       printf '%s\n' "$0: INFO: Dummy package installed."
    else
-      printf '%s\n' "$0: ERROR: 'apt-get' command failed!" >&2
+      printf '%s\n' "$0: ERROR: 'apt-get-noninteractive' command failed!" >&2
       exit 1
    fi
 
