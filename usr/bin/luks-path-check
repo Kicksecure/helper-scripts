@@ -17,8 +17,12 @@ exit_function() {
 }
 
 bail_if_not_on_luks() {
-   local file_mount_device file_mount_real_device file_mount_slave_dev \
+   local file_name file_mount_device file_mount_real_device file_mount_slave_dev \
       blkid_file_mount_fs
+
+   file_name="$1"
+
+   dirname_file="${file_name%/*}"
 
    file_mount_device="$(findmnt --noheadings --output=SOURCE --target "$dirname_file")" || true
    ## example:
@@ -74,4 +78,4 @@ bail_if_not_on_luks() {
    fi
 }
 
-bail_if_not_on_luks
+bail_if_not_on_luks "$1"
