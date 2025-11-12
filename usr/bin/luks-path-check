@@ -28,7 +28,7 @@ bail_if_not_on_luks() {
    ## example:
    #file_mount_device="/dev/mapper/dmroot"
    if [ -z "$file_mount_device" ]; then
-      printf '%s\n' "ERROR: No mountpoint source device found for file '$FILE'!" >&2
+      printf '%s\n' "ERROR: No mountpoint source device found for file '$file_name'." >&2
       exit_function 1
    fi
    if ! [[ "$file_mount_device" = '/dev/mapper/'* ]]; then
