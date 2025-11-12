@@ -17,8 +17,8 @@ exit_function() {
 }
 
 bail_if_not_on_luks() {
-   local file_name file_mount_device file_mount_real_device file_mount_slave_dev \
-      blkid_file_mount_fs
+   local file_name dirname_file file_mount_device file_mount_real_device \
+      file_mount_slave_dev blkid_file_mount_fs
 
    file_name="$1"
 
