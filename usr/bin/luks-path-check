@@ -29,11 +29,11 @@ bail_if_not_on_luks() {
    #file_mount_device="/dev/mapper/dmroot"
    if [ -z "$file_mount_device" ]; then
       printf '%s\n' "ERROR: No mountpoint source device found for file '$FILE'!" >&2
-      exit 1
+      exit_function 1
    fi
    if ! [[ "$file_mount_device" = '/dev/mapper/'* ]]; then
       printf '%s\n' "ERROR: File mountpoint source device '$file_mount_device' is not a device-mapper device." >&2
-      exit_function 0
+      exit_function 1
    fi
 
    file_mount_real_device="$(readlink -f -- "$file_mount_device")" || true
@@ -56,7 +56,7 @@ bail_if_not_on_luks() {
       printf '%s\n' "ERROR: File mountpoint source device '$file_mount_device' has an incorrect number of slave devices to be a LUKS device." >&2
       printf '%s\n' "ERROR: Slave devices:" >&2
       printf '%s\n' "'$file_mount_slave_dev'"
-      exit_function 0
+      exit_function 1
    fi
 
    #file_mount_slave_dev="$(basename -- "$file_mount_slave_dev")"
@@ -69,13 +69,16 @@ bail_if_not_on_luks() {
 
    blkid_file_mount_fs="$(blkid -s TYPE -o value "/dev/$file_mount_slave_dev")" || true
    if [ -z "$blkid_file_mount_fs" ]; then
-      printf '%s\n' "ERROR: 'blkid' did not return the filesystem on file mountpoint underlying device '/dev/$file_mount_slave_dev'."
+      printf '%s\n' "ERROR: 'blkid' did not return the filesystem on file mountpoint underlying device '/dev/$file_mount_slave_dev'." >&2
       exit_function 1
    fi
    if [ "$blkid_file_mount_fs" != 'crypto_LUKS' ]; then
-      printf '%s\n' "INFO: File mountpoint underlying device '/dev/$file_mount_slave_dev' is not a LUKS device."
+      printf '%s\n' "ERROR: File mountpoint underlying device '/dev/$file_mount_slave_dev' is not a LUKS device." >&2
       exit_function 1
    fi
+
+   printf '%s\n' "INFO: File '$file_name' is on LUKS device."
+   exit_function 0
 }
 
 bail_if_not_on_luks "$1"
