@@ -766,7 +766,7 @@ set_system_keymap() {
   printf '%s\n' "$0: INFO: Reloading keyboard layout..."
   kb_reload_root
 
-  printf '%s\n' "$0: INFO: Rebuilding all initramfs images..."
+  printf '%s\n' "$0: INFO: Rebuilding all initramfs images using command 'dracut --regenerate-all --force'..."
   dracut --regenerate-all --force
 
   printf '%s\n' "$0: INFO: Keyboard layout change successful."
