@@ -942,6 +942,8 @@ Type 'exit' to quit without changing keyboard layout settings.
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
+      ## Sanity test.
+      "${timeout_command[@]}" localectl --no-pager list-x11-keymap-layouts >/dev/null
       ## Cannot use 'timeout'.
       ## 'timeout' is not compatible with the pager and '--no-pager' is unwanted.
       #"${timeout_command[@]}" localectl list-x11-keymap-layouts
