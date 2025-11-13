@@ -440,14 +440,14 @@ set_labwc_keymap() {
   ## old config file).
   if [ -n "${labwc_config_bak_path}" ]; then
     printf '%s\n' "$0: INFO: ephemeral '${labwc_config_path}' contents:"
-    stcat "${labwc_config_path}" >&2
+    stcat "${labwc_config_path}"
     if ! mv -- "${labwc_config_bak_path}" "${labwc_config_path}" ; then
       printf '%s\n' "$0: ERROR: Cannot move backup 'labwc' environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!" >&2
       return 1
     fi
   elif [ "${do_persist}" = 'true' ]; then
     printf '%s\n' "$0: INFO: new '${labwc_config_path}' contents:"
-    stcat "${labwc_config_path}" >&2
+    stcat "${labwc_config_path}"
   elif [ "${do_persist}" = 'false' ]; then
     printf '%s\n' "$0: INFO: Non-persistent configuration done. To persist, omit option: --no-persist"
     if ! safe-rm -- "${labwc_config_path}" ; then
@@ -463,7 +463,7 @@ set_labwc_keymap() {
 dpkg_reconfigure_function() {
   local dpkg_reconfigure_exit_code dpkg_reconfigure_output_original \
     dpkg_reconfigure_output_filtered
-  printf '%s\n' "$0: EXECUTING: '${*}'" >&2
+  printf '%s\n' "$0: EXECUTING: '${*}'"
   dpkg_reconfigure_exit_code=0
   dpkg_reconfigure_output_original="$("${@}" 2>&1)" || { dpkg_reconfigure_exit_code="$?"; true; }
   ## dpkg-reconfigure can cause the following error message:
@@ -598,7 +598,7 @@ set_console_keymap() {
   fi
 
   printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:"
-  stcat "${kb_conf_path}" >&2
+  stcat "${kb_conf_path}"
 
   dpkg_reconfigure_command=( "dpkg-reconfigure" "--frontend=noninteractive" "keyboard-configuration" )
   ## Test error handling.
@@ -608,7 +608,7 @@ set_console_keymap() {
 
   ## TODO: Do not try this if not running as root.
   if "${timeout_command[@]}" systemctl --no-block --no-pager status keyboard-setup.service &>/dev/null; then
-    printf '%s\n' "$0: EXECUTING: 'systemctl --no-block --no-pager restart keyboard-setup.service'" >&2
+    printf '%s\n' "$0: EXECUTING: 'systemctl --no-block --no-pager restart keyboard-setup.service'"
     if "${timeout_command[@]}" systemctl --no-block --no-pager restart keyboard-setup.service; then
       printf '%s\n' "$0: INFO: Restart of systemd unit 'keyboard-setup.service' success."
     else
@@ -766,7 +766,7 @@ set_system_keymap() {
   set_console_keymap \
     "${args[@]}" \
     || return 1
-  printf '%s\n' "" >&2
+  printf '%s\n' ""
 
   ## Set the specified keyboard layout for labwc both system-wide and for the
   ## greeter.
@@ -777,7 +777,7 @@ set_system_keymap() {
     --config="${labwc_system_wide_config_path}" \
     "${args[@]}" \
     || return 1
-  printf '%s\n' "" >&2
+  printf '%s\n' ""
 
   printf '%s\n' "$0: INFO: 'greetd' configuration..."
   set_labwc_keymap \
@@ -785,7 +785,7 @@ set_system_keymap() {
     --config="${labwc_greeter_config_path}" \
     "${args[@]}" \
     || return 1
-  printf '%s\n' "" >&2
+  printf '%s\n' ""
 
   printf '%s\n' "$0: INFO: Reloading keyboard layout..."
   kb_reload_root
@@ -811,7 +811,7 @@ four may be set at any one time.
 
 For instance, to set US English, German, and Czech as the keyboard layouts,
 specify 'us,de,cz'.
-" >&2
+"
 }
 
 interactive_ui_help_variant() {
@@ -832,7 +832,7 @@ specify 'us,us' as the keyboard layouts and 'dvorak,colemak' as the
 variants. To set English (US QWERTY), English (US Dvorak), and German
 (QWERTZ) layouts, specify 'us,us,de' as the keyboard layouts and ',dvorak,'
 as the variants.
-" >&2
+"
 }
 
 interactive_ui_help_option() {
@@ -852,7 +852,7 @@ comma-separated.
 For instance, to set the right Alt key as the Compose key, and make
 Alt+Shift the keyboard layout switch shortcut, specify
 'compose:ralt,grp:alt_shift_toggle' as the keyboard layout options.
-" >&2
+"
 }
 
 interactive_ui() {
@@ -894,13 +894,13 @@ Press 'q' to exit the scrollable list.
 Type 'help' for help.
 
 Type 'exit' to quit without changing keyboard layout settings.
-" >&2
+"
 
   while true; do
     read -r -p 'Enter the keyboard layout(s) you would like to use: ' -- layout_str
-    printf '\n' >&2
+    printf '\n'
     if [ -z "${layout_str}" ]; then
-      printf '%s\n' 'No keyboard layouts specified. Exiting.' >&2
+      printf '%s\n' 'No keyboard layouts specified. Exiting.'
       return 0
     fi
     ## Normalize the layout string so it is all lowercase and has no spaces in
@@ -931,7 +931,7 @@ Type 'exit' to quit without changing keyboard layout settings.
 
   while true; do
     read -r -p 'Enter the keyboard layout variant(s) if desired, leave empty otherwise: ' -- variant_str
-    printf '\n' >&2
+    printf '\n'
     if [ -z "${variant_str}" ]; then
       break
     fi
@@ -976,7 +976,7 @@ Type 'exit' to quit without changing keyboard layout settings.
 
   while true; do
     read -r -p 'Enter the keyboard layout option(s) if desired, leave empty otherwise: ' -- option_str
-    printf '\n' >&2
+    printf '\n'
     if [ -z "${option_str}" ]; then
       break
     fi
