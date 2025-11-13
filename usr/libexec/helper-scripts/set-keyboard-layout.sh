@@ -219,10 +219,10 @@ check_keyboard_layout_options() {
   done
 
   if ! is_layout_data_valid "${option_str}" \
-    localectl list-x11-keymap-options ; then
+    localectl --no-pager list-x11-keymap-options ; then
     printf '%s\n' "$0: ERROR: Specified keyboard layout option(s) are not valid!" >&2
     if [ "${skl_interactive}" = 'false' ]; then
-      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-options' to get a list of valid layout options."
+      printf '%s\n' "$0: INFO: Run 'localectl --no-pager list-x11-keymap-options' to get a list of valid layout options."
     fi
     return 1
   fi
@@ -1025,7 +1025,9 @@ Type 'exit' to quit without changing keyboard layout settings.
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
-      "${timeout_command[@]}" localectl list-x11-keymap-options
+      ## Sanity test.
+      "${timeout_command[@]}" localectl --no-pager list-x11-keymap-options >/dev/null
+       localectl list-x11-keymap-options
       continue
     fi
     if [ "${option_str,,}" = 'help' ]; then
