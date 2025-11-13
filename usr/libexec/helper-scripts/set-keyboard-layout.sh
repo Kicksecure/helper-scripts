@@ -146,10 +146,10 @@ check_keyboard_layouts() {
 
   ## Ensure the specified keyboard layout(s) are valid.
   if ! is_layout_data_valid "${layout_str}" \
-    localectl list-x11-keymap-layouts ; then
+    localectl --no-pager list-x11-keymap-layouts ; then
     printf '%s\n' "$0: ERROR: Specified keyboard layout(s) are not all valid!" >&2
     if [ "${skl_interactive}" = 'false' ]; then
-      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-layouts' to get a list of valid layouts."
+      printf '%s\n' "$0: INFO: Run 'localectl --no-pager list-x11-keymap-layouts' to get a list of valid layouts."
     fi
     return 1
   fi
