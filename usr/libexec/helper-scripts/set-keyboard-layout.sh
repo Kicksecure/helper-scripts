@@ -19,6 +19,10 @@ command -v mkdir >/dev/null
 command -v overwrite >/dev/null
 command -v stcat >/dev/null
 command -v timeout >/dev/null
+command -v ischroot >/dev/null
+command -v jq >/dev/null
+command -v loginctl >/dev/null
+command -v /usr/libexec/helper-scripts/query-sock-pid >/dev/null
 
 timeout_command=("timeout" "--kill-after" "5" "5")
 
