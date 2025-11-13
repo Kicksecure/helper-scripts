@@ -516,7 +516,7 @@ dracut_run() {
   fi
   printf '%s\n' "$0: INFO: Rebuilding all dracut initramfs images."
   printf '%s\n' "$0: EXECUTING: 'dracut --regenerate-all --force'"
-  if dracut --regenerate-all --force ; then
+  if dracut --regenerate-all --force &>/dev/null; then
     printf '%s\n' "$0: INFO: Rebuilding all initramfs images was successful."
   else
     printf '%s\n' "$0: ERROR: Rebuilding all initramfs images was failed! Your system might be unbootable! This issue is very most likely not caused by $0. Please manually run 'sudo dracut --regenerate-all --force' to see this error for yourself." >&2
