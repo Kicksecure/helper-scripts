@@ -75,7 +75,7 @@ is_layout_data_valid() {
 
   ## Test run of 'localectl' to check if it is functional.
   if ! localectl >/dev/null; then
-    printf '%s\n' "$0: INFO: Failed to run 'localectl'. Is dbus running?"
+    printf '%s\n' "$0: INFO: Minor issue. Failed to run 'localectl'. Is dbus running?"
     localectl_available=false
     return 0
   fi
