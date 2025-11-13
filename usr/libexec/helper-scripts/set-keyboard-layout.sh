@@ -7,8 +7,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   set -o errexit
   set -o nounset
   set -o errtrace
-  ## TODO: Why not?
-  #set -o pipefail
+  set -o pipefail
 fi
 
 command -v safe-rm >/dev/null
@@ -35,7 +34,7 @@ skl_default_keyboard_var_names=(
 )
 
 error_handler() {
-  exit_code="${?}"
+  local exit_code="${?}"
   printf '%s\n' "\
 BASH_COMMAND: ${BASH_COMMAND}
 exit_code: ${exit_code}"
@@ -131,7 +130,7 @@ check_keyboard_layouts() {
     localectl list-x11-keymap-layouts ; then
     printf '%s\n' "$0: ERROR: Specified keyboard layout(s) are not all valid!" >&2
     if [ "${skl_interactive}" = 'false' ]; then
-      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-layouts' to get a list of valid layouts." >&2
+      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-layouts' to get a list of valid layouts."
     fi
     return 1
   fi
@@ -174,7 +173,7 @@ check_keyboard_layout_variants() {
       localectl list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
       printf '%s\n' "$0: ERROR: Specified keyboard layout variant '${kb_variant_list[kb_idx]}' for layout '${kb_layout_list[kb_idx]}' is not valid!" >&2
       if [ "${skl_interactive}" = 'false' ]; then
-        printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout." >&2
+        printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout."
       fi
       return 1
     fi
@@ -201,7 +200,7 @@ check_keyboard_layout_options() {
     localectl list-x11-keymap-options ; then
     printf '%s\n' "$0: ERROR: Specified keyboard layout option(s) are not valid!" >&2
     if [ "${skl_interactive}" = 'false' ]; then
-      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-options' to get a list of valid layout options." >&2
+      printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-options' to get a list of valid layout options."
     fi
     return 1
   fi
@@ -282,43 +281,43 @@ set_labwc_keymap() {
     calc_replace_args labwc_existing_config
 
   ## Parse command line arguments
-  do_persist='false'
+  do_persist='true'
   no_reload='false'
   labwc_config_path="${HOME}/.config/labwc/environment"
   labwc_config_bak_path=''
   while [ -n "${1:-}" ]; do
     case "${1:-}" in
-    '--persist')
-      do_persist='true'
-      shift
-      ;;
-    '--help'|'-h')
-      print_usage
-      return 0
-      ;;
-    '--no-reload')
-      no_reload='true'
-      shift
-      ;;
-    '--config')
-      if [ -z "${2:-}" ]; then
-        printf '%s\n' "$0: ERROR: No config path specified!" >&2
-        return 1
-      fi
-      labwc_config_path="${2:-}"
-      shift 2
-      ;;
-    '--interactive')
-      skl_interactive='true'
-      shift
-      ;;
-    '--')
-      shift
-      break
-      ;;
-    *)
-      break
-      ;;
+      '--no-persist')
+        do_persist='false'
+        shift
+        ;;
+      '--help'|'-h')
+        print_usage
+        return 0
+        ;;
+      '--no-reload')
+        no_reload='true'
+        shift
+        ;;
+      '--config='*)
+        labwc_config_path="$(cut -d'=' -f2- <<< "$1")"
+        if [ -z "$labwc_config_path" ]; then
+          printf '%s\n' "$0: ERROR: No config path specified!" >&2
+          return 1
+        fi
+        shift
+        ;;
+      '--interactive')
+        skl_interactive='true'
+        shift
+        ;;
+      '--')
+        shift
+        break
+        ;;
+      *)
+        break
+        ;;
     esac
   done
   args=( "$@" )
@@ -356,7 +355,7 @@ set_labwc_keymap() {
   fi
 
   if test -d "${labwc_config_path}"; then
-    printf '%s\n' "$0: ERROR: --config '${labwc_config_path}' is a folder but should be a file!" >&2
+    printf '%s\n' "$0: ERROR: --config='${labwc_config_path}' is a folder but should be a file!" >&2
     return 1
   fi
 
@@ -421,13 +420,13 @@ set_labwc_keymap() {
       else
         ## 'labwc' is running and available in PATH.
         if labwc --reconfigure; then
-          printf '%s\n' "$0: INFO: 'labwc --reconfigure' OK." >&2
+          printf '%s\n' "$0: INFO: 'labwc --reconfigure' OK."
         else
-          printf '%s\n' "$0: WARNING: 'labwc --reconfigure' reconfiguration failed!" >&2
+          printf '%s\n' "$0: WARNING: 'labwc --reconfigure' reconfiguration failed!"
         fi
       fi
     else
-      printf '%s\n' "$0: INFO: 'labwc' not running, no need to execute 'labwc --reconfigure', OK." >&2
+      printf '%s\n' "$0: INFO: 'labwc' not running, no need to execute 'labwc --reconfigure', OK."
     fi
   fi
 
@@ -435,17 +434,17 @@ set_labwc_keymap() {
   ## configuration back (or just delete the new config file if there wasn't an
   ## old config file).
   if [ -n "${labwc_config_bak_path}" ]; then
-    printf '%s\n' "$0: INFO: ephemeral '${labwc_config_path}' contents:" >&2
+    printf '%s\n' "$0: INFO: ephemeral '${labwc_config_path}' contents:"
     stcat "${labwc_config_path}" >&2
     if ! mv -- "${labwc_config_bak_path}" "${labwc_config_path}" ; then
       printf '%s\n' "$0: ERROR: Cannot move backup 'labwc' environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!" >&2
       return 1
     fi
   elif [ "${do_persist}" = 'true' ]; then
-    printf '%s\n' "$0: INFO: new '${labwc_config_path}' contents:" >&2
+    printf '%s\n' "$0: INFO: new '${labwc_config_path}' contents:"
     stcat "${labwc_config_path}" >&2
   elif [ "${do_persist}" = 'false' ]; then
-    printf '%s\n' "$0: INFO: Non-persistent configuration done. To persist, use option: --persist" >&2
+    printf '%s\n' "$0: INFO: Non-persistent configuration done. To persist, omit option: --no-persist"
     if ! safe-rm -- "${labwc_config_path}" ; then
       printf '%s\n' "$0: ERROR: Cannot remove temporary 'labwc' environment config '${labwc_config_path}'!" >&2
       return 1
@@ -453,7 +452,7 @@ set_labwc_keymap() {
   fi
 
   ## Can be for 'labwc' or 'greetd'.
-  printf '%s\n' "$0: INFO: Configuration success." >&2
+  printf '%s\n' "$0: INFO: Configuration success."
 }
 
 dpkg_reconfigure_function() {
@@ -472,7 +471,7 @@ dpkg_reconfigure_function() {
       sed "\|^cat: '/sys/bus/usb/devices/\*:\*/bInterface|d"
   )"
   if [ "${dpkg_reconfigure_output_filtered}" = "" ]; then
-    printf '%s\n' "$0: INFO: OK." >&2
+    printf '%s\n' "$0: INFO: OK."
   else
     printf '%s\n' "${dpkg_reconfigure_output_filtered}" >&2
   fi
@@ -574,7 +573,7 @@ set_console_keymap() {
     return 1
   fi
 
-  printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:" >&2
+  printf '%s\n' "$0: INFO: new '${kb_conf_path}' contents:"
   stcat "${kb_conf_path}" >&2
 
   dpkg_reconfigure_command=( "dpkg-reconfigure" "--frontend=noninteractive" "keyboard-configuration" )
@@ -587,15 +586,15 @@ set_console_keymap() {
   if "${timeout_command[@]}" systemctl --no-block --no-pager status keyboard-setup.service &>/dev/null; then
     printf '%s\n' "$0: EXECUTING: 'systemctl --no-block --no-pager restart keyboard-setup.service'" >&2
     if "${timeout_command[@]}" systemctl --no-block --no-pager restart keyboard-setup.service; then
-      printf '%s\n' "$0: INFO: Restart of systemd unit 'keyboard-setup.service' success." >&2
+      printf '%s\n' "$0: INFO: Restart of systemd unit 'keyboard-setup.service' success."
     else
-      printf '%s\n' "$0: WARNING: Restart of systemd unit 'keyboard-setup.service' failed. Reboot may be required to change keyboard layout." >&2
+      printf '%s\n' "$0: WARNING: Restart of systemd unit 'keyboard-setup.service' failed. Reboot may be required to change keyboard layout."
     fi
   else
-    printf '%s\n' "$0: WARNING: Systemd unit 'keyboard-setup.service' is not running or does not exist. Reboot may be required to change keyboard layout." >&2
+    printf '%s\n' "$0: WARNING: Systemd unit 'keyboard-setup.service' is not running or does not exist. Reboot may be required to change keyboard layout."
   fi
 
-  printf '%s\n' "$0: INFO: system console configuration success." >&2
+  printf '%s\n' "$0: INFO: system console configuration success."
 }
 
 ## NOTE: This function assumes it is run as root.
@@ -619,7 +618,7 @@ kb_reload_root() {
   loginctl_users="$("${timeout_command[@]}" loginctl -j list-users | jq -r '.[] | .user')" || true
   readarray -t user_list <<< "$loginctl_users"
 
-  true "user_list: $user_list"
+  true "user_list: ${user_list[*]}"
 
   if ((${#user_list[@]} == 0)); then
     printf '%s\n' "$0: WARNING: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change keyboard layout."
@@ -738,7 +737,7 @@ set_system_keymap() {
     return 1
   fi
 
-  printf '%s\n' "$0: INFO: Console keymap configuration..." >&2
+  printf '%s\n' "$0: INFO: Console keymap configuration..."
 
   set_console_keymap \
     "${args[@]}" \
@@ -747,31 +746,30 @@ set_system_keymap() {
 
   ## Set the specified keyboard layout for labwc both system-wide and for the
   ## greeter.
-  printf '%s\n' "$0: INFO: 'labwc' configuration..." >&2
+  printf '%s\n' "$0: INFO: 'labwc' configuration..."
 
   set_labwc_keymap \
-    --persist \
     --no-reload \
-    --config \
-    "${labwc_system_wide_config_path}" \
+    --config="${labwc_system_wide_config_path}" \
     "${args[@]}" \
     || return 1
   printf '%s\n' "" >&2
 
-  printf '%s\n' "$0: INFO: 'greetd' configuration..." >&2
+  printf '%s\n' "$0: INFO: 'greetd' configuration..."
   set_labwc_keymap \
-    --persist \
     --no-reload \
-    --config \
-    "${labwc_greeter_config_path}" \
+    --config="${labwc_greeter_config_path}" \
     "${args[@]}" \
     || return 1
   printf '%s\n' "" >&2
 
-  printf '%s\n' "$0: INFO: Reloading keyboard layout..." >&2
+  printf '%s\n' "$0: INFO: Reloading keyboard layout..."
   kb_reload_root
 
-  printf '%s\n' "$0: INFO: Keyboard layout change successful." >&2
+  printf '%s\n' "$0: INFO: Rebuilding all initramfs images..."
+  dracut --regenerate-all --force
+
+  printf '%s\n' "$0: INFO: Keyboard layout change successful."
 }
 
 interactive_ui_help_layout() {
@@ -845,11 +843,25 @@ interactive_ui() {
   skl_interactive='true'
   kb_set_func="${1:-}"
   if [ -z "${kb_set_func}" ]; then
-    printf '%s\n' "$0: ERROR: No keyboard layout set function provided!"
+    printf '%s\n' "$0: ERROR: No keyboard layout set function provided!" >&2
     return 1
   fi
   shift
-  kb_set_opts=( "$@" )
+  kb_set_opts=()
+  while [ -n "${1:-}" ]; do
+    case "$1" in
+      --)
+        break
+        ;;
+      -*)
+        kb_set_opts+=( "$1" )
+        shift
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
 
   printf '%s\n' "\
 Type 'list' at any prompt to see a list of valid options.
@@ -886,7 +898,7 @@ Type 'exit' to quit without changing keyboard layout settings.
       continue
     fi
     if [ "${layout_str}" = 'exit' ]; then
-      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout." >&2
+      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout."
       return 0
     fi
     if check_keyboard_layouts "${layout_str}"; then
@@ -931,7 +943,7 @@ Type 'exit' to quit without changing keyboard layout settings.
       continue
     fi
     if [ "${variant_str}" = 'exit' ]; then
-      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout." >&2
+      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout."
       return 0
     fi
     if check_keyboard_layout_variants "${layout_str}" "${variant_str}"; then
@@ -961,7 +973,7 @@ Type 'exit' to quit without changing keyboard layout settings.
       continue
     fi
     if [ "${option_str}" = 'exit' ]; then
-      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout." >&2
+      printf '%s\n' "$0: INFO: Exiting without setting keyboard layout."
       return 0
     fi
     if check_keyboard_layout_options "${option_str}"; then
@@ -970,7 +982,6 @@ Type 'exit' to quit without changing keyboard layout settings.
   done
 
   "${kb_set_func}" \
-    --interactive \
     "${kb_set_opts[@]}" \
     "${layout_str}" \
     "${variant_str}" \

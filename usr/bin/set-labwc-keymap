@@ -16,12 +16,12 @@ trap "error_handler" ERR
 
 print_usage() {
   printf '%s\n' "$0: Set keyboard layout for labwc" >&2
-  printf '%s\n' "Usage: $0 [--help] [--persist] [--no-reload] [--config <path>] [--interactive] -- [layout [variant [option]]]" >&2
+  printf '%s\n' "Usage: $0 [--help] [--no-persist] [--no-reload] [--config=<path>] [--interactive] -- [layout [variant [option]]]" >&2
   printf '%s\n' 'Options:' >&2
   printf '%s\n' '--help           Print this help message.' >&2
-  printf '%s\n' '--persist        Make layout change persistent.' >&2
+  printf '%s\n' '--no-persist     Make layout change non-persistent.' >&2
   printf '%s\n' '--no-reload      Skip reloading labwc config. Only useful with --persist.' >&2
-  printf '%s\n' '--config <path>  Specify an alternative config file path.' >&2
+  printf '%s\n' '--config=<path>  Specify an alternative config file path.' >&2
   printf '%s\n' '--interactive    Show an interactive user interface.' >&2
   printf '\n' >&2
   printf '%s\n' 'Examples:' >&2
@@ -41,7 +41,7 @@ for opt in "$@"; do
     break
   fi
   if [ "${opt}" = '--interactive' ]; then
-    interactive_ui 'set_labwc_keymap' --persist
+    interactive_ui 'set_labwc_keymap' "$@"
     exit 0
   fi
 done

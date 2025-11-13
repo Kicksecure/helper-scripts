@@ -38,7 +38,7 @@ for opt in "$@"; do
     break
   fi
   if [ "${opt}" = '--interactive' ]; then
-    interactive_ui 'set_system_keymap'
+    interactive_ui 'set_system_keymap' "$@"
     exit 0
   fi
 done
