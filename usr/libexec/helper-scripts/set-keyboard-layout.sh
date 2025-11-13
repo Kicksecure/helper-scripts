@@ -520,6 +520,23 @@ dracut_run() {
 
 ## Sets the XKB layout(s), variant(s), and option(s) for the console. Due to
 ## limitations in Linux, this is a system-wide setting only.
+##
+## Quote 'man setupcon':
+##   The keyboard configuration is specified in ~/.keyboard or /etc/default/keyboard.
+##
+## However, this does not help much because even if '~/.keyboard' still 'setupcon'
+## cannot be run without root rights.
+## It may be possible to set 'setupcon' (or 'loadkeys'?) SUID, however this is unwanted
+## for security reasons.
+## https://www.kicksecure.com/wiki/SUID_Disabler_and_Permission_Hardener
+## A privleap rule could be configured to allow non-root executing 'setupcon' but 'setupcon'
+## applies globally, not only per-user. Therefore the virtual console keyboard layout for
+## other users might also be changed.
+## Configuration of the '~/.keyboard' file may or may not be appliable during the 'login' program.
+## It has therefore been decided, not to implement non-root virtual console keyboard layout changes.
+##
+## https://unix.stackexchange.com/questions/85374/loadkeys-gives-permission-denied-for-normal-user
+##
 ## NOTE: Changes will take effect after a reboot. This is because CLI keyboard
 ## layout changes would need to be applied with 'setupcon', but 'setupcon' may not
 ## be safe to use to apply CLI keyboard layout changes while a graphical
