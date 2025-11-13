@@ -493,6 +493,9 @@ dpkg_reconfigure_function() {
     printf '%s\n' "${dpkg_reconfigure_output_filtered}" >&2
   fi
   exit_code="${dpkg_reconfigure_exit_code}"
+  ## Always 'return 0', because even if the dpkg-configure command failed, this is considered an
+  ## insufficient reason to stop this script at this point.
+  return 0
 }
 
 dracut_run() {
