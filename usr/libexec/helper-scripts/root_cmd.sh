@@ -53,6 +53,9 @@ get_su_cmd(){
     has su && sucmd=su && break
     [ -z "${sucmd:-}" ] && sucmd=''
     test -z "${sucmd}" && {
+      if pkg_installed user-sysmaint-split; then
+        die 1 "${underline}get_su_cmd:${nounderline} Failed to find program to run commands with administrative ('root') privileges. Package 'user-sysmaint-split' detected. You need to boot into sysmaint session."
+      fi
       die 1 "${underline}get_su_cmd:${nounderline} Failed to find program to run commands with administrative ('root') privileges. This program requires either one of the following programs to be installed:
 - sudo (recommended)
 - doas
