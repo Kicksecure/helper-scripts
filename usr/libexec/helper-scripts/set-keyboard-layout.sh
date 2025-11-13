@@ -478,6 +478,23 @@ dpkg_reconfigure_function() {
   return "${dpkg_reconfigure_exit_code}"
 }
 
+dracut_run() {
+  if ischroot --default-false; then
+    printf '%s\n' "$0: INFO: Skipping command 'dracut --regenerate-all --force' inside chroot, ok."
+    return 0
+  fi
+  if ! command -v dracut >/dev/null; then
+    printf '%s\n' "$0: WARNING: Minor issue. 'dracut' not installed. Keyboard layout in initramfs unchanged."
+   return 0
+  fi
+  printf '%s\n' "$0: INFO: Rebuilding all initramfs images using command 'dracut --regenerate-all --force'..."
+  if dracut --regenerate-all --force ; then
+    printf '%s\n' "$0: INFO: Rebuilding all initramfs images was successful."
+  else
+    printf '%s\n' "$0: ERROR: Rebuilding all initramfs images was failed! Your system might be unbootable! This issue is very most likely not caused by $0. Please manually run 'sudo dracut --regenerate-all --force' to see this error for yourself." >&2
+  fi
+}
+
 ## Sets the XKB layout(s), variant(s), and option(s) for the console. Due to
 ## limitations in Linux, this is a system-wide setting only.
 ## NOTE: Changes will take effect after a reboot. This is because CLI keyboard
@@ -766,8 +783,7 @@ set_system_keymap() {
   printf '%s\n' "$0: INFO: Reloading keyboard layout..."
   kb_reload_root
 
-  printf '%s\n' "$0: INFO: Rebuilding all initramfs images using command 'dracut --regenerate-all --force'..."
-  dracut --regenerate-all --force
+  dracut_run
 
   printf '%s\n' "$0: INFO: Keyboard layout change successful."
 }
