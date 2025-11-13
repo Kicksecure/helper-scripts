@@ -49,7 +49,7 @@ exit_handler() {
 
 localctl_availability_test() {
   ## Test run of 'localectl'.
-  is_layout_data_valid us localectl list-x11-keymap-layouts
+  is_layout_data_valid us localectl --no-pager list-x11-keymap-layouts
   if [ "$localectl_available" = "false" ]; then
     return 1
   fi
