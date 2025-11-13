@@ -485,6 +485,7 @@ dpkg_reconfigure_function() {
 
 dracut_run() {
   if ischroot --default-false; then
+    ## Inside chroot such as during image builds it may be best to leave running dracut to the build tool.
     printf '%s\n' "$0: INFO: Skipping command 'dracut --regenerate-all --force' inside chroot, ok."
     return 0
   fi
