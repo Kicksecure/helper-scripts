@@ -529,10 +529,10 @@ dracut_run() {
 ## It may be possible to set 'setupcon' (or 'loadkeys'?) SUID, however this is unwanted
 ## for security reasons.
 ## https://www.kicksecure.com/wiki/SUID_Disabler_and_Permission_Hardener
-## A privleap rule could be configured to allow non-root executing 'setupcon' but 'setupcon'
+## A 'privleap' rule could be configured to allow non-root executing 'setupcon' but 'setupcon'
 ## applies globally, not only per-user. Therefore the virtual console keyboard layout for
 ## other users might also be changed.
-## Configuration of the '~/.keyboard' file may or may not be appliable during the 'login' program.
+## Configuration of the '~/.keyboard' file may or may not be applicable during the 'login' program.
 ## It has therefore been decided, not to implement non-root virtual console keyboard layout changes.
 ##
 ## https://unix.stackexchange.com/questions/85374/loadkeys-gives-permission-denied-for-normal-user
