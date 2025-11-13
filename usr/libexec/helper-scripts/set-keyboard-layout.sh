@@ -46,6 +46,13 @@ exit_handler() {
   exit "$exit_code"
 }
 
+localctl_availability_test() {
+  ## Test run of 'localectl'.
+  is_layout_data_valid us localectl list-x11-keymap-layouts
+  true "localectl_available: $localectl_available"
+  return "${localectl_available}"
+}
+
 ## Checks to see if all items in "check_str" are present in the output of a
 ## command that lists valid items.
 is_layout_data_valid() {
@@ -66,14 +73,14 @@ is_layout_data_valid() {
   fi
 
   ## Test run of 'localectl' to check if it is functional.
-  if localectl >/dev/null; then
-    ## Yes, 'localectl' is functional.
-    localectl_available=true
-  else
+  if ! localectl >/dev/null; then
     printf '%s\n' "$0: INFO: Failed to run 'localectl'. Is dbus running?"
     localectl_available=false
     return 0
   fi
+
+  ## Yes, 'localectl' is functional.
+  localectl_available=true
 
   check_str="${1:-}"
   shift
@@ -81,7 +88,9 @@ is_layout_data_valid() {
   if [ "${#valid_list_cmd[@]}" = '0' ] || [ -z "${valid_list_cmd[0]}" ]; then\
     return 1
   fi
-  if [ -z "${check_str}" ]; then return 1; fi
+  if [ -z "${check_str}" ]; then
+    return 1
+  fi
 
   check_lines=$(printf '%s\n' "${check_str}" | tr ',' '\n')
   readarray -t check_list <<< "${check_lines}"
@@ -861,10 +870,6 @@ interactive_ui() {
   local kb_set_func kb_set_opts layout_str variant_str option_str \
     variant_key_str
 
-  ## Test run.
-  ## sets: localectl_available
-  is_layout_data_valid us localectl list-x11-keymap-layouts
-
   skl_interactive='true'
   kb_set_func="${1:-}"
   if [ -z "${kb_set_func}" ]; then
@@ -911,7 +916,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## contain spaces or capital letters.
     layout_str="$(tr -d ' ' <<< "${layout_str,,}")"
     if [ "${layout_str}" = 'list' ]; then
-      if [ "${localectl_available}" = "false" ]; then
+      if ! localctl_availability_test; then
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
@@ -942,7 +947,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## capitals, so we can't normalize everything to lowercase.
     variant_str="$(tr -d ' ' <<< "${variant_str}")"
     if [ "${variant_str,,}" = 'list' ]; then
-      if [ "${localectl_available}" = "false" ]; then
+      if ! localctl_availability_test; then
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
@@ -986,7 +991,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## because some options like "eurosign:E" contain capital letters.
     option_str="$(tr -d ' ' <<< "${option_str}")"
     if [ "${option_str,,}" = 'list' ]; then
-      if [ "${localectl_available}" = "false" ]; then
+      if ! localctl_availability_test; then
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
