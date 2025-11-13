@@ -521,9 +521,9 @@ dracut_run() {
 ## Sets the XKB layout(s), variant(s), and option(s) for the console. Due to
 ## limitations in Linux, this is a system-wide setting only.
 ## NOTE: Changes will take effect after a reboot. This is because CLI keyboard
-## layout changes would need to be applied with setupcon, but setupcon may not
+## layout changes would need to be applied with 'setupcon', but 'setupcon' may not
 ## be safe to use to apply CLI keyboard layout changes while a graphical
-## session is active. Quoting the manpage for setupcon:
+## session is active. Quoting the manpage for 'setupcon':
 ##
 ##   --force
 ##     Do not check whether we are on the console. Notice that you can be
@@ -532,9 +532,6 @@ dracut_run() {
 set_console_keymap() {
   local args var_idx kb_conf_file_string kb_conf_path kb_conf_dir \
     calc_replace_args dpkg_reconfigure_command
-
-  ## TODO: Add support for running as non-root by supporting file: '~/.keyboard'
-  ##       (See 'man setupcon'.)
 
   ## Parse command line arguments
   kb_conf_dir='/etc/default'
