@@ -41,6 +41,11 @@ exit_code: ${exit_code}"
   exit "${exit_code}"
 }
 
+exit_handler() {
+  [[ -v "exit_code" ]] || exit_code="0"
+  exit "$exit_code"
+}
+
 ## Checks to see if all items in "check_str" are present in the output of a
 ## command that lists valid items.
 is_layout_data_valid() {
@@ -475,7 +480,7 @@ dpkg_reconfigure_function() {
   else
     printf '%s\n' "${dpkg_reconfigure_output_filtered}" >&2
   fi
-  return "${dpkg_reconfigure_exit_code}"
+  exit_code="${dpkg_reconfigure_exit_code}"
 }
 
 dracut_run() {
@@ -485,13 +490,14 @@ dracut_run() {
   fi
   if ! command -v dracut >/dev/null; then
     printf '%s\n' "$0: WARNING: Minor issue. 'dracut' not installed. Keyboard layout in initramfs unchanged."
-   return 0
+    return 0
   fi
   printf '%s\n' "$0: INFO: Rebuilding all initramfs images using command 'dracut --regenerate-all --force'..."
   if dracut --regenerate-all --force ; then
     printf '%s\n' "$0: INFO: Rebuilding all initramfs images was successful."
   else
     printf '%s\n' "$0: ERROR: Rebuilding all initramfs images was failed! Your system might be unbootable! This issue is very most likely not caused by $0. Please manually run 'sudo dracut --regenerate-all --force' to see this error for yourself." >&2
+    exit_code=1
   fi
 }
 
