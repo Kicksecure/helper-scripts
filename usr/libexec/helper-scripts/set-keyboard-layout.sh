@@ -655,7 +655,8 @@ set_console_keymap() {
 kb_reload_root() {
   local loginctl_users user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
 
-  if [ "$localectl_available" = "false" ]; then
+  if ! localctl_availability_test; then
+    ## If 'localectl' is unavailable, very most likely 'loginctl' (used below) will also be unavailable.
     printf '%s\n' "$0: WARNING: Minor issue. 'localectl' unavailable. Reboot may be required to change keyboard layout."
     return 0
   fi
