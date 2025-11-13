@@ -347,7 +347,7 @@ autologinchange() {
    elif [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
       if [ "${sysmaint_autologin}" = 'yes' ]; then
          printf '%s\n' "Account 'sysmaint' is currently configured to automatically log in." >&2
-         read -r -p "Would you like to disable autologin for sysmaint mode? [Y/N] " -- disable_yn
+         read -r -p "Would you like to disable autologin for sysmaint session? [Y/N] " -- disable_yn
 
          if [ "${disable_yn,,}" = 'y' ]; then
             disable_sysmaint_autologin
@@ -359,7 +359,7 @@ autologinchange() {
          exit 0
       else
          printf '%s\n' "Account 'sysmaint' is currently NOT configured to automatically log in." >&2
-         read -r -p "Would you like to enable autologin for sysmaint mode? [Y/N] " -- enable_yn
+         read -r -p "Would you like to enable autologin for sysmaint session? [Y/N] " -- enable_yn
 
          if [ "${enable_yn,,}" = 'y' ]; then
             ## Disable sysmaint autologin first, then re-enable it, to make
