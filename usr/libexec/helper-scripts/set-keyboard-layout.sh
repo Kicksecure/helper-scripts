@@ -79,8 +79,6 @@ is_layout_data_valid() {
     return 0
   fi
 
-  ## Yes, 'localectl' is functional.
-  localectl_available=true
 
   check_str="${1:-}"
   shift
@@ -111,6 +109,9 @@ is_layout_data_valid() {
       return 1
     fi
   done
+
+  ## Yes, 'localectl' is functional.
+  localectl_available=true
 
   return 0
 }
