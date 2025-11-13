@@ -510,7 +510,8 @@ dracut_run() {
     printf '%s\n' "$0: WARNING: Minor issue. 'dracut' not available in PATH or not installed. Keyboard layout in initramfs unchanged."
     return 0
   fi
-  printf '%s\n' "$0: INFO: Rebuilding all initramfs images using command 'dracut --regenerate-all --force'..."
+  printf '%s\n' "$0: INFO: Rebuilding all dracut initramfs images."
+  printf '%s\n' "$0: EXECUTING: 'dracut --regenerate-all --force'"
   if dracut --regenerate-all --force ; then
     printf '%s\n' "$0: INFO: Rebuilding all initramfs images was successful."
   else
