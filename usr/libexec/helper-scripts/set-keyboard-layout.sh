@@ -78,12 +78,11 @@ is_layout_data_valid() {
   fi
 
   ## Test run of 'localectl' to check if it is functional.
-  if ! localectl >/dev/null; then
+  if ! "${timeout_command[@]}" localectl >/dev/null; then
     printf '%s\n' "$0: INFO: Minor issue. Failed to run 'localectl'. Is dbus running?"
     localectl_available=false
     return 0
   fi
-
 
   check_str="${1:-}"
   shift
