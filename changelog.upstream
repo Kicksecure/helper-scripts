@@ -1,3 +1,22 @@
+commit 85ac2550bba7652179c72dda794fc0c7f777bbf8
+Merge: b0de75f 47cfaec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 13 01:26:42 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 47cfaecf39424413da2750f191f7ef95d85027ca
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Nov 12 23:38:02 2025 -0600
+
+    Keyboard layout scripts; use stdout for info, regen initramfs images during layout change, make non-standard options work in interactive mode, enable pipefail, change --persist to --no-persist
+
+commit b0de75fd333f97a575c6302ac36ec95e62f56562
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 12 10:12:21 2025 +0000
+
+    bumped changelog version
+
 commit b9e473ccf8878729370c5f76c55f8633fdc07cad
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Nov 12 02:57:16 2025 -0500
