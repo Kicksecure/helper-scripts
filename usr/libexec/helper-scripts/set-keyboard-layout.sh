@@ -38,6 +38,25 @@ skl_default_keyboard_var_names=(
   'XKBOPTIONS'
 )
 
+grub_kb_layout_dir='/boot/grub/kb_layouts'
+
+## START Detect if localectl is usable.
+## localectl cannot be run within a chroot to get lists of valid values.
+## Assume data is correct if it passed the previous sanity checks.
+if ischroot --default-false; then
+  localectl_available='false'
+
+## Test run of 'localectl' to check if it is functional.
+elif ! "${timeout_command[@]}" localectl >/dev/null; then
+  printf '%s\n' "$0: INFO: Minor issue. Failed to run 'localectl'. Is dbus running?"
+  localectl_available='false'
+
+## Yes, 'localectl' is functional.
+else
+  localectl_available='true'
+fi
+## END Detect if localectl is usable.
+
 error_handler() {
   local exit_code="${?}"
   printf '%s\n' "\
@@ -51,38 +70,11 @@ exit_handler() {
   exit "$exit_code"
 }
 
-localctl_availability_test() {
-  ## Test run of 'localectl'.
-  is_layout_data_valid us localectl --no-pager list-x11-keymap-layouts
-  if [ "$localectl_available" = "false" ]; then
-    return 1
-  fi
-}
-
 ## Checks to see if all items in "check_str" are present in the output of a
 ## command that lists valid items.
 is_layout_data_valid() {
   local valid_list_cmd check_str check_lines check_list check_item \
     valid_output valid_item_list valid_item is_item_valid
-
-  if [ "${localectl_available-}" = "false" ]; then
-    return 0
-  fi
-  [[ -v localectl_available ]] || localectl_available="false"
-
-  ## localectl cannot be run within a chroot to get lists of valid values.
-  ## Assume data is correct if it passed the previous sanity checks.
-  if ischroot --default-false; then
-    localectl_available=false
-    return 0
-  fi
-
-  ## Test run of 'localectl' to check if it is functional.
-  if ! "${timeout_command[@]}" localectl >/dev/null; then
-    printf '%s\n' "$0: INFO: Minor issue. Failed to run 'localectl'. Is dbus running?"
-    localectl_available=false
-    return 0
-  fi
 
   check_str="${1:-}"
   shift
@@ -115,9 +107,6 @@ is_layout_data_valid() {
       return 1
     fi
   done
-
-  ## Yes, 'localectl' is functional.
-  localectl_available=true
 
   return 0
 }
@@ -309,7 +298,7 @@ set_labwc_keymap() {
   labwc_config_path="${HOME}/.config/labwc/environment"
   labwc_config_bak_path=''
   while [ -n "${1:-}" ]; do
-    case "${1:-}" in
+    case "$1" in
       '--no-persist')
         do_persist='false'
         shift
@@ -560,7 +549,7 @@ set_console_keymap() {
   kb_conf_dir='/etc/default'
   kb_conf_path="${kb_conf_dir}/keyboard"
   while [ -n "${1:-}" ]; do
-    case "${1:-}" in
+    case "$1" in
       '--help')
         print_usage
         return 0
@@ -661,7 +650,7 @@ set_console_keymap() {
 kb_reload_root() {
   local loginctl_users user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
 
-  if ! localctl_availability_test; then
+  if ! localectl_availability_test; then
     ## If 'localectl' is unavailable, very most likely 'loginctl' (used below) will also be unavailable.
     printf '%s\n' "$0: WARNING: Minor issue. 'localectl' unavailable. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
     return 0
@@ -748,7 +737,7 @@ set_system_keymap() {
     labwc_greeter_config_dir labwc_greeter_config_path
 
   while [ -n "${1:-}" ]; do
-    case "${1:-}" in
+    case "$1" in
       '--help')
         print_usage
         return 0
@@ -830,6 +819,155 @@ set_system_keymap() {
   dracut_run
 
   printf '%s\n' "$0: INFO: Keyboard layout change successful."
+}
+
+set_grub_keymap() {
+  local args grub_kbdcomp_output update_grub_output name_part_list name_part
+
+  while [ -n "${1:-}" ]; do
+    case "$1" in
+      '--help'|'-h')
+        print_usage
+        return 0
+        ;;
+      '--interactive')
+        skl_interactive='true'
+        shift
+        ;;
+      '--build-all')
+        printf '%s\n' "$0: ERROR: Cannot combine --build-all with any other arguments!" >&2
+        return 1
+        ;;
+      '--')
+        shift
+        break
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+  args=( "$@" )
+
+  ## We must have at least one, but no more than three, arguments specifying the
+  ## keyboard layout(s).
+  if [ "${#args[@]}" = '0' ] || [ -z "${args[0]:-}" ] \
+    || (( ${#args[@]} > 3 )); then
+    ## The print_usage function is provided by the script that sources this
+    ## library.
+    print_usage
+    return 1
+  fi
+
+  ## If we have less than three arguments, populate the `args` array with empty
+  ## strings for the remaining arguments.
+  while (( ${#args[@]} < 3 )); do
+    args+=( '' )
+  done
+
+  ## Interactive mode checks the layouts for us already, no need to do it
+  ## twice.
+  if [ "${skl_interactive}" = 'false' ]; then
+    check_keyboard_layouts "${args[0]}" || return 1
+    if [ -n "${args[1]:-}" ]; then
+      check_keyboard_layout_variants "${args[0]}" "${args[1]}" || return 1
+    fi
+    if [ -n "${args[2]:-}" ]; then
+      check_keyboard_layout_options "${args[2]}" || return 1
+    fi
+  fi
+
+  if ! mkdir --parents -- "${grub_kb_layout_dir}"; then
+    printf '%s\n' "$0: ERROR: Cannot create GRUB keyboard layout dir '${grub_kb_layout_dir}'!" >&2
+    return 1
+  fi
+
+  printf '%s\n' "$0: INFO: Generating GRUB keymap..."
+  if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
+    printf '%s\n' "$0: ERROR: 'grub-kbdcomp' is not available in PATH or not installed." >&2
+    return 1
+  fi
+
+  if ! grub_kbdcomp_output="$(
+    grub-kbdcomp -o "${grub_kb_layout_dir}/user-layout.gkb" "${args[@]}" 2>&1
+  )"; then
+    printf '%s\n' "$0: ERROR: Failed to build GRUB keyboard layout!"
+    printf '%s\n' "$0: Output from command 'grub-kbdcomp -o ${grub_kb_layout_dir}/user-layout.gkb ${args[*]}':" >&2
+    printf '%s\n' "${grub_kbdcomp_output}" >&2
+    return 1
+  fi
+
+  name_part_list=()
+  for name_part in "${args[@]}"; do
+    if [ -n "${name_part:-}" ]; then
+      name_part_list+=( "${name_part}" )
+    fi
+  done
+  (IFS='-'; printf '%s\n' "${name_part_list[*]}" | sponge "${grub_kb_layout_dir}/user-layout.name")
+
+  printf '%s\n' "$0: INFO: Rebuilding GRUB configuration..."
+  if ! update_grub_output="$(update-grub 2>&1)"; then
+    printf '%s\n' "$0: ERROR: Failed to update GRUB configuration!" >&2
+    printf '%s\n' "$0: Output from command 'update-grub':" >&2
+    printf '%s\n' "${update_grub_output}" >&2
+    return 1
+  fi
+  printf '%s\n' "$0: INFO: Configuration success."
+}
+
+build_all_grub_keymaps() {
+  local keymap_list keymap old_keymap_file grub_kbdcomp_output \
+    update_grub_output
+
+  if [ "${localectl_available-}" = "true" ]; then
+    printf '%s\n' "$0: INFO: Getting list of available keyboard layouts from localectl."
+    readarray -t keymap_list < <(localectl --no-pager list-x11-keymap-layouts)
+  else
+    printf '%s\n' "$0: INFO: localectl not available, getting list of keyboard layouts from stdin."
+    readarray -t keymap_list
+  fi
+
+  if ! mkdir --parents -- "${grub_kb_layout_dir}"; then
+    printf '%s\n' "$0: ERROR: Cannot create GRUB keyboard layout dir '${grub_kb_layout_dir}'!" >&2
+    return 1
+  fi
+
+  if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
+    printf '%s\n' "$0: ERROR: 'grub-kbdcomp' is not available in PATH or not installed." >&2
+    return 1
+  fi
+
+  printf '%s\n' "$0: INFO: Building keyboard layouts for GRUB."
+  for old_keymap_file in "${grub_kb_layout_dir}/"* ; do
+    if [ "${old_keymap_file}" = "${grub_kb_layout_dir}/user-layout.gkb" ] \
+      || [ "${old_keymap_file}" = "${grub_kb_layout_dir}/user-layout.name" ]; then
+      continue
+    fi
+    safe-rm -- "${old_keymap_file}"
+  done
+  for keymap in "${keymap_list[@]}"; do
+    if [ "${keymap}" = 'custom' ]; then
+      continue
+    fi
+
+    if ! grub_kbdcomp_output="$(
+      grub-kbdcomp -o "${grub_kb_layout_dir}/${keymap}.gkb" "${keymap}" 2>&1
+    )"; then
+      printf '%s\n' "$0: WARNING: 'grub-kbdcomp' failed to build keyboard layout '${keymap}'!" >&2
+      printf '%s\n' "$0: Output from command 'grub-kbdcomp -o ${grub_kb_layout_dir}/${keymap}.gkb ${keymap}':" >&2
+      printf '%s\n' "${grub_kbdcomp_output}" >&2
+    fi
+  done
+
+  printf '%s\n' "$0: INFO: Rebuilding GRUB configuration..."
+  if ! update_grub_output="$(update-grub 2>&1)"; then
+    printf '%s\n' "$0: ERROR: Failed to update GRUB configuration!" >&2
+    printf '%s\n' "$0: Output from command 'update-grub':" >&2
+    printf '%s\n' "${update_grub_output}" >&2
+    return 1``
+  fi
+
+  printf '%s\n' "$0: INFO: Done building keyboard layouts for GRUB."
 }
 
 interactive_ui_help_layout() {
@@ -942,7 +1080,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## contain spaces or capital letters.
     layout_str="$(tr -d ' ' <<< "${layout_str,,}")"
     if [ "${layout_str}" = 'list' ]; then
-      if ! localctl_availability_test; then
+      if [ "${localectl_available}" = 'false' ]; then
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
@@ -978,7 +1116,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## capitals, so we can't normalize everything to lowercase.
     variant_str="$(tr -d ' ' <<< "${variant_str}")"
     if [ "${variant_str,,}" = 'list' ]; then
-      if ! localctl_availability_test; then
+      if [ "${localectl_available}" = 'false' ]; then
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
@@ -1022,7 +1160,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     ## because some options like "eurosign:E" contain capital letters.
     option_str="$(tr -d ' ' <<< "${option_str}")"
     if [ "${option_str,,}" = 'list' ]; then
-      if ! localctl_availability_test; then
+      if [ "${localectl_available}" = 'false' ]; then
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
