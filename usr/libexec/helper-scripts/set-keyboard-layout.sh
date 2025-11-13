@@ -50,8 +50,9 @@ exit_handler() {
 localctl_availability_test() {
   ## Test run of 'localectl'.
   is_layout_data_valid us localectl list-x11-keymap-layouts
-  true "localectl_available: $localectl_available"
-  return "${localectl_available}"
+  if [ "$localectl_available" = "false" ]; then
+    return 1
+  fi
 }
 
 ## Checks to see if all items in "check_str" are present in the output of a
