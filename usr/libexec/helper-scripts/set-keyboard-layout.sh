@@ -643,10 +643,10 @@ set_console_keymap() {
     if "${timeout_command[@]}" systemctl --no-block --no-pager restart keyboard-setup.service; then
       printf '%s\n' "$0: INFO: Restart of systemd unit 'keyboard-setup.service' success."
     else
-      printf '%s\n' "$0: WARNING: Restart of systemd unit 'keyboard-setup.service' failed. Reboot may be required to change keyboard layout."
+      printf '%s\n' "$0: WARNING: Restart of systemd unit 'keyboard-setup.service' failed. Reboot may be required to change the virtual console keyboard layout."
     fi
   else
-    printf '%s\n' "$0: WARNING: Systemd unit 'keyboard-setup.service' is not running or does not exist. Reboot may be required to change keyboard layout."
+    printf '%s\n' "$0: WARNING: Systemd unit 'keyboard-setup.service' is not running or does not exist. Reboot may be required to change the virtual console keyboard layout."
   fi
 
   printf '%s\n' "$0: INFO: system console configuration success."
@@ -658,7 +658,7 @@ kb_reload_root() {
 
   if ! localctl_availability_test; then
     ## If 'localectl' is unavailable, very most likely 'loginctl' (used below) will also be unavailable.
-    printf '%s\n' "$0: WARNING: Minor issue. 'localectl' unavailable. Reboot may be required to change keyboard layout."
+    printf '%s\n' "$0: WARNING: Minor issue. 'localectl' unavailable. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
     return 0
   fi
 
@@ -677,7 +677,7 @@ kb_reload_root() {
   true "user_list: ${user_list[*]}"
 
   if ((${#user_list[@]} == 0)); then
-    printf '%s\n' "$0: WARNING: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change keyboard layout."
+    printf '%s\n' "$0: WARNING: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
     return 0
   fi
 
@@ -726,10 +726,10 @@ kb_reload_root() {
           if kill -s SIGHUP -- "${wl_pid}"; then
             printf '%s\n' "$0: INFO: Signal SIGHUP ok."
           else
-            printf '%s\n' "$0: WARNING: Minor issue. Sending signal SIGHUP failed. Reboot may be required to change keyboard layout."
+            printf '%s\n' "$0: WARNING: Minor issue. Sending signal SIGHUP failed. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
           fi
         else
-          printf '%s\n' "$0: WARNING: Minor issue. Not sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' because it is not running. Reboot may be required to change keyboard layout."
+          printf '%s\n' "$0: WARNING: Minor issue. Not sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' because it is not running. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
         fi
       fi
     done
