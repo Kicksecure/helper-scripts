@@ -1,3 +1,21 @@
+commit 3e6bec116cb729a5ffa2501ade826fe004c2a38c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 13 07:19:18 2025 -0500
+
+    shellcheck
+
+commit c797886560ce40c9344078258acf4ea0f6915031
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 13 07:15:53 2025 -0500
+
+    detect user-sysmaint-split
+
+commit 4dd048a85d6f495323aad725393a70644155b153
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 13 09:56:35 2025 +0000
+
+    bumped changelog version
+
 commit dc3c725367679ba12b4f6f5a9700add030833d5f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 13 04:54:49 2025 -0500
