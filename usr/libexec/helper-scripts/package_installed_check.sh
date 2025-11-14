@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
@@ -30,13 +30,3 @@ pkg_installed() {
    true "$0: INFO: $package_name is not installed, ok."
    return 1
 }
-
-if [ "${BASH_SOURCE}" = "${0}" ]; then
-  ## Script was executed.
-  ## This is useful to allow non-Bash shell scripts to use this functionality.
-  set -o errexit
-  set -o nounset
-  set -o errtrace
-  set -o pipefail
-  pkg_installed "$1"
-fi
