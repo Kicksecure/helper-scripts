@@ -18,11 +18,13 @@ trap "exit_handler" EXIT
 print_usage() {
   printf '%s\n' "$0: Set keyboard layout for GRUB" >&2
   printf '%s\n' "Usage: $0 [--help] [--interactive] -- [layout [variant [option]]]" >&2
-  printf '%s\n' "   Or: $0 --build-all" >&2
+  printf '%s\n' "   Or: $0 --build-all [--read-stdin]" >&2
   printf '%s\n' 'Options:' >&2
   printf '%s\n' '--help         Print this help message.' >&2
   printf '%s\n' '--interactive  Show an interactive user interface.' >&2
   printf '%s\n' '--build-all    Builds all standard keyboard layouts for GRUB.' >&2
+  printf '%s\n' '--read-stdin   Read the list of keyboard layouts from stdin rather than' >&2
+  printf '%s\n' '               getting it from localectl.' >&2
   printf '\n' >&2
   printf '%s\n' 'Examples:' >&2
   printf '%s\n' '  set-grub-keymap de' >&2
@@ -36,7 +38,11 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 ## Build all GRUB keymaps if requested.
-if [ "$#" = '1' ] && [ "$1" = '--build-all' ]; then
+if [ "${1:-}" = '--build-all' ]; then
+  if [ "${2:-}" = '--read-stdin' ]; then
+    build_all_grub_keymaps --read-stdin
+    exit 0
+  fi
   build_all_grub_keymaps
   exit 0
 fi

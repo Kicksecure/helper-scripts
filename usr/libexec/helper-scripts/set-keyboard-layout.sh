@@ -835,7 +835,11 @@ set_grub_keymap() {
         shift
         ;;
       '--build-all')
-        printf '%s\n' "$0: ERROR: Cannot combine --build-all with any other arguments!" >&2
+        printf '%s\n' "$0: ERROR: Cannot combine --build-all arguments other than --read-stdin!" >&2
+        return 1
+        ;;
+      '--read-stdin')
+        printf '%s\n' "$0: ERROR: --read-stdin is not valid unless the first argument is --build-all!" >&2
         return 1
         ;;
       '--')
@@ -917,14 +921,22 @@ set_grub_keymap() {
 
 build_all_grub_keymaps() {
   local keymap_list keymap old_keymap_file grub_kbdcomp_output \
-    update_grub_output
+    update_grub_output do_read_stdin
 
-  if [ "${localectl_available-}" = "true" ]; then
+  do_read_stdin='false'
+  if [ "${1:-}" = '--read-stdin' ]; then
+    do_read_stdin='true'
+  fi
+
+  if [ "${do_read_stdin}" = 'true' ]; then
+    printf '%s\n' "$0: INFO: Getting list of keyboard layouts from stdin."
+    readarray -t keymap_list
+  elif [ "${localectl_available-}" = "true" ]; then
     printf '%s\n' "$0: INFO: Getting list of available keyboard layouts from localectl."
     readarray -t keymap_list < <(localectl --no-pager list-x11-keymap-layouts)
   else
-    printf '%s\n' "$0: INFO: localectl not available, getting list of keyboard layouts from stdin."
-    readarray -t keymap_list
+    printf '%s\n' "$0: ERROR: Cannot get list of keyboard layouts from localectl or stdin!" >&2
+    return 1
   fi
 
   if ! mkdir --parents -- "${grub_kb_layout_dir}"; then
@@ -939,6 +951,9 @@ build_all_grub_keymaps() {
 
   printf '%s\n' "$0: INFO: Building keyboard layouts for GRUB."
   for old_keymap_file in "${grub_kb_layout_dir}/"* ; do
+    if ! [ -f "${old_keymap_file}" ]; then
+      continue
+    fi
     if [ "${old_keymap_file}" = "${grub_kb_layout_dir}/user-layout.gkb" ] \
       || [ "${old_keymap_file}" = "${grub_kb_layout_dir}/user-layout.name" ]; then
       continue
