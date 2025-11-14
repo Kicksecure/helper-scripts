@@ -5,8 +5,8 @@
 
 set -e
 
-# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/package_installed_check.bsh
-source /usr/libexec/helper-scripts/package_installed_check.bsh
+# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/package_installed_check.sh
+source /usr/libexec/helper-scripts/package_installed_check.sh
 
 if [ "$(id -un)" = 'root' ]; then
   ## Avoid using 'sudo' if already using account 'root'. Reasons:
