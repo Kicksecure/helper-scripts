@@ -550,7 +550,7 @@ set_console_keymap() {
   kb_conf_path="${kb_conf_dir}/keyboard"
   while [ -n "${1:-}" ]; do
     case "$1" in
-      '--help')
+      '--help'|'-h')
         print_usage
         return 0
         ;;
@@ -738,7 +738,7 @@ set_system_keymap() {
 
   while [ -n "${1:-}" ]; do
     case "$1" in
-      '--help')
+      '--help'|'-h')
         print_usage
         return 0
         ;;
@@ -821,8 +821,20 @@ set_system_keymap() {
   printf '%s\n' "$0: INFO: Keyboard layout change successful."
 }
 
+rebuild_grub_config() {
+  local update_grub_output
+
+  printf '%s\n' "$0: INFO: Rebuilding GRUB configuration..."
+  if ! update_grub_output="$(update-grub 2>&1)"; then
+    printf '%s\n' "$0: ERROR: Failed to update GRUB configuration!" >&2
+    printf '%s\n' "$0: Output from command 'update-grub':" >&2
+    printf '%s\n' "${update_grub_output}" >&2
+    return 1
+  fi
+}
+
 set_grub_keymap() {
-  local args grub_kbdcomp_output update_grub_output name_part_list name_part
+  local args grub_kbdcomp_output name_part_list name_part do_update_grub
 
   while [ -n "${1:-}" ]; do
     case "$1" in
@@ -841,6 +853,10 @@ set_grub_keymap() {
       '--read-stdin')
         printf '%s\n' "$0: ERROR: --read-stdin is not valid unless the first argument is --build-all!" >&2
         return 1
+        ;;
+      '--no-update-grub')
+        do_update_grub='false'
+        shift
         ;;
       '--')
         shift
@@ -909,24 +925,40 @@ set_grub_keymap() {
   done
   (IFS='-'; printf '%s\n' "${name_part_list[*]}" | sponge "${grub_kb_layout_dir}/user-layout.name")
 
-  printf '%s\n' "$0: INFO: Rebuilding GRUB configuration..."
-  if ! update_grub_output="$(update-grub 2>&1)"; then
-    printf '%s\n' "$0: ERROR: Failed to update GRUB configuration!" >&2
-    printf '%s\n' "$0: Output from command 'update-grub':" >&2
-    printf '%s\n' "${update_grub_output}" >&2
-    return 1
+  if [ "${do_update_grub}" = 'true' ]; then
+    rebuild_grub_config
   fi
+
   printf '%s\n' "$0: INFO: Configuration success."
 }
 
 build_all_grub_keymaps() {
   local keymap_list keymap old_keymap_file grub_kbdcomp_output \
-    update_grub_output do_read_stdin
+    do_read_stdin do_update_grub
 
   do_read_stdin='false'
-  if [ "${1:-}" = '--read-stdin' ]; then
-    do_read_stdin='true'
-  fi
+  do_update_grub='true'
+
+  while [ -n "${1:-}" ]; do
+    case "$1" in
+      '--help'|'-h')
+        print_usage
+        return 0
+        ;;
+      '--read-stdin')
+        do_read_stdin='true'
+        shift
+        ;;
+      '--no-update-grub')
+        do_update_grub='false'
+        shift
+        ;;
+      *)
+        printf '%s\n' "$0: ERROR: Unrecognized argument '$1'!"
+        return 1
+        ;;
+    esac
+  done
 
   if [ "${do_read_stdin}" = 'true' ]; then
     printf '%s\n' "$0: INFO: Getting list of keyboard layouts from stdin."
@@ -974,12 +1006,8 @@ build_all_grub_keymaps() {
     fi
   done
 
-  printf '%s\n' "$0: INFO: Rebuilding GRUB configuration..."
-  if ! update_grub_output="$(update-grub 2>&1)"; then
-    printf '%s\n' "$0: ERROR: Failed to update GRUB configuration!" >&2
-    printf '%s\n' "$0: Output from command 'update-grub':" >&2
-    printf '%s\n' "${update_grub_output}" >&2
-    return 1``
+  if [ "${do_update_grub}" = 'true' ]; then
+    rebuild_grub_config
   fi
 
   printf '%s\n' "$0: INFO: Done building keyboard layouts for GRUB."

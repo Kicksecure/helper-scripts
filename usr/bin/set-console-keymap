@@ -17,9 +17,9 @@ trap "exit_handler" EXIT
 
 print_usage() {
   printf '%s\n' "$0: Set console keyboard layout for next boot" >&2
-  printf '%s\n' "Usage: $0 [--help] [--interactive] -- [layout [variant [option]]]" >&2
+  printf '%s\n' "Usage: $0 [--help|-h] [--interactive] -- [layout [variant [option]]]" >&2
   printf '%s\n' 'Options:' >&2
-  printf '%s\n' '--help         Print this help message.' >&2
+  printf '%s\n' '--help, -h     Print this help message.' >&2
   printf '%s\n' '--interactive  Show an interactive user interface.' >&2
   printf '\n' >&2
   printf '%s\n' 'Examples:' >&2
