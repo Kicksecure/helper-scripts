@@ -26,6 +26,9 @@ disable_xtrace() {
 }
 
 re_enable_xtrace_maybe() {
+  if [ "${xtrace_force_no_re_enable:-}" = "true" ]; then
+    return 0
+  fi
   if test "${xtrace:-}" = "1"; then
     set -o xtrace
   fi
