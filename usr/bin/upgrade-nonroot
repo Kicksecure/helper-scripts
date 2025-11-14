@@ -5,9 +5,6 @@
 
 set -e
 
-# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/package_installed_check.sh
-source /usr/libexec/helper-scripts/package_installed_check.sh
-
 if [ "$(id -un)" = 'root' ]; then
   ## Avoid using 'sudo' if already using account 'root'. Reasons:
   ## - Using 'sudo' is unnecessary in this case.
@@ -32,7 +29,7 @@ fi
 
 ## This is never reached if using 'exec' above.
 
-if pkg_installed user-sysmaint-split; then
+if package-installed-check user-sysmaint-split; then
   ## Example use cases for using account 'root' with 'user-sysmaint-split' installed:
   ## - 'root' login
   ## - Qubes 'root' console.
