@@ -18,6 +18,7 @@ pkg_installed() {
    ## install ok installed
 
    requested_action=$(printf '%s' "$dpkg_query_output" | awk '{print $1}')
+   # shellcheck disable=SC2034
    status=$(printf '%s' "$dpkg_query_output" | awk '{print $2}')
    # shellcheck disable=SC2034
    error_state=$(printf '%s' "$dpkg_query_output" | awk '{print $3}')
