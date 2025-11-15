@@ -186,12 +186,14 @@ shutdown() {
   exit "$status"
 }
 
-# Register our `shutdown` function to be invoked when the process dies.
-trap "shutdown sigint" SIGINT
-trap "shutdown sigterm" SIGTERM
-trap "shutdown err" ERR
-trap "shutdown exit" EXIT
-trap "shutdown sighup" SIGHUP
+traps_enable() {
+  # Register our `shutdown` function to be invoked when the process dies.
+  trap "shutdown sigint" SIGINT
+  trap "shutdown sigterm" SIGTERM
+  trap "shutdown err" ERR
+  trap "shutdown exit" EXIT
+  trap "shutdown sighup" SIGHUP
+}
 
 # The `print_progress` function draws our progress bar to the screen. It
 # takes two arguments: the number of bytes read so far, and the total
@@ -410,6 +412,7 @@ main() {
   exit "$wait_exit_code"
 }
 
+traps_enable
 initialize_terminal
 initialize_variables
 check_variables
