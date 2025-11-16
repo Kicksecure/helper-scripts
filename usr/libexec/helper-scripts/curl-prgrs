@@ -440,7 +440,7 @@ main() {
   true "$BASH_SOURCE INFO: END."
   exit "$wait_exit_code"
 }
-set -x
+
 traps_enable
 initialize_terminal
 initialize_variables
