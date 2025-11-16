@@ -1,3 +1,57 @@
+commit 0f5da83f631263a660e0fe60a2dddf27e3325bfb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 01:39:52 2025 -0500
+
+    fix
+
+commit 8d6ef846ac6222f2f9cfa0a784965ccc8903a455
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 06:20:14 2025 +0000
+
+    bumped changelog version
+
+commit e93a15690ab03513b6b07c19012bc8e55d0c84a1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 00:58:01 2025 -0500
+
+    port to package-installed-check
+
+commit cd2a0b034e08137016c30ede391817068e54170c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 00:13:26 2025 -0500
+
+    move to `/usr/bin/package-installed-check`
+
+commit e6aa660c57706cbadac78320b8aa9ed8464bda91
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 00:11:52 2025 -0500
+
+    shellcheck
+
+commit 0cc351af17dcee659b26db153d62cea48767666c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 00:11:11 2025 -0500
+
+    shellcheck
+
+commit ee44508b9636c388473b5d4776d8ae956a34ccf2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 00:07:59 2025 -0500
+
+    split into /usr/libexec/helper-scripts/package_installed_check and /usr/libexec/helper-scripts/package_installed_check.sh
+
+commit 1663e10d843e142f46793a05a5824791ebd59e96
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 13 23:43:03 2025 -0500
+
+    refactoring
+
+commit 56b59449f91d0261fb13f908c56a217ce5645834
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 13 12:47:41 2025 +0000
+
+    bumped changelog version
+
 commit b2bcaa8f75cfcdfc426df764b1407a0c05a07bfe
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 13 07:47:26 2025 -0500
