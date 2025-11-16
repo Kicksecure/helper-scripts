@@ -327,41 +327,67 @@ curl_download() {
 }
 
 remove_argument_for_header_request() {
-  local arg
-  local args=()
+  local arg_item
+  local arg_list=()
   local skip_next=false
+  header_arguments=()
 
-  for arg in "$@"; do
+  for arg_item in "$@"; do
     if [ "$skip_next" = true ]; then
       skip_next=false
       continue
     fi
 
-    if [ "$arg" = "--continue-at" ]; then
+    if [ "$arg_item" = "--continue-at" ]; then
       skip_next=true
       continue
     fi
 
-    if [ "$arg" = "-C" ]; then
+    if [ "$arg_item" = "-C" ]; then
       skip_next=true
       continue
     fi
 
-    if [ "$arg" = "--output" ]; then
+    if [ "$arg_item" = "--output" ]; then
       skip_next=true
       continue
     fi
 
-    args+=("$arg")
+    arg_list+=("$arg_item")
   done
 
-  stecho "${args[@]}"
+  header_arguments=("${arg_list[@]}")
+
+  ## Cannot use. Collapses newlines.
+  #stecho "${args[@]}"
 }
 
 main() {
-  local header_arguments header_file
+  local header_file
 
-  read -r -a header_arguments < <(remove_argument_for_header_request "$@")
+  ## {{{ Debugging.
+#   local i arg
+#   printf '%s\n' "Before number of args: $#"
+#   i=0
+#   for arg in "$@"; do
+#     i=$(( i + 1 ))
+#     printf '  [%d]=%q\n' "$i" "$arg"
+#   done
+  ## }}}
+
+  ## sets: header_arguments
+  remove_argument_for_header_request "${@}"
+
+  ## {{{ Debugging.
+#   printf '%s\n' ""
+#   printf '%s\n' "After number of args: ${#header_arguments[@]}"
+#   i=0
+#   for arg in "${header_arguments[@]}"; do
+#     i=$(( i + 1 ))
+#     printf '  [%d]=%q\n' "$i" "$arg"
+#   done
+  ## }}}
+
   header_file="$temporary_directory/header"
 
   true "$BASH_SOURCE INFO: Download header..."
