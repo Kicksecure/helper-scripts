@@ -1,3 +1,33 @@
+commit a6f38c0862bc1db07f4e2af729248ee14c6c97af
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 16 03:10:37 2025 -0500
+
+    `curl-prgrs`: also consider `-o`
+
+commit cd8c903663d0488346a6f4a039c09808d07be7b1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 16 03:07:49 2025 -0500
+
+    `/usr/libexec/helper-scripts/curl-prgrs`: fix argument quoting
+
+commit 412d4c7aa0e8aec6ffbd84a8c65005031d850c78
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 15 02:53:42 2025 -0500
+
+    refactoring
+
+commit cab1366c62008fea6e8497ebc516eac6ea9a7ee7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 15 02:50:58 2025 -0500
+
+    indent
+
+commit 8a0efa8c09b57167e816d6935f0ca7a4a931b16e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 06:55:07 2025 +0000
+
+    bumped changelog version
+
 commit 0f5da83f631263a660e0fe60a2dddf27e3325bfb
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Nov 14 01:39:52 2025 -0500
