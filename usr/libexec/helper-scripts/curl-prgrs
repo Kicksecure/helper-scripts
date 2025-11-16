@@ -342,13 +342,16 @@ remove_argument_for_header_request() {
       skip_next=true
       continue
     fi
-
     if [ "$arg_item" = "-C" ]; then
       skip_next=true
       continue
     fi
 
     if [ "$arg_item" = "--output" ]; then
+      skip_next=true
+      continue
+    fi
+    if [ "$arg_item" = "-o" ]; then
       skip_next=true
       continue
     fi
@@ -437,7 +440,7 @@ main() {
   true "$BASH_SOURCE INFO: END."
   exit "$wait_exit_code"
 }
-
+set -x
 traps_enable
 initialize_terminal
 initialize_variables
