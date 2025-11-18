@@ -15,7 +15,7 @@ if [ ! "$1" = "force" ]; then
   exit 1
 fi
 
-if ! [ $(id -u) = 0 ]; then
+if ! sudo --non-interactive /usr/bin/test -x /usr/bin/test; then
   set-labwc-keymap de || true
   systemcheck --verbose --leak-tests --gui --cli
   exit 0
