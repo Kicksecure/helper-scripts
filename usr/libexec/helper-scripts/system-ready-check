@@ -16,10 +16,4 @@ else
   exit_code=1
 fi
 
-if test -w /run/helper-scripts; then
-  overwrite /run/helper-scripts/system-ready-check "$output" >/dev/null
-else
-  exit_code=1
-fi
-
 exit "$exit_code"
