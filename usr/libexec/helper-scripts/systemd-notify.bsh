@@ -1,0 +1,19 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  set -o errexit
+  set -o nounset
+  set -o errtrace
+  set -o pipefail
+fi
+
+if [ "${NOTIFY_SOCKET-}" = "" ]; then
+  ## Support manual run from command line.
+  ## I.e. when run not through systemd unit.
+  systemd_notify="true 'INFO: skip because NOTIFY_SOCKET unset. Probably run manually. SKIP: systemd-notify"
+else
+  systemd_notify=systemd-notify
+fi
