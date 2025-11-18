@@ -15,6 +15,12 @@ if [ ! "$1" = "force" ]; then
   exit 1
 fi
 
+if ! [ $(id -u) = 0 ]; then
+  set-labwc-keymap de || true
+  systemcheck --verbose --leak-tests --gui --cli
+  exit 0
+fi
+
 dev-root force
 
 sudo set-system-keymap de || true
