@@ -1,3 +1,57 @@
+commit 48fcacacaa38b8f66b5703ec3a1624df1fc1e6c8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 18 05:10:21 2025 -0500
+
+    dev
+
+commit c45d82ed60153c419e683cf3d3bfc2d6a4f43485
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 18 09:38:34 2025 +0000
+
+    bumped changelog version
+
+commit c571ef7bdd60e552f29e208fe7eca0c4943ed7f9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 18 04:38:18 2025 -0500
+
+    dev
+
+commit 06147578d74b4ac41b0b20eb2b989523d95b855c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 18 07:33:50 2025 +0000
+
+    bumped changelog version
+
+commit 87f34590e693d1a9aeed9eacf006fd9a86375293
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 18 02:26:02 2025 -0500
+
+    output
+
+commit 298a0c6583e32ca40eaeddc4a3fbf788ed19baf9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 18 07:21:54 2025 +0000
+
+    bumped changelog version
+
+commit 53b9cf215caf65eb02afce31aa63f96bb2da70ef
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 18 02:18:09 2025 -0500
+
+    add /usr/libexec/helper-scripts/systemd-notify.bsh
+
+commit 879ad71e0689c47bd9a25f058babf4cfb5365822
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 18 02:09:44 2025 -0500
+
+    no longer write /run/helper-scripts/system-ready-check
+
+commit 1986562c708d1f5149961bd4c4661b81728ab6b3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 16 10:26:12 2025 +0000
+
+    bumped changelog version
+
 commit 494345b9c612409c3171a9808228242b49896d87
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 16 05:09:30 2025 -0500
