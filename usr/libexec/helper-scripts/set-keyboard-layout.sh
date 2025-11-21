@@ -836,6 +836,8 @@ rebuild_grub_config() {
 set_grub_keymap() {
   local args grub_kbdcomp_output name_part_list name_part do_update_grub
 
+  do_update_grub='true'
+
   while [ -n "${1:-}" ]; do
     case "$1" in
       '--help'|'-h')
