@@ -172,7 +172,7 @@ check_keyboard_layout_variants() {
 
   readarray -t kb_layout_list < <(printf '%s\n' "${layout_str}" | tr ',' '\n')
   ## Don't redo the keyboard layout count check, that's been done by
-  ## check_keyboard_layouts already
+  ## function 'check_keyboard_layouts' already.
   readarray -t kb_variant_list < <(printf '%s\n' "${variant_str}" | tr ',' '\n')
 
   if (( ${#kb_layout_list[@]} < ${#kb_variant_list[@]} )); then
