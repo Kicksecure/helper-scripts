@@ -955,7 +955,7 @@ set_grub_keymap() {
     rebuild_grub_config
   fi
 
-  printf '%s\n' "$0: INFO: Configuration success."
+  printf '%s\n' "$0: INFO: GRUB keymap configuration success."
 }
 
 build_all_grub_keymaps() {
