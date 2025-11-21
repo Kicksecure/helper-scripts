@@ -841,6 +841,7 @@ rebuild_grub_config() {
   fi
 
   printf '%s\n' "$0: INFO: Rebuilding GRUB configuration..."
+  printf '%s\n' "$0: EXECUTING: 'update-grub'"
   if ! update_grub_output="$(update-grub 2>&1)"; then
     printf '%s\n' "$0: ERROR: Failed to update GRUB configuration!" >&2
     printf '%s\n' "$0: Output from command 'update-grub':" >&2
@@ -932,11 +933,12 @@ set_grub_keymap() {
   fi
 
   printf '%s\n' "$0: INFO: Generating GRUB keymap..."
+  printf '%s\n' "$0: EXECUTING: 'grub-kbdcomp -o ${grub_kb_layout_dir}/user-layout.gkb ${args[*]}'"
   if ! grub_kbdcomp_output="$(
     grub-kbdcomp -o "${grub_kb_layout_dir}/user-layout.gkb" "${args[@]}" 2>&1
   )"; then
     printf '%s\n' "$0: ERROR: Failed to build GRUB keyboard layout!"
-    printf '%s\n' "$0: Output from command 'grub-kbdcomp -o ${grub_kb_layout_dir}/user-layout.gkb ${args[*]}':" >&2
+    printf '%s\n' "$0: Output from the 'grub-kbdcomp' command:" >&2
     printf '%s\n' "${grub_kbdcomp_output}" >&2
     return 1
   fi
