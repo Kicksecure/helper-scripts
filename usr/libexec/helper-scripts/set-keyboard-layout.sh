@@ -902,7 +902,6 @@ set_grub_keymap() {
     return 1
   fi
 
-  printf '%s\n' "$0: INFO: Generating GRUB keymap..."
   if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
     printf '%s\n' "$0: ERROR: 'grub-kbdcomp' is not available in PATH or not installed." >&2
     return 1
@@ -914,6 +913,7 @@ set_grub_keymap() {
     return 1
   fi
 
+  printf '%s\n' "$0: INFO: Generating GRUB keymap..."
   if ! grub_kbdcomp_output="$(
     grub-kbdcomp -o "${grub_kb_layout_dir}/user-layout.gkb" "${args[@]}" 2>&1
   )"; then
