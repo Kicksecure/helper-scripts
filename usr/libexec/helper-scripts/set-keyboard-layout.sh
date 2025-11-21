@@ -428,7 +428,7 @@ set_labwc_keymap() {
       ## Therefore let's run 'labwc --reconfigure'.
       if ! command -v labwc >/dev/null; then
         ## This would be weird. 'labwc' is running but unavailable in PATH.
-        printf '%s\n' "$0: ERROR: 'labwc' not available in PATH or not installed." >&2
+        printf '%s\n' "$0: ERROR: 'labwc' unavailable in PATH or not installed." >&2
       else
         ## 'labwc' is running and available in PATH.
         if labwc --reconfigure; then
@@ -500,7 +500,7 @@ dracut_run() {
     return 0
   fi
   if ! command -v dracut >/dev/null; then
-    printf '%s\n' "$0: WARNING: Minor issue. 'dracut' not available in PATH or not installed. Keyboard layout in initramfs unchanged."
+    printf '%s\n' "$0: WARNING: Minor issue. 'dracut' unavailable in PATH or not installed. Keyboard layout in initramfs unchanged."
     return 0
   fi
   printf '%s\n' "$0: INFO: Rebuilding all dracut initramfs images. This will take a while..."
@@ -905,13 +905,13 @@ set_grub_keymap() {
   fi
 
   if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
-    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. 'grub-kbdcomp' is not available in PATH or not installed. Is package 'grub-common' installed?" >&2
+    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. 'grub-kbdcomp' is unavailable in PATH or not installed. Is package 'grub-common' installed?" >&2
     return 1
   fi
 
   ## /usr/bin/grub-kbdcomp: 76: ckbcomp: not found
   if ! command -v 'ckbcomp' >/dev/null 2>&1; then
-    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. 'ckbcomp' is not available in PATH or not installed. Is package 'console-setup' or 'console-setup-mini' installed?" >&2
+    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. 'ckbcomp' is unavailable in PATH or not installed. Is package 'console-setup' or 'console-setup-mini' installed?" >&2
     return 1
   fi
 
@@ -985,7 +985,7 @@ build_all_grub_keymaps() {
   fi
 
   if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
-    printf '%s\n' "$0: ERROR: 'grub-kbdcomp' is not available in PATH or not installed." >&2
+    printf '%s\n' "$0: ERROR: 'grub-kbdcomp' is unavailable in PATH or not installed." >&2
     return 1
   fi
 
