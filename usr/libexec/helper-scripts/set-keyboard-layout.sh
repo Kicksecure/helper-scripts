@@ -314,7 +314,7 @@ set_labwc_keymap() {
       '--config='*)
         labwc_config_path="$(cut -d'=' -f2- <<< "$1")"
         if [ -z "$labwc_config_path" ]; then
-          printf '%s\n' "$0: ERROR: No config path specified!" >&2
+          printf '%s\n' "$0: ERROR: No '--config=path' specified!" >&2
           return 1
         fi
         shift
