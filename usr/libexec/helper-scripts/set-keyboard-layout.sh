@@ -96,6 +96,10 @@ is_layout_data_valid() {
   check_lines=$(printf '%s\n' "${check_str}" | tr ',' '\n')
   readarray -t check_list <<< "${check_lines}"
 
+  if [ "${localectl_available}" = 'false' ]; then
+    return 0
+  fi
+
   ## Should this ever fail, that would probably be a bug. In that case,
   ## consider this fatal and let the error_handler address it.
   valid_output=$("${timeout_command[@]}" "${valid_list_cmd[@]}")
