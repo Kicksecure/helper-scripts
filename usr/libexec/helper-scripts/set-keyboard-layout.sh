@@ -908,6 +908,12 @@ set_grub_keymap() {
     return 1
   fi
 
+  ## /usr/bin/grub-kbdcomp: 76: ckbcomp: not found
+  if ! command -v 'ckbcomp' >/dev/null 2>&1; then
+    printf '%s\n' "$0: ERROR: 'ckbcomp' is not available in PATH or not installed. Is package 'console-setup' or 'console-setup-mini' installed?" >&2
+    return 1
+  fi
+
   if ! grub_kbdcomp_output="$(
     grub-kbdcomp -o "${grub_kb_layout_dir}/user-layout.gkb" "${args[@]}" 2>&1
   )"; then
