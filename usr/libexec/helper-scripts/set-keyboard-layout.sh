@@ -42,7 +42,7 @@ skl_default_keyboard_var_names=(
 
 grub_kb_layout_dir='/boot/grub/kb_layouts'
 
-## START Detect if localectl is usable.
+## START Detect if 'localectl' is usable.
 ## localectl cannot be run within a chroot to get lists of valid values.
 ## Assume data is correct if it passed the previous sanity checks.
 if ischroot --default-false; then
@@ -62,7 +62,7 @@ else
     localectl_available='false'
   fi
 fi
-## END Detect if localectl is usable.
+## END Detect if 'localectl' is usable.
 
 error_handler() {
   local exit_code="${?}"
