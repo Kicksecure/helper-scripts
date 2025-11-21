@@ -112,15 +112,15 @@ if test -f /etc/tor/torrc ; then
       true "INFO: already includes - %include /etc/torrc.d/*.conf - ok."
    else
       true "INFO: does not include - %include /etc/torrc.d/*.conf - yet."
-      printf '%s\n' '\
+      printf '%s\n' "\
 # The following line has been added by /usr/libexec/helper-scripts/repair-torrc
-%include /etc/torrc.d/*.conf' | tee -a /etc/tor/torrc >/dev/null
+%include /etc/torrc.d/*.conf" | tee -a /etc/tor/torrc >/dev/null
    fi
 else
    true "INFO: file /etc/tor/torrc does not exist yet, creating..."
-   printf '%s\n' '\
+   printf '%s\n' "\
 # The following line has been added by /usr/libexec/helper-scripts/repair-torrc
-%include /etc/torrc.d/*.conf' | tee -a -- /etc/tor/torrc >/dev/null
+%include /etc/torrc.d/*.conf" | tee -a -- /etc/tor/torrc >/dev/null
 fi
 
 if grep --quiet -- "%include /etc/torrc.d/\$" "/etc/tor/torrc" ; then
