@@ -18,6 +18,7 @@ command -v dirname >/dev/null
 command -v mkdir >/dev/null
 command -v overwrite >/dev/null
 command -v stcat >/dev/null
+command -v sponge >/dev/null
 command -v timeout >/dev/null
 command -v ischroot >/dev/null
 command -v jq >/dev/null
