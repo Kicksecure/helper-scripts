@@ -835,6 +835,11 @@ set_system_keymap() {
 rebuild_grub_config() {
   local update_grub_output
 
+  if ! command -v 'update-grub' >/dev/null 2>&1; then
+    printf '%s\n' "$0: ERROR: Cannot proceed with updating GRUB configuration because requirements are unavailable. 'update-grub' is unavailable in the PATH environment variable or not installed. Is package 'grub2-common' installed?" >&2
+    return 1
+  fi
+
   printf '%s\n' "$0: INFO: Rebuilding GRUB configuration..."
   if ! update_grub_output="$(update-grub 2>&1)"; then
     printf '%s\n' "$0: ERROR: Failed to update GRUB configuration!" >&2
