@@ -662,8 +662,8 @@ kb_reload_root() {
   local loginctl_users user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
 
   if [ "${localectl_available}" = 'false' ]; then
-    ## If 'localectl' is unavailable, very most likely 'loginctl' (used below) will also be unavailable.
-    printf '%s\n' "$0: WARNING: Minor issue. 'localectl' unavailable. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
+    ## If the 'localectl' program is unavailable, very most likely 'loginctl' (used below) will also be unavailable.
+    printf '%s\n' "$0: WARNING: Minor issue. The 'localectl' program unavailable in the PATH environment variable or not installed. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
     return 0
   fi
 
@@ -836,7 +836,7 @@ rebuild_grub_config() {
   local update_grub_output
 
   if ! command -v 'update-grub' >/dev/null 2>&1; then
-    printf '%s\n' "$0: ERROR: Cannot proceed with updating GRUB configuration because requirements are unavailable. 'update-grub' is unavailable in the PATH environment variable or not installed. Is package 'grub2-common' installed?" >&2
+    printf '%s\n' "$0: ERROR: Cannot proceed with updating GRUB configuration because requirements are unavailable. The 'update-grub' program is unavailable in the PATH environment variable or not installed. Is package 'grub2-common' installed?" >&2
     return 1
   fi
 
@@ -921,13 +921,13 @@ set_grub_keymap() {
   fi
 
   if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
-    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. 'grub-kbdcomp' is unavailable in the PATH environment variable or not installed. Is package 'grub-common' installed?" >&2
+    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. The 'grub-kbdcomp' program is unavailable in the PATH environment variable or not installed. Is package 'grub-common' installed?" >&2
     return 1
   fi
 
   ## /usr/bin/grub-kbdcomp: 76: ckbcomp: not found
   if ! command -v 'ckbcomp' >/dev/null 2>&1; then
-    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. 'ckbcomp' is unavailable in the PATH environment variable or not installed. Is package 'console-setup' or 'console-setup-mini' installed?" >&2
+    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. The 'ckbcomp' program is unavailable in the PATH environment variable or not installed. Is package 'console-setup' or 'console-setup-mini' installed?" >&2
     return 1
   fi
 
@@ -1001,7 +1001,7 @@ build_all_grub_keymaps() {
   fi
 
   if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
-    printf '%s\n' "$0: ERROR: 'grub-kbdcomp' is unavailable in the PATH environment variable or not installed." >&2
+    printf '%s\n' "$0: ERROR: The 'grub-kbdcomp' program is unavailable in the PATH environment variable or not installed." >&2
     return 1
   fi
 
