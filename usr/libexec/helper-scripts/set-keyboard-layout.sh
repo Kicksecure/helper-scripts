@@ -54,7 +54,12 @@ elif ! "${timeout_command[@]}" localectl >/dev/null; then
 
 ## Yes, 'localectl' is functional.
 else
-  localectl_available='true'
+  if localectl_kb_layouts="$("${timeout_command[@]}" localectl --no-pager list-x11-keymap-layouts)"; then
+    localectl_available='true'
+  else
+    printf '%s\n' "$0: ERROR: Failed to run 'localectl --no-pager list-x11-keymap-layouts'."
+    localectl_available='false'
+  fi
 fi
 ## END Detect if localectl is usable.
 
@@ -974,7 +979,7 @@ build_all_grub_keymaps() {
     readarray -t keymap_list
   elif [ "${localectl_available-}" = "true" ]; then
     printf '%s\n' "$0: INFO: Getting list of available keyboard layouts from 'localectl'."
-    readarray -t keymap_list < <(localectl --no-pager list-x11-keymap-layouts)
+    readarray -t keymap_list <<< "${localectl_kb_layouts}"
   else
     printf '%s\n' "$0: ERROR: Cannot get list of keyboard layouts from 'localectl' or 'stdin' (standard input)!" >&2
     return 1
@@ -1142,6 +1147,9 @@ Type 'exit' to quit without changing keyboard layout settings.
       ## 'timeout' is not compatible with the pager and '--no-pager' is unwanted.
       #"${timeout_command[@]}" localectl list-x11-keymap-layouts
       localectl list-x11-keymap-layouts
+      ## TODO: Minor. Replace above using 'pager' or similar?
+      #printf '%s\n' "${localectl_kb_layouts}" | pager
+      ##       localectl's default pager is better. It does not clear output of this script.
       continue
     fi
     if [ "${layout_str}" = 'help' ]; then
