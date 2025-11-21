@@ -29,7 +29,7 @@
 ## Guarantee the existence of:
 ## /etc/tor/torrc
 ## /etc/torrc.d/95_whonix.conf
-## /usr/local/etc/tor/torrc/40_tor_control_panel.conf
+## /usr/local/etc/torrc.d/40_tor_control_panel.conf
 ## /usr/local/etc/tor/torrc/50_user.conf
 ##
 ##           "%include /etc/torrc.d/*.conf" line in /etc/tor/torrc file
@@ -79,6 +79,7 @@ fi
 
 if ! test -d "$client_onion_auth_dir"; then
    mkdir --parents -- "$client_onion_auth_dir"
+   chmod 0700 -- "$client_onion_auth_dir"
 fi
 
 chown "${tor_user}:${tor_group}" -- "$client_onion_auth_dir"
