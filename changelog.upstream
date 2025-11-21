@@ -1,3 +1,45 @@
+commit 8b7a2b4439e98a97b105a591eef779c5d4885b65
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 12:04:19 2025 -0500
+
+    cleanup
+
+commit a7a56c4a87a022b9f9df83b8e6ad5e1662a6603b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 12:00:30 2025 -0500
+
+    fix
+
+commit 781192eef5a5e48e5c1128c3afd9437be9c5f15f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 11:57:14 2025 -0500
+
+    fix
+
+commit c8fad412d3538d4da041e3e038711b8a0167cd63
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 11:56:01 2025 -0500
+
+    fix
+
+commit 64651c1e2e07e7cf1496d217784872654b692453
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 11:51:23 2025 -0500
+
+    refactoring
+
+commit 2d79c3140a95595be4466fc3ad19b4f8c7140aa6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 11:50:00 2025 -0500
+
+    import from anon-gw-anonymizer-config
+
+commit 7b4518c10122002ba3d3d8cd9a7f687129afee66
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 09:18:19 2025 +0000
+
+    bumped changelog version
+
 commit fe4ebd09ad778dd1bde7440357a8077313d9b770
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Nov 21 03:52:14 2025 -0500
