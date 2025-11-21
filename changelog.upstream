@@ -1,3 +1,167 @@
+commit fe4ebd09ad778dd1bde7440357a8077313d9b770
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:52:14 2025 -0500
+
+    fix
+
+commit 1258d7f90e877567426544d7d376bfeeae0a4ed8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:51:08 2025 -0500
+
+    output
+
+commit 3433bd40cec64931e609604979e639114313d3fd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:50:38 2025 -0500
+
+    output
+
+commit 9de748b4705ddfe4f46446e19f9570e2e32a0438
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:47:39 2025 -0500
+
+    output
+
+commit 069781f32ee8d4b1c4af58871b0cf7f575b3f28f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:45:42 2025 -0500
+
+    sanity test
+
+commit 961451407d2e53a454f1ae5cef45d43f89094375
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:42:13 2025 -0500
+
+    fix
+
+commit e7ce7d7c75587c374df993758081d846f2cc3af3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:37:09 2025 -0500
+
+    comment
+
+commit f60b6e3c80ab9994e9380f321570d68401a5c06d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:35:59 2025 -0500
+
+    sanity test
+
+commit bbd5d07b6ded6b40ff3a609cd86160a321dfcb4e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:35:36 2025 -0500
+
+    comment
+
+commit 390ac942ae0a75d5fab00adcce22e5f931a569d1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:33:48 2025 -0500
+
+    refactoring
+
+commit fda81f257944367b2c0f0cfd3eb95513869a27a6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:17:04 2025 -0500
+
+    sanity test
+
+commit b37325d187bdc1a6a79392003addf468b9c386dd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:15:36 2025 -0500
+
+    output
+
+commit aa3b6629d24af6d7cd47a39685e03f7f989a587b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:14:28 2025 -0500
+
+    output
+
+commit 1a9eca003d84d3942dffe7c8161b9834ae302068
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:13:47 2025 -0500
+
+    output
+
+commit e8f691c7e16e82258f5bb181d5a4ff42f112cd43
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 03:12:05 2025 -0500
+
+    output
+
+commit 14e2d12ca26658cecf582d4c96ad1bde386d96a4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:49:06 2025 -0500
+
+    output
+
+commit e2e8d201030d283217ffc18c89441fba2b0c4447
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:46:09 2025 -0500
+
+    fix
+
+commit 72dfc114b5904453e9ac530021bea2c5e528ab1b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:42:15 2025 -0500
+
+    end-of-options
+
+commit 4c904adf9aa83c41522b8dd93c0fb4124c28c7c8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:41:09 2025 -0500
+
+    output
+
+commit 9f36d91d8b5967037a60fd39be1cd767526b3608
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:39:49 2025 -0500
+
+    output
+
+commit b5ef0d9ab4999eecb2eda0b8aa93c58b66d6e5af
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:39:13 2025 -0500
+
+    output
+
+commit 00c2e61c0bb55eb4207d8f1e682b7d92b5905636
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:38:31 2025 -0500
+
+    sanity test
+
+commit eeaf0d268848e0e67fc52a23dcc13667f5b615f3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:32:20 2025 -0500
+
+    fix
+
+commit 008f54b15790d20a1e3981c8af1fa1cd7db5b737
+Merge: a3a3531 d268d55
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:30:31 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit d268d5536b6121179aef67f5d23ae2a5316c4082
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Nov 20 20:32:21 2025 -0600
+
+    Try to prevent /tmp/user/100* from becoming owned by root due to lockfile.sh
+
+commit d2b2c524fc6fd55909ceef6eb720e52184156470
+Merge: 2254607 a3a3531
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Nov 18 19:59:37 2025 -0600
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit a3a3531d13f8475d009e51535c6e13e20281c7e2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 18 10:10:37 2025 +0000
+
+    bumped changelog version
+
 commit 48fcacacaa38b8f66b5703ec3a1624df1fc1e6c8
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Nov 18 05:10:21 2025 -0500
@@ -46,6 +210,13 @@ Date:   Tue Nov 18 02:09:44 2025 -0500
 
     no longer write /run/helper-scripts/system-ready-check
 
+commit 2254607324e6acef387ae7e7b2ca34abdb2cd869
+Merge: 3e7f47e 1986562
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Nov 16 10:27:32 2025 -0600
+
+    Merge branch 'master' into arraybolt3/trixie
+
 commit 1986562c708d1f5149961bd4c4661b81728ab6b3
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 16 10:26:12 2025 +0000
@@ -75,6 +246,13 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 16 03:07:49 2025 -0500
 
     `/usr/libexec/helper-scripts/curl-prgrs`: fix argument quoting
+
+commit 3e7f47eb5deab5a58f77182d7937288ada828924
+Merge: 1ddadf1 8a0efa8
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Nov 15 19:56:22 2025 -0600
+
+    Merge branch 'master' into arraybolt3/trixie
 
 commit 412d4c7aa0e8aec6ffbd84a8c65005031d850c78
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -141,6 +319,24 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 13 23:43:03 2025 -0500
 
     refactoring
+
+commit 1ddadf16bd00fb624cfe46652c467896d4a0626a
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Nov 13 22:35:00 2025 -0600
+
+    Add --no-update-grub option to set-grub-keymap, refactor and improve help output in set-keyboard-layout.sh
+
+commit 3f70ce509006d35bd546235e90b8c7e6c0b6d7ca
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Nov 13 18:48:59 2025 -0600
+
+    Adjust stdin read mechanism for GRUB keyboard layout setter
+
+commit 34c1c2aaec00ac8fded056e3ed49fe08c03e6126
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Nov 13 17:38:36 2025 -0600
+
+    Add set-grub-keymap script, refactor localectl availability check in set-keyboard-layout.sh
 
 commit 56b59449f91d0261fb13f908c56a217ce5645834
 Author: Patrick Schleizer <adrelanos@whonix.org>
