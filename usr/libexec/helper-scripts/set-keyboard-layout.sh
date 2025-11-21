@@ -969,13 +969,13 @@ build_all_grub_keymaps() {
   done
 
   if [ "${do_read_stdin}" = 'true' ]; then
-    printf '%s\n' "$0: INFO: Getting list of keyboard layouts from stdin."
+    printf '%s\n' "$0: INFO: Getting list of keyboard layouts from 'stdin'."
     readarray -t keymap_list
   elif [ "${localectl_available-}" = "true" ]; then
-    printf '%s\n' "$0: INFO: Getting list of available keyboard layouts from localectl."
+    printf '%s\n' "$0: INFO: Getting list of available keyboard layouts from 'localectl'."
     readarray -t keymap_list < <(localectl --no-pager list-x11-keymap-layouts)
   else
-    printf '%s\n' "$0: ERROR: Cannot get list of keyboard layouts from localectl or stdin!" >&2
+    printf '%s\n' "$0: ERROR: Cannot get list of keyboard layouts from 'localectl' or 'stdin'!" >&2
     return 1
   fi
 
