@@ -22,6 +22,7 @@ command -v sponge >/dev/null
 command -v timeout >/dev/null
 command -v ischroot >/dev/null
 command -v jq >/dev/null
+command -v tr >/dev/null
 command -v loginctl >/dev/null
 command -v /usr/libexec/helper-scripts/query-sock-pid >/dev/null
 
