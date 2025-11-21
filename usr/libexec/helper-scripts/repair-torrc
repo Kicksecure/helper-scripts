@@ -124,14 +124,6 @@ else
 %include /etc/torrc.d/*.conf" | tee -a -- /etc/tor/torrc >/dev/null
 fi
 
-if grep --quiet -- "%include /etc/torrc.d/\$" "/etc/tor/torrc" ; then
-   true "INFO: still using old include directive - %include /etc/torrc.d/ - upgrading..."
-      search="%include /etc/torrc.d/"
-   replace="%include /etc/torrc.d/*.conf"
-   file_name="/etc/tor/torrc"
-   str_replace "$search" "$replace" "$file_name"
-fi
-
 if test -f "$torrcd_path" ; then
    true "INFO: file $torrcd_path already exists, ok."
 else
