@@ -11,7 +11,6 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 fi
 
 command -v safe-rm >/dev/null
-command -v localectl >/dev/null
 command -v mktemp >/dev/null
 command -v mv >/dev/null
 command -v dirname >/dev/null
@@ -25,6 +24,9 @@ command -v jq >/dev/null
 command -v tr >/dev/null
 command -v loginctl >/dev/null
 command -v /usr/libexec/helper-scripts/query-sock-pid >/dev/null
+
+## Not a hard dependency.
+#command -v localectl >/dev/null
 
 timeout_command=("timeout" "--kill-after" "5" "5")
 
