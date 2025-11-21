@@ -903,13 +903,13 @@ set_grub_keymap() {
   fi
 
   if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
-    printf '%s\n' "$0: ERROR: 'grub-kbdcomp' is not available in PATH or not installed. Is package 'grub-common' installed?" >&2
+    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. 'grub-kbdcomp' is not available in PATH or not installed. Is package 'grub-common' installed?" >&2
     return 1
   fi
 
   ## /usr/bin/grub-kbdcomp: 76: ckbcomp: not found
   if ! command -v 'ckbcomp' >/dev/null 2>&1; then
-    printf '%s\n' "$0: ERROR: 'ckbcomp' is not available in PATH or not installed. Is package 'console-setup' or 'console-setup-mini' installed?" >&2
+    printf '%s\n' "$0: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. 'ckbcomp' is not available in PATH or not installed. Is package 'console-setup' or 'console-setup-mini' installed?" >&2
     return 1
   fi
 
