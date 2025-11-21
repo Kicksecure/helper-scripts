@@ -17,9 +17,9 @@ trap "exit_handler" EXIT
 
 print_usage() {
   printf '%s\n' "$0: Set keyboard layout for labwc" >&2
-  printf '%s\n' "Usage: $0 [--help] [--no-persist] [--no-reload] [--config=<path>] [--interactive] -- [layout [variant [option]]]" >&2
+  printf '%s\n' "Usage: $0 [--help|-h] [--no-persist] [--no-reload] [--config=<path>] [--interactive] -- [layout [variant [option]]]" >&2
   printf '%s\n' 'Options:' >&2
-  printf '%s\n' '--help           Print this help message.' >&2
+  printf '%s\n' '--help, -h       Print this help message.' >&2
   printf '%s\n' '--no-persist     Make layout change non-persistent.' >&2
   printf '%s\n' '--no-reload      Skip reloading labwc config. Only useful with --persist.' >&2
   printf '%s\n' '--config=<path>  Specify an alternative config file path.' >&2

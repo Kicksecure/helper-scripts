@@ -1,0 +1,60 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+true "$0: START"
+
+source /usr/libexec/helper-scripts/set-keyboard-layout.sh
+
+trap "error_handler" ERR
+trap "exit_handler" EXIT
+
+print_usage() {
+  printf '%s\n' "$0: Set keyboard layout for GRUB" >&2
+  printf '%s\n' "Usage: $0 [--help|-h] [--interactive] [--no-update-grub] -- [layout [variant [option]]]" >&2
+  printf '%s\n' "   Or: $0 --build-all [--help|-h] [--read-stdin] [--no-update-grub]" >&2
+  printf '%s\n' 'Options:' >&2
+  printf '%s\n' '--help, -h        Print this help message.' >&2
+  printf '%s\n' '--interactive     Show an interactive user interface.' >&2
+  printf '%s\n' '--no-update-grub  Do not update grub.cfg after building layouts.' >&2
+  printf '%s\n' '--build-all       Builds all standard keyboard layouts for GRUB.' >&2
+  printf '%s\n' '--read-stdin      Read the list of keyboard layouts from stdin rather than' >&2
+  printf '%s\n' '                  getting it from localectl.' >&2
+  printf '\n' >&2
+  printf '%s\n' 'Examples:' >&2
+  printf '%s\n' '  set-grub-keymap de' >&2
+  printf '%s\n' '  set-grub-keymap us colemak' >&2
+  printf '%s\n' '  set-grub-keymap --build-all'
+}
+
+if [ "$(id -u)" != "0" ]; then
+  printf '%s\n' "$0: ERROR: This must be run as root (sudo)!" >&2
+  exit 1
+fi
+
+## Build all GRUB keymaps if requested.
+if [ "${1:-}" = '--build-all' ]; then
+  shift
+  build_all_grub_keymaps "$@"
+  exit 0
+fi
+
+## Enter interactive mode if requested.
+for opt in "$@"; do
+  if [ "${opt}" = '--' ]; then
+    break
+  fi
+  if [ "${opt}" = '--interactive' ]; then
+    interactive_ui 'set_grub_keymap' "$@"
+    exit 0
+  fi
+done
+set_grub_keymap "$@"
+
+true "$0: END"

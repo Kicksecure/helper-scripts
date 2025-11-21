@@ -16,6 +16,10 @@ true "${BASH_SOURCE[0]}: INFO: FLOCKER: ${FLOCKER-}"
 
 [[ -v TMP ]] || TMP="/tmp"
 flocker_temp_folder="${TMP}/flocker-temp-folder"
+if ! [ -d "${TMP}" ]; then
+  printf '%s\n' "$0: ERROR: Could not create lock file directory at '${flocker_temp_folder}', because '${TMP}' does not exist or is not a directory!" 1>&2
+  exit 1
+fi
 mkdir --parents -- "${flocker_temp_folder}"
 
 flocker_path_substituted="$(realpath -- "${0}")"
