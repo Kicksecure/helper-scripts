@@ -1,8 +1,31 @@
 #!/bin/bash
 
 ## Copyright (C) 2018 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## Copyright (C) 2018 Iry Koon <iry@riseup.net>
 ## See the file COPYING for copying conditions.
 
+#### meta start
+#### project Whonix
+#### category tor
+#### gateway_only yes
+#### description
+## helper script to create folders
+##
+## * <code>/etc/tor</code>
+## * <code>/etc/torrc.d/code>
+## * <code>/usr/local/etc/torrc.d</code>
+##
+## and make sure files exist
+##
+## * <code>/etc/tor/torrc</code>
+## * <code>/etc/torrc.d/95_whonix.conf</code>
+## * <code>/usr/local/etc/torrc.d/40_tor_control_panel.conf</code>
+## * <code>/usr/share/anon-gw-anonymizer-config/user_torrc_template.conf /usr/local/etc/torrc.d/50_user.conf</code>
+##
+## create folder <code>/var/lib/tor/authdir</code>
+##
+## with correct access rights from template folder <code>/usr/share/anon-gw-anonymizer-config</code>.
+##
 ## Guarantee the existence of:
 ## /etc/tor/torrc
 ## /etc/torrc.d/95_whonix.conf
@@ -11,11 +34,56 @@
 ##
 ##           "%include /etc/torrc.d/*.conf" line in /etc/tor/torrc file
 ## "%include /usr/local/etc/torrc.d/*.conf" line in /etc/torrc.d/95_whonix.conf
+#### meta end
 
 set -x
 set -e
 
 true "$0: START"
+
+if [ ! -d /etc/tor ]; then
+   /usr/bin/install -Z -m 00755 -o root -g root -d /etc/tor
+fi
+
+if [ ! -d /etc/torrc.d ]; then
+   /usr/bin/install -Z -m 00755 -o root -g root -d /etc/torrc.d
+fi
+
+if [ ! -d /usr/local/etc/torrc.d ]; then
+   /usr/bin/install -Z -m 00755 -o root -g root -d /usr/local/etc/torrc.d
+fi
+
+## files:
+
+if [ ! -e /etc/tor/torrc ]; then
+   /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/etc_tor_torrc_template.conf /etc/tor/torrc
+fi
+
+if [ ! -e /etc/torrc.d/95_whonix.conf ]; then
+   /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/etc_torrc_d_template.conf /etc/torrc.d/95_whonix.conf
+fi
+
+if [ ! -e /usr/local/etc/torrc.d/40_tor_control_panel.conf ]; then
+   /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/tor_control_panel_torrc_template.conf /usr/local/etc/torrc.d/40_tor_control_panel.conf
+fi
+
+if [ ! -e /usr/local/etc/torrc.d/50_user.conf ]; then
+   /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/user_torrc_template.conf /usr/local/etc/torrc.d/50_user.conf
+fi
+
+## /etc/torrc.d/65_gateway.conf
+## ClientOnionAuthDir /var/lib/tor/authdir
+[ -n "$tor_user" ] || tor_user="debian-tor"
+[ -n "$tor_group" ] || tor_group="debian-tor"
+[ -n "$tor_dir" ] || tor_dir="/var/lib/tor"
+[ -n "$client_onion_auth_dir" ] || client_onion_auth_dir="${tor_dir}/authdir"
+
+if ! test -d "$client_onion_auth_dir"; then
+   mkdir --parents -- "$client_onion_auth_dir"
+fi
+
+chown "${tor_user}:${tor_group}" -- "$client_onion_auth_dir"
+
 
 if test -f /usr/share/anon-gw-base-files/gateway ; then
    true "INFO: Whonix detected, ok."
