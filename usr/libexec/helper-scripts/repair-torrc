@@ -55,20 +55,19 @@ fi
 
 ## files:
 
-if [ ! -e /etc/tor/torrc ]; then
-   /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/etc_tor_torrc_template.conf /etc/tor/torrc
-fi
-
-if [ ! -e /etc/torrc.d/95_whonix.conf ]; then
-   /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/etc_torrc_d_template.conf /etc/torrc.d/95_whonix.conf
-fi
-
-if [ ! -e /usr/local/etc/torrc.d/40_tor_control_panel.conf ]; then
-   /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/tor_control_panel_torrc_template.conf /usr/local/etc/torrc.d/40_tor_control_panel.conf
-fi
-
-if [ ! -e /usr/local/etc/torrc.d/50_user.conf ]; then
-   /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/user_torrc_template.conf /usr/local/etc/torrc.d/50_user.conf
+if test -f /usr/share/anon-gw-base-files/gateway ; then
+  if [ ! -e /etc/tor/torrc ]; then
+    /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/etc_tor_torrc_template.conf /etc/tor/torrc
+  fi
+  if [ ! -e /etc/torrc.d/95_whonix.conf ]; then
+    /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/etc_torrc_d_template.conf /etc/torrc.d/95_whonix.conf
+  fi
+  if [ ! -e /usr/local/etc/torrc.d/40_tor_control_panel.conf ]; then
+    /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/tor_control_panel_torrc_template.conf /usr/local/etc/torrc.d/40_tor_control_panel.conf
+  fi
+  if [ ! -e /usr/local/etc/torrc.d/50_user.conf ]; then
+    /usr/bin/install -Z -m 00644 -o root -g root -T /usr/share/anon-gw-anonymizer-config/user_torrc_template.conf /usr/local/etc/torrc.d/50_user.conf
+  fi
 fi
 
 ## /etc/torrc.d/65_gateway.conf
