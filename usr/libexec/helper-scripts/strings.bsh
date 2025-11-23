@@ -3,6 +3,21 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+br_add() {
+   local in out
+
+   if (( $# != 1 )); then
+      printf '%s\n' "br_add: requires exactly one argument" >&2
+      return 1
+   fi
+
+   in="$1"
+   ## Replace each newline with "<br />\n"
+   out_="${in//$'\n'/'<br />'$'\n'}"
+
+   printf '%s\n' "$out"
+}
+
 br_add_to_file() {
    local file_name="$1"
 
