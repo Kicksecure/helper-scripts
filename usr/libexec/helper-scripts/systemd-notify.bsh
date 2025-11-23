@@ -13,7 +13,9 @@ fi
 if [ "${NOTIFY_SOCKET-}" = "" ]; then
   ## Support manual run from command line.
   ## I.e. when run not through systemd unit.
-  systemd_notify="true 'INFO: skip because NOTIFY_SOCKET unset. Probably run manually. SKIP: systemd-notify"
+  systemd_notify=( "true" 'INFO: skip because NOTIFY_SOCKET unset. Probably run manually. SKIP: systemd-notify' )
+elif ! command -v systemd-notify >/dev/null; then
+  systemd_notify=( "true" 'INFO: skip because systemd-notify executable cannot be found. SKIP: systemd-notify' )
 else
-  systemd_notify=systemd-notify
+  systemd_notify=( 'systemd-notify' )
 fi
