@@ -13,7 +13,7 @@ br_add() {
 
    in="$1"
    ## Replace each newline with "<br />\n"
-   out_="${in//$'\n'/'<br />'$'\n'}"
+   out="${in//$'\n'/'<br />'$'\n'}"
 
    printf '%s\n' "$out"
 }
