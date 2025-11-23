@@ -184,6 +184,8 @@ tests() {
    set -o pipefail
    set -o nounset
 
+   local input_string expected_result actual_result
+
    run_test "Empty variable" "testvar1" "" 1
    run_test "Only newlines" "testvar2" "
 
@@ -194,6 +196,15 @@ tests() {
    run_test "Multiple lines" "testvar5" "Hello
    World" 1
    run_test "Leading and trailing spaces" "testvar6" "  Hello  " 0
+
+   input_string="test1
+test2"
+   expected_result="test1<br />
+test2"
+   actual_result="$(br_add "$input_string")"
+   if ! [ "$expected_result" = "$actual_result" ]; then
+      error "br_add failed!"
+   fi
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
