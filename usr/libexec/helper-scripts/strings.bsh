@@ -6,15 +6,19 @@
 br_add() {
    local in out
 
-   if (( $# != 1 )); then
-      printf '%s\n' "br_add: requires exactly one argument" >&2
+   if (( $# > 1 )); then
+      printf '%s\n' "br_add: too many arguments" >&2
       return 1
    fi
 
-   in="$1"
+   if (( $# == 1 )); then
+      in="$1"
+   else
+      in="$(cat)"
+   fi
+
    ## Replace each newline with "<br />\n"
    out="${in//$'\n'/'<br />'$'\n'}"
-
    printf '%s\n' "$out"
 }
 
@@ -203,7 +207,12 @@ test2"
 test2"
    actual_result="$(br_add "$input_string")"
    if ! [ "$expected_result" = "$actual_result" ]; then
-      error "br_add failed!"
+      error "br_add command failed!"
+   fi
+
+   actual_result="$(printf '%s\n' "$input_string" | br_add)"
+   if ! [ "$expected_result" = "$actual_result" ]; then
+      error "br_add pipe failed!"
    fi
 }
 
