@@ -8,5 +8,8 @@
 # set -o errtrace
 # set -o pipefail
 
-timeout --kill-after="1" "5" systemctl --wait is-system-running
+if timeout --kill-after="1" "5" systemctl --wait is-system-running; then
+  exit 0
+fi
+
 timeout --kill-after="1" "5" systemctl is-system-running
