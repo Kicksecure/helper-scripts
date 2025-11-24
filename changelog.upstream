@@ -1,8 +1,27 @@
+commit 2a83044d2ddf2ab4f1da8eadcd8935c99dfd74d6
+Merge: 96f8969 d216761
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 24 03:07:15 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 96f8969d417ee2aa81e8a82740b6c590c19c891a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 24 08:03:12 2025 +0000
+
+    bumped changelog version
+
 commit 4c1fad0b9a8d58704b7fb5ce9dd0e359e8d365f0
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Nov 24 02:39:44 2025 -0500
 
     fix
+
+commit d21676124fa100415ac6dc673ba4525c59cc166e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Nov 23 10:21:56 2025 -0600
+
+    Fix word-splitting in systemd-notify.bsh
 
 commit 8cd32e79c5dc21ef4dcfe6925d882e58ef04cded
 Author: Patrick Schleizer <adrelanos@whonix.org>
