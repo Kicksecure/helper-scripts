@@ -1,3 +1,15 @@
+commit 252da770f49ddefb95f42a2374854ebb889ac319
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 24 04:37:32 2025 -0500
+
+    add `/usr/libexec/helper-scripts/system-ready-check-user`
+
+commit 21b1a6064e9fb0aec125d34eea13d19d837ef514
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 24 08:42:36 2025 +0000
+
+    bumped changelog version
+
 commit 2a83044d2ddf2ab4f1da8eadcd8935c99dfd74d6
 Merge: 96f8969 d216761
 Author: Patrick Schleizer <adrelanos@whonix.org>
