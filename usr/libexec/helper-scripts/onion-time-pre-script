@@ -248,7 +248,7 @@ extra guess: Tor consensus might be outdated and download might still be in prog
 
    if [ "$clock_tor_consensus_check_result" = "ok" ]; then
       clock_tor_consensus_check_result="ok"
-      clock_tor_consensus_check_msg="Clock within consensus parameters consensus/valid-after $tor_consensus_valid_after_output and consensus/valid-until $tor_consensus_valid_until_output."
+      clock_tor_consensus_check_msg="Clock within consensus parameters consensus/valid-after '$tor_consensus_valid_after_output' and consensus/valid-until '$tor_consensus_valid_until_output'."
    fi
 
    if [ "$clock_tor_consensus_check_result" = "ok" ]; then
