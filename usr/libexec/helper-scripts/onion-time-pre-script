@@ -193,7 +193,7 @@ tor_bootstrap_check() {
       output_cmd "Tor reports: $tor_bootstrap_status"
       output_cmd "Tor circuit: $tor_circuit_established_word"
 
-      if printf '%s' "$tor_bootstrap_status" | grep -q "REASON=TIMEOUT" ; then
+      if printf '%s\n' "$tor_bootstrap_status" | grep -- "REASON=TIMEOUT" &>/dev/null; then
          output_cmd "Tor reports: REASON=TIMEOUT"
       fi
    fi
