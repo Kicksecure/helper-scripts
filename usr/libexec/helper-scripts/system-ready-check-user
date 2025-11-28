@@ -8,7 +8,8 @@
 # set -o errtrace
 # set -o pipefail
 
-if timeout --kill-after="1" "5" systemctl --user --wait is-system-running; then
+if result="$(timeout --kill-after="1" "5" systemctl --user --wait is-system-running 2>&1)"; then
+  printf '%s\n' "$result"
   exit 0
 fi
 
