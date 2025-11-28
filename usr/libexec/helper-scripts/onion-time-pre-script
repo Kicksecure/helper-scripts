@@ -117,6 +117,21 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo setup-dist"
    fi
 }
 
+tor_dormant_status() {
+   ## sets: tor_dormant_status
+   check_tor_dormant_status ## tor_bootstrap_check.bsh
+
+   if [ "$tor_dormant_status" = "0" ]; then
+      output_cmd "Tor Dormant Result: No, dormant, good. (tor_dormant_type: '$tor_dormant_type')"
+   elif [ "$tor_dormant_status" = "1" ]; then
+      output_cmd "Tor Dormant Result: Yes, dormant. (tor_dormant_type: '$tor_dormant_type')  Sending 'SIGNAL active' and 'SIGNAL newnym' to wake up Tor..."
+      ## https://stackoverflow.com/questions/37135213/check-tor-connection-is-established-before-running-scrapy
+      run_signal_newnym
+   else
+      output_cmd "Tor Dormant Result: Unknown."
+   fi
+}
+
 check_tor_circuit_established_yet() {
    ## sets: check_bootstrap_helper_script
    ## sets: lastpid
@@ -281,13 +296,22 @@ exit_success_if_tor_circuit_already_established() {
       output_cmd "Conclusion: Tor already reports circuit established."
       exit_code=0
       exit "$exit_code"
-   else
-      ## Happened that Tor bootstrap was 100% done but not circuit established.
-      ## Example Tor log:
-      ## Bootstrapped 100% (done): Done
-      ## Our directory information is no longer up-to-date enough to build circuits: We're missing descriptors for 1/2 of our primary entry guards (total microdescriptors: 6967/6984). That's ok. We will try to fetch missing descriptors soon.
-      output_cmd "Conclusion: No Tor circuit established yet."
    fi
+
+   ## https://stackoverflow.com/questions/37135213/check-tor-connection-is-established-before-running-scrapy
+
+   if [ "$tor_bootstrap_percent" = "100" ]; then
+      output_cmd "Conclusion:  No Tor circuit established yet, but Tor bootstrap progress (tor_bootstrap_percent) is 100."
+
+      exit_code=0
+      exit "$exit_code"
+   fi
+
+   ## Happened that Tor bootstrap was 100% done but not circuit established.
+   ## Example Tor log:
+   ## Bootstrapped 100% (done): Done
+   ## Our directory information is no longer up-to-date enough to build circuits: We're missing descriptors for 1/2 of our primary entry guards (total microdescriptors: 6967/6984). That's ok. We will try to fetch missing descriptors soon.
+   output_cmd "Conclusion: No Tor circuit established yet."
 }
 
 anondate_use() {
@@ -321,6 +345,8 @@ te_pe_tb_check() {
    timesanitycheck_static
 
    exit_if_tor_not_yet_enabled
+
+   tor_dormant_status
 
    check_tor_circuit_established_yet
 

@@ -1,0 +1,19 @@
+#!/usr/bin/python3 -su
+
+## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+import sys
+from stem.connection import connect
+import re
+
+controller = connect()
+
+if not controller:
+    sys.exit(255)
+
+dormant_status = controller.get_info("dormant")
+
+print(format(dormant_status))
+
+controller.close()

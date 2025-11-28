@@ -103,6 +103,35 @@ check_tor_bootstrap_helper() {
    check_tor_circuit_established
 }
 
+run_signal_newnym() {
+   check_bootstrap_helper_script="tor-signal-newnym"
+   check_tor_bootstrap_helper_run_helper_script
+}
+
+check_tor_dormant_status() {
+   check_bootstrap_helper_script="tor-dormant-check"
+
+   ## sets: check_bootstrap_helper_script_exit_code
+   ## sets: check_bootstrap_helper_script_output
+   check_tor_bootstrap_helper_run_helper_script
+
+   tor_dormant_status="$check_bootstrap_helper_script_output"
+
+   ## `timeout` returns:
+   ## - 124 if sigterm was sufficient
+   ## - 137 if needed to use kill.
+   if [ "$check_bootstrap_helper_script_exit_code" = "124" ]; then
+      tor_dormant_type="sigterm"
+   elif [ "$check_bootstrap_helper_script_exit_code" = "137" ]; then
+      tor_dormant_type="sigkill"
+   elif [ "$check_bootstrap_helper_script_exit_code" = "254" ]; then
+      tor_dormant_type="invalid-exit-code-please-report-this-bug"
+   else
+      tor_dormant_type="check-ok"
+   fi
+
+}
+
 check_tor_bootstrap_status() {
    check_bootstrap_helper_script="tor-bootstrap-check"
 
