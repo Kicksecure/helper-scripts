@@ -1,3 +1,41 @@
+commit 874fdcbccac8fdbc1afffc05e02740c56e0fe859
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 28 01:29:33 2025 -0500
+
+    * check if Tor is dormant and re-activate Tor
+    * `tor-dormant-check`
+    * `tor-signal-newnym`
+
+commit 71871f999d233871ef33f9deb755e23e50ec1831
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 28 00:24:35 2025 -0500
+
+    output
+
+commit b26926e8838b80b738f6e32ea52f798ab09bc761
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 28 00:23:53 2025 -0500
+
+    fix
+
+commit 0493c4c6c0a111a7e1ab440a57d92523ded8eb53
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 28 00:04:18 2025 -0500
+
+    minor fix: system-ready-check: avoid duplicate output
+
+commit 66a8800d183387258f823ac117fc20a02fdc5b35
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 27 07:38:03 2025 -0500
+
+    lower debugging
+
+commit f537a4c1b295b746e52271dbaa3d3b2e4a5428bb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 24 11:59:15 2025 +0000
+
+    bumped changelog version
+
 commit 252da770f49ddefb95f42a2374854ebb889ac319
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Nov 24 04:37:32 2025 -0500
