@@ -3,19 +3,10 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# pylint: disable=missing-module-docstring,invalid-name
+
 import sys
-
-from strip_markup.strip_markup import strip_markup
-
-def print_usage():
-    print("strip-html: Usage: strip-html string", file=sys.stderr)
-    sys.exit(1)
-
-def main():
-    print(strip_markup(sys.argv[1]))
+from strip_markup.strip_markup import main
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print_usage()
-        sys.exit(1)
-    main()
+    sys.exit(main())

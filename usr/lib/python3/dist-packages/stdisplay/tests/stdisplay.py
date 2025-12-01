@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3 -su
 
 ## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
 ## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
@@ -17,6 +17,33 @@ from stdisplay.stdisplay import (
     exclude_pattern,
     stdisplay,
 )
+
+
+## This is split into a global so it can be used by sanitize_string.py's tests.
+simple_escape_cases: list[tuple[str, str]] = [
+    ("\a", "_"),
+    ("\b", "_"),
+    ("\t", "\t"),
+    ("\n", "\n"),
+    ("\v", "_"),
+    ("\f", "_"),
+    ("\r", "_"),
+    ("\a\n\b\t\v\f\r", "_\n_\t___"),
+    ("\0", "_"),
+    ("\1", "_"),
+    ("\u0061", "a"),
+    ("\u00d6 or \u00f6", "_ or _"),
+    ("Ö or ö", "_ or _"),
+    ("\x1b]8;;", "_]8;;"),
+    ("a\x1b]8;;b", "a_]8;;b"),
+    ("a\x1b]8;;", "a_]8;;"),
+    ("a\x1b] 8;;", "a_] 8;;"),
+    ("a\x1b ]8;;", "a_ ]8;;"),
+    ("\033", "_"),
+    ("\033[", "_["),
+    ("\x1b[2K", "_[2K"),
+    ("\\x1b[2K", "\\x1b[2K"),
+]
 
 
 class TestSTDisplay(unittest.TestCase):
@@ -81,31 +108,7 @@ class TestSTDisplay(unittest.TestCase):
         """
         Test ESC sequence.
         """
-        cases = [
-            ("\a", "_"),
-            ("\b", "_"),
-            ("\t", "\t"),
-            ("\n", "\n"),
-            ("\v", "_"),
-            ("\f", "_"),
-            ("\r", "_"),
-            ("\a\n\b\t\v\f\r", "_\n_\t___"),
-            ("\0", "_"),
-            ("\1", "_"),
-            ("\u0061", "a"),
-            ("\u00d6 or \u00f6", "_ or _"),
-            ("Ö or ö", "_ or _"),
-            ("\x1b]8;;", "_]8;;"),
-            ("a\x1b]8;;b", "a_]8;;b"),
-            ("a\x1b]8;;", "a_]8;;"),
-            ("a\x1b] 8;;", "a_] 8;;"),
-            ("a\x1b ]8;;", "a_ ]8;;"),
-            ("\033", "_"),
-            ("\033[", "_["),
-            ("\x1b[2K", "_[2K"),
-            ("\\x1b[2K", "\\x1b[2K"),
-        ]
-        self.run_stdisplay_cases(cases)
+        self.run_stdisplay_cases(simple_escape_cases)
 
     def test_stdisplay_sgr(self) -> None:
         """

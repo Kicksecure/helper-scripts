@@ -10,16 +10,21 @@ black=(black --config="${pyrc}" --color --diff --check)
 pylint=(pylint --rcfile="${pyrc}")
 mypy=(mypy --config-file="${pyrc}")
 
-cd "${pythonpath}/stdisplay/"
-# Ideally, these variables should be ignored by the tests...
-NO_COLOR="" COLORTERM="" TERM="xterm-direct" "${pytest[@]}" "${@}"
-"${black[@]}" .
-find . -type f -name "*.py" -print0 | xargs -0 "${pylint[@]}"
-"${mypy[@]}" .
+py_lib_to_test_list=(stdisplay sanitize_string strip_markup)
 
-stdin_utils_to_stdout=(stcat stcatn)
-stdin_utils_to_file=(sttee stsponge)
-stdin_utils=("${stdin_utils_to_stdout[@]}" "${stdin_utils_to_file[@]}")
+for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
+  cd "${pythonpath}/${py_lib_to_test}/"
+  # Ideally, these variables should be ignored by the tests...
+  NO_COLOR="" COLORTERM="" TERM="xterm-direct" "${pytest[@]}" "${@}"
+  "${black[@]}" .
+  #find . -type f -name "*.py" -print0 | xargs -0 "${pylint[@]}"
+  "${pylint[@]}" .
+  "${mypy[@]}" .
+done
+
+stdin_file_read_utils=(stcat stcatn)
+stdin_implicit_read_utils=(sttee stsponge strip-html sanitize-string)
+stdin_utils=("${stdin_file_read_utils[@]}" "${stdin_implicit_read_utils[@]}")
 utils=(stprint stecho "${stdin_utils[@]}")
 cd "${git_toplevel}/usr/bin"
 "${black[@]}" -- "${utils[@]}"
@@ -28,11 +33,11 @@ for file in "${utils[@]}"; do
   "${mypy[@]}" -- "${file}"
 done
 
-for util in "${stdin_utils_to_stdout[@]}"; do
+for util in "${stdin_file_read_utils[@]}"; do
   ./"${util}" <&-
   ./"${util}" - <&-
 done
-for util in "${stdin_utils_to_file[@]}"; do
+for util in "${stdin_implicit_read_utils[@]}"; do
   ./"${util}" <&-
 done
 

@@ -3,38 +3,10 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# pylint: disable=missing-module-docstring,invalid-name
+
 import sys
-
-from sanitize_string.sanitize_string import sanitize_string
-
-def print_usage():
-    print(
-        "sanitize-string: Usage: sanitize-string string [max_length]",
-        file=sys.stderr,
-    )
-    sys.exit(1)
-
-def main():
-    untrusted_string: str | None = None
-    max_string_length: int | None = None
-
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print_usage()
-    untrusted_string = sys.argv[1]
-
-    if len(sys.argv) == 3:
-        try:
-            max_string_length = int(sys.argv[2])
-        except ValueError:
-            print_usage()
-
-    assert untrusted_string is not None
-
-    sanitized_string: str = sanitize_string(untrusted_string)
-    if max_string_length is not None:
-        sys.stdout.write(sanitized_string[:max_string_length])
-    else:
-        sys.stdout.write(sanitized_string)
+from sanitize_string.sanitize_string import main
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
