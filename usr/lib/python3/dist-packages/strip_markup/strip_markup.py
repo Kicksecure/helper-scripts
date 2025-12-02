@@ -3,44 +3,71 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-from io import StringIO
-from html.parser import HTMLParser
+"""
+strip_markup.py: Strips HTML-like markup from a string.
+"""
 
-## Inspired by https://stackoverflow.com/a/925630/19474638
-class StripMarkupEngine(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.reset()
-        self.convert_charrefs = True
-        self.text = StringIO()
+import sys
+from .strip_markup_lib import strip_markup
 
-    def handle_data(self, data):
-        self.text.write(data)
 
-    def get_data(self):
-        return self.text.getvalue()
+def print_usage() -> None:
+    """
+    Prints usage information.
+    """
 
-def strip_markup(untrusted_string):
-    markup_stripper = StripMarkupEngine()
-    markup_stripper.feed(untrusted_string)
-    strip_one_string = markup_stripper.get_data()
-    markup_stripper = StripMarkupEngine()
-    markup_stripper.feed(strip_one_string)
-    strip_two_string = markup_stripper.get_data()
-    if strip_one_string == strip_two_string:
-        return strip_one_string
-
-    ## If we get this far, the second strip attempt further transformed the
-    ## text, indicating an attempt to maliciously circumvent the stripper.
-    ## Sanitize the malicious text by changing all '<', '>', and '&'
-    ## characters to underscores. See
-    ## https://stackoverflow.com/a/10371699/19474638
-    ##
-    ## Note that we sanitize strip_one_string, NOT strip_two_string, so that
-    ## the neutered malicious text is displayed to the user. This is so that
-    ## the user is alerted to something odd happening.
-    sanitized_string = "".join(
-        "_" if char in ["<", ">", "&"] else char
-        for char in strip_one_string
+    print(
+        "strip-markup: Usage: strip-markup [--help] [string]\n"
+        + "  If no string is provided as an argument, the string is read from "
+        + "standard input.",
+        file=sys.stderr,
     )
-    return sanitized_string
+
+
+def main() -> int:
+    """
+    Main function.
+    """
+
+    untrusted_string: str | None = None
+
+    ## Process arguments
+    if len(sys.argv) > 1:
+        ## Parse options
+        arg_list: list[str] = sys.argv[1:]
+        while len(arg_list) > 0:
+            arg = arg_list[0]
+            # pylint: disable=no-else-return
+            if arg in ("--help", "-h"):
+                print_usage()
+                return 0
+            elif arg == "--":
+                arg_list.pop(0)
+                break
+            else:
+                break
+
+        ## Parse positional arguments
+        if len(arg_list) > 1:
+            print_usage()
+            return 1
+        untrusted_string = arg_list[0]
+
+    ## Read untrusted_string from stdin if needed
+    if untrusted_string is None:
+        if sys.stdin is not None:
+            if "pytest" not in sys.modules:
+                sys.stdin.reconfigure(errors="ignore")  # type: ignore
+            untrusted_string = sys.stdin.read()
+        else:
+            ## No way to get an untrusted string, print nothing and
+            ## exit successfully
+            return 0
+
+    ## Sanitize and print
+    sys.stdout.write(strip_markup(untrusted_string))
+    return 0
+
+
+if __name__ == "__main__":
+    main()

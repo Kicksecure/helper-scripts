@@ -6,7 +6,7 @@
 # pylint: disable=missing-module-docstring,invalid-name
 
 import sys
-from sanitize_string.sanitize_string import main
+from strip_markup.strip_markup import main
 
 if __name__ == "__main__":
     sys.exit(main())

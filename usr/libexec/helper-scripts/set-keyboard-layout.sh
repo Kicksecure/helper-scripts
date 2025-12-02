@@ -826,6 +826,12 @@ set_system_keymap() {
     || return 1
   printf '%s\n' ""
 
+  printf '%s\n' "$0: INFO: GRUB keymap configuration..."
+  set_grub_keymap \
+    "${args[@]}" \
+    || return 1
+  printf '%s\n' ""
+
   printf '%s\n' "$0: INFO: Reloading keyboard layout..."
   kb_reload_root
 
@@ -868,7 +874,7 @@ set_grub_keymap() {
         shift
         ;;
       '--build-all')
-        printf '%s\n' "$0: ERROR: Cannot combine --build-all arguments other than --read-stdin!" >&2
+        printf '%s\n' "$0: ERROR: Cannot combine --build-all with arguments other than --read-stdin!" >&2
         return 1
         ;;
       '--read-stdin')
