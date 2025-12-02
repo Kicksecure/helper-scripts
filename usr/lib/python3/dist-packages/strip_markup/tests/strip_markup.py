@@ -57,6 +57,7 @@ class TestStripMarkupBase(unittest.TestCase):
         argv0: str,
         stdout_string: str,
         stderr_string: str,
+        args: list[str],
         stdin_string: str,
     ) -> None:
         """
@@ -69,7 +70,7 @@ class TestStripMarkupBase(unittest.TestCase):
         stdin_buf: StringIO = StringIO()
         stdin_buf.write(stdin_string)
         stdin_buf.seek(0)
-        args_arr: list[str] = [argv0]
+        args_arr: list[str] = [argv0, *args]
         with (
             mock.patch.object(sys, "argv", args_arr),
             mock.patch.object(sys, "stdin", stdin_buf),
@@ -139,6 +140,7 @@ probably long enough, so let's let this be the end of it.
                 argv0=argv0,
                 stdout_string=test_case,
                 stderr_string="",
+                args=[*pos_args_prefix],
                 stdin_string=test_case,
             )
 
@@ -159,6 +161,7 @@ probably long enough, so let's let this be the end of it.
                 argv0=argv0,
                 stdout_string=test_case,
                 stderr_string="",
+                args=[*pos_args_prefix],
                 stdin_string=test_case,
             )
 
@@ -239,6 +242,7 @@ document with an embedded script. :)
                 argv0=argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                args=[*pos_args_prefix],
                 stdin_string=test_case[0],
             )
 
@@ -308,6 +312,7 @@ document with an embedded script. :)
                 argv0=argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                args=[*pos_args_prefix],
                 stdin_string=test_case[0],
             )
 
@@ -317,7 +322,7 @@ class TestStripMarkup(TestStripMarkupBase):
     Tests specific to strip_markup.py.
     """
 
-    argv0: str = "strip-html"
+    argv0: str = "strip-markup"
 
     def test_help(self) -> None:
         """
@@ -325,7 +330,7 @@ class TestStripMarkup(TestStripMarkupBase):
         """
 
         help_str: str = """\
-strip-html: Usage: strip-html [--help] [string]
+strip-markup: Usage: strip-markup [--help] [string]
   If no string is provided as an argument, the string is read from standard \
 input.
 """

@@ -26,7 +26,7 @@ def print_usage() -> None:
     )
 
 
-# pylint: disable=too-many-branches
+# pylint: disable=too-many-branches,too-many-return-statements
 def main() -> int:
     """
     Main function.
@@ -36,36 +36,38 @@ def main() -> int:
     max_string_length: int | None = None
 
     ## Process arguments
-    if len(sys.argv) > 1:
-        ## Parse options
-        arg_list: list[str] = sys.argv[1:]
-        while len(arg_list) > 0:
-            arg = arg_list[0]
-            # pylint: disable=no-else-return
-            if arg in ("--help", "-h"):
-                print_usage()
-                return 0
-            elif arg == "--":
-                arg_list.pop(0)
-                break
-            else:
-                break
-
-        ## Parse positional arguments
-        if len(arg_list) > 2 or len(arg_list) < 1:
+    if len(sys.argv) < 2:
+        print_usage()
+        return 1
+    ## Parse options
+    arg_list: list[str] = sys.argv[1:]
+    while len(arg_list) > 0:
+        arg = arg_list[0]
+        # pylint: disable=no-else-return
+        if arg in ("--help", "-h"):
             print_usage()
-            return 1
-        if arg_list[0] != "nolimit":
-            try:
-                max_string_length = int(arg_list[0])
-                if max_string_length < 0:
-                    print_usage()
-                    return 1
-            except ValueError:
+            return 0
+        elif arg == "--":
+            arg_list.pop(0)
+            break
+        else:
+            break
+
+    ## Parse positional arguments
+    if len(arg_list) > 2 or len(arg_list) < 1:
+        print_usage()
+        return 1
+    if arg_list[0] != "nolimit":
+        try:
+            max_string_length = int(arg_list[0])
+            if max_string_length < 0:
                 print_usage()
                 return 1
-        if len(arg_list) == 2:
-            untrusted_string = arg_list[1]
+        except ValueError:
+            print_usage()
+            return 1
+    if len(arg_list) == 2:
+        untrusted_string = arg_list[1]
 
     ## Read untrusted_string from stdin if needed
     if untrusted_string is None:

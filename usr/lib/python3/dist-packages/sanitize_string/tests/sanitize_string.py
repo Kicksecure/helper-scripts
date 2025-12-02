@@ -101,10 +101,11 @@ sanitize-string: Usage: sanitize-string [--help] max_length [string]
                 argv0=self.argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                args=["nolimit"],
                 stdin_string=test_case[0],
             )
 
-    def test_malicious_case(self) -> None:
+    def test_malicious_cases(self) -> None:
         """
         Ensures malicious HTML plus malicious Unicode plus malicious escape
         sequences are handled correctly.
@@ -162,5 +163,73 @@ _b_Not bold!_/b_
                 argv0=self.argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                args=["nolimit"],
+                stdin_string=test_case[0],
+            )
+
+    def test_long_cases(self) -> None:
+        """
+        Ensures sanitize-string's truncation feature works.
+        """
+
+        test_case_list: list[tuple[str, str, str]] = [
+            (
+                "This is a longish string.",
+                "9",
+                "This is a",
+            ),
+            (
+                "This is a longish string.",
+                "15",
+                "This is a longi",
+            ),
+            ("This is a longish string.", "100", "This is a longish string."),
+            (
+                "This is a longish string.",
+                "0",
+                "",
+            ),
+            (
+                "<p>This string is shorter than it looks.</p>",
+                "36",
+                "This string is shorter than it looks",
+            ),
+            (
+                "\x1b[8mThis text is hidden.\x1b[0m",
+                "16",
+                "_[8mThis text is",
+            ),
+            (
+                """\
+This text is multi-line.
+That is, with a newline inserted.""",
+                "42",
+                """\
+This text is multi-line.
+That is, with a n""",
+            ),
+        ]
+
+        for test_case in test_case_list:
+            self._test_args(
+                main_func=sanitize_string_main,
+                argv0=self.argv0,
+                stdout_string=test_case[2],
+                stderr_string="",
+                args=[test_case[1], test_case[0]],
+            )
+            self._test_args(
+                main_func=sanitize_string_main,
+                argv0=self.argv0,
+                stdout_string=test_case[2],
+                stderr_string="",
+                args=["--", test_case[1], test_case[0]],
+            )
+            self._test_stdin(
+                main_func=sanitize_string_main,
+                argv0=self.argv0,
+                stdout_string=test_case[2],
+                stderr_string="",
+                args=[test_case[1]],
                 stdin_string=test_case[0],
             )

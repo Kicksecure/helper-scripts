@@ -17,7 +17,7 @@ def print_usage() -> None:
     """
 
     print(
-        "strip-html: Usage: strip-html [--help] [string]\n"
+        "strip-markup: Usage: strip-markup [--help] [string]\n"
         + "  If no string is provided as an argument, the string is read from "
         + "standard input.",
         file=sys.stderr,

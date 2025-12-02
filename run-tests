@@ -23,7 +23,7 @@ for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
 done
 
 stdin_file_read_utils=(stcat stcatn)
-stdin_implicit_read_utils=(sttee stsponge strip-html sanitize-string)
+stdin_implicit_read_utils=(sttee stsponge strip-markup)
 stdin_utils=("${stdin_file_read_utils[@]}" "${stdin_implicit_read_utils[@]}")
 utils=(stprint stecho "${stdin_utils[@]}")
 cd "${git_toplevel}/usr/bin"
@@ -40,6 +40,10 @@ done
 for util in "${stdin_implicit_read_utils[@]}"; do
   ./"${util}" <&-
 done
+
+## sanitize-string needs special handling because it takes a mandatory output
+## string length argument.
+./sanitize-string -- nolimit <&-
 
 if ! [ -d "${HOME}/trojan-source" ]; then
   printf "%s\n" "WARNING: Not running unicode-testscript, ${HOME}/trojan-source does not exist.
