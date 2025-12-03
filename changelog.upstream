@@ -1,3 +1,89 @@
+commit 9cfb48c442c9f046d297a7ecdf41fc24e0b0d489
+Merge: d449a5c 3e071fd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 3 03:20:33 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 3e071fdf6684c77e0ed6ac91575bca9e50ff809b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 2 22:52:43 2025 -0600
+
+    Handle a missing executable name in append-shared better, fix comment
+
+commit 48a994b0774c7d451fd10818c30d530be20996d0
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 2 22:42:58 2025 -0600
+
+    Use python3 -su shebangs everywhere
+
+commit e20e4540f457f0aa64d62e65fe099ff5c72f2f3b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 2 22:27:10 2025 -0600
+
+    Work in various stdisplay enhancements from ChatGPT Codex
+
+commit 986b5cde9fe2af996db33c61234d9cc296d9fc22
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 2 20:31:52 2025 -0600
+
+    Run CI when files under certain paths are pushed, attempt 2
+
+commit 0d9cad74b2e1a8736334c5e685e47bfd1572b9f7
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 2 19:19:46 2025 -0600
+
+    sanitize_string: Add another escape code strip stage (bug found by ChatGPT Codex)
+
+commit 9f7b4435f784f5e1b000a809f4ca72cac8d37357
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 2 19:18:18 2025 -0600
+
+    Trigger CI runs when sanitize_string or strip_markup are modified
+
+commit 1d8b2fea63c8852395a583a8daf9ae11333e8128
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 2 19:14:51 2025 -0600
+
+    Silence spurious linter gripes caused by testing against multiple versions of pylint
+
+commit d449a5c9b69eff3a063b3c9e2cb1577b2d3550e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 2 04:35:29 2025 -0500
+
+    sanity test
+
+commit ff7e9287ad26c90785c5ce2d70973dcdb9ffd313
+Merge: 2085f74 76e7132
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 1 23:46:12 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 76e7132655ba157ed94bec272ef5c2c8e84a2281
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Dec 1 21:44:32 2025 -0600
+
+    Add GRUB keymap configuration to set-system-keymap, fix missing word
+
+commit 096674a566726633ef58b3b15ce2bc1f06f8b39f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Dec 1 20:27:50 2025 -0600
+
+    Rename strip-html -> strip-markup, fix sanitize-string argument parsing, add string truncation tests for sanitize-string
+
+commit d4ce304c3510119acbbfe28ab8fa6932afc08b9c
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Nov 30 20:54:07 2025 -0600
+
+    Refactor strip_markup and sanitize_string libraries, add tests
+
+commit 2085f744cd34545b5b5f1747aba56f1c49683107
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 29 06:07:18 2025 +0000
+
+    bumped changelog version
+
 commit 874fdcbccac8fdbc1afffc05e02740c56e0fe859
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Nov 28 01:29:33 2025 -0500
