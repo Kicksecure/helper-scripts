@@ -3,6 +3,8 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# pylint: disable=unknown-option-value
+
 """
 sanitize_string_lib.py: Library for stripping markup and control characters
 from a string.

@@ -3,7 +3,7 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-# pylint: disable=missing-module-docstring,fixme
+# pylint: disable=missing-module-docstring,fixme,unknown-option-value
 
 from strip_markup.tests.strip_markup import TestStripMarkupBase
 from stdisplay.tests.stdisplay import simple_escape_cases
