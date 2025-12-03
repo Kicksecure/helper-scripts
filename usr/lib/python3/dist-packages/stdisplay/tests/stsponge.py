@@ -60,6 +60,33 @@ class TestSTSponge(stdisplay.tests.TestSTBase):
             self.text_dirty_sanitized,
             Path(self.tmpfiles["fill2"]).read_text(encoding="utf-8"),
         )
+        # Proper handling of invalid bytes, \udcff = surrogate escape for 'ff'
+        # byte, which is how Python interprets such bytes into strings
+        self.assertEqual("a_b\n", self._test_util(stdin="a\udcffb\n"))
+        self.assertEqual(
+            "",
+            self._test_util(stdin="a\udcffb\n", argv=[self.tmpfiles["fill"]]),
+        )
+        self.assertEqual(
+            "a_b\n",
+            Path(self.tmpfiles["fill"]).read_text(encoding="utf-8"),
+        )
+        # Proper handling of malicious Unicode
+        self.assertEqual(
+            self.text_malicious_unicode_sanitized,
+            self._test_util(stdin=self.text_malicious_unicode),
+        )
+        self.assertEqual(
+            "",
+            self._test_util(
+                stdin=self.text_malicious_unicode,
+                argv=[self.tmpfiles["fill"]],
+            ),
+        )
+        self.assertEqual(
+            self.text_malicious_unicode_sanitized,
+            Path(self.tmpfiles["fill"]).read_text(encoding="utf-8"),
+        )
 
 
 if __name__ == "__main__":
