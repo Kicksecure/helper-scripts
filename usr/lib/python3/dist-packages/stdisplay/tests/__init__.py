@@ -34,25 +34,45 @@ class TestSTBase(unittest.TestCase):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.text_dirty = "\x1b[0mTest\x1b[2Kor\x1b]1;is\x1b\n[m"
         self.text_dirty_sanitized = "\x1b[0mTest_[2Kor_]1;is_\n[m"
+        self.text_malicious_unicode = """\
+\N{RIGHT-TO-LEFT ISOLATE}\
+\N{LEFT-TO-RIGHT ISOLATE}\
+not commented\
+\N{POP DIRECTIONAL ISOLATE}\
+\N{LEFT-TO-RIGHT ISOLATE}\
+//\
+\N{POP DIRECTIONAL ISOLATE}\
+\N{POP DIRECTIONAL ISOLATE} \
+commented\n\
+"""
+        self.text_malicious_unicode_sanitized = (
+            "__not commented__//__ commented\n"
+        )
         super().__init__(*args, **kwargs)
 
     def setUp(self) -> None:
         self.tmpfiles_list = []
-        contents = ["a b\n", "c d"]
+        contents = [b"a b\n", b"c d"]
         self.tmpdir = tempfile.mkdtemp()
-        for i in range(0, 6):
+        for i in range(0, 8):
             self.tmpfiles_list.append(os.path.join(self.tmpdir, str(i)))
-            with open(self.tmpfiles_list[i], "w", encoding="utf-8") as file:
+            with open(self.tmpfiles_list[i], "wb") as file:
                 if i == 0:
-                    file.write("")
+                    file.write(b"")
                 elif i == 1:
-                    file.write("".join(contents))
+                    file.write(b"".join(contents))
                 elif i == 2:
-                    file.write("".join(contents) + "\n")
+                    file.write(b"".join(contents) + b"\n")
                 elif i == 3:
-                    file.write(self.text_dirty)
+                    file.write(self.text_dirty.encode(encoding="utf-8"))
                 elif i in [4, 5]:
                     pass
+                elif i == 6:
+                    file.write(b"a\xffb\n")
+                elif i == 7:
+                    file.write(
+                        self.text_malicious_unicode.encode(encoding="utf-8")
+                    )
                 file.flush()
                 file.close()
         self.tmpfiles = {
@@ -62,6 +82,8 @@ class TestSTBase(unittest.TestCase):
             "dirty": self.tmpfiles_list[3],
             "fill": self.tmpfiles_list[4],
             "fill2": self.tmpfiles_list[5],
+            "invalid": self.tmpfiles_list[6],
+            "malicious_unicode": self.tmpfiles_list[7],
         }
 
     def tearDown(self) -> None:

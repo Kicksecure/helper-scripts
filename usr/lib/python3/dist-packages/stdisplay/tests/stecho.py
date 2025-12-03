@@ -32,6 +32,13 @@ class TestSTEcho(stdisplay.tests.TestSTBase):
             self.text_dirty_sanitized + "\n",
             self._test_util(argv=[self.text_dirty]),
         )
+        self.assertEqual(
+            self.text_malicious_unicode_sanitized + "\n",
+            self._test_util(argv=[self.text_malicious_unicode]),
+        )
+        ## \udcff == surrogate escape for 'ff' byte, this is what the string
+        ## in sys.argv would contain if running `stecho $'a\xffb\n'`
+        self.assertEqual("a_b\n\n", self._test_util(argv=["a\udcffb\n"]))
 
 
 if __name__ == "__main__":

@@ -3,6 +3,8 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# pylint: disable=unknown-option-value
+
 """
 strip_markup_lib.py: Library for stripping markup from a string.
 """

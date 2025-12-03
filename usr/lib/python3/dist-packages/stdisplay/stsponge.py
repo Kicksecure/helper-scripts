@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3 -su
 
 ## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
 ## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
@@ -17,7 +17,7 @@ def main() -> None:
     """Safely print stdin to stdout or file."""
     # https://github.com/pytest-dev/pytest/issues/4843
     if "pytest" not in modules and stdin is not None:
-        stdin.reconfigure(errors="ignore")  # type: ignore
+        stdin.reconfigure(errors="replace")  # type: ignore
     untrusted_text_list = []
     if stdin is not None:
         for untrusted_text in stdin:

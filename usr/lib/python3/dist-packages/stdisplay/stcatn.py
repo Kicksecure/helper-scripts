@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3 -su
 
 ## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
 ## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
@@ -21,7 +21,7 @@ def main() -> None:
     """
     # https://github.com/pytest-dev/pytest/issues/4843
     if "pytest" not in modules and stdin is not None:
-        stdin.reconfigure(errors="ignore")  # type: ignore
+        stdin.reconfigure(errors="replace")  # type: ignore
     if len(argv) == 1:
         if stdin is not None:
             for untrusted_line in stdin:
@@ -37,7 +37,9 @@ def main() -> None:
             ## We cannot read the entire file in at once like we do with
             ## stcat, since we need to trim trailing whitespace from each
             ## individual line in the file.
-            with open(untrusted_arg, "r", encoding="utf-8") as untrusted_file:
+            with open(
+                untrusted_arg, "r", encoding="utf-8", errors="replace"
+            ) as untrusted_file:
                 for untrusted_line in untrusted_file:
                     stdout.write(stdisplay(untrusted_line).rstrip() + "\n")
     stdout.flush()
