@@ -4,11 +4,15 @@ on:
   push:
     paths:
       - usr/lib/python3/dist-packages/stdisplay/
+      - usr/lib/python3/dist-packages/sanitize_string/
+      - usr/lib/python3/dist-packages/strip_markup/
       - .github/workflows/lint.yml
       - run-tests
   pull_request:
     paths:
       - usr/lib/python3/dist-packages/stdisplay/
+      - usr/lib/python3/dist-packages/sanitize_string/
+      - usr/lib/python3/dist-packages/strip_markup/
       - .github/workflows/lint.yml
       - run-tests
 
