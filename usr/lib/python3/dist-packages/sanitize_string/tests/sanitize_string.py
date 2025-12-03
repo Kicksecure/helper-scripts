@@ -129,6 +129,7 @@ Won't blow up world, because it's commented :) \x1b[8mor not!\x1b[0m
 </script></head><body>
 <p>There really isn't bold text below, I promise!</p>
 <<b>b>Not bold!<</b>/b>
+<p>&#27;[8mThis text might become invisible.&#27;[0m</p>
 </body></html>
 """,
                 """\
@@ -138,6 +139,7 @@ _[8mor not!_[0m
 
 There really isn't bold text below, I promise!
 _b_Not bold!_/b_
+[8mThis text might become invisible.[0m
 
 """,
             ),
