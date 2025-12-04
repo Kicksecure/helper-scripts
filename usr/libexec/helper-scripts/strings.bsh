@@ -139,7 +139,7 @@ trim_collapse_split() {
    printf '%s\n' "$formatted_list"
 }
 
-## success: whole numbers such as 1 2 3 456 etc.
+## success: whole numbers such as 1 2 3 456 etc. (purely numeric only) (isnum)
 ## fail:
 ## 5.5
 ## 5,500
