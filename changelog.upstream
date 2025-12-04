@@ -1,3 +1,21 @@
+commit 1d47656cdeba909b03066c9a1c20c0582e1c0a93
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 4 06:11:48 2025 -0500
+
+    luks-path-check: fix detection if using Btrfs (to fix swap-file-creator on Btrfs failing to detect encrypted LUKS device)
+
+commit e7ab45eae64b397f6916221e4a07cace90fcab9f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 4 05:08:13 2025 -0500
+
+    comments
+
+commit 2f170f47f962da8295f35a0347b09f0b9bd78b4b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 4 09:30:47 2025 +0000
+
+    bumped changelog version
+
 commit 9292a454c0c958e1759c1de392b914a2318aa7e7
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Dec 4 04:04:27 2025 -0500
