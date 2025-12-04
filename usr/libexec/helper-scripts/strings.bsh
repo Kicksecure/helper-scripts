@@ -97,16 +97,16 @@ check_is_not_empty_and_only_one_line() {
    varname="$1"
    value="${!varname}"
 
-   # Trim leading/trailing spaces while preserving newlines.
+   ## Trim leading/trailing spaces while preserving newlines.
    IFS= read -r trimmed_value <<< "$value"
 
-   # Check if value is empty or only contains spaces/newlines.
+   ## Check if value is empty or only contains spaces/newlines.
    if [[ -z "$trimmed_value" || -z "${value//[[:space:]]/}" ]]; then
       printf '%s\n' "$0: ERROR: Variable '$varname' is empty or contains only whitespace/newlines." >&2
       return 1
    fi
 
-   # Count the number of lines using mapfile.
+   ## Count the number of lines using mapfile.
    mapfile -t lines <<< "$value"
    number_of_lines="${#lines[@]}"
 
