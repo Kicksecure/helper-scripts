@@ -74,8 +74,7 @@ def main() -> int:
     ## Read untrusted_string from stdin if needed
     if untrusted_string is None:
         if sys.stdin is not None:
-            if "pytest" not in sys.modules:
-                sys.stdin.reconfigure(errors="ignore")  # type: ignore
+            sys.stdin.reconfigure(errors="ignore")  # type: ignore
             untrusted_string = sys.stdin.read()
         else:
             ## No way to get an untrusted string, print nothing and

@@ -19,31 +19,48 @@ class TestSanitizeString(TestStripMarkupBase):
     maxDiff = None
 
     argv0: str = "sanitize-string"
+    help_str: str = """\
+sanitize-string: Usage: sanitize-string [--help] max_length [string]
+  If no string is provided as an argument, the string is read from standard input.
+  Set max_length to 'nolimit' to allow arbitrarily long strings.
+"""
 
     def test_help(self) -> None:
         """
         Ensure sanitize_string.py's help output is as expected.
         """
 
-        help_str: str = """\
-sanitize-string: Usage: sanitize-string [--help] max_length [string]
-  If no string is provided as an argument, the string is read from standard input.
-  Set max_length to 'nolimit' to allow arbitrarily long strings.
-"""
-        self._test_args(
-            main_func=sanitize_string_main,
-            argv0=self.argv0,
-            stdout_string="",
-            stderr_string=help_str,
-            args=["--help"],
-        )
-        self._test_args(
-            main_func=sanitize_string_main,
-            argv0=self.argv0,
-            stdout_string="",
-            stderr_string=help_str,
-            args=["-h"],
-        )
+        for test_arg in ("--help", "-h"):
+            self._test_args(
+                main_func=sanitize_string_main,
+                argv0=self.argv0,
+                stdout_string="",
+                stderr_string=self.help_str,
+                exit_code=0,
+                args=[test_arg],
+            )
+
+    def test_usage_errors(self) -> None:
+        """
+        Ensure argument validation errors emit usage and exit non-zero.
+        """
+
+        test_args_list: list[list[str]] = [
+            [],
+            ["-5"],
+            ["not-a-number"],
+            ["1", "2", "3"],
+        ]
+
+        for test_args in test_args_list:
+            self._test_args(
+                main_func=sanitize_string_main,
+                argv0=self.argv0,
+                stdout_string="",
+                stderr_string=self.help_str,
+                exit_code=1,
+                args=test_args,
+            )
 
     def test_safe_strings(self) -> None:
         """
@@ -87,6 +104,7 @@ sanitize-string: Usage: sanitize-string [--help] max_length [string]
                 argv0=self.argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                exit_code=0,
                 args=["nolimit", test_case[0]],
             )
             self._test_args(
@@ -94,6 +112,7 @@ sanitize-string: Usage: sanitize-string [--help] max_length [string]
                 argv0=self.argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                exit_code=0,
                 args=["--", "nolimit", test_case[0]],
             )
             self._test_stdin(
@@ -151,6 +170,7 @@ _b_Not bold!_/b_
                 argv0=self.argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                exit_code=0,
                 args=["nolimit", test_case[0]],
             )
             self._test_args(
@@ -158,6 +178,7 @@ _b_Not bold!_/b_
                 argv0=self.argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                exit_code=0,
                 args=["--", "nolimit", test_case[0]],
             )
             self._test_stdin(
@@ -218,6 +239,7 @@ That is, with a n""",
                 argv0=self.argv0,
                 stdout_string=test_case[2],
                 stderr_string="",
+                exit_code=0,
                 args=[test_case[1], test_case[0]],
             )
             self._test_args(
@@ -225,6 +247,7 @@ That is, with a n""",
                 argv0=self.argv0,
                 stdout_string=test_case[2],
                 stderr_string="",
+                exit_code=0,
                 args=["--", test_case[1], test_case[0]],
             )
             self._test_stdin(
