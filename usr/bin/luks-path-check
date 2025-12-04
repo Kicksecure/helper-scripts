@@ -24,9 +24,12 @@ bail_if_not_on_luks() {
 
    dirname_file="${file_name%/*}"
 
+   ## 'findmnt' does not support end-of options ("--").
    file_mount_device="$(findmnt --noheadings --output=SOURCE --target "$dirname_file")" || true
    ## example:
    #file_mount_device="/dev/mapper/dmroot"
+   ## TODO: broken on Btrfs due to '[/@]' at the end of string 'file_mount_device'.
+
    if [ -z "$file_mount_device" ]; then
       printf '%s\n' "ERROR: No mountpoint source device found for file '$file_name'." >&2
       exit_function 1
