@@ -7,7 +7,7 @@
 
 import unittest
 import sys
-from io import StringIO
+from io import BytesIO, TextIOWrapper
 from typing import Callable
 from unittest import mock
 from strip_markup.strip_markup import main as strip_markup_main
@@ -28,6 +28,7 @@ class TestStripMarkupBase(unittest.TestCase):
         argv0: str,
         stdout_string: str,
         stderr_string: str,
+        exit_code: int,
         args: list[str],
     ) -> None:
         """
@@ -36,17 +37,32 @@ class TestStripMarkupBase(unittest.TestCase):
         """
 
         args_arr: list[str] = [argv0, *args]
-        stdout_buf: StringIO = StringIO()
-        stderr_buf: StringIO = StringIO()
+        stdout_buf_internal: BytesIO = BytesIO()
+        stderr_buf_internal: BytesIO = BytesIO()
+        stdout_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdout_buf_internal,
+            encoding="utf-8",
+            newline="\n",
+            errors="surrogateescape",
+        )
+        stderr_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stderr_buf_internal,
+            encoding="utf-8",
+            newline="\n",
+            errors="surrogateescape",
+        )
         with (
             mock.patch.object(sys, "argv", args_arr),
             mock.patch.object(sys, "stdout", stdout_buf),
             mock.patch.object(sys, "stderr", stderr_buf),
+            mock.patch.object(sys, "stdin", None),
         ):
-            exit_code: int = main_func()
-        self.assertEqual(stdout_buf.getvalue(), stdout_string)
-        self.assertEqual(stderr_buf.getvalue(), stderr_string)
-        self.assertEqual(exit_code, 0)
+            ret_exit_code: int = main_func()
+        stdout_buf.seek(0, 0)
+        stderr_buf.seek(0, 0)
+        self.assertEqual(stdout_buf.read(), stdout_string)
+        self.assertEqual(stderr_buf.read(), stderr_string)
+        self.assertEqual(ret_exit_code, exit_code)
         stdout_buf.close()
         stderr_buf.close()
 
@@ -65,11 +81,29 @@ class TestStripMarkupBase(unittest.TestCase):
         ensures its output matches an expected value.
         """
 
-        stdout_buf: StringIO = StringIO()
-        stderr_buf: StringIO = StringIO()
-        stdin_buf: StringIO = StringIO()
+        stdout_buf_internal: BytesIO = BytesIO()
+        stderr_buf_internal: BytesIO = BytesIO()
+        stdin_buf_internal: BytesIO = BytesIO()
+        stdout_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdout_buf_internal,
+            encoding="utf-8",
+            newline="\n",
+            errors="surrogateescape",
+        )
+        stderr_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stderr_buf_internal,
+            encoding="utf-8",
+            newline="\n",
+            errors="surrogateescape",
+        )
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdin_buf_internal,
+            encoding="utf-8",
+            newline="\n",
+            errors="surrogateescape",
+        )
         stdin_buf.write(stdin_string)
-        stdin_buf.seek(0)
+        stdin_buf.seek(0, 0)
         args_arr: list[str] = [argv0, *args]
         with (
             mock.patch.object(sys, "argv", args_arr),
@@ -78,8 +112,10 @@ class TestStripMarkupBase(unittest.TestCase):
             mock.patch.object(sys, "stderr", stderr_buf),
         ):
             exit_code: int = main_func()
-        self.assertEqual(stdout_buf.getvalue(), stdout_string)
-        self.assertEqual(stderr_buf.getvalue(), stderr_string)
+        stdout_buf.seek(0, 0)
+        stderr_buf.seek(0, 0)
+        self.assertEqual(stdout_buf.read(), stdout_string)
+        self.assertEqual(stderr_buf.read(), stderr_string)
         self.assertEqual(exit_code, 0)
         stdout_buf.close()
         stderr_buf.close()
@@ -126,6 +162,7 @@ probably long enough, so let's let this be the end of it.
                 argv0=argv0,
                 stdout_string=test_case,
                 stderr_string="",
+                exit_code=0,
                 args=[*pos_args_prefix, test_case],
             )
             self._test_args(
@@ -133,6 +170,7 @@ probably long enough, so let's let this be the end of it.
                 argv0=argv0,
                 stdout_string=test_case,
                 stderr_string="",
+                exit_code=0,
                 args=["--", *pos_args_prefix, test_case],
             )
             self._test_stdin(
@@ -154,6 +192,7 @@ probably long enough, so let's let this be the end of it.
                 argv0=argv0,
                 stdout_string=test_case,
                 stderr_string="",
+                exit_code=0,
                 args=["--", *pos_args_prefix, test_case],
             )
             self._test_stdin(
@@ -228,6 +267,7 @@ document with an embedded script. :)
                 argv0=argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                exit_code=0,
                 args=[*pos_args_prefix, test_case[0]],
             )
             self._test_args(
@@ -235,6 +275,7 @@ document with an embedded script. :)
                 argv0=argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                exit_code=0,
                 args=["--", *pos_args_prefix, test_case[0]],
             )
             self._test_stdin(
@@ -298,6 +339,7 @@ document with an embedded script. :)
                 argv0=argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                exit_code=0,
                 args=[*pos_args_prefix, test_case[0]],
             )
             self._test_args(
@@ -305,6 +347,7 @@ document with an embedded script. :)
                 argv0=argv0,
                 stdout_string=test_case[1],
                 stderr_string="",
+                exit_code=0,
                 args=["--", *pos_args_prefix, test_case[0]],
             )
             self._test_stdin(
@@ -339,6 +382,7 @@ input.
             argv0=self.argv0,
             stdout_string="",
             stderr_string=help_str,
+            exit_code=0,
             args=["--help"],
         )
         self._test_args(
@@ -346,6 +390,7 @@ input.
             argv0=self.argv0,
             stdout_string="",
             stderr_string=help_str,
+            exit_code=0,
             args=["-h"],
         )
 

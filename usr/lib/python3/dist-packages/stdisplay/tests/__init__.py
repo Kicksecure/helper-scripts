@@ -43,10 +43,10 @@ not commented\
 //\
 \N{POP DIRECTIONAL ISOLATE}\
 \N{POP DIRECTIONAL ISOLATE} \
-commented\n\
+commented\x00after null\n\
 """
         self.text_malicious_unicode_sanitized = (
-            "__not commented__//__ commented\n"
+            "__not commented__//__ commented_after null\n"
         )
         super().__init__(*args, **kwargs)
 
