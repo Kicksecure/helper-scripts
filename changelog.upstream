@@ -1,3 +1,41 @@
+commit 23474fe4abce0484315ef3213a2307c24c244f92
+Merge: 65717e7 3c64c17
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 4 02:50:24 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 3c64c17ed5f4da79f92e003aea9de5ddc4ae7870
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Dec 3 22:47:24 2025 -0600
+
+    stdisplay: Accept upper-case or mixed-case values in COLORTERM (suggested by ChatGPT Codex)
+
+commit 2f28372956679b9537c2fa85118f3fe2e82469d9
+Merge: ad74840 65717e7
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Dec 3 20:34:29 2025 -0600
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit ad74840f472b5eccd5c127acd56501cd9cdda5e1
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Dec 3 20:22:11 2025 -0600
+
+    Add invalid argument tests to sanitize_string as suggested by ChatGPT Codex, make mocked stdin in strip_markup and sanitize_string tests more similar to real stdin
+
+commit 1967b0dc919c0772db432c2155d5a97ce33f1e32
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Dec 3 19:19:18 2025 -0600
+
+    Optimize stsponge memory usage, add NUL byte check to stdisplay malicious Unicode test
+
+commit 65717e76b14132c88acb0d9cc6ebb7788ee40733
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 3 08:25:27 2025 +0000
+
+    bumped changelog version
+
 commit 9cfb48c442c9f046d297a7ecdf41fc24e0b0d489
 Merge: d449a5c 3e071fd
 Author: Patrick Schleizer <adrelanos@whonix.org>
