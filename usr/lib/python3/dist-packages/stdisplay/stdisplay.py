@@ -70,7 +70,8 @@ def get_sgr_support() -> int:
     """
     if environ.get("NO_COLOR"):
         return -1
-    if environ.get("COLORTERM") in ("truecolor", "24bit"):
+    colorterm: str | None = environ.get("COLORTERM")
+    if colorterm and colorterm.lower() in ("truecolor", "24bit"):
         return 2**24
     try:
         setupterm()
