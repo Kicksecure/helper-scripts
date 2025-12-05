@@ -5,6 +5,9 @@
 
 ## https://www.kicksecure.com/wiki/Unicode#grep-find-unicode-wrapper
 
+command -v stecho >/dev/null
+command -v sort >/dev/null
+
 ## --binary-files=text - required to find backspace and null character
 grep_args="\
    --files-with-matches \
