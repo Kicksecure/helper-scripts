@@ -3,6 +3,8 @@
 ## Copyright (C) 2022 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## https://www.kicksecure.com/wiki/Unicode#grep-find-unicode-wrapper
+
 ## --binary-files=text - required to find backspace and null character
 grep_args="\
    --files-with-matches \
