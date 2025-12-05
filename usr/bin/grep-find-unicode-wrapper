@@ -71,10 +71,10 @@ set -o errexit
 
 output_message="$(
   {
-    [ -n "$one"   ] && printf '%s\n' "$one"
-    [ -n "$two"   ] && printf '%s\n' "$two"
-    [ -n "$three" ] && printf '%s\n' "$three"
-    [ -n "$four"  ] && printf '%s\n' "$four"
+    [ -n "${one:-}"   ] && printf '%s\n' "$one"   || true
+    [ -n "${two:-}"   ] && printf '%s\n' "$two"   || true
+    [ -n "${three:-}" ] && printf '%s\n' "$three" || true
+    [ -n "${four:-}"  ] && printf '%s\n' "$four"  || true
   } | sort --unique
 )"
 
