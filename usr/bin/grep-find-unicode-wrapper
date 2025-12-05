@@ -36,7 +36,8 @@ output_message="$(printf "%s\n" "$result" | sort --unique)"
 if [ "$output_message" = "" ]; then
    exit 1
 else
-   printf "%s\n" "$output_message"
+   ## Use 'stecho' in case the file names itself contain unicode.
+   stecho "%s\n" "$output_message"
 fi
 
 exit 0
