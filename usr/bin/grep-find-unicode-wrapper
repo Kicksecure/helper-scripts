@@ -48,6 +48,7 @@ $two
 $three
 $four"
 
+## If there are only newlines, these will be removed by 'sort --unique' and collapsed to ''.
 output_message="$(printf "%s\n" "$result" | sort --unique)"
 
 if [ "$output_message" = "" ]; then
