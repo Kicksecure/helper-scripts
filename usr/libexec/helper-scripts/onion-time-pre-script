@@ -122,9 +122,9 @@ tor_dormant_status() {
    check_tor_dormant_status ## tor_bootstrap_check.bsh
 
    if [ "$tor_dormant_status" = "0" ]; then
-      output_cmd "Tor Dormant Result: No, dormant, good. (tor_dormant_type: '$tor_dormant_type')"
+      output_cmd "Tor Dormant Result: No, not dormant, good. (tor_dormant_type: '$tor_dormant_type')"
    elif [ "$tor_dormant_status" = "1" ]; then
-      output_cmd "Tor Dormant Result: Yes, dormant. (tor_dormant_type: '$tor_dormant_type')  Sending 'SIGNAL active' and 'SIGNAL newnym' to wake up Tor..."
+      output_cmd "Tor Dormant Result: Yes, dormant. (tor_dormant_type: '$tor_dormant_type') Sending 'SIGNAL active' and 'SIGNAL newnym' to wake up Tor..."
       ## https://stackoverflow.com/questions/37135213/check-tor-connection-is-established-before-running-scrapy
       run_signal_newnym
    else
