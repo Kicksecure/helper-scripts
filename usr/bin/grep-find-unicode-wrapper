@@ -10,6 +10,17 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
+check_grep_status() {
+  if [ "$1" = "0" ]; then
+    true "$0: INFO: Match."
+  elif [ "$1" = "1" ]; then
+    true "$0: INFO: No match."
+  else
+    printf '%s\n' "$0: ERROR: grep (syntax?) error! Exiting with code code '$1'." >&2
+    exit "$1"
+  fi
+}
+
 command -v stecho >/dev/null
 command -v sort >/dev/null
 
@@ -21,14 +32,18 @@ command -v sort >/dev/null
 
 ## --binary-files=text - required to find backspace and null character
 grep_args=(
-   --files-with-matches
-   --line-number
-   --binary-files=text
+  --files-with-matches
+  --line-number
+  --binary-files=text
 )
 
+set +o errexit
+
 one="$(LC_ALL=C grep "${grep_args[@]}" --perl-regexp '[^\x00-\x7F]' "$@")"
+check_grep_status "$?"
 
 two="$(LC_ALL=C grep "${grep_args[@]}" --perl-regexp "[^[:ascii:]]" "$@")"
+check_grep_status "$?"
 
 ## https://access.redhat.com/security/vulnerabilities/RHSB-2021-007
 ## https://lintian.debian.org/tags/unicode-trojan
@@ -38,9 +53,13 @@ two="$(LC_ALL=C grep "${grep_args[@]}" --perl-regexp "[^[:ascii:]]" "$@")"
 ## Because not mentioned in above links and can lead to the following error message:
 # grep: PCRE2 does not support \F, \L, \l, \N{name}, \U, or \u
 three="$(LC_ALL=C grep "${grep_args[@]}" $'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]' "$@")"
+check_grep_status "$?"
 
 ## ASCII control characters.
 four="$(LC_ALL=C grep "${grep_args[@]}" --perl-regexp '[\x00-\x08\x0B\x0C\x0D\x0E-\x1F\x7F]' "$@")"
+check_grep_status "$?"
+
+set -o errexit
 
 result="\
 $one
@@ -49,16 +68,16 @@ $three
 $four"
 
 ## If there are only newlines, these will be removed by 'sort --unique' and collapsed to ''.
-output_message="$(printf "%s\n" "$result" | sort --unique)"
+output_message="$(printf '%s\n' "$result" | sort --unique)"
 
 if [ "$output_message" = "" ]; then
-   ## No matches found, therefore 'exit 1'.
-   ## This is consistent with 'grep', which also exits non-zero if no match has been found.
-   exit 1
+  ## No matches found, therefore 'exit 1'.
+  ## This is consistent with 'grep', which also exits non-zero if no match has been found.
+  exit 1
 fi
 
 ## Use 'stecho' in case the file names itself contain unicode.
-stecho "%s\n" "$output_message"
+stecho "$output_message"
 
 ## Matches found, therefore 'exit 0'.
 ## This is consistent with 'grep', which also exits 0 if matches have been found.
