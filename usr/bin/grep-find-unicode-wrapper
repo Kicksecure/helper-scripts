@@ -23,7 +23,7 @@ two="$(LC_ALL=C grep $grep_args --perl-regexp "[^[:ascii:]]" "$@")"
 three="$(LC_ALL=C grep $grep_args $'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]' "$@")"
 
 ## ASCII control characters.
-four="$(LC_ALL=C grep $grep_args --perl-regexp '[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]' "$@")"
+four="$(LC_ALL=C grep $grep_args --perl-regexp '[\x00-\x08\x0B\x0C\x0D\x0E-\x1F\x7F]' "$@")"
 
 result="\
 $one
