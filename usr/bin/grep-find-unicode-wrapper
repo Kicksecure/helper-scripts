@@ -34,6 +34,8 @@ $four"
 output_message="$(printf "%s\n" "$result" | sort --unique)"
 
 if [ "$output_message" = "" ]; then
+   ## No matches found, therefore 'exit 1'.
+   ## This is consistent with 'grep', which also exits non-zero if no match has been found.
    exit 1
 else
    ## Use 'stecho' in case the file names itself contain unicode.
