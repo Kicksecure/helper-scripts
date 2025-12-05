@@ -61,12 +61,11 @@ check_grep_status "$?"
 
 set -o errexit
 
-result="\
-$one
-$two
-$three
-$four"
-
+#result="\
+#$one
+#$two
+#$three
+#$four"
 ## Problem: Extraneous newline at the end.
 #output_message="$(printf '%s' "$result" | sort --unique)"
 
