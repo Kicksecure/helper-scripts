@@ -5,6 +5,11 @@
 
 ## https://www.kicksecure.com/wiki/Unicode#grep-find-unicode-wrapper
 
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
 command -v stecho >/dev/null
 command -v sort >/dev/null
 
