@@ -39,9 +39,10 @@ if [ "$output_message" = "" ]; then
    ## No matches found, therefore 'exit 1'.
    ## This is consistent with 'grep', which also exits non-zero if no match has been found.
    exit 1
-else
-   ## Use 'stecho' in case the file names itself contain unicode.
-   stecho "%s\n" "$output_message"
 fi
 
-exit 0
+## Use 'stecho' in case the file names itself contain unicode.
+stecho "%s\n" "$output_message"
+
+## Matches found, therefore 'exit 0'.
+## This is consistent with 'grep', which also exits 0 if no matches have been found.
