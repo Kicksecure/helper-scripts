@@ -43,6 +43,15 @@ simple_escape_cases: list[tuple[str, str]] = [
     ("\033[", "_["),
     ("\x1b[2K", "_[2K"),
     ("\\x1b[2K", "\\x1b[2K"),
+    ("zero\u200bwidth", "zero_width"),
+    ("A\u202er", "A_r"),
+    ("prefix\u202astack\u202cpostfix", "prefix_stack_postfix"),
+    ("isolate\u2066ltr\u2069end", "isolate_ltr_end"),
+    ("join\u200dhere", "join_here"),
+    ("soft\u00adhyphen", "soft_hyphen"),
+    ("byte\ufefforder", "byte_order"),
+    ("object\ufffcreplacement", "object_replacement"),
+    ("emoji\ufe0fselector", "emoji_selector"),
 ]
 
 
@@ -298,6 +307,39 @@ class TestSTDisplay(unittest.TestCase):
             r"0*38;0*2;\d+;0*253;\d+",
         ]
         self.run_stdisplay_cases(cases, sgr=2**24, exclude_sgr=exclude_sgr)
+
+    def test_non_sgr_escape_sequences(self) -> None:
+        """
+        Ensure sequences outside the SGR allowlist are neutralized.
+        """
+
+        cases = [
+            ("\x1b]0;evil title\x07", "_]0;evil title_"),
+            ("\x1bP1;2|malicious\x1b\\", "_P1;2|malicious_\\"),
+            ("\x1b_Gf=24,s=1,v=1;AAAA\x1b\\", "__Gf=24,s=1,v=1;AAAA_\\"),
+            ("\x1b%Gpayload", "_%Gpayload"),
+            ("\u009b31mnot-sgr", "_31mnot-sgr"),
+            ("\x1b_application command\x1b\\", "__application command_\\"),
+            ("\x1b^privacy message\x1b\\", "_^privacy message_\\"),
+            ("\x1bXsave me\x1b\\", "_Xsave me_\\"),
+            ("\u009fstate\u009c", "_state_"),
+            ("\u0084wrap\u008d", "_wrap_"),
+            ("\u009dhard-title\u009c", "_hard-title_"),
+            ("\u0090capture\u009c", "_capture_"),
+            ("\u0098privacy\u009c", "_privacy_"),
+            ("\u0091safe\u009c", "_safe_"),
+            ("\u0085hard\u008a", "_hard_"),
+            ("\u0080pad\u008f", "_pad_"),
+            ("\u0092status\u0097", "_status_"),
+            ("visible\x0eshift\x0f", "visible_shift_"),
+            ("erase\x18me\x1a", "erase_me_"),
+            ("units\x1cgroup\x1f", "units_group_"),
+            ("\x1b]52;;\x1b]0;X\x07", "_]52;;_]0;X_"),
+            ("\x1b]52;c;clip\x07", "_]52;c;clip_"),
+            ("\x1bPqpayload\x07", "_Pqpayload_"),
+            ("\x1bP2$tight\x1b\\", "_P2$tight_\\"),
+        ]
+        self.run_stdisplay_cases(cases, sgr=2**24)
 
 
 if __name__ == "__main__":
