@@ -60,4 +60,4 @@ fi
 stecho "%s\n" "$output_message"
 
 ## Matches found, therefore 'exit 0'.
-## This is consistent with 'grep', which also exits 0 if no matches have been found.
+## This is consistent with 'grep', which also exits 0 if matches have been found.
