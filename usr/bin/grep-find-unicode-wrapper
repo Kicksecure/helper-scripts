@@ -13,6 +13,12 @@ set -o pipefail
 command -v stecho >/dev/null
 command -v sort >/dev/null
 
+## end-of-options ("--"):
+## There is intentionally not use of end-of-options, because this a wrapper
+## around 'grep' and the user is supposed to inject their own command line
+## options such as for example '--recursive'. It remains the responsibility of
+## the user to use end-of-options.
+
 ## --binary-files=text - required to find backspace and null character
 grep_args=(
    --files-with-matches
