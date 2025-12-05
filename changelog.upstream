@@ -1,3 +1,99 @@
+commit 8f06dcf774b09fbc2a54e6fdc3dc749b09ca24ee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 08:00:05 2025 -0500
+
+    cleanup
+
+commit f50f631d9fd7b693af10d889d6d77355fda48ceb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:58:50 2025 -0500
+
+    fix
+
+commit d0000a235e8815adcb55176edd87d1916b5af92d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:54:48 2025 -0500
+
+    hardening
+
+commit a27aeb0a391e69e5f2d803efc0fb8a7122ea01ac
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:43:00 2025 -0500
+
+    comment
+
+commit 48bd086ccf685a1ce4fba32be753c7e16f4004f6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:41:36 2025 -0500
+
+    comment
+
+commit b6893f812f61079c9c08addf2b6f035f98bd1d4d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:36:46 2025 -0500
+
+    comment
+
+commit bdd06e1ad093d83eb51865e9972c81f25781edd7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:34:59 2025 -0500
+
+    refactoring
+
+commit 89c01c9cd16ff3f9c5ff6caa1eda0f3a1b18f1e0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:33:01 2025 -0500
+
+    comments
+
+commit 663058e045b421c100f7bcf584a4eccef8d02e66
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:31:18 2025 -0500
+
+    hardening
+
+commit a623a55f5ed60d9692c5a7cb5dad5789e7509c15
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:28:09 2025 -0500
+
+    fix
+
+commit 2af501a83fde781c61701395ca850921e20da136
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:27:12 2025 -0500
+
+    code simlification
+
+commit 90f8bf44dd9938890a9ebe47364ae18ccf31ac42
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:26:19 2025 -0500
+
+    comment
+
+commit c320fca389ee1820b560b194651967453b82f6e2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:25:40 2025 -0500
+
+    comment
+
+commit 0ed29ccac1361cb999b7598d32e81670ecd2994d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:23:47 2025 -0500
+
+    `grep-find-unicode-wrapper`: Use 'stecho' in case the file names itself contain unicode.
+
+commit 6f9d81deb1d8eb877ebe657323048aba933d6c1b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 07:17:11 2025 -0500
+
+    `grep-find-unicode-wrapper`: also check for carriage return ("`\r`")
+
+commit 422648748bbfc9842ce2371ea142cf21d8bbea7c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 11:38:08 2025 +0000
+
+    bumped changelog version
+
 commit 63927069d393109536fe2c721c8a7e07a4fe6940
 Merge: db9b7c8 bb095e1
 Author: Patrick Schleizer <adrelanos@whonix.org>
