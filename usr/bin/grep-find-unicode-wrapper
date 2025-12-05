@@ -67,8 +67,17 @@ $two
 $three
 $four"
 
-## If there are only newlines, these will be removed by 'sort --unique' and collapsed to ''.
-output_message="$(printf '%s\n' "$result" | sort --unique)"
+## Problem: Extraneous newline at the end.
+#output_message="$(printf '%s' "$result" | sort --unique)"
+
+output_message="$(
+  {
+    [ -n "$one"   ] && printf '%s\n' "$one"
+    [ -n "$two"   ] && printf '%s\n' "$two"
+    [ -n "$three" ] && printf '%s\n' "$three"
+    [ -n "$four"  ] && printf '%s\n' "$four"
+  } | sort --unique
+)"
 
 if [ "$output_message" = "" ]; then
   ## No matches found, therefore 'exit 1'.
