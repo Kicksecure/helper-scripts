@@ -16,8 +16,8 @@ class TestSTCatn(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "stcatn"
         super().setUp()
+        self.module = "stcatn"
 
     def test_stcatn_file(self) -> None:
         """

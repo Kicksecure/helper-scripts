@@ -16,8 +16,8 @@ class TestSTCat(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "stcat"
         super().setUp()
+        self.module = "stcat"
 
     def test_stcat_stdin(self) -> None:
         """

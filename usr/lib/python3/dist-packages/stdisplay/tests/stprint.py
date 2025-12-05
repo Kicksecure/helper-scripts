@@ -22,8 +22,8 @@ class TestSTPrint(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "stprint"
         super().setUp()
+        self.module = "stprint"
 
     def test_stprint(self) -> None:
         """

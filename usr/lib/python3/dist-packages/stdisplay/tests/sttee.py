@@ -17,8 +17,8 @@ class TestSTTee(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "sttee"
         super().setUp()
+        self.module = "sttee"
 
     def test_sttee(self) -> None:
         """

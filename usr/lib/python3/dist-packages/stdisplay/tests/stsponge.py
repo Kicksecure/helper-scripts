@@ -17,8 +17,8 @@ class TestSTSponge(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "stsponge"
         super().setUp()
+        self.module = "stsponge"
 
     def test_stsponge(self) -> None:
         """

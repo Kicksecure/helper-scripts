@@ -16,8 +16,8 @@ class TestSTEcho(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "stecho"
         super().setUp()
+        self.module = "stecho"
 
     def test_stecho(self) -> None:
         """
