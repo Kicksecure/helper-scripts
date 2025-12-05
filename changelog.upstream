@@ -1,3 +1,22 @@
+commit 63927069d393109536fe2c721c8a7e07a4fe6940
+Merge: db9b7c8 bb095e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 06:31:56 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit bb095e11a202693d6896409c7056d4f73f851df3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Dec 4 20:23:07 2025 -0600
+
+    Add a new batch of stdisplay test cases suggested by ChatGPT Codex
+
+commit db9b7c8804459319a1c5eb6a98844f52b20b7470
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 4 11:12:44 2025 +0000
+
+    bumped changelog version
+
 commit 1d47656cdeba909b03066c9a1c20c0582e1c0a93
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Dec 4 06:11:48 2025 -0500
