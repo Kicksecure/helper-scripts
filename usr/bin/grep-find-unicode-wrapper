@@ -27,8 +27,8 @@ two="$(LC_ALL=C grep $grep_args --perl-regexp "[^[:ascii:]]" "$@")"
 ## https://lintian.debian.org/tags/unicode-trojan
 ##
 ## '--perl-regexp':
-## Not using 'grep's '--perl-regexp' option. because not mentioned above and
-## can lead to the following error message:
+## Not using 'grep's '--perl-regexp' option for three.
+## Because not mentioned in above links and can lead to the following error message:
 # grep: PCRE2 does not support \F, \L, \l, \N{name}, \U, or \u
 three="$(LC_ALL=C grep $grep_args $'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]' "$@")"
 
