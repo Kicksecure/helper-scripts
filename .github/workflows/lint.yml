@@ -27,7 +27,10 @@ jobs:
           - image: debian:stable
           - image: debian:testing
           - image: debian:unstable
-          - image: ubuntu:latest
+          ## Disabled because ubuntu:latest is currently 24.04, which uses a
+          ## version of Python that does not support the `newline` argument of
+          ## Path.read_text()
+          # - image: ubuntu:latest
           - image: ubuntu:rolling
 
     container:

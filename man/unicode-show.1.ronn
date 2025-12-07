@@ -19,7 +19,8 @@ unicode-show(1) -- Scan and annotate suspicious Unicode characters
 
 ### What is considered suspicious:
 - Characters outside the printable ASCII range (`0x20`-`0x7E`)
-- Control characters (excluding `\n`, `\r`, `\t`)
+- Control characters (excluding `\n` and `\t`)
+- Carriage returns (`\r`), even when used in CRLF pairs
 - Any character not in the standard set of ASCII letters, digits, punctuation, and trailing whitespace
 
 ### Output formatting:
@@ -29,6 +30,7 @@ unicode-show(1) -- Scan and annotate suspicious Unicode characters
 
 ## Color output is disabled if:
 - The environment variable `$NOCOLOR` is set
+- The environment variable `$NO_COLOR` is set to `1`
 - `$TERM` is set to `dumb`
 - Output is redirected (non-interactive terminal)
 
@@ -71,6 +73,7 @@ NOCOLOR=1 unicode-show example.txt
 ## ENVIRONMENT
 
 - **NOCOLOR** - disables color output if set
+- **NO_COLOR** - disables color output if set to `1`
 - **TERM** - if set to `dumb`, disables color output
 
 ## AUTHOR

@@ -10,7 +10,7 @@ black=(black --config="${pyrc}" --color --diff --check)
 pylint=(pylint --rcfile="${pyrc}")
 mypy=(mypy --config-file="${pyrc}")
 
-py_lib_to_test_list=(stdisplay sanitize_string strip_markup)
+py_lib_to_test_list=(stdisplay sanitize_string strip_markup unicode_show)
 
 for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
   cd "${pythonpath}/${py_lib_to_test}/"
@@ -23,7 +23,7 @@ for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
 done
 
 stdin_file_read_utils=(stcat stcatn)
-stdin_implicit_read_utils=(sttee stsponge strip-markup)
+stdin_implicit_read_utils=(sttee stsponge strip-markup unicode-show)
 stdin_utils=("${stdin_file_read_utils[@]}" "${stdin_implicit_read_utils[@]}")
 utils=(stprint stecho "${stdin_utils[@]}")
 cd "${git_toplevel}/usr/bin"
