@@ -50,7 +50,3 @@ def main() -> None:
                 for untrusted_line in untrusted_file:
                     stdout.write(stdisplay(untrusted_line).rstrip() + "\n")
     stdout.flush()
-
-
-if __name__ == "__main__":
-    main()

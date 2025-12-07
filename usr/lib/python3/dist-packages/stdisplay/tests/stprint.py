@@ -230,7 +230,3 @@ class TestSTPrintShell(unittest.TestCase):
             with self.subTest(text=text, expected_result=expected_result):
                 result = self.shell(text, term="xterm-direct")
                 self.assertEqual(result.stdout, expected_result)
-
-
-if __name__ == "__main__":
-    unittest.main()

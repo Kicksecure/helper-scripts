@@ -38,7 +38,3 @@ def main() -> None:
             )
             stdout.write(stdisplay(untrusted_text))
     stdout.flush()
-
-
-if __name__ == "__main__":
-    main()

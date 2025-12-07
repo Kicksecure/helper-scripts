@@ -6,7 +6,6 @@
 
 # pylint: disable=missing-module-docstring disable=duplicate-code
 
-import unittest
 from pathlib import Path
 import stdisplay.tests
 
@@ -87,7 +86,3 @@ class TestSTSponge(stdisplay.tests.TestSTBase):
             self.text_malicious_unicode_sanitized,
             Path(self.tmpfiles["fill"]).read_text(encoding="utf-8"),
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

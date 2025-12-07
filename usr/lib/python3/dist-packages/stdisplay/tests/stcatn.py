@@ -6,7 +6,6 @@
 
 # pylint: disable=missing-module-docstring
 
-import unittest
 import stdisplay.tests
 
 
@@ -44,7 +43,3 @@ class TestSTCatn(stdisplay.tests.TestSTBase):
             "a b\nc d\n",
             self._test_util(stdin="is ignored", argv=[self.tmpfiles["raw"]]),
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

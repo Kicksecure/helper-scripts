@@ -32,7 +32,3 @@ def main() -> None:
                 file, "w", encoding="ascii", errors="replace", newline="\n"
             ) as out_file:
                 out_file.write(stdisplay("".join(untrusted_text_list)))
-
-
-if __name__ == "__main__":
-    main()

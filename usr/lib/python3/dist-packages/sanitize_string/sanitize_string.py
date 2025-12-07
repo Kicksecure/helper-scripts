@@ -89,7 +89,3 @@ def main() -> int:
     else:
         sys.stdout.write(sanitized_string)
     return 0
-
-
-if __name__ == "__main__":
-    main()

@@ -339,7 +339,3 @@ class TestSTDisplay(unittest.TestCase):
             ("\x1bP2$tight\x1b\\", "_P2$tight_\\"),
         ]
         self.run_stdisplay_cases(cases, sgr=2**24)
-
-
-if __name__ == "__main__":
-    unittest.main()

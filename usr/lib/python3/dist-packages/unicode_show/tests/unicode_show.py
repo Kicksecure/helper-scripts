@@ -412,7 +412,7 @@ FILENAME_PLACEHOLDER:1: Hello world![U+0009][U+0020]
             stdout_string="",
             stderr_string=out_string.replace("FILENAME_PLACEHOLDER", "stdin"),
             args=[],
-            exit_code=1,
+            exit_code=2,
             stdin_string=test_string,
         )
         self._test_file(
@@ -420,7 +420,7 @@ FILENAME_PLACEHOLDER:1: Hello world![U+0009][U+0020]
             argv0=self.argv0,
             stdout_string="",
             stderr_string=out_string,
-            exit_code=1,
+            exit_code=2,
             file_contents=test_string,
         )
 

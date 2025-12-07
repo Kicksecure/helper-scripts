@@ -180,6 +180,7 @@ def main() -> int:
     )
 
     clean: bool = True
+    had_valid_utf8: bool = True
     try:
         if len(sys.argv) > 1:
             for fname in sys.argv[1:]:
@@ -203,7 +204,7 @@ def main() -> int:
                         + f"{e}",
                         file=sys.stderr,
                     )
-                    clean = False
+                    had_valid_utf8 = False
                 except Exception as e:
                     print(
                         "[ERROR] File read error "
@@ -223,16 +224,15 @@ def main() -> int:
                     f"[ERROR] Unicode decode error [stdin]: {e}",
                     file=sys.stderr,
                 )
-                clean = False
+                had_valid_utf8 = False
     except Exception as e:
         print(f"[ERROR] Unexpected error [main]: {e}", file=sys.stderr)
+        return 2
+
+    if not had_valid_utf8:
         return 2
 
     if not clean:
         return 1
 
     return 0
-
-
-if __name__ == "__main__":
-    main()

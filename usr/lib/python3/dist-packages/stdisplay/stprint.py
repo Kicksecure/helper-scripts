@@ -19,7 +19,3 @@ def main() -> None:
         untrusted_text = "".join(argv[1:])
         stdout.write(stdisplay(untrusted_text))
         stdout.flush()
-
-
-if __name__ == "__main__":
-    main()

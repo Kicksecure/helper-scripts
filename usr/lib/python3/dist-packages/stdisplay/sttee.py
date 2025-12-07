@@ -43,7 +43,3 @@ def main() -> None:
     finally:
         for output_file in output_files:
             output_file.close()
-
-
-if __name__ == "__main__":
-    main()

@@ -20,7 +20,3 @@ def main() -> None:
         stdout.write(stdisplay(untrusted_text))
     stdout.write("\n")
     stdout.flush()
-
-
-if __name__ == "__main__":
-    main()

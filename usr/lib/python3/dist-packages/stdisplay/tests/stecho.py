@@ -6,7 +6,6 @@
 
 # pylint: disable=missing-module-docstring
 
-import unittest
 import stdisplay.tests
 
 
@@ -39,7 +38,3 @@ class TestSTEcho(stdisplay.tests.TestSTBase):
         ## \udcff == surrogate escape for 'ff' byte, this is what the string
         ## in sys.argv would contain if running `stecho $'a\xffb\n'`
         self.assertEqual("a_b\n\n", self._test_util(argv=["a\udcffb\n"]))
-
-
-if __name__ == "__main__":
-    unittest.main()
