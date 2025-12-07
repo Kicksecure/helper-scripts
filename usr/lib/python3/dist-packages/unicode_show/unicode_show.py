@@ -22,6 +22,7 @@ import unicodedata
 import string
 import os
 from typing import TextIO
+from stdisplay.stdisplay import stdisplay
 
 USE_COLOR: bool = False
 
@@ -94,7 +95,9 @@ def scan_line(
 
     annotated: str = ""
     has_suspicious: bool = False
-    prefix: str = f"{filename or "<stdin>"}:{lineno}: "
+    prefix: str = (
+        f"{stdisplay(filename, sgr=-1) if filename else "<stdin>"}:{lineno}: "
+    )
     suspicious_descrs: list[str] = []
 
     for c in line:
@@ -152,8 +155,10 @@ def scan_file(f: TextIO, filename: str | None = None) -> bool:
     if last_line is not None and not last_line.endswith("\n"):
         found = True
         ## Missing newline at the end is suspicious.
-        msg: str = f"{filename or "<stdin>"}:{last_lineno}: " + colorize(
-            "[missing newline at end]", RED
+        msg: str = (
+            f"{stdisplay(filename, sgr=-1) if filename else "<stdin>"}:"
+            + f"{last_lineno}: "
+            + colorize("[missing newline at end]", RED)
         )
         print(msg)
 
@@ -193,13 +198,16 @@ def main() -> int:
                             clean = False
                 except UnicodeDecodeError as e:
                     print(
-                        f"[ERROR] Unicode decode error [{fname}]: {e}",
+                        "[ERROR] Unicode decode error "
+                        + f"[{stdisplay(fname, sgr=-1)}]: "
+                        + f"{e}",
                         file=sys.stderr,
                     )
                     clean = False
                 except Exception as e:
                     print(
-                        f"[ERROR] File read error [{fname}]: {e}",
+                        "[ERROR] File read error "
+                        + f"[{stdisplay(fname, sgr=-1)}]: {e}",
                         file=sys.stderr,
                     )
                     return 2

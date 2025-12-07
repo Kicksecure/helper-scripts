@@ -13,6 +13,7 @@ import os
 from typing import Callable
 from io import BytesIO, FileIO, TextIOWrapper
 from unittest import mock
+from stdisplay.stdisplay import stdisplay
 from unicode_show.unicode_show import main as unicode_show_main
 
 
@@ -191,6 +192,7 @@ class TestUnicodeShow(unittest.TestCase):
         stderr_string: str,
         exit_code: int,
         file_contents: str,
+        filename_prefix: str = "",
     ) -> None:
         """
         Executes the provided main function with a temporary file containing
@@ -204,15 +206,17 @@ class TestUnicodeShow(unittest.TestCase):
             encoding="utf-8",
             newline="\n",
             errors="surrogateescape",
+            prefix=filename_prefix,
             delete_on_close=False,
         ) as tmp:
             tmp.write(file_contents)
             tmp.close()
+            tmp_name_sanitized: str = stdisplay(tmp.name, sgr=-1)
             stdout_string = stdout_string.replace(
-                "FILENAME_PLACEHOLDER", tmp.name
+                "FILENAME_PLACEHOLDER", tmp_name_sanitized
             )
             stderr_string = stderr_string.replace(
-                "FILENAME_PLACEHOLDER", tmp.name
+                "FILENAME_PLACEHOLDER", tmp_name_sanitized
             )
             self._test_args(
                 main_func=main_func,
@@ -480,4 +484,24 @@ FILENAME_PLACEHOLDER:1: Hello world![U+0009][U+0020]
             exit_code=1,
             args=[],
             stdin_string=test_string,
+        )
+
+    def test_unicode_in_filename(self) -> None:
+        """
+        Tests if Unicode characters in filenames are properly sanitized.
+        """
+
+        test_string: str = "pre\u202apost\n"
+        expect_string: str = """\
+FILENAME_PLACEHOLDER:1: pre[U+202A]post
+   -> '\\u202a' (U+202A, LEFT-TO-RIGHT EMBEDDING, Cf)
+"""
+        self._test_file(
+            main_func=unicode_show_main,
+            argv0=self.argv0,
+            stdout_string=expect_string,
+            stderr_string="",
+            exit_code=1,
+            filename_prefix="danger\u202adanger",
+            file_contents=test_string,
         )
