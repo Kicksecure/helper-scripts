@@ -1,3 +1,106 @@
+commit ecd17c811e68a9d84992714014c32aa455b3d021
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 8 07:37:04 2025 -0500
+
+    re-generate man pages (generated using "genmkfile manpages")
+
+commit 0b1c91cce205f581b031dd001e75094e55fee599
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 8 07:29:49 2025 -0500
+
+    set keymap scripts: port to localectl-static for higher reliability inside chroot
+
+commit 6f8083033f320229e58c6624c007cffe19e95ea6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 8 07:19:03 2025 -0500
+
+    add `usr/bin/localectl-static`
+
+commit 44fe01771ed06a352c2ce40d61675949555d7c3e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 8 07:12:05 2025 -0500
+
+    add `usr/share/helper-scripts/localectl-list-x11-keymap-variants-static.txt`
+
+commit e63abe88dde93901df90f36e45b6c74cbd7881bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 8 07:11:38 2025 -0500
+
+    fix
+
+commit 22688b7204a1d17f3768446b0dd8e3b788ab1fc3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 8 07:10:25 2025 -0500
+
+    fix
+
+commit 78e6d96996966e2a1209050edfdf6ae483c242cf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 8 07:00:48 2025 -0500
+
+    add `usr/share/helper-scripts/localectl-list-x11-keymap-layouts-static.txt`
+
+commit 2c16228d14274d928fde8ae1f1350bc818c309cf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 8 06:58:20 2025 -0500
+
+    add `/usr/share/helper-scripts/localectl-static-list-update`
+
+commit 2ae531630146d92419a32abb77bf47fd7deb0734
+Merge: f6876ea 3d12d9b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 8 06:44:35 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 3d12d9ba576dce49716cfaf1f6b6aa32e12a5b10
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Dec 7 10:06:16 2025 -0600
+
+    Make stdisplay, strip_markup, unicode_show, sanitize_string library files non-executable, fix return value on unicode decode failure in unicode_show (suggested by Codex)
+
+commit 726e4e663805f057e0ab748c64b7e27874eaeb0c
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Dec 6 23:12:31 2025 -0600
+
+    Add unicode_show module to CI watched paths
+
+commit 49ffd2e97bcbe6f1bec93ee3d3a3123d535b8694
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Dec 6 23:11:07 2025 -0600
+
+    unicode-show: Add filename sanitization and corresponding test
+
+commit ec70b55149d47d03ad4adb38b7af18ea2c0fcaa5
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Dec 6 22:39:01 2025 -0600
+
+    Disable Ubuntu 24.04 tests due to incompatibility with Python 3.12, add test suite for unicode-show, make unicode-show treat carriage returns as suspicious
+
+commit 3f404e3d8accfd06339f13cb7c4e7e6238195b07
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Dec 5 15:32:20 2025 -0600
+
+    Fix grep-find-unicode-wrapper failing to detect malicious unicode
+
+commit f401a2117eb2c7d30fe726616d9ff7469b721c3e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Dec 5 15:15:26 2025 -0600
+
+    Remove need for explicit pytest checks in stdisplay utilities, explicitly specify newlines and encodings for text I/O
+
+commit 6d3109872a4e04374e14829e8dcd6c27bbda0cda
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Dec 5 14:24:50 2025 -0600
+
+    Use standard copyright headers in stdisplay
+
+commit f6876ea0e9447fe29d33ee7ff334a57fc5fe7c31
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 5 13:54:36 2025 +0000
+
+    bumped changelog version
+
 commit 5d992dd5da30bcb4c833e6a9b97a471ca67d2d53
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Dec 5 08:23:05 2025 -0500
