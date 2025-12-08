@@ -1,0 +1,34 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+while [ -n "${1:-}" ]; do
+   case "$1" in
+   '--no-pager')
+      shift
+      ;;
+   '--')
+      shift
+      break
+      ;;
+   *)
+      break
+      ;;
+   esac
+done
+args=( "$@" )
+
+if [ "$args" = "list-x11-keymap-layouts" ]; then
+  stcat /usr/share/helper-scripts/localectl-list-x11-keymap-layouts-static.txt
+elif [ "$args" = "list-x11-keymap-variants" ]; then
+  stcat /usr/share/helper-scripts/localectl-list-x11-keymap-variants-static.txt
+else
+  printf '%s\n' "$0: ERROR: Unknown command: '$@'"
+  exit 1
+fi
