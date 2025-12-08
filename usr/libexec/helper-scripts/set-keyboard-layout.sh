@@ -51,8 +51,8 @@ if ischroot --default-false; then
   localectl_available='false'
 
 ## Test run of 'localectl' to check if it is functional.
-elif ! "${timeout_command[@]}" localectl >/dev/null; then
-  printf '%s\n' "$0: INFO: Minor issue. Failed to run 'localectl'. Is dbus running?"
+elif ! "${timeout_command[@]}" localectl --no-pager >/dev/null; then
+  printf '%s\n' "$0: INFO: Minor issue. Failed to run 'localectl --no-pager'. Is dbus running?"
   localectl_available='false'
 
 ## Yes, 'localectl' is functional.
@@ -195,10 +195,10 @@ check_keyboard_layout_variants() {
   for kb_idx in "${!kb_layout_list[@]}"; do
     if [ -z "${kb_variant_list[kb_idx]}" ]; then continue; fi
     if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
-      localectl list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
+      localectl --no-pager list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
       printf '%s\n' "$0: ERROR: Specified keyboard layout variant '${kb_variant_list[kb_idx]}' for layout '${kb_layout_list[kb_idx]}' is not valid!" >&2
       if [ "${skl_interactive}" = 'false' ]; then
-        printf '%s\n' "$0: INFO: Run 'localectl list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout."
+        printf '%s\n' "$0: INFO: Run 'localectl --no-pager list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout."
       fi
       return 1
     fi
@@ -1163,9 +1163,10 @@ Type 'exit' to quit without changing keyboard layout settings.
       fi
       ## Sanity test.
       "${timeout_command[@]}" localectl --no-pager list-x11-keymap-layouts >/dev/null
+      ## Use without '--no-pager' for user output.
       ## Cannot use 'timeout'.
       ## 'timeout' is not compatible with the pager and '--no-pager' is unwanted.
-      #"${timeout_command[@]}" localectl list-x11-keymap-layouts
+      #"${timeout_command[@]}" localectl --no-pager list-x11-keymap-layouts
       localectl list-x11-keymap-layouts
       ## TODO: Minor. Replace above using 'pager' or similar?
       #printf '%s\n' "${localectl_kb_layouts}" | pager
@@ -1200,8 +1201,8 @@ Type 'exit' to quit without changing keyboard layout settings.
         printf '%s\n' "INFO: 'localectl' unavailable, cannot list possible keyboard layouts."
         continue
       fi
-      if ! grep -q ',' <<< "${layout_str}"; then
-        "${timeout_command[@]}" localectl list-x11-keymap-variants "${layout_str}"
+      if ! grep --quiet ',' <<< "${layout_str}"; then
+        "${timeout_command[@]}" localectl --no-pager list-x11-keymap-variants "${layout_str}"
       else
         read -r -p 'Enter the keyboard layout to view variants for: ' -- variant_key_str
         variant_key_str="$(tr -d ' ' <<< "${variant_key_str,,}")"
@@ -1213,7 +1214,7 @@ Type 'exit' to quit without changing keyboard layout settings.
           printf '%s\n' "$0: ERROR: Specified layout is not in the previously specified layout list!" >&2
           continue
         fi
-        "${timeout_command[@]}" localectl list-x11-keymap-variants "${variant_key_str}"
+        "${timeout_command[@]}" localectl --no-pager list-x11-keymap-variants "${variant_key_str}"
       fi
       continue
     fi
@@ -1246,6 +1247,7 @@ Type 'exit' to quit without changing keyboard layout settings.
       fi
       ## Sanity test.
       "${timeout_command[@]}" localectl --no-pager list-x11-keymap-options >/dev/null
+      ## Run without '--no-pager' for user output.
        localectl list-x11-keymap-options
       continue
     fi
