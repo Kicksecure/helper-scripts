@@ -19,7 +19,9 @@ A description including the character (if visible), Unicode codepoint, character
 .IP "\(bu" 4
 Characters outside the printable ASCII range (\fB0x20\fR\-\fB0x7E\fR)
 .IP "\(bu" 4
-Control characters (excluding \fB\en\fR, \fB\er\fR, \fB\et\fR)
+Control characters (excluding \fB\en\fR and \fB\et\fR)
+.IP "\(bu" 4
+Carriage returns (\fB\er\fR), even when used in CRLF pairs
 .IP "\(bu" 4
 Any character not in the standard set of ASCII letters, digits, punctuation, and trailing whitespace
 .IP "" 0
@@ -34,6 +36,8 @@ Cyan for character metadata descriptions
 .SH "Color output is disabled if:"
 .IP "\(bu" 4
 The environment variable \fB$NOCOLOR\fR is set
+.IP "\(bu" 4
+The environment variable \fB$NO_COLOR\fR is set to \fB1\fR
 .IP "\(bu" 4
 \fB$TERM\fR is set to \fBdumb\fR
 .IP "\(bu" 4
@@ -69,6 +73,8 @@ NOCOLOR=1 unicode\-show example\.txt
 .SH "ENVIRONMENT"
 .IP "\(bu" 4
 \fBNOCOLOR\fR \- disables color output if set
+.IP "\(bu" 4
+\fBNO_COLOR\fR \- disables color output if set to \fB1\fR
 .IP "\(bu" 4
 \fBTERM\fR \- if set to \fBdumb\fR, disables color output
 .IP "" 0
