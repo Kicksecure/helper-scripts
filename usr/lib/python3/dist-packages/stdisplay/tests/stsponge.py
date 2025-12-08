@@ -1,12 +1,11 @@
 #!/usr/bin/python3 -su
+
+## Copyright (C) 2025 - 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 # pylint: disable=missing-module-docstring disable=duplicate-code
 
-## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
-## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
-##
-## SPDX-License-Identifier: AGPL-3.0-or-later
-
-import unittest
 from pathlib import Path
 import stdisplay.tests
 
@@ -17,8 +16,8 @@ class TestSTSponge(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "stsponge"
         super().setUp()
+        self.module = "stsponge"
 
     def test_stsponge(self) -> None:
         """
@@ -87,7 +86,3 @@ class TestSTSponge(stdisplay.tests.TestSTBase):
             self.text_malicious_unicode_sanitized,
             Path(self.tmpfiles["fill"]).read_text(encoding="utf-8"),
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

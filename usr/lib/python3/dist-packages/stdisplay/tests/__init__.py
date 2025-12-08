@@ -1,10 +1,10 @@
 #!/usr/bin/python3 -su
-# pylint: disable=missing-module-docstring
 
-## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
-## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
-##
-## SPDX-License-Identifier: AGPL-3.0-or-later
+## Copyright (C) 2025 - 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+# pylint: disable=missing-module-docstring
 
 import importlib
 import os
@@ -12,12 +12,13 @@ import shutil
 import sys
 import tempfile
 import unittest
+from io import BytesIO, TextIOWrapper
 from typing import Optional, Any
-from test.support import captured_stdout, captured_stdin  # type: ignore
 from unittest.mock import patch
 from stdisplay.stdisplay import get_sgr_support
 
 
+# pylint: disable=too-many-instance-attributes
 class TestSTBase(unittest.TestCase):
     """
     Base class for testing safe terminal utilities.
@@ -51,6 +52,7 @@ commented\x00after null\n\
         super().__init__(*args, **kwargs)
 
     def setUp(self) -> None:
+        self.module = "placeholder"
         self.tmpfiles_list = []
         contents = [b"a b\n", b"c d"]
         self.tmpdir = tempfile.mkdtemp()
@@ -90,7 +92,7 @@ commented\x00after null\n\
         shutil.rmtree(self.tmpdir)
 
     def _del_module(self) -> None:
-        for module in ["stdisplay." + self.module]:  # type: ignore # pylint: disable=no-member
+        for module in ["stdisplay." + self.module]:
             if module in sys.modules:
                 del sys.modules[module]
             globals().pop(module, None)
@@ -105,17 +107,36 @@ commented\x00after null\n\
         Helper function to pass stdin.
         """
         self._del_module()
+        stdout_buf_internal: BytesIO = BytesIO()
+        stdin_buf_internal: BytesIO = BytesIO()
+        stdout_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdout_buf_internal,
+            encoding="utf-8",
+            newline="\n",
+            errors="surrogateescape",
+        )
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdin_buf_internal,
+            encoding="utf-8",
+            newline="\n",
+            errors="surrogateescape",
+        )
         if argv is None:
-            argv = [self.module + ".py"]  # type: ignore # pylint: disable=no-member
+            argv = [self.module]
         else:
-            argv = [self.module + ".py"] + argv  # type: ignore # pylint: disable=no-member
-        with patch.object(
-            sys, "argv", argv
-        ), captured_stdout() as stdout, captured_stdin() as stdin_patch:
-            module = importlib.import_module("stdisplay." + self.module)  # type: ignore # pylint: disable=no-member
-            if stdin is not None:
-                stdin_patch.write(stdin)
-            stdin_patch.seek(0)
+            argv = [self.module, *argv]
+        if stdin is not None:
+            stdin_buf.write(stdin)
+            stdin_buf.seek(0, 0)
+        with (
+            patch.object(sys, "argv", argv),
+            patch.object(sys, "stdin", stdin_buf),
+            patch.object(sys, "stdout", stdout_buf),
+        ):
+            module = importlib.import_module("stdisplay." + self.module)
             module.main()
-        result = str(stdout.getvalue())  # pylint: disable=no-member
+        stdout_buf.seek(0, 0)
+        result = str(stdout_buf.read())  # pylint: disable=no-member
+        stdout_buf.close()
+        stdin_buf.close()
         return result

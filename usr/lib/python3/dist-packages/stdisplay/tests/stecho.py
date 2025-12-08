@@ -1,12 +1,11 @@
 #!/usr/bin/python3 -su
+
+## Copyright (C) 2025 - 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 # pylint: disable=missing-module-docstring
 
-## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
-## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
-##
-## SPDX-License-Identifier: AGPL-3.0-or-later
-
-import unittest
 import stdisplay.tests
 
 
@@ -16,8 +15,8 @@ class TestSTEcho(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "stecho"
         super().setUp()
+        self.module = "stecho"
 
     def test_stecho(self) -> None:
         """
@@ -39,7 +38,3 @@ class TestSTEcho(stdisplay.tests.TestSTBase):
         ## \udcff == surrogate escape for 'ff' byte, this is what the string
         ## in sys.argv would contain if running `stecho $'a\xffb\n'`
         self.assertEqual("a_b\n\n", self._test_util(argv=["a\udcffb\n"]))
-
-
-if __name__ == "__main__":
-    unittest.main()

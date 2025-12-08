@@ -1,12 +1,11 @@
 #!/usr/bin/python3 -su
+
+## Copyright (C) 2025 - 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 # pylint: disable=missing-module-docstring
 
-## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
-## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
-##
-## SPDX-License-Identifier: AGPL-3.0-or-later
-
-import unittest
 import stdisplay.tests
 
 
@@ -16,8 +15,8 @@ class TestSTCatn(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "stcatn"
         super().setUp()
+        self.module = "stcatn"
 
     def test_stcatn_file(self) -> None:
         """
@@ -44,7 +43,3 @@ class TestSTCatn(stdisplay.tests.TestSTBase):
             "a b\nc d\n",
             self._test_util(stdin="is ignored", argv=[self.tmpfiles["raw"]]),
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

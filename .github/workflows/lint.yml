@@ -6,6 +6,7 @@ on:
       - usr/lib/python3/dist-packages/stdisplay/**
       - usr/lib/python3/dist-packages/sanitize_string/**
       - usr/lib/python3/dist-packages/strip_markup/**
+      - usr/lib/python3/dist-packages/unicode_show/**
       - .github/workflows/lint.yml
       - run-tests
   pull_request:
@@ -13,6 +14,7 @@ on:
       - usr/lib/python3/dist-packages/stdisplay/**
       - usr/lib/python3/dist-packages/sanitize_string/**
       - usr/lib/python3/dist-packages/strip_markup/**
+      - usr/lib/python3/dist-packages/unicode_show/**
       - .github/workflows/lint.yml
       - run-tests
 
@@ -27,7 +29,10 @@ jobs:
           - image: debian:stable
           - image: debian:testing
           - image: debian:unstable
-          - image: ubuntu:latest
+          ## Disabled because ubuntu:latest is currently 24.04, which uses a
+          ## version of Python that does not support the `newline` argument of
+          ## Path.read_text()
+          # - image: ubuntu:latest
           - image: ubuntu:rolling
 
     container:

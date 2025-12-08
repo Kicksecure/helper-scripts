@@ -1,10 +1,10 @@
 #!/usr/bin/python3 -su
-# pylint: disable=missing-module-docstring
 
-## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
-## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
-##
-## SPDX-License-Identifier: AGPL-3.0-or-later
+## Copyright (C) 2025 - 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+# pylint: disable=missing-module-docstring
 
 import os
 import subprocess
@@ -22,8 +22,8 @@ class TestSTPrint(stdisplay.tests.TestSTBase):
     """
 
     def setUp(self) -> None:
-        self.module = "stprint"
         super().setUp()
+        self.module = "stprint"
 
     def test_stprint(self) -> None:
         """
@@ -230,7 +230,3 @@ class TestSTPrintShell(unittest.TestCase):
             with self.subTest(text=text, expected_result=expected_result):
                 result = self.shell(text, term="xterm-direct")
                 self.assertEqual(result.stdout, expected_result)
-
-
-if __name__ == "__main__":
-    unittest.main()

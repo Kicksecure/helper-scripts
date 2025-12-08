@@ -1,9 +1,8 @@
 #!/usr/bin/python3 -su
 
-## SPDX-FileCopyrightText: 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
-## SPDX-FileCopyrightText: 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
-##
-## SPDX-License-Identifier: AGPL-3.0-or-later
+## Copyright (C) 2025 - 2025 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
 
 """Safely print argument to stdout with echo's formatting."""
 
@@ -13,12 +12,11 @@ from stdisplay.stdisplay import stdisplay
 
 def main() -> None:
     """Safely print argument to stdout with echo's formatting."""
+    stdout.reconfigure(  # type: ignore
+        encoding="ascii", errors="replace", newline="\n"
+    )
     if len(argv) > 1:
         untrusted_text = " ".join(argv[1:])
         stdout.write(stdisplay(untrusted_text))
     stdout.write("\n")
     stdout.flush()
-
-
-if __name__ == "__main__":
-    main()

@@ -68,7 +68,3 @@ def main() -> int:
     ## Sanitize and print
     sys.stdout.write(strip_markup(untrusted_string))
     return 0
-
-
-if __name__ == "__main__":
-    main()
