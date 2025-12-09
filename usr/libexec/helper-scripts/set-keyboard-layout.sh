@@ -341,7 +341,7 @@ set_labwc_keymap() {
       ## Therefore let's run 'labwc --reconfigure'.
       if ! command -v labwc >/dev/null; then
         ## This would be weird. 'labwc' is running but unavailable in the PATH environment variable.
-        printf '%s\n' "$0: ERROR: 'labwc' unavailable in the PATH environment variable or not installed." >&2
+        printf '%s\n' "$0: ERROR: The 'labwc' program is unavailable in the PATH environment variable or not installed." >&2
       else
         ## 'labwc' is running and available in the PATH environment variable.
         if labwc --reconfigure; then
@@ -413,7 +413,7 @@ dracut_run() {
     return 0
   fi
   if ! command -v dracut >/dev/null; then
-    printf '%s\n' "$0: WARNING: Minor issue. 'dracut' unavailable in the PATH environment variable or not installed. Keyboard layout in initramfs unchanged."
+    printf '%s\n' "$0: WARNING: Minor issue. The 'dracut' program is unavailable in the PATH environment variable or not installed. Keyboard layout in initramfs unchanged."
     return 0
   fi
   printf '%s\n' "$0: INFO: Rebuilding all dracut initramfs images. This will take a while..."
