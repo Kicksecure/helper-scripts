@@ -758,6 +758,7 @@ rebuild_grub_config() {
     printf '%s\n' "${update_grub_output}" >&2
     return 1
   fi
+  printf '%s\n' "${FUNCNAME[0]}: INFO: Rebuilding GRUB configuration success."
 }
 
 set_grub_keymap() {
