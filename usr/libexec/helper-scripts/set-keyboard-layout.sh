@@ -857,9 +857,7 @@ set_grub_keymap() {
   done
   (IFS='-'; printf '%s\n' "${name_part_list[*]}" | sponge -- "${grub_kb_layout_dir}/user-layout.name")
 
-  if [ "${do_update_grub}" = 'true' ]; then
-    rebuild_grub_config
-  fi
+  rebuild_grub_config
 
   printf '%s\n' "${FUNCNAME[0]}: INFO: GRUB keymap configuration success."
 }
