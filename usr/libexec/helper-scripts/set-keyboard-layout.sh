@@ -8,6 +8,7 @@
 ## set-grub-keymap
 ## set-labwc-keymap
 ## set-system-keymap
+## This script acts as a "main program", not as a library.
 
 set -o errexit
 set -o nounset
