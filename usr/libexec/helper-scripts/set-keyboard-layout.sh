@@ -3,6 +3,12 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## This script gets 'source'ed by:
+## set-console-keymap
+## set-grub-keymap
+## set-labwc-keymap
+## set-system-keymap
+
 set -o errexit
 set -o nounset
 set -o errtrace
@@ -1156,7 +1162,7 @@ parse_cmd() {
   args=( "$@" )
   true "${FUNCNAME[0]}: args: ${args[*]}"
 
-  ## Variable '$function_name' is set by calling script.
+  ## Variable '$function_name' gets set by the calling script.
 
   if [ "$do_build_all_grub_keymaps" = "true" ]; then
     ## Build all GRUB keymaps if requested.
@@ -1165,7 +1171,7 @@ parse_cmd() {
   fi
 
   if [ "$skl_interactive" = "true" ]; then
-    interactive_ui "$function_name" "${args[@]}"
+    interactive_ui "${args[@]}"
     exit 0
   fi
 
