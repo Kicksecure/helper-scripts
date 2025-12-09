@@ -10,11 +10,6 @@ set -o pipefail
 
 true "$0: START"
 
-source /usr/libexec/helper-scripts/set-keyboard-layout.sh
-
-trap "error_handler" ERR
-trap "exit_handler" EXIT
-
 print_usage() {
   printf '%s\n' "$0: Set console keyboard layout for next boot" >&2
   printf '%s\n' "Usage: $0 [--help|-h] [--interactive] -- [layout [variant [option]]]" >&2
@@ -33,16 +28,9 @@ if [ "$(id -u)" != "0" ]; then
   exit 1
 fi
 
-## Enter interactive mode if requested.
-for opt in "$@"; do
-  if [ "${opt}" = '--' ]; then
-    break
-  fi
-  if [ "${opt}" = '--interactive' ]; then
-    interactive_ui 'set_console_keymap' "$@"
-    exit 0
-  fi
-done
-set_console_keymap "$@"
+scriptname=$(basename -- "$0")
+function_name="$(printf '%s\n' "$scriptname" | str_replace "-" "_")"
+
+source /usr/libexec/helper-scripts/set-keyboard-layout.sh
 
 true "$0: END"

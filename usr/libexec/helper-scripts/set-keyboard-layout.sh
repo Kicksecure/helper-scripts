@@ -953,16 +953,10 @@ Alt+Shift the keyboard layout switch shortcut, specify
 
 ## Scripts such as 'set-grub-keymap' etc. call function 'interactive_ui' directly.
 interactive_ui() {
-  local kb_set_func kb_set_opts layout_str variant_str option_str \
+  local kb_set_opts layout_str variant_str option_str \
     variant_key_str
 
   skl_interactive='true'
-  kb_set_func="${1:-}"
-  if [ -z "${kb_set_func}" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: No keyboard layout set function provided!" >&2
-    return 1
-  fi
-  shift
 
   kb_set_opts=()
   while [ -n "${1:-}" ]; do
@@ -1099,7 +1093,7 @@ Type 'exit' to quit without changing keyboard layout settings.
     fi
   done
 
-  "${kb_set_func}" \
+  "${function_name}" \
     "${kb_set_opts[@]}" \
     "${layout_str}" \
     "${variant_str}" \
@@ -1145,7 +1139,7 @@ parse_cmd() {
         shift
         ;;
       '--build-all')
-        ## The 'set-grub-keymap' script calls function 'build_all_grub_keymaps' directly.
+        do_build_all_grub_keymaps='true'
         shift
         ;;
       '--')
@@ -1161,12 +1155,33 @@ parse_cmd() {
   ## global args
   args=( "$@" )
   true "${FUNCNAME[0]}: args: ${args[*]}"
+
+  ## Variable '$function_name' is set by calling script.
+
+  if [ "$do_build_all_grub_keymaps" = "true" ]; then
+    ## Build all GRUB keymaps if requested.
+    build_all_grub_keymaps "${args[@]}"
+    exit 0
+  fi
+
+  if [ "$skl_interactive" = "true" ]; then
+    interactive_ui "$function_name" "${args[@]}"
+    exit 0
+  fi
+
+  "$function_name" "${args[@]}"
 }
 
 ## Debugging.
-#ischroot() {
+# ischroot() {
 #   true
-#}
+# }
+# dracut() {
+#   true
+# }
+
+trap "error_handler" ERR
+trap "exit_handler" EXIT
 
 printf '%s\n' "$0: Start."
 printf '%s\n' ""
@@ -1207,6 +1222,7 @@ skl_interactive='false'
 do_update_grub='true'
 do_persist='true'
 no_reload='false'
+do_build_all_grub_keymaps='false'
 
 [[ -v "HOME" ]] || HOME="/home/user"
 labwc_config_path="${HOME}/.config/labwc/environment"
