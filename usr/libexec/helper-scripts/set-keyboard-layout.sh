@@ -555,7 +555,7 @@ set_console_keymap() {
 
 ## NOTE: This function assumes it is run as root.
 kb_reload_root() {
-  local loginctl_users_json user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
+  local loginctl_users_json user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name counter
 
   if ischroot --default-false; then
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping sending SIGHUP to 'labwc' inside chroot, ok."
@@ -602,6 +602,7 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
     uid_list+=( "$(id --user -- "${user_name}")" )
   done
 
+  counter=0
   for uid in "${uid_list[@]}"; do
     for wl_sock in "/run/user/${uid}/wayland-"*; do
       if ! [ -S "${wl_sock}" ]; then
@@ -621,6 +622,7 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
       account_name="$(id --name --user -- "${uid}")"
 
       if [ "${wl_comm}" = 'labwc' ]; then
+        counter=$(( counter + 1))
         ## From the labwc manpage:
         ##
         ## -r, --reconfigure
@@ -650,6 +652,10 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
       fi
     done
   done
+
+  if [ "$counter" = 0 ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: No need to send SIGHUP to 'labwc' because none running."
+  fi
 }
 
 ## Sets the system-wide keyboard layout for the console, greeter, and labwc
