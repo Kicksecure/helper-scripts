@@ -336,7 +336,9 @@ set_labwc_keymap() {
   fi
 
   if [ "${no_reload}" = 'false' ]; then
-    if pgrep -- labwc >/dev/null; then
+    if ischroot --default-false; then
+      printf '%s\n' "$0: INFO: Skipping executing 'labwc --reconfigure' inside chroot, ok."
+    elif pgrep -- labwc >/dev/null; then
       ## 'labwc' is running. So the user most likely wishes the change to instantly apply.
       ## Therefore let's run 'labwc --reconfigure'.
       if ! command -v labwc >/dev/null; then
@@ -524,6 +526,11 @@ set_console_keymap() {
   ## Apply the changes to the config file to the system.
   dpkg_reconfigure_function "${dpkg_reconfigure_command[@]}"
 
+  if ischroot --default-false; then
+    printf '%s\n' "$0: INFO: Skipping command 'systemctl --no-block --no-pager restart keyboard-setup.service' inside chroot, ok."
+    return 0
+  fi
+
   ## TODO: Do not try this if not running as root.
   if "${timeout_command[@]}" systemctl --no-block --no-pager status keyboard-setup.service &>/dev/null; then
     printf '%s\n' "$0: EXECUTING: 'systemctl --no-block --no-pager restart keyboard-setup.service'"
@@ -542,6 +549,11 @@ set_console_keymap() {
 ## NOTE: This function assumes it is run as root.
 kb_reload_root() {
   local loginctl_users_json user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
+
+  if ischroot --default-false; then
+    printf '%s\n' "$0: INFO: Skipping sending SIGHUP to 'labwc' inside chroot, ok."
+    return 0
+  fi
 
   ## The only easily machine-readable format 'loginctl' can output the user list
   ## in is json. We could also use
@@ -1146,6 +1158,11 @@ parse_cmd() {
   args=( "$@" )
   true "${FUNCNAME[0]}: args: ${args[*]}"
 }
+
+## Debugging.
+#ischroot() {
+#   true
+#}
 
 command -v safe-rm >/dev/null
 command -v mktemp >/dev/null
