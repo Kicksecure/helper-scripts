@@ -40,6 +40,8 @@ skl_default_keyboard_var_names=(
   'XKBOPTIONS'
 )
 
+do_update_grub='true'
+
 grub_kb_layout_dir='/boot/grub/kb_layouts'
 
 localectl_kb_layouts="$("${timeout_command[@]}" localectl-static --no-pager list-x11-keymap-layouts)"
@@ -635,7 +637,7 @@ set_console_keymap() {
 
 ## NOTE: This function assumes it is run as root.
 kb_reload_root() {
-  local loginctl_users user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
+  local loginctl_users_json user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name
 
   ## The only easily machine-readable format 'loginctl' can output the user list
   ## in is json. We could also use
@@ -646,15 +648,31 @@ kb_reload_root() {
   ## Avoid subshell for better error handling.
   #readarray -t user_list < <(loginctl -j list-users | jq -r '.[] | .user')
 
-  loginctl_users="$("${timeout_command[@]}" loginctl -j list-users | jq -r '.[] | .user')" || true
-  readarray -t user_list <<< "$loginctl_users"
+  loginctl_users_json="$(
+    "${timeout_command[@]}" \
+      loginctl -j list-users
+  )" || true
 
-  true "user_list: ${user_list[*]}"
-
-  if ((${#user_list[@]} == 0)); then
+  if [ "$loginctl_users_json" = "" ]; then
     printf '%s\n' "$0: WARNING: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
     return 0
   fi
+
+  loginctl_users_parsed="$(jq -r '.[] | .user' <<< "$loginctl_users_json")" || true
+
+  if [ "$loginctl_users_parsed" = "" ]; then
+    printf '%s\n' "$0: WARNING: Minor issue. Failed to parse 'loginctl_users_json' using 'jq'.
+loginctl_users_json: '$loginctl_users_json'
+Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
+    return 0
+  fi
+
+  user_list=()
+  while IFS= read -r line; do
+    user_list+=("$line")
+  done <<< "$loginctl_users_parsed"
+
+  true "user_list: ${user_list[*]}"
 
   uid_list=()
   for user_name in "${user_list[@]}"; do
@@ -725,6 +743,10 @@ set_system_keymap() {
         ;;
       '--interactive')
         skl_interactive='true'
+        shift
+        ;;
+      '--no-update-grub')
+        do_update_grub='false'
         shift
         ;;
       '--')
@@ -827,9 +849,7 @@ rebuild_grub_config() {
 }
 
 set_grub_keymap() {
-  local args grub_kbdcomp_output name_part_list name_part do_update_grub
-
-  do_update_grub='true'
+  local args grub_kbdcomp_output name_part_list name_part
 
   while [ -n "${1:-}" ]; do
     case "$1" in
@@ -936,10 +956,9 @@ set_grub_keymap() {
 
 build_all_grub_keymaps() {
   local keymap_list keymap old_keymap_file grub_kbdcomp_output \
-    do_read_stdin do_update_grub
+    do_read_stdin
 
   do_read_stdin='false'
-  do_update_grub='true'
 
   while [ -n "${1:-}" ]; do
     case "$1" in
