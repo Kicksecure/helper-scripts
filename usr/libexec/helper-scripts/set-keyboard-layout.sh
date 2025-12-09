@@ -747,6 +747,11 @@ set_system_keymap() {
 rebuild_grub_config() {
   local update_grub_output
 
+  if [ "${do_update_grub}" = 'true' ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'update-grub' due to '--no-update-grub' option."
+    return 0
+  fi
+
   if ischroot --default-false; then
     ## Inside chroot such as during image builds it may be best to leave running update-grub to the build tool.
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'update-grub' inside chroot, ok."
@@ -891,9 +896,7 @@ build_all_grub_keymaps() {
     fi
   done
 
-  if [ "${do_update_grub}" = 'true' ]; then
-    rebuild_grub_config
-  fi
+  rebuild_grub_config
 
   printf '%s\n' "${FUNCNAME[0]}: INFO: Done building keyboard layouts for GRUB."
 }
