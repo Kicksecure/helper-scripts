@@ -322,7 +322,7 @@ set_labwc_keymap() {
     esac
   done
   args=( "$@" )
-  true "args: ${args[*]}"
+  true "${FUNCNAME[0]}: args: ${args[*]}"
 
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
@@ -558,7 +558,7 @@ set_console_keymap() {
     esac
   done
   args=( "$@" )
-  true "args: ${args[*]}"
+  true "${FUNCNAME[0]}: args: ${args[*]}"
 
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
@@ -761,7 +761,7 @@ set_system_keymap() {
     esac
   done
   args=( "$@" )
-  true "args: ${args[*]}"
+  true "${FUNCNAME[0]}: args: ${args[*]}"
 
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
@@ -886,7 +886,7 @@ set_grub_keymap() {
     esac
   done
   args=( "$@" )
-  true "args: ${args[*]}"
+  true "${FUNCNAME[0]}: args: ${args[*]}"
 
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
