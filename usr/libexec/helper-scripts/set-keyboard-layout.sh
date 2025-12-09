@@ -422,6 +422,10 @@ dpkg_reconfigure_function() {
 }
 
 dracut_run() {
+  if [ "${do_update_grub}" = 'true' ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'dracut --regenerate-all --force' due to '--no-update-grub' option."
+    return 0
+  fi
   if ischroot --default-false; then
     ## Inside chroot such as during image builds it may be best to leave running dracut to the build tool.
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'dracut --regenerate-all --force' inside chroot, ok."
