@@ -703,8 +703,10 @@ set_system_keymap() {
 
   printf '%s\n' "$0: INFO: Reloading keyboard layout..."
   kb_reload_root
+  printf '%s\n' ""
 
   dracut_run
+  printf '%s\n' ""
 
   printf '%s\n' "$0: INFO: Keyboard layout change successful."
 }
