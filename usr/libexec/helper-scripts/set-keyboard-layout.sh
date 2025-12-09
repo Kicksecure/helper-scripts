@@ -706,17 +706,16 @@ set_system_keymap() {
   ## {{{ Set the specified keyboard layout for labwc both system-wide and for the greeter.
 
   printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc' configuration..."
-  set_labwc_keymap \
-    --no-reload \
-    --config="${labwc_system_wide_config_path}" \
+
+  labwc_config_path="${labwc_system_wide_config_path}" \
+    set_labwc_keymap \
     "${args[@]}" \
     || return 1
   printf '%s\n' ""
 
   printf '%s\n' "${FUNCNAME[0]}: INFO: 'greetd' configuration..."
-  set_labwc_keymap \
-    --no-reload \
-    --config="${labwc_greeter_config_path}" \
+  labwc_config_path="${labwc_greeter_config_path}" \
+    set_labwc_keymap \
     "${args[@]}" \
     || return 1
   printf '%s\n' ""
