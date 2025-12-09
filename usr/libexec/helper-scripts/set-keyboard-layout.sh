@@ -422,7 +422,7 @@ dpkg_reconfigure_function() {
 }
 
 dracut_run() {
-  if [ "${do_update_grub}" = 'true' ]; then
+  if [ "${do_update_grub}" = 'false' ]; then
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'dracut --regenerate-all --force' due to '--no-update-grub' option."
     return 0
   fi
@@ -751,7 +751,7 @@ set_system_keymap() {
 rebuild_grub_config() {
   local update_grub_output
 
-  if [ "${do_update_grub}" = 'true' ]; then
+  if [ "${do_update_grub}" = 'false' ]; then
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'update-grub' due to '--no-update-grub' option."
     return 0
   fi
