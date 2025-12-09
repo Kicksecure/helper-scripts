@@ -467,6 +467,8 @@ set_console_keymap() {
   local var_idx kb_conf_file_string kb_conf_path kb_conf_dir \
     calc_replace_args dpkg_reconfigure_command
 
+  printf '%s\n' "${FUNCNAME[0]}: INFO: Console keymap configuration..."
+
   ## Parse command line arguments
   kb_conf_dir='/etc/default'
   kb_conf_path="${kb_conf_dir}/keyboard"
@@ -556,6 +558,8 @@ set_console_keymap() {
 ## NOTE: This function assumes it is run as root.
 kb_reload_root() {
   local loginctl_users_json user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name counter
+
+  printf '%s\n' "${FUNCNAME[0]}: INFO: Reloading keyboard layout..."
 
   if ischroot --default-false; then
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping sending SIGHUP to 'labwc' inside chroot, ok."
@@ -694,17 +698,14 @@ set_system_keymap() {
     return 1
   fi
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Console keymap configuration..."
-
   set_console_keymap \
     "${args[@]}" \
     || return 1
   printf '%s\n' ""
 
-  ## Set the specified keyboard layout for labwc both system-wide and for the
-  ## greeter.
-  printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc' configuration..."
+  ## {{{ Set the specified keyboard layout for labwc both system-wide and for the greeter.
 
+  printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc' configuration..."
   set_labwc_keymap \
     --no-reload \
     --config="${labwc_system_wide_config_path}" \
@@ -720,13 +721,13 @@ set_system_keymap() {
     || return 1
   printf '%s\n' ""
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: GRUB keymap configuration..."
+  ## }}}
+
   set_grub_keymap \
     "${args[@]}" \
     || return 1
   printf '%s\n' ""
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Reloading keyboard layout..."
   kb_reload_root
   printf '%s\n' ""
 
@@ -762,6 +763,8 @@ rebuild_grub_config() {
 
 set_grub_keymap() {
   local grub_kbdcomp_output name_part_list name_part
+
+  printf '%s\n' "${FUNCNAME[0]}: INFO: GRUB keymap configuration..."
 
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
