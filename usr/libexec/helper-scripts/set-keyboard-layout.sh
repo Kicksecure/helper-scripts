@@ -960,25 +960,8 @@ Alt+Shift the keyboard layout switch shortcut, specify
 
 ## Scripts such as 'set-grub-keymap' etc. call function 'interactive_ui' directly.
 interactive_ui() {
-  local kb_set_opts layout_str variant_str option_str \
+  local layout_str variant_str option_str \
     variant_key_str
-
-  kb_set_opts=()
-  while [ -n "${1:-}" ]; do
-    case "$1" in
-      --)
-        shift
-        break
-        ;;
-      -*)
-        kb_set_opts+=( "$1" )
-        shift
-        ;;
-      *)
-        break
-        ;;
-    esac
-  done
 
   printf '%s\n' "\
 Type 'list' at any prompt to see a list of valid options.
@@ -1099,7 +1082,6 @@ Type 'exit' to quit without changing keyboard layout settings.
   done
 
   "${function_name}" \
-    "${kb_set_opts[@]}" \
     "${layout_str}" \
     "${variant_str}" \
     "${option_str}" \
