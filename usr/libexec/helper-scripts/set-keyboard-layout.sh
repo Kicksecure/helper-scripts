@@ -416,7 +416,7 @@ dracut_run() {
     printf '%s\n' "$0: WARNING: Minor issue. The 'dracut' program is unavailable in the PATH environment variable or not installed. Keyboard layout in initramfs unchanged."
     return 0
   fi
-  printf '%s\n' "$0: INFO: Rebuilding all dracut initramfs images. This will take a while..."
+  printf '%s\n' "$0: INFO: Rebuilding all dracut initramfs images... This will take a while..."
   printf '%s\n' "$0: EXECUTING: 'dracut --regenerate-all --force'"
   if dracut --regenerate-all --force &>/dev/null; then
     printf '%s\n' "$0: INFO: Rebuilding all initramfs images was successful."
@@ -717,7 +717,7 @@ rebuild_grub_config() {
     return 1
   fi
 
-  printf '%s\n' "$0: INFO: Rebuilding GRUB configuration..."
+  printf '%s\n' "$0: INFO: Rebuilding GRUB configuration... This will take a moment..."
   printf '%s\n' "$0: EXECUTING: 'update-grub'"
   if ! update_grub_output="$(update-grub 2>&1)"; then
     printf '%s\n' "$0: ERROR: Failed to update GRUB configuration!" >&2
