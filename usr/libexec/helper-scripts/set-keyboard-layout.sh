@@ -714,6 +714,12 @@ set_system_keymap() {
 rebuild_grub_config() {
   local update_grub_output
 
+  if ischroot --default-false; then
+    ## Inside chroot such as during image builds it may be best to leave running update-grub to the build tool.
+    printf '%s\n' "$0: INFO: Skipping command 'update-grub' inside chroot, ok."
+    return 0
+  fi
+
   if ! command -v 'update-grub' >/dev/null 2>&1; then
     printf '%s\n' "$0: ERROR: Cannot proceed with updating GRUB configuration because requirements are unavailable. The 'update-grub' program is unavailable in the PATH environment variable or not installed. Is package 'grub2-common' installed?" >&2
     return 1
