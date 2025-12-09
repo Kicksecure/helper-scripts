@@ -241,7 +241,7 @@ replace_file_variables() {
 ## Sets the XKB layout(s), variant(s), and option(s) in 'labwc', either for just
 ## this session or persistently.
 set_labwc_keymap() {
-  local labwc_config_bak_path var_idx args labwc_env_file_string \
+  local labwc_config_bak_path var_idx labwc_env_file_string \
     labwc_config_directory \
     calc_replace_args labwc_existing_config
 
