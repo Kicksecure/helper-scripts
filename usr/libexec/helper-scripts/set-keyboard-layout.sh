@@ -546,6 +546,11 @@ set_console_keymap() {
   ## Apply the changes to the config file to the system.
   dpkg_reconfigure_function "${dpkg_reconfigure_command[@]}"
 
+  if [ "${do_update_grub}" = 'false' ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'systemctl --no-block --no-pager restart keyboard-setup.service' due to '--no-update-grub' option."
+    return 0
+  fi
+
   if ischroot --default-false; then
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'systemctl --no-block --no-pager restart keyboard-setup.service' inside chroot, ok."
     return 0
@@ -571,6 +576,11 @@ kb_reload_root() {
   local loginctl_users_json user_list uid_list user_name uid wl_sock wl_pid wl_comm account_name counter
 
   printf '%s\n' "${FUNCNAME[0]}: INFO: Reloading keyboard layout..."
+
+  if [ "${do_update_grub}" = 'false' ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping sending SIGHUP to 'labwc' due to '--no-update-grub' option."
+    return 0
+  fi
 
   if ischroot --default-false; then
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping sending SIGHUP to 'labwc' inside chroot, ok."
