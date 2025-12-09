@@ -963,8 +963,6 @@ interactive_ui() {
   local kb_set_opts layout_str variant_str option_str \
     variant_key_str
 
-  skl_interactive='true'
-
   kb_set_opts=()
   while [ -n "${1:-}" ]; do
     case "$1" in
@@ -1129,7 +1127,7 @@ parse_cmd() {
         labwc_config_path="$(cut -d'=' -f2- <<< "$1")"
         if [ -z "$labwc_config_path" ]; then
           printf '%s\n' "${FUNCNAME[0]}: ERROR: No '--config=path' specified!" >&2
-          return 1
+          exit 1
         fi
         shift
         ;;
@@ -1154,6 +1152,11 @@ parse_cmd() {
         break
         ;;
       *)
+        if [[ "$1" == -* ]]; then
+          printf '%s\n' "${FUNCNAME[0]}: ERROR: Unknown option '$1'." >&2
+          print_usage
+          exit 1
+        fi
         break
         ;;
     esac
