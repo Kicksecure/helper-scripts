@@ -421,7 +421,7 @@ dracut_run() {
   if dracut --regenerate-all --force &>/dev/null; then
     printf '%s\n' "$0: INFO: Rebuilding all initramfs images was successful."
   else
-    printf '%s\n' "$0: ERROR: Rebuilding all initramfs images was failed! Your system might be unbootable! This issue is very most likely not caused by $0. Please manually run 'sudo dracut --regenerate-all --force' to see this error for yourself." >&2
+    printf '%s\n' "$0: ERROR: Rebuilding all initramfs images was failed! Your system might be unbootable! This issue is very most likely not caused by '$0'. Please manually run 'sudo dracut --regenerate-all --force' to see this error for yourself." >&2
     exit_code=1
   fi
 }
@@ -720,7 +720,7 @@ rebuild_grub_config() {
   printf '%s\n' "$0: INFO: Rebuilding GRUB configuration... This will take a moment..."
   printf '%s\n' "$0: EXECUTING: 'update-grub'"
   if ! update_grub_output="$(update-grub 2>&1)"; then
-    printf '%s\n' "$0: ERROR: Failed to update GRUB configuration! Your system might be unbootable! This issue is very most likely not caused by $0. Please manually run 'sudo update-grub' to see this error for yourself." >&2
+    printf '%s\n' "$0: ERROR: Failed to update GRUB configuration! Your system might be unbootable! This issue is very most likely not caused by '$0'. Please manually run 'sudo update-grub' to see this error for yourself." >&2
     printf '%s\n' "$0: Output from command 'update-grub':" >&2
     printf '%s\n' "${update_grub_output}" >&2
     return 1
