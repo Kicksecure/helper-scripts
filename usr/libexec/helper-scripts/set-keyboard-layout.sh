@@ -1173,7 +1173,8 @@ skl_interactive='false'
 do_update_grub='true'
 do_persist='true'
 no_reload='false'
-## TODO: If ${HOME} is unset
+
+[[ -v "HOME" ]] || HOME="/home/user"
 labwc_config_path="${HOME}/.config/labwc/environment"
 
 grub_kb_layout_dir='/boot/grub/kb_layouts'
