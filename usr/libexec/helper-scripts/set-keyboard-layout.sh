@@ -3,15 +3,13 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  set -o errexit
-  set -o nounset
-  set -o errtrace
-  set -o pipefail
-fi
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
 
 error_handler() {
-  local exit_code="${?}"
+  exit_code="${?}"
   printf '%s\n' "\
 BASH_COMMAND: ${BASH_COMMAND}
 exit_code: ${exit_code}"
@@ -248,6 +246,7 @@ replace_file_variables() {
 ## Sets the XKB layout(s), variant(s), and option(s) in 'labwc', either for just
 ## this session or persistently.
 set_labwc_keymap() {
+  local args=("$@")
   local labwc_config_bak_path var_idx labwc_env_file_string \
     labwc_config_directory \
     calc_replace_args labwc_existing_config
@@ -464,6 +463,7 @@ dracut_run() {
 ##     forced to hard-reboot your computer if you run setupcon with this
 ##     option and the screen is controlled by a X server.
 set_console_keymap() {
+  local args=("$@")
   local var_idx kb_conf_file_string kb_conf_path kb_conf_dir \
     calc_replace_args dpkg_reconfigure_command
 
@@ -665,6 +665,7 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
 ## Sets the system-wide keyboard layout for the console, greeter, and labwc
 ## sessions all at once.
 set_system_keymap() {
+  local args=("$@")
   local labwc_system_wide_config_dir labwc_system_wide_config_path \
     labwc_greeter_config_dir labwc_greeter_config_path
 
@@ -762,6 +763,7 @@ rebuild_grub_config() {
 }
 
 set_grub_keymap() {
+  local args=("$@")
   local grub_kbdcomp_output name_part_list name_part
 
   printf '%s\n' "${FUNCNAME[0]}: INFO: GRUB keymap configuration..."
@@ -837,31 +839,7 @@ set_grub_keymap() {
 }
 
 build_all_grub_keymaps() {
-  local keymap_list keymap old_keymap_file grub_kbdcomp_output \
-    do_read_stdin
-
-  do_read_stdin='false'
-
-  while [ -n "${1:-}" ]; do
-    case "$1" in
-      '--help'|'-h')
-        print_usage
-        exit 0
-        ;;
-      '--read-stdin')
-        do_read_stdin='true'
-        shift
-        ;;
-      '--no-update-grub')
-        do_update_grub='false'
-        shift
-        ;;
-      *)
-        printf '%s\n' "${FUNCNAME[0]}: ERROR: Unrecognized argument '$1'!"
-        return 1
-        ;;
-    esac
-  done
+  local keymap_list keymap old_keymap_file grub_kbdcomp_output
 
   if [ "${do_read_stdin}" = 'true' ]; then
     printf '%s\n' "${FUNCNAME[0]}: INFO: Getting list of keyboard layouts from 'stdin' (standard input)."
@@ -973,6 +951,7 @@ Alt+Shift the keyboard layout switch shortcut, specify
 "
 }
 
+## Scripts such as 'set-grub-keymap' etc. call function 'interactive_ui' directly.
 interactive_ui() {
   local kb_set_func kb_set_opts layout_str variant_str option_str \
     variant_key_str
@@ -984,10 +963,12 @@ interactive_ui() {
     return 1
   fi
   shift
+
   kb_set_opts=()
   while [ -n "${1:-}" ]; do
     case "$1" in
       --)
+        shift
         break
         ;;
       -*)
@@ -1134,6 +1115,8 @@ parse_cmd() {
         shift
         ;;
       '--help'|'-h')
+        ## The print_usage function is provided by the script that sources this
+        ## library.
         print_usage
         exit 0
         ;;
@@ -1157,8 +1140,12 @@ parse_cmd() {
         do_update_grub='false'
         shift
         ;;
+      '--read-stdin')
+        do_read_stdin='true'
+        shift
+        ;;
       '--build-all')
-        ## TODO
+        ## The 'set-grub-keymap' script calls function 'build_all_grub_keymaps' directly.
         shift
         ;;
       '--')
@@ -1171,6 +1158,7 @@ parse_cmd() {
     esac
   done
 
+  ## global args
   args=( "$@" )
   true "${FUNCNAME[0]}: args: ${args[*]}"
 }
@@ -1212,7 +1200,9 @@ skl_default_keyboard_var_names=(
   'XKBOPTIONS'
 )
 
-args=""
+args=()
+kb_set_opts=()
+do_read_stdin='false'
 skl_interactive='false'
 do_update_grub='true'
 do_persist='true'
