@@ -10,47 +10,6 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   set -o pipefail
 fi
 
-command -v safe-rm >/dev/null
-command -v mktemp >/dev/null
-command -v mv >/dev/null
-command -v dirname >/dev/null
-command -v mkdir >/dev/null
-command -v overwrite >/dev/null
-command -v stcat >/dev/null
-command -v sponge >/dev/null
-command -v timeout >/dev/null
-command -v ischroot >/dev/null
-command -v jq >/dev/null
-command -v tr >/dev/null
-command -v loginctl >/dev/null
-command -v /usr/libexec/helper-scripts/query-sock-pid >/dev/null
-command -v localectl-static >/dev/null
-
-timeout_command=("timeout" "--kill-after" "5" "5")
-
-skl_xkb_env_var_names=(
-  'XKB_DEFAULT_LAYOUT'
-  'XKB_DEFAULT_VARIANT'
-  'XKB_DEFAULT_OPTIONS'
-)
-skl_default_keyboard_var_names=(
-  'XKBLAYOUT'
-  'XKBVARIANT'
-  'XKBOPTIONS'
-)
-
-args=""
-skl_interactive='false'
-do_update_grub='true'
-do_persist='true'
-no_reload='false'
-## TODO: If ${HOME} is unset
-labwc_config_path="${HOME}/.config/labwc/environment"
-
-grub_kb_layout_dir='/boot/grub/kb_layouts'
-
-localectl_kb_layouts="$("${timeout_command[@]}" localectl-static --no-pager list-x11-keymap-layouts)"
-
 error_handler() {
   local exit_code="${?}"
   printf '%s\n' "\
@@ -1179,5 +1138,46 @@ parse_cmd() {
   args=( "$@" )
   true "${FUNCNAME[0]}: args: ${args[*]}"
 }
+
+command -v safe-rm >/dev/null
+command -v mktemp >/dev/null
+command -v mv >/dev/null
+command -v dirname >/dev/null
+command -v mkdir >/dev/null
+command -v overwrite >/dev/null
+command -v stcat >/dev/null
+command -v sponge >/dev/null
+command -v timeout >/dev/null
+command -v ischroot >/dev/null
+command -v jq >/dev/null
+command -v tr >/dev/null
+command -v loginctl >/dev/null
+command -v /usr/libexec/helper-scripts/query-sock-pid >/dev/null
+command -v localectl-static >/dev/null
+
+timeout_command=("timeout" "--kill-after" "5" "5")
+
+skl_xkb_env_var_names=(
+  'XKB_DEFAULT_LAYOUT'
+  'XKB_DEFAULT_VARIANT'
+  'XKB_DEFAULT_OPTIONS'
+)
+skl_default_keyboard_var_names=(
+  'XKBLAYOUT'
+  'XKBVARIANT'
+  'XKBOPTIONS'
+)
+
+args=""
+skl_interactive='false'
+do_update_grub='true'
+do_persist='true'
+no_reload='false'
+## TODO: If ${HOME} is unset
+labwc_config_path="${HOME}/.config/labwc/environment"
+
+grub_kb_layout_dir='/boot/grub/kb_layouts'
+
+localectl_kb_layouts="$("${timeout_command[@]}" localectl-static --no-pager list-x11-keymap-layouts)"
 
 parse_cmd "$@"
