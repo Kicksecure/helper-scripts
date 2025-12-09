@@ -349,8 +349,12 @@ set_labwc_keymap() {
   fi
 
   if [ "${no_reload}" = 'false' ]; then
-    if ischroot --default-false; then
+    if [ "${do_update_grub}" = 'false' ]; then
+      printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'labwc --reconfigure' due to '--no-update-grub' option."
+    elif ischroot --default-false; then
       printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping executing 'labwc --reconfigure' inside chroot, ok."
+    elif [ "$(id --user)" = 0 ]; then
+      printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping executing 'labwc --reconfigure' because running as root, ok."
     elif pgrep -- labwc >/dev/null; then
       ## 'labwc' is running. So the user most likely wishes the change to instantly apply.
       ## Therefore let's run 'labwc --reconfigure'.
