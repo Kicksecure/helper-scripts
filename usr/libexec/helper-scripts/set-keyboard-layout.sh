@@ -28,7 +28,6 @@ command -v localectl-static >/dev/null
 
 timeout_command=("timeout" "--kill-after" "5" "5")
 
-skl_interactive='false'
 skl_xkb_env_var_names=(
   'XKB_DEFAULT_LAYOUT'
   'XKB_DEFAULT_VARIANT'
@@ -40,7 +39,13 @@ skl_default_keyboard_var_names=(
   'XKBOPTIONS'
 )
 
+args=""
+skl_interactive='false'
 do_update_grub='true'
+do_persist='true'
+no_reload='false'
+## TODO: If ${HOME} is unset
+labwc_config_path="${HOME}/.config/labwc/environment"
 
 grub_kb_layout_dir='/boot/grub/kb_layouts'
 
@@ -278,51 +283,10 @@ replace_file_variables() {
 ## this session or persistently.
 set_labwc_keymap() {
   local labwc_config_bak_path var_idx args labwc_env_file_string \
-    labwc_config_directory do_persist no_reload labwc_config_path \
+    labwc_config_directory \
     calc_replace_args labwc_existing_config
 
-  ## Parse command line arguments
-  do_persist='true'
-  no_reload='false'
-  labwc_config_path="${HOME}/.config/labwc/environment"
   labwc_config_bak_path=''
-  while [ -n "${1:-}" ]; do
-    case "$1" in
-      '--no-persist')
-        do_persist='false'
-        shift
-        ;;
-      '--help'|'-h')
-        print_usage
-        return 0
-        ;;
-      '--no-reload')
-        no_reload='true'
-        shift
-        ;;
-      '--config='*)
-        labwc_config_path="$(cut -d'=' -f2- <<< "$1")"
-        if [ -z "$labwc_config_path" ]; then
-          printf '%s\n' "$0: ERROR: No '--config=path' specified!" >&2
-          return 1
-        fi
-        shift
-        ;;
-      '--interactive')
-        skl_interactive='true'
-        shift
-        ;;
-      '--')
-        shift
-        break
-        ;;
-      *)
-        break
-        ;;
-    esac
-  done
-  args=( "$@" )
-  true "${FUNCNAME[0]}: args: ${args[*]}"
 
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
@@ -331,7 +295,7 @@ set_labwc_keymap() {
     ## The print_usage function is provided by the script that sources this
     ## library.
     print_usage
-    return 1
+    exit 1
   fi
 
   ## If we have less than three arguments, populate the `args` array with empty
@@ -532,33 +496,12 @@ dracut_run() {
 ##     forced to hard-reboot your computer if you run setupcon with this
 ##     option and the screen is controlled by a X server.
 set_console_keymap() {
-  local args var_idx kb_conf_file_string kb_conf_path kb_conf_dir \
+  local var_idx kb_conf_file_string kb_conf_path kb_conf_dir \
     calc_replace_args dpkg_reconfigure_command
 
   ## Parse command line arguments
   kb_conf_dir='/etc/default'
   kb_conf_path="${kb_conf_dir}/keyboard"
-  while [ -n "${1:-}" ]; do
-    case "$1" in
-      '--help'|'-h')
-        print_usage
-        return 0
-        ;;
-      '--interactive')
-        skl_interactive='true'
-        shift
-        ;;
-      '--')
-        shift
-        break
-        ;;
-      *)
-        break
-        ;;
-    esac
-  done
-  args=( "$@" )
-  true "${FUNCNAME[0]}: args: ${args[*]}"
 
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
@@ -567,7 +510,7 @@ set_console_keymap() {
     ## The print_usage function is provided by the script that sources this
     ## library.
     print_usage
-    return 1
+    exit 1
   fi
 
   ## If we have less than three arguments, populate the `args` array with empty
@@ -734,34 +677,8 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
 ## Sets the system-wide keyboard layout for the console, greeter, and labwc
 ## sessions all at once.
 set_system_keymap() {
-  local args labwc_system_wide_config_dir labwc_system_wide_config_path \
+  local labwc_system_wide_config_dir labwc_system_wide_config_path \
     labwc_greeter_config_dir labwc_greeter_config_path
-
-  while [ -n "${1:-}" ]; do
-    case "$1" in
-      '--help'|'-h')
-        print_usage
-        return 0
-        ;;
-      '--interactive')
-        skl_interactive='true'
-        shift
-        ;;
-      '--no-update-grub')
-        do_update_grub='false'
-        shift
-        ;;
-      '--')
-        shift
-        break
-        ;;
-      *)
-        break
-        ;;
-    esac
-  done
-  args=( "$@" )
-  true "${FUNCNAME[0]}: args: ${args[*]}"
 
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
@@ -770,7 +687,7 @@ set_system_keymap() {
     ## The print_usage function is provided by the script that sources this
     ## library.
     print_usage
-    return 1
+    exit 1
   fi
 
   ## If we have less than three arguments, populate the `args` array with empty
@@ -852,41 +769,7 @@ rebuild_grub_config() {
 }
 
 set_grub_keymap() {
-  local args grub_kbdcomp_output name_part_list name_part
-
-  while [ -n "${1:-}" ]; do
-    case "$1" in
-      '--help'|'-h')
-        print_usage
-        return 0
-        ;;
-      '--interactive')
-        skl_interactive='true'
-        shift
-        ;;
-      '--build-all')
-        printf '%s\n' "$0: ERROR: Cannot combine --build-all with arguments other than --read-stdin!" >&2
-        return 1
-        ;;
-      '--read-stdin')
-        printf '%s\n' "$0: ERROR: --read-stdin is not valid unless the first argument is --build-all!" >&2
-        return 1
-        ;;
-      '--no-update-grub')
-        do_update_grub='false'
-        shift
-        ;;
-      '--')
-        shift
-        break
-        ;;
-      *)
-        break
-        ;;
-    esac
-  done
-  args=( "$@" )
-  true "${FUNCNAME[0]}: args: ${args[*]}"
+  local grub_kbdcomp_output name_part_list name_part
 
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
@@ -895,7 +778,7 @@ set_grub_keymap() {
     ## The print_usage function is provided by the script that sources this
     ## library.
     print_usage
-    return 1
+    exit 1
   fi
 
   ## If we have less than three arguments, populate the `args` array with empty
@@ -968,7 +851,7 @@ build_all_grub_keymaps() {
     case "$1" in
       '--help'|'-h')
         print_usage
-        return 0
+        exit 0
         ;;
       '--read-stdin')
         do_read_stdin='true'
@@ -1247,3 +1130,54 @@ Type 'exit' to quit without changing keyboard layout settings.
     "${option_str}" \
     || return 1
 }
+
+parse_cmd() {
+  while [ -n "${1:-}" ]; do
+    case "$1" in
+      '--no-persist')
+        do_persist='false'
+        shift
+        ;;
+      '--help'|'-h')
+        print_usage
+        exit 0
+        ;;
+      '--no-reload')
+        no_reload='true'
+        shift
+        ;;
+      '--config='*)
+        labwc_config_path="$(cut -d'=' -f2- <<< "$1")"
+        if [ -z "$labwc_config_path" ]; then
+          printf '%s\n' "$0: ERROR: No '--config=path' specified!" >&2
+          return 1
+        fi
+        shift
+        ;;
+      '--interactive')
+        skl_interactive='true'
+        shift
+        ;;
+      '--no-update-grub')
+        do_update_grub='false'
+        shift
+        ;;
+      '--build-all')
+        ## TODO
+        shift
+        ;;
+      '--')
+        shift
+        break
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  args=( "$@" )
+  true "${FUNCNAME[0]}: args: ${args[*]}"
+}
+
+parse_cmd "$@"
