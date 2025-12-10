@@ -1136,6 +1136,7 @@ command -v ischroot >/dev/null
 command -v jq >/dev/null
 command -v tr >/dev/null
 command -v loginctl >/dev/null
+command -v pgrep >/dev/null
 command -v /usr/libexec/helper-scripts/query-sock-pid >/dev/null
 command -v localectl-static >/dev/null
 
