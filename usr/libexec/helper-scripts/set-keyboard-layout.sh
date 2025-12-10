@@ -18,13 +18,14 @@ set -o pipefail
 error_handler() {
   exit_code="${?}"
   printf '%s\n' "\
+$0: error_handler:
 BASH_COMMAND: ${BASH_COMMAND}
 exit_code: ${exit_code}"
   exit "${exit_code}"
 }
 
 exit_handler() {
-  [[ -v "exit_code" ]] || exit_code="0"
+  [[ -v "exit_code" ]] || exit_code="${?}"
   printf '%s\n' ""
   if [ "$exit_code" = 0 ]; then
     printf '%s\n' "$0: INFO: OK."
