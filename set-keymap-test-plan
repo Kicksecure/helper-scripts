@@ -22,23 +22,23 @@
   * [ ] Run `set-labwc-keymap us,us ,colemak ,grp:alt_shift_toggle,`. Complains that empty keyboard layout option was found?
   * [ ] Run `set-labwc-keymap us,us ,colemak grp:alt_shift_toggle,,caps:backspace`. Complains that empty keyboard layout option was found?
 * [ ] set-labwc-keymap persistent tests
-  * [ ] Run `set-labwc-keymap --persist us`. Environment file is created with the following contents?
+  * [ ] Run `set-labwc-keymap us`. Environment file is created with the following contents?
     * XKB_DEFAULT_LAYOUT=us
     * XKB_DEFAULT_VARIANT=
     * XKB_DEFAULT_OPTIONS=
-  * [ ] Run `set-labwc-keymap --persist de`. Environment file is created with the following contents?
+  * [ ] Run `set-labwc-keymap de`. Environment file is created with the following contents?
     * XKB_DEFAULT_LAYOUT=de
     * XKB_DEFAULT_VARIANT=
     * XKB_DEFAULT_OPTIONS=
-  * [ ] Run `set-labwc-keymap --persist cz`. Environment file is created with the following contents?
+  * [ ] Run `set-labwc-keymap cz`. Environment file is created with the following contents?
     * XKB_DEFAULT_LAYOUT=cz
     * XKB_DEFAULT_VARIANT=
     * XKB_DEFAULT_OPTIONS=
-  * [ ] Run `set-labwc-keymap --persist us,de,cz '' grp:alt_shift_toggle`. Environment file is created with the following contents?
+  * [ ] Run `set-labwc-keymap us,de,cz '' grp:alt_shift_toggle`. Environment file is created with the following contents?
     * XKB_DEFAULT_LAYOUT=us,de,cz
     * XKB_DEFAULT_VARIANT=
     * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle
-  * [ ] Run `set-labwc-keymap --persist us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
+  * [ ] Run `set-labwc-keymap us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
     * XKB_DEFAULT_LAYOUT=us,us,us,de
     * XKB_DEFAULT_VARIANT=,dvorak,colemak,
     * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle,caps:backspace
@@ -47,7 +47,7 @@
     * XKB_DEFAULT_LAYOUT=us
     * XKB_DEFAULT_VARIANT=,dvorak,colemak,
     * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle,caps:backspace
-  * [ ] Run `set-labwc-keymap --persist us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
+  * [ ] Run `set-labwc-keymap us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
     * XKB_DEFAULT_LAYOUT=us,us,us,de
     * XKB_DEFAULT_VARIANT=,dvorak,colemak,
     * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle,caps:backspace
@@ -58,7 +58,7 @@
     * XKB_DEFAULT_VARIANT=,dvorak,colemak,
     * XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle,caps:backspace
     * E=F
-  * [ ] Run `set-labwc-keymap --persist es`. Environment file is created with the following contents?
+  * [ ] Run `set-labwc-keymap es`. Environment file is created with the following contents?
     * A=B
     * XKB_DEFAULT_LAYOUT=es
     * C=D
@@ -72,7 +72,7 @@
     *   XKB_DEFAULT_VARIANT=
     * XKB_DEFAULT_OPTIONS=
     * E=F
-  * [ ] Run `set-labwc-keymap --persist us,us colemak,`. Environment file is created with the following contents?
+  * [ ] Run `set-labwc-keymap us,us colemak,`. Environment file is created with the following contents?
     * A=B
     * XKB_DEFAULT_LAYOUT=us,us
     *   C=D
@@ -89,7 +89,7 @@
     * XKB_DEFAULT_OPTIONS=
     * XKB_DEFAULT_OPTIONS=caps:backspace
     * E=F
-  * [ ] Run `set-labwc-keymap --persist us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
+  * [ ] Run `set-labwc-keymap us,us,us,de ,dvorak,colemak, grp:alt_shift_toggle,caps:backspace`. Environment file is created with the following contents?
     * A=B
     * #XKB_DEFAULT_LAYOUT=us
     *  XKB_DEFAULT_LAYOUT=us,us,us,de
@@ -100,7 +100,7 @@
     * E=F
 * [ ] set-labwc-keymap misc options
   * [ ] Run `set-labwc-keymap --help`. Displays help?
-  * [ ] Run `set-labwc-keymap --config ./test --no-reload --persist us colemak`. Creates a file ~/.test with the following contents?
+  * [ ] Run `set-labwc-keymap --config ./test --no-reload us colemak`. Creates a file ~/.test with the following contents?
     * XKB_DEFAULT_LAYOUT=us
     * XKB_DEFAULT_VARIANT=colemak
     * XKB_DEFAULT_OPTIONS=

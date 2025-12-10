@@ -32,7 +32,7 @@ done
 args=( "$@" )
 subcommand="${args[0]:-}"
 
-if [ -z "$subcommand" ]; then
+if [ -z "${subcommand}" ]; then
   printf '%s\n' "$0: ERROR: Missing command (expected: list-x11-keymap-layouts|list-x11-keymap-variants|list-x11-keymap-options)"
   exit 1
 fi
@@ -50,15 +50,15 @@ if [ "${subcommand}" = "list-x11-keymap-layouts" ]; then
   fi
 elif [ "${subcommand}" = "list-x11-keymap-variants" ]; then
   if [ -z "${args[1]:-}" ]; then
-    printf '%s\n' "ERROR: Missing layout argument!"
+    printf '%s\n' "$0: ERROR: Missing layout argument!"
     exit 1
   fi
   if ! [ -d "${variants_static_dir}" ]; then
-    printf '%s\n' "ERROR: Folder variants_static_dir '${variants_static_dir}' missing! args[1]: '${args[1]}'!"
+    printf '%s\n' "$0: ERROR: Folder variants_static_dir '${variants_static_dir}' missing! args[1]: '${args[1]}'!"
     exit 1
   fi
   if ! [ -f "${variants_static_dir}/${args[1]}" ]; then
-    printf '%s\n' "ERROR: Unrecognized keymap '${args[1]}'!"
+    printf '%s\n' "$0: ERROR: Unrecognized keymap '${args[1]}'!"
     exit 1
   fi
   if [ "$use_pager" = 'true' ]; then
