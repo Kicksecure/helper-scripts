@@ -53,7 +53,11 @@ elif [ "${args[0]}" = "list-x11-keymap-variants" ]; then
     printf '%s\n' "ERROR: Missing layout argument!"
     exit 1
   fi
-  if ! [ -r "${variants_static_dir}" ]; then
+  if ! [ -d "${variants_static_dir}" ]; then
+    printf '%s\n' "ERROR: Folder variants_static_dir '${variants_static_dir}' missing! args[1]: '${args[1]}'!"
+    exit 1
+  fi
+  if ! [ -f "${variants_static_dir}/${args[1]}" ]; then
     printf '%s\n' "ERROR: Unrecognized keymap '${args[1]}'!"
     exit 1
   fi
