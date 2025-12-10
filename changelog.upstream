@@ -1,3 +1,106 @@
+commit 0b0ac898f2ddc4f5d6a5db055fa105b88c1d5041
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 08:23:07 2025 -0500
+
+    fix
+
+commit dc85e06beacb56b5c8da5db9cfd0c1235cb3cb15
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:42:53 2025 -0500
+
+    fix
+
+commit 16d8cac3b3b54ae4955e88a8ea8c8625bc98f2a5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:37:15 2025 -0500
+
+    fix
+
+commit f0650418a572481d58fc30a654ea5f37ca3eddfc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:34:51 2025 -0500
+
+    refactoring
+
+commit 8bcc02d4aa187c052052a0730de55694217e4fe8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:28:49 2025 -0500
+
+    fix
+
+commit a62178bcbfb788b2a0fb7ee08eb26915351038f5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:24:15 2025 -0500
+
+    fix
+
+commit 0971eb54bc9f1ef7e938d5ac59da190300fba366
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:21:45 2025 -0500
+
+    fix
+
+commit faaef802e97c70d46807762472d273260798f902
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:18:28 2025 -0500
+
+    fix
+
+commit 2a61bb9d9b27f9f9c33b68cd4dee316134084e37
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:17:20 2025 -0500
+
+    fix
+
+commit 9725725526442555169a9c005435db7890be837a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:13:54 2025 -0500
+
+    fix
+
+commit a3dfada812ad7d52cc5ffb484d2a6d16085af16c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:11:52 2025 -0500
+
+    refactoring
+
+commit 0ef2740fe359f0e292f2798c80833c4868cf1eff
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:06:00 2025 -0500
+
+    refactoring
+
+commit e173b0de198b415a10b1bb40b81835a7a5a8d79f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:04:53 2025 -0500
+
+    fix
+
+commit 8cb7eb0bc51f9cb974ec7a35d0da9039b4ecce69
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:02:17 2025 -0500
+
+    fix
+
+commit 2bf959d11b15ee6b8f3e541d4242960265d5152f
+Merge: 60ea0ec eeb8a68
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 06:55:40 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit eeb8a68acdf454524e8bf2f64f2bbf9bafbc61c4
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 9 21:52:09 2025 -0600
+
+    Keyboard layout script and localectl-static fixes / optimization
+
+commit 60ea0ec766fa17b89fbdc623675be8dbf232b45c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 9 14:35:32 2025 +0000
+
+    bumped changelog version
+
 commit f5d60eac9499286ec87b5b03e9c09d57c8f0a41d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Dec 9 09:34:44 2025 -0500
