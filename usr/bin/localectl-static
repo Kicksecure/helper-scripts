@@ -8,9 +8,15 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
+command -v stcat >/dev/null
+command -v pager >/dev/null
+
+use_pager='true'
+
 while [ -n "${1:-}" ]; do
    case "$1" in
    '--no-pager')
+      use_pager='false'
       shift
       ;;
    '--')
@@ -24,11 +30,38 @@ while [ -n "${1:-}" ]; do
 done
 args=( "$@" )
 
-if [ "$args" = "list-x11-keymap-layouts" ]; then
-  stcat /usr/share/helper-scripts/localectl-list-x11-keymap-layouts-static.txt
-elif [ "$args" = "list-x11-keymap-variants" ]; then
-  stcat /usr/share/helper-scripts/localectl-list-x11-keymap-variants-static.txt
+helper_scripts_share_dir='/usr/share/helper-scripts'
+layouts_static_file="${helper_scripts_share_dir}/localectl-list-x11-keymap-layouts-static.txt"
+variants_static_dir="${helper_scripts_share_dir}/localectl-list-x11-keymap-variants-static.d"
+options_static_file="${helper_scripts_share_dir}/localectl-list-x11-keymap-options-static.txt"
+
+if [ "${args[0]}" = "list-x11-keymap-layouts" ]; then
+  if [ "$use_pager" = 'true' ]; then
+    stcat "${layouts_static_file}" | pager
+  else
+    stcat "${layouts_static_file}"
+  fi
+elif [ "${args[0]}" = "list-x11-keymap-variants" ]; then
+  if [ -z "${args[1]:-}" ]; then
+    printf '%s\n' "ERROR: Display of all keymap variants for all layouts not yet implemented!"
+    exit 1
+  fi
+  if ! [ -f "${variants_static_dir}" ]; then
+    printf '%s\n' "ERROR: Unrecognized keymap '${args[1]}'!"
+    exit 1
+  fi
+  if [ "$use_pager" = 'true' ]; then
+    stcat "${variants_static_dir}/${args[1]}" | pager
+  else
+    stcat "${variants_static_dir}/${args[1]}"
+  fi
+elif [ "${args[0]}" = "list-x11-keymap-options" ]; then
+  if [ "$use_pager" = 'true' ]; then
+    stcat "${options_static_file}" | pager
+  else
+    stcat "${options_static_file}"
+  fi
 else
-  printf '%s\n' "$0: ERROR: Unknown command: '$@'"
+  printf '%s\n' "$0: ERROR: Unknown command: '${args[*]}'"
   exit 1
 fi

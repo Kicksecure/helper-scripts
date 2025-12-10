@@ -12,15 +12,13 @@ true "$0: START"
 
 print_usage() {
   printf '%s\n' "$0: Set keyboard layout for GRUB" >&2
-  printf '%s\n' "Usage: $0 [--help|-h] [--interactive] [--no-update-grub] -- [layout [variant [option]]]" >&2
-  printf '%s\n' "   Or: $0 --build-all [--help|-h] [--read-stdin] [--no-update-grub]" >&2
+  printf '%s\n' "Usage: $0 [--help|-h] [--interactive] [--no-live-changes] -- [layout [variant [option]]]" >&2
+  printf '%s\n' "   Or: $0 --build-all [--help|-h] [--no-live-changes]" >&2
   printf '%s\n' 'Options:' >&2
-  printf '%s\n' '--help, -h        Print this help message.' >&2
-  printf '%s\n' '--interactive     Show an interactive user interface.' >&2
-  printf '%s\n' '--no-update-grub  Do not update grub.cfg after building layouts.' >&2
-  printf '%s\n' '--build-all       Builds all standard keyboard layouts for GRUB.' >&2
-  printf '%s\n' '--read-stdin      Read the list of keyboard layouts from stdin rather than' >&2
-  printf '%s\n' '                  getting it from localectl.' >&2
+  printf '%s\n' '--help, -h         Print this help message.' >&2
+  printf '%s\n' '--interactive      Show an interactive user interface.' >&2
+  printf '%s\n' '--no-live-changes  Do not update grub.cfg after building layouts.' >&2
+  printf '%s\n' '--build-all        Builds all standard keyboard layouts for GRUB.' >&2
   printf '\n' >&2
   printf '%s\n' 'Examples:' >&2
   printf '%s\n' '  set-grub-keymap de' >&2

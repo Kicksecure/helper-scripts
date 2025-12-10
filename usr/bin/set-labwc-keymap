@@ -12,13 +12,14 @@ true "$0: START"
 
 print_usage() {
   printf '%s\n' "$0: Set keyboard layout for labwc" >&2
-  printf '%s\n' "Usage: $0 [--help|-h] [--no-persist] [--no-reload] [--config=<path>] [--interactive] -- [layout [variant [option]]]" >&2
+  printf '%s\n' "Usage: $0 [--help|-h] [--no-persist] [--no-reload] [--config=<path>] [--no-live-changes] [--interactive] -- [layout [variant [option]]]" >&2
   printf '%s\n' 'Options:' >&2
-  printf '%s\n' '--help, -h       Print this help message.' >&2
-  printf '%s\n' '--no-persist     Make layout change non-persistent.' >&2
-  printf '%s\n' '--no-reload      Skip reloading labwc config. Only useful with --persist.' >&2
-  printf '%s\n' '--config=<path>  Specify an alternative config file path.' >&2
-  printf '%s\n' '--interactive    Show an interactive user interface.' >&2
+  printf '%s\n' '--help, -h         Print this help message.' >&2
+  printf '%s\n' '--no-persist       Make layout change non-persistent.' >&2
+  printf '%s\n' '--no-reload        Skip reloading labwc config. Only useful with --persist.' >&2
+  printf '%s\n' '--config=<path>    Specify an alternative config file path.' >&2
+  printf '%s\n' '--no-live-changes  Do not change the keyboard layout in the active running session.' >&2
+  printf '%s\n' '--interactive      Show an interactive user interface.' >&2
   printf '\n' >&2
   printf '%s\n' 'Examples:' >&2
   printf '%s\n' '  set-labwc-keymap de' >&2
