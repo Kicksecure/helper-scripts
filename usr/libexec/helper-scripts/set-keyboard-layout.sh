@@ -729,7 +729,7 @@ set_grub_keymap() {
   if ! grub_kbdcomp_output="$(
     grub-kbdcomp -o "${grub_kb_layout_dir}/user-layout.gkb" "${args[@]}" 2>&1
   )"; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Failed to build GRUB keyboard layout!"
+    printf '%s\n' "${FUNCNAME[0]}: ERROR: Failed to build GRUB keyboard layout!" >&2
     printf '%s\n' "${FUNCNAME[0]}: Output from the 'grub-kbdcomp' command:" >&2
     printf '%s\n' "${grub_kbdcomp_output}" >&2
     return 1
