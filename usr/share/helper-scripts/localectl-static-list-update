@@ -25,7 +25,8 @@ localectl --no-pager list-x11-keymap-options | stsponge ./localectl-list-x11-key
 ## NOTE: localectl also supports displaying *all* layout variants, but this is
 ##   of limited use since the set of available variants is dependent upon the
 ##   layout in use. Not implemented in localectl-static yet.
-mkdir ./localectl-list-x11-keymap-variants-static.d
+mkdir --parents -- ./localectl-list-x11-keymap-variants-static.d
+
 for keymap_layout in $keymap_layouts; do
   ## localectl will exit non-zero if $keymap_layout refers to a layout that
   ## has no variants.
