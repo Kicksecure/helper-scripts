@@ -23,7 +23,7 @@ print_usage() {
   printf '%s\n' 'Examples:' >&2
   printf '%s\n' '  set-grub-keymap de' >&2
   printf '%s\n' '  set-grub-keymap us colemak' >&2
-  printf '%s\n' '  set-grub-keymap --build-all'
+  printf '%s\n' '  set-grub-keymap --build-all' >&2
 }
 
 if [ "$(id -u)" != "0" ]; then

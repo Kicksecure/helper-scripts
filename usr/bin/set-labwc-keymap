@@ -16,14 +16,14 @@ print_usage() {
   printf '%s\n' 'Options:' >&2
   printf '%s\n' '--help, -h         Print this help message.' >&2
   printf '%s\n' '--no-persist       Make layout change non-persistent.' >&2
-  printf '%s\n' '--no-reload        Skip reloading labwc config. Only useful with --persist.' >&2
+  printf '%s\n' '--no-reload        Skip reloading labwc config. Only useful with --no-persist.' >&2
   printf '%s\n' '--config=<path>    Specify an alternative config file path.' >&2
   printf '%s\n' '--no-live-changes  Do not change the keyboard layout in the active running session.' >&2
   printf '%s\n' '--interactive      Show an interactive user interface.' >&2
   printf '\n' >&2
   printf '%s\n' 'Examples:' >&2
   printf '%s\n' '  set-labwc-keymap de' >&2
-  printf '%s\n' '  set-labwc-keymap --persist us colemak' >&2
+  printf '%s\n' '  set-labwc-keymap --no-persist us colemak' >&2
   printf '%s\n' '  set-labwc-keymap us,cz,de "" grp:alt_shift_toggle' >&2
 }
 
