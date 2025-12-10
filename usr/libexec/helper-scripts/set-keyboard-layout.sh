@@ -332,7 +332,7 @@ set_labwc_keymap() {
         if labwc --reconfigure; then
           printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc --reconfigure' OK."
         else
-          printf '%s\n' "${FUNCNAME[0]}: WARNING: 'labwc --reconfigure' reconfiguration failed!"
+          printf '%s\n' "${FUNCNAME[0]}: WARNING: 'labwc --reconfigure' reconfiguration failed!" >&2
         fi
       fi
     else
@@ -402,7 +402,7 @@ dracut_run() {
     return 0
   fi
   if ! command -v dracut >/dev/null; then
-    printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. The 'dracut' program is unavailable in the PATH environment variable or not installed. Keyboard layout in initramfs unchanged."
+    printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. The 'dracut' program is unavailable in the PATH environment variable or not installed. Keyboard layout in initramfs unchanged." >&2
     return 0
   fi
   printf '%s\n' "${FUNCNAME[0]}: INFO: Rebuilding all dracut initramfs images... This will take a while..."
@@ -502,10 +502,10 @@ set_console_keymap() {
     if "${timeout_command[@]}" systemctl --no-block --no-pager restart keyboard-setup.service; then
       printf '%s\n' "${FUNCNAME[0]}: INFO: Restart of systemd unit 'keyboard-setup.service' success."
     else
-      printf '%s\n' "${FUNCNAME[0]}: WARNING: Restart of systemd unit 'keyboard-setup.service' failed. Reboot may be required to change the virtual console keyboard layout."
+      printf '%s\n' "${FUNCNAME[0]}: WARNING: Restart of systemd unit 'keyboard-setup.service' failed. Reboot may be required to change the virtual console keyboard layout." >&2
     fi
   else
-    printf '%s\n' "${FUNCNAME[0]}: WARNING: Systemd unit 'keyboard-setup.service' is not running or does not exist. Reboot may be required to change the virtual console keyboard layout."
+    printf '%s\n' "${FUNCNAME[0]}: WARNING: Systemd unit 'keyboard-setup.service' is not running or does not exist. Reboot may be required to change the virtual console keyboard layout." >&2
   fi
 
   printf '%s\n' "${FUNCNAME[0]}: INFO: system console configuration success."
@@ -543,7 +543,7 @@ labwc_kb_reload_root() {
   )" || true
 
   if [ "$loginctl_users_json" = "" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
+    printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout." >&2
     return 0
   fi
 
@@ -552,7 +552,7 @@ labwc_kb_reload_root() {
   if [ "$loginctl_users_parsed" = "" ]; then
     printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. Failed to parse 'loginctl_users_json' using 'jq'.
 loginctl_users_json: '$loginctl_users_json'
-Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
+Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout." >&2
     return 0
   fi
 
@@ -610,10 +610,10 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
           if kill -s SIGHUP -- "${wl_pid}"; then
             printf '%s\n' "${FUNCNAME[0]}: INFO: Signal SIGHUP ok."
           else
-            printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. Sending signal SIGHUP failed. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
+            printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. Sending signal SIGHUP failed. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout." >&2
           fi
         else
-          printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. Not sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' because it is not running. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
+          printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. Not sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' because it is not running. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout." >&2
         fi
       fi
     done
@@ -668,10 +668,16 @@ set_system_keymap() {
   labwc_kb_reload_root
   printf '%s\n' ""
 
+  ## Soft-fail.
   dracut_run
   printf '%s\n' ""
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Keyboard layout change successful."
+  if [ "${exit_code:-0}" = 0 ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Keyboard layout change successful."
+    return 0
+  fi
+
+  printf '%s\n' "${FUNCNAME[0]}: WARNING: Keyboard layout changes applied, but some steps failed, see above."
 }
 
 rebuild_grub_config() {
