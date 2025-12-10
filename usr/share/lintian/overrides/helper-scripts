@@ -6,4 +6,4 @@ helper-scripts: uses-dpkg-database-directly [usr/libexec/helper-scripts/pkg_mana
 
 ## Not documentation.
 helper-scripts: package-contains-documentation-outside-usr-share-doc [usr/share/helper-scripts/localectl-list-x11-keymap-layouts-static.txt]
-helper-scripts: package-contains-documentation-outside-usr-share-doc [usr/share/helper-scripts/localectl-list-x11-keymap-variants-static.txt]
+helper-scripts: package-contains-documentation-outside-usr-share-doc [usr/share/helper-scripts/localectl-list-x11-keymap-options-static.txt]

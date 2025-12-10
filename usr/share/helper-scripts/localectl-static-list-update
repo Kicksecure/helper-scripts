@@ -16,5 +16,20 @@ cd "$MYDIR"
 ## Sanity test.
 localectl --no-pager >/dev/null
 
-localectl --no-pager list-x11-keymap-layouts  | stsponge ./localectl-list-x11-keymap-layouts-static.txt
-localectl --no-pager list-x11-keymap-variants | stsponge ./localectl-list-x11-keymap-variants-static.txt
+keymap_layouts="$(localectl --no-pager list-x11-keymap-layouts)"
+stsponge ./localectl-list-x11-keymap-layouts-static.txt <<< "$keymap_layouts"
+
+localectl --no-pager list-x11-keymap-options | stsponge ./localectl-list-x11-keymap-options-static.txt
+
+## Variants have to be handled on a per-layout basis.
+## NOTE: localectl also supports displaying *all* layout variants, but this is
+##   of limited use since the set of available variants is dependent upon the
+##   layout in use. Not implemented in localectl-static yet.
+mkdir ./localectl-list-x11-keymap-variants-static.d
+for keymap_layout in $keymap_layouts; do
+  ## localectl will exit non-zero if $keymap_layout refers to a layout that
+  ## has no variants.
+  localectl --no-pager list-x11-keymap-variants "$keymap_layout" 2>/dev/null \
+    | stsponge "./localectl-list-x11-keymap-variants-static.d/$keymap_layout" \
+    || true
+done
