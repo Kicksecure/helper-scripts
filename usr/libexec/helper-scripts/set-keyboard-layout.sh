@@ -1068,6 +1068,12 @@ parse_cmd() {
     exit 0
   fi
 
+  ## Needs to be before args check. Otherwise args is empty.
+  if [ "${skl_interactive}" = "true" ]; then
+    interactive_ui
+    exit 0
+  fi
+
   ## We must have at least one, but no more than three, arguments specifying the
   ## keyboard layout(s).
   if [ "${#args[@]}" = '0' ] || [ -z "${args[0]:-}" ] \
@@ -1081,11 +1087,6 @@ parse_cmd() {
   while (( ${#args[@]} < 3 )); do
     args+=( '' )
   done
-
-  if [ "${skl_interactive}" = "true" ]; then
-    interactive_ui
-    exit 0
-  fi
 
   ## Ensure keyboard setting validity before calling the
   ## configuration function
