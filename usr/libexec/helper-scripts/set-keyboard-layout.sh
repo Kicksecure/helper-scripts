@@ -314,30 +314,30 @@ set_labwc_keymap() {
     return 1
   fi
 
-  if [ "${no_reload}" = 'false' ]; then
-    if [ "${do_live_changes}" = 'false' ]; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'labwc --reconfigure' due to '--no-live-changes' option."
-    elif ischroot --default-false; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping executing 'labwc --reconfigure' inside chroot, ok."
-    elif [ "$(id --user)" = 0 ]; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping executing 'labwc --reconfigure' because running as root, ok."
-    elif pgrep -- labwc >/dev/null; then
-      ## 'labwc' is running. So the user most likely wishes the change to instantly apply.
-      ## Therefore let's run 'labwc --reconfigure'.
-      if ! command -v labwc >/dev/null; then
-        ## This would be weird. 'labwc' is running but unavailable in the PATH environment variable.
-        printf '%s\n' "${FUNCNAME[0]}: ERROR: The 'labwc' program is unavailable in the PATH environment variable or not installed." >&2
-      else
-        ## 'labwc' is running and available in the PATH environment variable.
-        if labwc --reconfigure; then
-          printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc --reconfigure' OK."
-        else
-          printf '%s\n' "${FUNCNAME[0]}: WARNING: 'labwc --reconfigure' reconfiguration failed!" >&2
-        fi
-      fi
+  if [ "${no_reload}" = 'true' ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'labwc --reconfigure' due to '--no-reload' option."
+  elif [ "${do_live_changes}" = 'false' ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'labwc --reconfigure' due to '--no-live-changes' option."
+  elif ischroot --default-false; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping executing 'labwc --reconfigure' inside chroot, ok."
+  elif [ "$(id --user)" = 0 ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping executing 'labwc --reconfigure' because running as root, ok."
+  elif pgrep -- labwc >/dev/null; then
+    ## 'labwc' is running. So the user most likely wishes the change to instantly apply.
+    ## Therefore let's run 'labwc --reconfigure'.
+    if ! command -v labwc >/dev/null; then
+      ## This would be weird. 'labwc' is running but unavailable in the PATH environment variable.
+      printf '%s\n' "${FUNCNAME[0]}: ERROR: The 'labwc' program is unavailable in the PATH environment variable or not installed." >&2
     else
-      printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc' not running, no need to execute 'labwc --reconfigure', OK."
+      ## 'labwc' is running and available in the PATH environment variable.
+      if labwc --reconfigure; then
+        printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc --reconfigure' OK."
+      else
+        printf '%s\n' "${FUNCNAME[0]}: WARNING: 'labwc --reconfigure' reconfiguration failed!" >&2
+      fi
     fi
+  else
+    printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc' not running, no need to execute 'labwc --reconfigure', OK."
   fi
 
   ## If we do not want to persist the new configuration, put the old
