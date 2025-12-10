@@ -999,7 +999,7 @@ parse_cmd() {
         exit 0
         ;;
       '--no-live-changes')
-        do_live_changes='true'
+        do_live_changes='false'
         shift
         ;;
       '--interactive')
