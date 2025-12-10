@@ -25,7 +25,7 @@ exit_code: ${exit_code}"
 }
 
 exit_handler() {
-  [[ -v "exit_code" ]] || exit_code="${?}"
+  exit_code="${?}"
   printf '%s\n' ""
   if [ "$exit_code" = 0 ]; then
     printf '%s\n' "$0: INFO: OK."
