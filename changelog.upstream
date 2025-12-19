@@ -1,3 +1,22 @@
+commit ffdde39fd468f8ada1c2ebed37f2d8e0b980cef8
+Merge: bc55b87 b563e80
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 19 03:25:36 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit b563e80cabd288b64b15e29f045deb02cda859d0
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Dec 14 15:08:31 2025 -0600
+
+    Remove obsolete script 'desktop-background-skel-test', the default desktop background can now be configured system-wide in /usr/share with LXQt
+
+commit bc55b87705121eb32a7145f6ce75bb6a056920be
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 15:09:18 2025 +0000
+
+    bumped changelog version
+
 commit 0b0ac898f2ddc4f5d6a5db055fa105b88c1d5041
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Dec 10 08:23:07 2025 -0500
