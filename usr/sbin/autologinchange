@@ -500,7 +500,6 @@ if ! user_list_str="$(/usr/libexec/helper-scripts/get-user-list)"; then
     printf '%s\n' "ERROR: Failed to get user list!" >&2
     exit 1
 fi
-
 readarray -t user_list <<< "$user_list_str"
 
 "${autologinchange_mode}" "$@"
