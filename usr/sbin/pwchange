@@ -18,12 +18,11 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
-if ! output="$(/usr/libexec/helper-scripts/get-user-list)"; then
+if ! user_list_str="$(/usr/libexec/helper-scripts/get-user-list)"; then
     printf "%s\n" "$0: ERROR: Failed to get user list!" >&2
     exit 1
 fi
-
-readarray -t user_list <<< "$output"
+readarray -t user_list <<< "$user_list_str"
 
 printf "%s\n" "Users present on the system:" >&2
 for user_entry in "${user_list[@]}"; do

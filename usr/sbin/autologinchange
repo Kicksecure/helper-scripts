@@ -219,6 +219,7 @@ validate_username() {
          break
       fi
    done
+
    if [ "${found_user}" = 'n' ]; then
       printf '%s\n' "ERROR: Account '$user' is not a normal user account. Please check the username and try again." >&2
       exit 1
@@ -495,11 +496,11 @@ readarray -t autologin_users < <(
      | sort -u
 )
 
-if ! ul_output="$(/usr/libexec/helper-scripts/get-user-list)"; then
+if ! user_list_str="$(/usr/libexec/helper-scripts/get-user-list)"; then
     printf '%s\n' "ERROR: Failed to get user list!" >&2
     exit 1
 fi
 
-readarray -t user_list <<< "$ul_output"
+readarray -t user_list <<< "$user_list_str"
 
 "${autologinchange_mode}" "$@"
