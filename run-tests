@@ -10,7 +10,13 @@ black=(black --config="${pyrc}" --color --diff --check)
 pylint=(pylint --rcfile="${pyrc}")
 mypy=(mypy --config-file="${pyrc}")
 
-py_lib_to_test_list=(stdisplay sanitize_string strip_markup unicode_show)
+py_lib_to_test_list=(
+  'stdisplay'
+  'sanitize_string'
+  'strip_markup'
+  'unicode_show'
+  'strict_config_parser'
+)
 
 for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
   cd "${pythonpath}/${py_lib_to_test}/"
