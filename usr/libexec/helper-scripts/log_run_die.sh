@@ -14,22 +14,16 @@ fi
 
 disable_xtrace() {
   if test "${xtrace:-}" = "1"; then
+    xtrace_was_on=true
     set +o xtrace
   else
-    case "${-}" in
-      *x*)
-        xtrace=1
-        set +o xtrace
-        ;;
-    esac
+    xtrace_was_on=false
   fi
 }
 
-re_enable_xtrace_maybe() {
-  if [ "${xtrace_force_no_re_enable:-}" = "true" ]; then
-    return 0
-  fi
-  if test "${xtrace:-}" = "1"; then
+xtrace_reenable_maybe() {
+  trap '' RETURN
+  if [ "${xtrace_was_on:-}" = "true" ]; then
     set -o xtrace
   fi
 }
@@ -57,6 +51,7 @@ log() {
 
   ## Avoid clogging output if log() is working alright.
   disable_xtrace
+  trap 'xtrace_reenable_maybe' RETURN
 
   local log_type log_type_up log_color log_source_script log_level_colorized log_content log_full
   local should_print=0
@@ -101,7 +96,6 @@ log() {
       ## Avoid recursion into log() on unsupported type; print directly.
       #log bug "Unsupported log type specified: '${log_type}'"
       stecho "${0##*/}: [${red}BUG${nocolor}]: Unsupported log type specified: '${log_type}'" >&2
-      re_enable_xtrace_maybe
       die 1 "Please report this bug."
       return 0
       ;;
@@ -118,11 +112,9 @@ log() {
   case "${log_type}" in
     bug|error)
       stecho "${log_full}" >&2
-      re_enable_xtrace_maybe
       return 0
       ;;
     null)
-      re_enable_xtrace_maybe
       return 0
       ;;
   esac
@@ -138,7 +130,6 @@ log() {
     stecho "${log_full}" >&2
   fi
 
-  re_enable_xtrace_maybe
   return 0
 }
 
