@@ -34,18 +34,43 @@ re_enable_xtrace_maybe() {
   fi
 }
 
+__log_level_num() {
+  case "${1:-notice}" in
+    bug|error) printf '%s' 0 ;;
+    warn)      printf '%s' 1 ;;
+    notice)    printf '%s' 2 ;;
+    info)      printf '%s' 3 ;;
+    debug)     printf '%s' 4 ;;
+    echo)      printf '%s' 5 ;;
+    null)      printf '%s' 6 ;;
+    *)         printf '%s' 2 ;; ## unknown -> treat as notice
+  esac
+  return 0
+}
+
 ## Logging mechanism with easy customization of message format as well as
 ## standardization on how the messages are delivered.
-## usage: log [info|notice|warn|error] "X occurred."
+## usage: log [info|notice|warn|error|debug|bug|echo|null] "X occurred."
 ## Variable to define by calling script: log_level
-log(){
-  : "${log_level:="notice"}"
+log() {
+  : "${log_level:=notice}"
+
   ## Avoid clogging output if log() is working alright.
   disable_xtrace
+
+  local log_type log_type_up log_color log_source_script log_level_colorized log_content log_full
+  local should_print=0
+  local caller_level_num msg_level_num
+
   log_type="${1:-notice}"
+
+  if (( $# > 0 )); then
+    shift || true
+  fi
+
   ## capitalize log level
-  log_type_up="$(printf '%s' "${log_type}" | tr "[:lower:]" "[:upper:]")"
-  shift 1
+  log_type_up="${log_type^^}"
+
   ## set formatting based on log level
   case "${log_type}" in
     bug)
@@ -60,21 +85,26 @@ log(){
     info)
       log_color="${cyan}"
       ;;
+    debug)
+      log_color="${cyan}"
+      ;;
     notice)
       log_color="${green}"
       ;;
     echo)
       log_color=""
-      true
       ;;
     null)
       log_color=""
-      true
       ;;
     *)
-      log bug "Unsupported log type specified: '${log_type}'"
+      ## Avoid recursion into log() on unsupported type; print directly.
+      #log bug "Unsupported log type specified: '${log_type}'"
+      stecho "${0##*/}: [${red}BUG${nocolor}]: Unsupported log type specified: '${log_type}'" >&2
       re_enable_xtrace_maybe
       die 1 "Please report this bug."
+      return 0
+      ;;
   esac
   ## uniform log format
   log_color="${bold}${log_color}"
@@ -92,28 +122,24 @@ log(){
       return 0
       ;;
     null)
-      true
+      re_enable_xtrace_maybe
+      return 0
       ;;
   esac
-  ## reverse importance order is required, excluding 'error'
-  all_log_levels="warn notice info debug echo null"
-  # shellcheck disable=SC2154
-  if printf '%s' " ${all_log_levels} " | grep -o ".* ${log_level} " \
-    | grep " ${log_type}" &>/dev/null
-  then
-    case "${log_type}" in
-      null)
-        true
-        ;;
-      *)
-        stecho "${log_full}" >&2
-        ;;
-    esac
+
+  caller_level_num="$(__log_level_num "${log_level}")"
+  msg_level_num="$(__log_level_num "${log_type}")"
+
+  if (( msg_level_num <= caller_level_num )); then
+    should_print=1
   fi
 
-  #sleep 0.1
+  if (( should_print == 1 )); then
+    stecho "${log_full}" >&2
+  fi
 
   re_enable_xtrace_maybe
+  return 0
 }
 
 
@@ -122,7 +148,7 @@ log(){
 ## to log consecutive errors on multiple lines, making die more suitable
 ## usage: die # "msg"
 ## where '#' is the exit code.
-die(){
+die() {
   log error "${2}"
   if test "${allow_errors:-}" = "1"; then
     log warn "Skipping termination because of with code '${1}' due to 'allow_errors' setting."
@@ -141,13 +167,11 @@ die(){
 
 
 ## Wrapper to log command before running to avoid duplication of code
-log_run(){
+log_run() {
   local level command_without_extraneous_spaces_temp command_without_extraneous_spaces
   level="${1}"
-  shift
-  ## Extra spaces appearing when breaking log_run on multiple lines.
-  ## bug: removes all spaces
-  #command_without_extraneous_spaces="$(printf '%s' "${@}" | tr -s " ")"
+  shift || true
+
   printf -v command_without_extraneous_spaces_temp '%q ' "${@}"
   command_without_extraneous_spaces="$(printf "%s\n" "${command_without_extraneous_spaces_temp}")"
   if test "${dry_run:-}" = "1"; then
@@ -161,7 +185,7 @@ log_run(){
     log "${level}" "Background command starting: $ ${command_without_extraneous_spaces} &"
     "${@}" &
     background_pid="$!"
-    disown "$background_pid"
+    disown "${background_pid}" || true
   else
     log "${level}" "Command executing: $ ${command_without_extraneous_spaces}"
     "${@}" || return 1
@@ -172,12 +196,12 @@ log_run(){
 ## Useful to get runtime mid run to log easily
 ## Variable to define outside: start_time
 # shellcheck disable=SC2154
-get_elapsed_time(){
+get_elapsed_time() {
   printf '%s\n' "$(($(date +%s) - start_time))"
 }
 
 
 ## Log elapsed time, the name explains itself.
-log_time(){
+log_time() {
   log info "Time elapsed: $(get_elapsed_time)s."
 }
