@@ -1,3 +1,21 @@
+commit 4da8aa37b6320aae8cf6723a5809c61831a8997c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Dec 27 07:25:11 2025 -0500
+
+    fix
+
+commit 75de55783f2aae7567705fc74c245594c33b7ef8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Dec 27 07:02:03 2025 -0500
+
+    fix
+
+commit cf2c5028f82eb33ca13ca26b746bf0ee8874e7a1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 26 19:02:48 2025 +0000
+
+    bumped changelog version
+
 commit e5889537ff950277899a520df8a90d5dedbc7f59
 Merge: 78bb999 869470c
 Author: Patrick Schleizer <adrelanos@whonix.org>
