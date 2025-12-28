@@ -1,3 +1,16 @@
+commit 6911c41981ccca38c6dfe7ee66ea3ea28f8a8d70
+Merge: 3400e81 14e04e4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 28 00:43:57 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 3400e813b33747a952356d43553b83ba151d2c4b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Dec 27 12:30:22 2025 +0000
+
+    bumped changelog version
+
 commit 4da8aa37b6320aae8cf6723a5809c61831a8997c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Dec 27 07:25:11 2025 -0500
@@ -9,6 +22,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Dec 27 07:02:03 2025 -0500
 
     fix
+
+commit 14e04e451e119e79b2bab733d188f1efad1976f3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Dec 26 13:33:32 2025 -0600
+
+    Improve strict_config_parser tests based on feedback from ChatGPT
 
 commit cf2c5028f82eb33ca13ca26b746bf0ee8874e7a1
 Author: Patrick Schleizer <adrelanos@whonix.org>
