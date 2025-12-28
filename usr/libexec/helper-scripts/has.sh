@@ -18,7 +18,7 @@ lsmod_deterministic() {
 }
 
 kernel_module_loaded_check() {
-  lsmod_deterministic | grep --line-regexp --fixed-strings -- "${1}"
+  lsmod_deterministic | grep --line-regexp --fixed-strings -- "${1}" >/dev/null
 }
 
 modprobe_remove() {
