@@ -8,6 +8,7 @@
 ## against aliases and functions.
 ## https://github.com/dylanaraps/pfetch/blob/pfetch#L53
 has(){
+  local _cmd
   _cmd="$(command -v "${1}")" 2>/dev/null || return 1
   [ -x "${_cmd}" ] || return 1
 }
