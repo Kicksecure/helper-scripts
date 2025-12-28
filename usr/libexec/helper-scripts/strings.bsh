@@ -161,7 +161,7 @@ random_alpha_numeric() {
 }
 
 run_test() {
-   local test_name varname value expected_exit_code
+   local test_name varname value expected_exit_code exit_code
    test_name="$1"
    varname="$2"
    value="$3"
