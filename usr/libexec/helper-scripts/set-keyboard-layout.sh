@@ -415,6 +415,60 @@ dracut_run() {
   fi
 }
 
+## Checks if LUKS encryption is being used, and prompts the user to confirm if
+## they really want to change their keyboard layout if so. This is necessary,
+## because changing the console or system keyboard layout could result in a
+## system lock-out if the encryption passphrase includes characters that are
+## not present in the new keyboard layout.
+prompt_for_luks_on_root_fs_maybe() {
+  local msg continue_despite_luks
+
+  if [ "${do_force}" = 'true' ]; then
+    return 0
+  fi
+  if [ "${did_prompt_for_luks}" = 'true' ]; then
+    return 0
+  fi
+  did_prompt_for_luks='true'
+  if /usr/bin/luks-path-check /; then
+    if ! tty >/dev/null; then
+      ## Can't prompt user for confirmation, bail out
+      return 1
+    fi
+    if [ "${scriptname:-}" = 'set-system-keymap' ]; then
+      msg="\
+WARNING: This system's root filesystem is LUKS-encrypted. Changing the
+system-wide keyboard layout will also change the keyboard layout used at the
+disk decryption prompt. If your passphrase contains characters that cannot be
+typed using a new keyboard layout, special care must be taken to avoid a
+system lockout! See:
+
+https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption"
+    elif [ "${scriptname:-}" = 'set-console-keymap' ]; then
+      msg="\
+WARNING: This system's root filesystem is LUKS-encrypted. Changing the
+console keyboard layout will also change the keyboard layout used at the
+disk decryption prompt the next time the initramfs is regenerated. If your
+passphrase contains characters that cannot be typed using a new keyboard
+layout, special care must be taken to avoid a system lockout! See:
+
+https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption"
+    else
+      printf '%s\n' "ERROR: Expected script name 'set-system-keymap' or 'set-console-keymap', but got script name '${scriptname:-}'!"
+      return 1
+    fi
+    printf '%s\n' "${msg}"
+    read -r -p "Are you sure you want to continue? [Y/N] " continue_despite_luks
+
+    if [ "${continue_despite_luks,,}" = 'y' ]; then
+      printf '%s\n' 'INFO: User confirmed keyboard layout change, continuing.'
+      return 0
+    fi
+    printf '%s\n' 'INFO: User declined keyboard layout change, exiting.'
+    return 1
+  fi
+}
+
 ## Sets the XKB layout(s), variant(s), and option(s) for the console. Due to
 ## limitations in Linux, this is a system-wide setting only.
 ##
@@ -446,6 +500,8 @@ dracut_run() {
 set_console_keymap() {
   local var_idx kb_conf_file_string kb_conf_path kb_conf_dir \
     calc_replace_args dpkg_reconfigure_command
+
+  prompt_for_luks_on_root_fs_maybe || return 1
 
   printf '%s\n' "${FUNCNAME[0]}: INFO: Console keymap configuration..."
 
@@ -629,6 +685,8 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
 set_system_keymap() {
   local labwc_system_wide_config_dir labwc_system_wide_config_path \
     labwc_greeter_config_dir labwc_greeter_config_path
+
+  prompt_for_luks_on_root_fs_maybe || return 1
 
   labwc_system_wide_config_dir='/etc/xdg/labwc'
   labwc_system_wide_config_path="${labwc_system_wide_config_dir}/environment"
@@ -1050,6 +1108,16 @@ parse_cmd() {
         shift
         ;;
 
+      ## shared set-console-keymap and set-system-keymap options
+      '--force'|'-f')
+        if [ "${scriptname:-}" != 'set-console-keymap' ] \
+          && [ "${scriptname:-}" != 'set-system-keymap' ]; then
+          unknown_option_error "$1"
+        fi
+        do_force='true'
+        shift
+        ;;
+
       ## Non-options (universal)
       '--')
         shift
@@ -1159,6 +1227,8 @@ do_live_changes='true'
 do_persist='true'
 no_reload='false'
 do_build_all_grub_keymaps='false'
+do_force='false'
+did_prompt_for_luks='false'
 
 [[ -v "HOME" ]] || HOME="/home/user"
 labwc_config_path="${HOME}/.config/labwc/environment"
