@@ -8,7 +8,7 @@ source /usr/libexec/helper-scripts/log_run_die.sh
 
 ## Wrapper that supports su, sudo, doas
 root_cmd(){
-  local cmdarr
+  local cmd cmdarr
 
   test -z "${1:-}" && die 1 "${underline}root_cmd function:${nounderline} Failed to pass arguments to function 'root_cmd'."
   if test -z "${sucmd:-}"; then
@@ -19,7 +19,7 @@ root_cmd(){
     su)
       ## Thanks to Congelli501 for su to not mess with quotes.
       ## https://stackoverflow.com/a/32966744/2605155
-      cmd="$(which -- "${1}")"
+      cmd="$(command -v -- "${1}")"
       shift
       log_run "$root_cmd_loglevel" su root -s "${cmd}" -- "${@}"
       ;;
