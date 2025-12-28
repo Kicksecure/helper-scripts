@@ -12,3 +12,19 @@ has(){
   _cmd="$(command -v "${1}")" 2>/dev/null || return 1
   [ -x "${_cmd}" ] || return 1
 }
+
+lsmod_deterministic() {
+  lsmod | awk 'NR>1 {print $1}' | sort
+}
+
+kernel_module_loaded_check() {
+  lsmod_deterministic | grep --line-regexp --fixed-strings -- "${1}"
+}
+
+modprobe_remove() {
+  if ! kernel_module_loaded_check "${1}"; then
+    return 0
+  fi
+  modprobe --remove "${1}" || return 1
+  return 0
+}

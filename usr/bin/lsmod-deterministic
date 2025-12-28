@@ -6,4 +6,6 @@
 set -e
 set -o pipefail
 
-lsmod | tail -n +2 | cut -d ' ' -f 1 | sort
+source /usr/libexec/helper-scripts/has.sh
+
+lsmod_deterministic
