@@ -1,3 +1,39 @@
+commit b3a3036a4635702bda07e42f250f70fd73e092e3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 28 09:30:20 2025 -0500
+
+    local
+
+commit 6ffa903baf15090980a0c77b02bcb4d9a3487c58
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 28 05:50:00 2025 -0500
+
+    fix
+
+commit 7d6b266b830b7f66a5646dfbde8f9c4bd1424228
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 28 04:57:20 2025 -0500
+
+    fix
+
+commit 9b112c5bc8918435fb33a328222b0cf3248aa115
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 28 04:25:24 2025 -0500
+
+    new functions: `lsmod_deterministic`, `kernel_module_loaded_check`, `modprobe_remove`
+
+commit 91fc0e5b2c9124a97a40e1fd406cac3f8b723655
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 28 02:38:24 2025 -0500
+
+    local
+
+commit 6a7a189f75dc1dbee4867476948b712aac4c1a43
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 28 06:32:16 2025 +0000
+
+    bumped changelog version
+
 commit 6911c41981ccca38c6dfe7ee66ea3ea28f8a8d70
 Merge: 3400e81 14e04e4
 Author: Patrick Schleizer <adrelanos@whonix.org>
