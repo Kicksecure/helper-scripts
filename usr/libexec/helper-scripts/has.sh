@@ -14,7 +14,7 @@ has(){
 }
 
 lsmod_deterministic() {
-  lsmod | awk 'NR>1 {print $1}' | sort
+  lsmod | awk 'NR>1 {print $1}' | LC_ALL='C' sort
 }
 
 kernel_module_loaded_check() {
