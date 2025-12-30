@@ -424,19 +424,28 @@ prompt_for_luks_on_root_fs_maybe() {
   local msg continue_despite_luks
 
   if [ "${do_force}" = 'true' ]; then
+    true "'--force' passed, not checking for LUKS on root filesystem, ok."
     return 0
   fi
   if [ "${did_prompt_for_luks}" = 'true' ]; then
+    true "Already checked for LUKS on root filesystem and prompted user if needed, ok."
     return 0
   fi
   did_prompt_for_luks='true'
-  if /usr/bin/luks-path-check /; then
-    if ! tty >/dev/null; then
-      ## Can't prompt user for confirmation, bail out
-      return 1
-    fi
-    if [ "${scriptname:-}" = 'set-system-keymap' ]; then
-      msg="\
+  if ! /usr/bin/luks-path-check / &>/dev/null; then
+    true "Root filesystem not using LUKS, skipping layout change confirm, ok."
+    return 0
+  fi
+
+  if ! tty &>/dev/null; then
+    printf '%s\n' "${FUNCNAME[0]}: ERROR: OS disk is encrypted, cannot prompt user for confirmation, and --force not used! See:"
+    printf '%s\n' 'https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption'
+    printf '%s\n' 'If the keyboard layout change will not make the LUKS passphrase impossible to type, use --force to skip this check.'
+    printf '\n'
+    return 1
+  fi
+  if [ "${scriptname:-}" = 'set-system-keymap' ]; then
+    msg="\
 WARNING: This system's root filesystem is LUKS-encrypted. Changing the
 system-wide keyboard layout will also change the keyboard layout used at the
 disk decryption prompt. If your passphrase contains characters that cannot be
@@ -444,8 +453,8 @@ typed using a new keyboard layout, special care must be taken to avoid a
 system lockout! See:
 
 https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption"
-    elif [ "${scriptname:-}" = 'set-console-keymap' ]; then
-      msg="\
+  elif [ "${scriptname:-}" = 'set-console-keymap' ]; then
+    msg="\
 WARNING: This system's root filesystem is LUKS-encrypted. Changing the
 console keyboard layout will also change the keyboard layout used at the
 disk decryption prompt the next time the initramfs is regenerated. If your
@@ -453,20 +462,19 @@ passphrase contains characters that cannot be typed using a new keyboard
 layout, special care must be taken to avoid a system lockout! See:
 
 https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption"
-    else
-      printf '%s\n' "ERROR: Expected script name 'set-system-keymap' or 'set-console-keymap', but got script name '${scriptname:-}'!"
-      return 1
-    fi
-    printf '%s\n' "${msg}"
-    read -r -p "Are you sure you want to continue? [Y/N] " continue_despite_luks
-
-    if [ "${continue_despite_luks,,}" = 'y' ]; then
-      printf '%s\n' 'INFO: User confirmed keyboard layout change, continuing.'
-      return 0
-    fi
-    printf '%s\n' 'INFO: User declined keyboard layout change, exiting.'
+  else
+    printf '%s\n' "ERROR: Expected script name 'set-system-keymap' or 'set-console-keymap', but got script name '${scriptname:-}'!"
     return 1
   fi
+  printf '%s\n' "${msg}"
+  read -r -p "Are you sure you want to continue? [Y/N] " continue_despite_luks
+
+  if [ "${continue_despite_luks,,}" = 'y' ]; then
+    printf '%s\n' 'INFO: User confirmed keyboard layout change, continuing.'
+    return 0
+  fi
+  printf '%s\n' 'INFO: User declined keyboard layout change, exiting.'
+  return 1
 }
 
 ## Sets the XKB layout(s), variant(s), and option(s) for the console. Due to
