@@ -1,0 +1,16 @@
+## Copyright (C) 202525 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+[Unit]
+Description=detect if ipv6 is enabled and create a drop file for other units to use if so
+DefaultDependencies=no
+After=systemd-sysctl.service
+After=systemd-tmpfiles-setup.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/helper-scripts/detect-ipv6-enabled-in-kernel
+
+[Install]
+WantedBy=sysinit.target
