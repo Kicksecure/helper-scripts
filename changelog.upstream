@@ -1,3 +1,22 @@
+commit 4f8cd53df0e1433ee52ce15d88d0e6bb8cdc2fa9
+Merge: 341eb52 be93765
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 29 02:29:47 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit be937657e373b9d7c1f6e5e8e61864cc9263bce5
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Dec 28 12:40:23 2025 -0600
+
+    Add a safeguard if changing the system or console keymap when LUKS is used on the root filesystem
+
+commit 341eb5294b4bf09dca0860436a4b52140c60b8fc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 28 14:51:58 2025 +0000
+
+    bumped changelog version
+
 commit b3a3036a4635702bda07e42f250f70fd73e092e3
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Dec 28 09:30:20 2025 -0500
