@@ -1,3 +1,52 @@
+commit f74d07a8345e375bef488684daf747848cd6aa14
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 1 11:57:30 2026 -0500
+
+    fix
+
+commit 1b539b7ea552ceb506ac78b42449252ed4b02907
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 1 11:56:16 2026 -0500
+
+    minor
+
+commit 46cc80c1ce0e67841a4f783d438df7660306a867
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 1 11:55:48 2026 -0500
+
+    fix
+
+commit 3cee2586a891ba83ffbd9a088164114cf94c1eb7
+Merge: c5f7ecd 847c42b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 1 11:53:32 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit c5f7ecdf50881b28ebd014458f48279a15c91d87
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 1 15:40:17 2026 +0000
+
+    bumped changelog version
+
+commit 847c42bf9caa40baf00e13d789fefcc535d060a0
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Dec 31 17:52:17 2025 -0600
+
+    Add systemd service for detecting and notifying about the existence of in-kernel ipv6 support
+
+commit 8a4c56b84ad4fedc4ee6b0069045a8ba6aa75890
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Dec 29 21:09:47 2025 -0600
+
+    Make lsmod_deterministic not sensitive to system locale
+
+commit f5fda2d4e3d8dc1ea5082d5e989a893a348ace4f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Dec 29 20:32:52 2025 -0600
+
+    Improve UX and code style of LUKS check in set-keyboard-layout.sh
+
 commit 4f8cd53df0e1433ee52ce15d88d0e6bb8cdc2fa9
 Merge: 341eb52 be93765
 Author: Patrick Schleizer <adrelanos@whonix.org>
