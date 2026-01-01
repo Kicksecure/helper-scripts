@@ -9,7 +9,7 @@ if ! [ -f "${disable_ipv6_file}" ]; then
   printf '%s\n' "INFO: '${disable_ipv6_file}' does not exist, assuming IPv6 is disabled, ok."
   exit 0
 fi
-disable_ipv6_val="$(cat /proc/sys/net/ipv6/conf/all/disable_ipv6)"
+disable_ipv6_val="$(cat "${disable_ipv6_file}")"
 if [ "${disable_ipv6_val}" = '1' ]; then
   printf '%s\n' "INFO: '${disable_ipv6_file}' exists and contains value '1', therefore IPv6 is disabled, ok."
   exit 0
