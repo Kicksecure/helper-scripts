@@ -11,7 +11,10 @@ if ! [ -f "${disable_ipv6_file}" ]; then
   exit 0
 fi
 
-disable_ipv6_val="$(cat "${disable_ipv6_file}")"
+if ! disable_ipv6_val="$(cat "$disable_ipv6_file" 2>/dev/null)"; then
+  printf '%s\n' "ERROR: Unable to read '$disable_ipv6_file'!"
+  exit 1
+fi
 
 if [ "${disable_ipv6_val}" = '1' ]; then
   printf '%s\n' "INFO: '${disable_ipv6_file}' exists and contains value '1', therefore IPv6 is disabled, ok."
