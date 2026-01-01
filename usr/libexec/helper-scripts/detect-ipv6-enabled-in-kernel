@@ -5,18 +5,24 @@
 
 disable_ipv6_file='/proc/sys/net/ipv6/conf/all/disable_ipv6'
 ipv6_flag_file='/run/helper-scripts/ipv6-is-enabled'
+
 if ! [ -f "${disable_ipv6_file}" ]; then
   printf '%s\n' "INFO: '${disable_ipv6_file}' does not exist, assuming IPv6 is disabled, ok."
   exit 0
 fi
+
 disable_ipv6_val="$(cat "${disable_ipv6_file}")"
+
 if [ "${disable_ipv6_val}" = '1' ]; then
   printf '%s\n' "INFO: '${disable_ipv6_file}' exists and contains value '1', therefore IPv6 is disabled, ok."
   exit 0
 fi
+
 printf '%s\n' "INFO: '${disable_ipv6_file}' exists and does not contain value '1', therefore IPv6 is enabled, ok."
+
 if ! touch "${ipv6_flag_file}"; then
   printf '%s\n' "ERROR: Unable to create '${ipv6_flag_file}'!"
   exit 1
 fi
+
 exit 0
