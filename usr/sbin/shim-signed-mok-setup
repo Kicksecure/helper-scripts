@@ -34,7 +34,7 @@ that rely on non-mainline kernel modules may not load until they are properly si
 More information:
 https://www.kicksecure.com/wiki/Secure_Boot"
 
-   printf '%s\n' "$0: INFO: Preparing module-signing keys (used only if Secure Boot is enabled)..."
+   printf '%s\n' "$0: INFO: Preparing Secure Boot module-signing keys (used only if Secure Boot is enabled)..."
    printf '%s\n' "$0: INFO: Expected DKMS key files: '${dkms_mok_public_file}' and '${dkms_mok_private_file}'"
    printf '%s\n' "$0: INFO: Expected shim key links: '${shim_mok_public_file}' and '${shim_mok_private_file}'"
 
@@ -44,7 +44,7 @@ https://www.kicksecure.com/wiki/Secure_Boot"
    fi
 
    if [ -f "${dkms_mok_public_file}" ] && [ -f "${dkms_mok_private_file}" ]; then
-      printf '%s\n' "$0: INFO: Key files already exist: yes (nothing to do)."
+      printf '%s\n' "$0: INFO: Key files already exist: yes"
       mok_keys_present='y'
    else
       printf '%s\n' "$0: INFO: Key files already exist: no - trying to create them using 'dkms generate_mok'..."
@@ -88,12 +88,11 @@ https://www.kicksecure.com/wiki/Secure_Boot"
       fi
    fi
 
-   printf '%s\n' "$0: INFO: Key links are in place:"
-   printf '%s\n' "$0: INFO: '${shim_mok_public_file}' (should link to '${dkms_mok_public_file}')"
-   printf '%s\n' "$0: INFO: '${shim_mok_private_file}' (should link to '${dkms_mok_private_file}')"
+   printf '%s\n' "$0: INFO: Key links are in place: yes"
+   #printf '%s\n' "$0: INFO: '${shim_mok_public_file}' (should link to '${dkms_mok_public_file}')"
+   #printf '%s\n' "$0: INFO: '${shim_mok_private_file}' (should link to '${dkms_mok_private_file}')"
 
-   printf '%s\n' "$0: INFO: Done preparing module-signing keys/links (used only if Secure Boot is enabled)."
-   printf '%s\n' "$0: INFO: Success."
+   printf '%s\n' "$0: INFO: Successfully prepared Secure Boot module-signing keys/links."
 }
 
 as_root
