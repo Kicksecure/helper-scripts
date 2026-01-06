@@ -1,3 +1,129 @@
+commit 7357c392299ea045c0877104a8baec732795913b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 07:20:14 2026 -0500
+
+    refactoring
+
+commit abecb79ff45bf92a473b0395fe2731b2c641a2a3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:43:59 2026 -0500
+
+    output
+
+commit 699f317c7572edeb0e3d93d664aad768b677f71a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:42:08 2026 -0500
+
+    output
+
+commit 3f9dc5fcec31df1370bed20135797da6b77e5e0e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:39:41 2026 -0500
+
+    output
+
+commit 83f1cce52320a1a1ae9a0851c29d4e73b9273956
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:30:44 2026 -0500
+
+    output
+
+commit 96656e68021d6303b051c9308e92ddd7e9441ad0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:30:06 2026 -0500
+
+    output
+
+commit 74a0eec3d2cce73d6bcc1302631319bd2e67f299
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:29:28 2026 -0500
+
+    output
+
+commit e07a25ff1d89b5abec28d4a60c08b3bab27317a8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:27:18 2026 -0500
+
+    improve
+
+commit 42873a4a376d98bcafc1979d2b7d4555f98190e9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:25:36 2026 -0500
+
+    improve
+
+commit 8f1c62969a27df1486fbc959579dd06ddeca1ddf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:23:31 2026 -0500
+
+    improve
+
+commit 4e3412751c864a72846d26bdd6fc74cae2b9fa79
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:16:11 2026 -0500
+
+    improve
+
+commit 0b33fd7f12ac908f048787847b81253589a4997b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:13:39 2026 -0500
+
+    improve
+
+commit a22308ed2ef89a02267cd665a0c91ee26cee2d4f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:10:23 2026 -0500
+
+    improve
+
+commit 4797c154d7870c280f8234625c0b4778983603de
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:10:02 2026 -0500
+
+    improve
+
+commit f7c840e3416427536d47949728dcf7f26ee3ea26
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:08:18 2026 -0500
+
+    improve
+
+commit 696eba62889b74e0ee642b954bce31b240a113f8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:07:23 2026 -0500
+
+    improve
+
+commit 58fd28715ab823646c9275e2c0e03c34c488c6bb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:06:51 2026 -0500
+
+    improve
+
+commit 0744338a8dd52a39d3b03b3b64734a7d1032e90c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:04:40 2026 -0500
+
+    improve
+
+commit 64f0c1a81d3034c36c420c51422176d59c094c8c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:01:29 2026 -0500
+
+    fix
+
+commit 8afb4998fa672cc84259ebe4dd1e84c5a3528a8b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 06:00:39 2026 -0500
+
+    import `/usr/sbin/shim-signed-mok-setup` from usability-misc postinst
+
+commit e6ecb3100fc6a4be7c8ed92f261d7bec3b2d531a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 1 17:12:45 2026 +0000
+
+    bumped changelog version
+
 commit f74d07a8345e375bef488684daf747848cd6aa14
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 1 11:57:30 2026 -0500
