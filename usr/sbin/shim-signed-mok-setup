@@ -19,8 +19,6 @@ main() {
       shim_mok_dir shim_mok_public_file shim_mok_private_file \
       mok_keys_present third_party_kernel_module_warning
 
-   printf '%s\n' "$0: INFO: Setting up MOK secure boot keys..."
-
    dkms_mok_dir='/var/lib/dkms'
    dkms_mok_public_file="${dkms_mok_dir}/mok.pub"
    dkms_mok_private_file="${dkms_mok_dir}/mok.key"
@@ -30,68 +28,72 @@ main() {
    mok_keys_present='n'
    third_party_kernel_module_warning="
 
-Third-party kernel modules and applications that depend on them may not \
-function if Secure Boot is enabled. See also:
+Note: This script does not enable Secure Boot.
+If Secure Boot is enabled on this computer, some optional drivers or features
+that rely on non-mainline kernel modules may not load until they are properly signed.
+More information:
 https://www.kicksecure.com/wiki/Secure_Boot"
 
+   printf '%s\n' "$0: INFO: Preparing module-signing keys (used only if Secure Boot is enabled)..."
+   printf '%s\n' "$0: INFO: Expected DKMS key files: '${dkms_mok_public_file}' and '${dkms_mok_private_file}'"
+   printf '%s\n' "$0: INFO: Expected shim key links: '${shim_mok_public_file}' and '${shim_mok_private_file}'"
+
    if ! has dkms; then
-      printf '%s\n' "ERROR: 'dkms' unavailable. ${third_party_kernel_module_warning}"
+      printf '%s\n' "$0: ERROR: The 'dkms' tool is not available, so keys cannot be prepared.${third_party_kernel_module_warning}"
       exit 1
    fi
 
    if [ -f "${dkms_mok_public_file}" ] && [ -f "${dkms_mok_private_file}" ]; then
-      printf '%s\n' "INFO: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' already exist: yes"
+      printf '%s\n' "$0: INFO: Key files already exist: yes (nothing to do)."
       mok_keys_present='y'
    else
-      printf '%s\n' "INFO: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' already exist: no - Creating..."
+      printf '%s\n' "$0: INFO: Key files already exist: no - trying to create them using 'dkms generate_mok'..."
       if dkms generate_mok; then
          if [ -f "${dkms_mok_public_file}" ] && [ -f "${dkms_mok_private_file}" ]; then
             mok_keys_present='y'
-            printf '%s\n' "INFO: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' successfully created: yes"
+            printf '%s\n' "$0: INFO: Key files created: yes"
          else
-            printf '%s\n' "ERROR: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' successfully created: no
-Command 'dkms generate_mok' exited success but failed to create the key files. ${third_party_kernel_module_warning}"
+            printf '%s\n' "$0: ERROR: The command 'dkms generate_mok' reported success, but the expected key files were not found afterwards:"
+            printf '%s\n' "$0: ERROR: Missing one or both of: '${dkms_mok_public_file}', '${dkms_mok_private_file}'.${third_party_kernel_module_warning}"
             exit 1
          fi
       else
-         printf '%s\n' "WARNING: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' successfully created: no ${third_party_kernel_module_warning}"
+         printf '%s\n' "$0: ERROR: The command 'dkms generate_mok' failed, so the key files could not be created.${third_party_kernel_module_warning}"
          exit 1
       fi
    fi
 
    if [ "${mok_keys_present}" != 'y' ]; then
-      printf '%s\n' "WARNING: '${dkms_mok_public_file}' and/or \
-'${dkms_mok_private_file}' do not exist, and DKMS errored out while trying \
-to generate them! ${third_party_kernel_module_warning}"
+      printf '%s\n' "$0: ERROR: Key files are still missing, so setup cannot continue."
+      printf '%s\n' "$0: ERROR: Expected: '${dkms_mok_public_file}' and '${dkms_mok_private_file}'.${third_party_kernel_module_warning}"
       exit 1
    fi
 
    if ! mkdir --parents -- "${shim_mok_dir}"; then
-      printf '%s\n' "WARNING: Unable to create directory '${shim_mok_dir}'! \
-${third_party_kernel_module_warning}"
+      printf '%s\n' "$0: ERROR: Could not create the folder '${shim_mok_dir}'.${third_party_kernel_module_warning}"
       exit 1
    fi
 
    if ! test -L "${shim_mok_public_file}"; then
       if ! ln -s -- "${dkms_mok_public_file}" "${shim_mok_public_file}"; then
-         printf '%s\n' "WARNING: Unable to create symlink from \
-'${dkms_mok_public_file}' to '${shim_mok_public_file}'! \
-${third_party_kernel_module_warning}"
-        exit 1
+         printf '%s\n' "$0: ERROR: Could not create the symlink '${shim_mok_public_file}' -> '${dkms_mok_public_file}'.${third_party_kernel_module_warning}"
+         exit 1
       fi
    fi
 
    if ! test -L "${shim_mok_private_file}"; then
-      if ! ln -s -- "${dkms_mok_private_file}" "${shim_mok_private_file}" ; then
-         printf '%s\n' "WARNING: Unable to create symlink from \
-'${dkms_mok_private_file}' to '${shim_mok_private_file}'! \
-${third_party_kernel_module_warning}"
+      if ! ln -s -- "${dkms_mok_private_file}" "${shim_mok_private_file}"; then
+         printf '%s\n' "$0: ERROR: Could not create the symlink '${shim_mok_private_file}' -> '${dkms_mok_private_file}'.${third_party_kernel_module_warning}"
          exit 1
       fi
    fi
-   printf '%s\n' "INFO: Symlinks '${shim_mok_public_file}' and '${shim_mok_private_file}' exist: yes"
 
-   printf '%s\n' "$0: INFO: Successfully created MOK secure boot keys."
+   printf '%s\n' "$0: INFO: Key links are in place:"
+   printf '%s\n' "$0: INFO: '${shim_mok_public_file}' (should link to '${dkms_mok_public_file}')"
+   printf '%s\n' "$0: INFO: '${shim_mok_private_file}' (should link to '${dkms_mok_private_file}')"
+
+   printf '%s\n' "$0: INFO: Done preparing module-signing keys/links (used only if Secure Boot is enabled)."
+   printf '%s\n' "$0: INFO: Success."
 }
 
 as_root
