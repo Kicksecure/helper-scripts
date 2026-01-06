@@ -19,7 +19,7 @@ main() {
       shim_mok_dir shim_mok_public_file shim_mok_private_file \
       mok_keys_present third_party_kernel_module_warning
 
-   printf '%s\n' "INFO: Setting up MOK secure boot keys..."
+   printf '%s\n' "$0: INFO: Setting up MOK secure boot keys..."
 
    dkms_mok_dir='/var/lib/dkms'
    dkms_mok_public_file="${dkms_mok_dir}/mok.pub"
@@ -91,7 +91,7 @@ ${third_party_kernel_module_warning}"
    fi
    printf '%s\n' "INFO: Symlinks '${shim_mok_public_file}' and '${shim_mok_private_file}' exist: yes"
 
-   printf '%s\n' "INFO: Successfully created MOK secure boot keys."
+   printf '%s\n' "$0: INFO: Successfully created MOK secure boot keys."
 }
 
 as_root
