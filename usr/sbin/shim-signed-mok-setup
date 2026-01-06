@@ -15,6 +15,11 @@ main() {
 
    printf '%s\n' "INFO: Setting up MOK secure boot keys if necessary..."
 
+   if ! command -v dkms >/dev/null 2>&1; then
+      printf '%s\n' "ERROR: 'dkms' unavailable. ${third_party_kernel_module_warning}"
+      exit 1
+   fi
+
    dkms_mok_dir='/var/lib/dkms'
    dkms_mok_public_file="${dkms_mok_dir}/mok.pub"
    dkms_mok_private_file="${dkms_mok_dir}/mok.key"
@@ -33,8 +38,12 @@ https://www.kicksecure.com/wiki/Secure_Boot"
    else
       printf '%s\n' "INFO: File '$dkms_mok_public_file' and '$dkms_mok_private_file' already exist: no - Creating..."
       if dkms generate_mok; then
-         mok_keys_present='y'
-         printf '%s\n' "INFO: File '$dkms_mok_public_file' and '$dkms_mok_private_file' successfully created: yes"
+         if [ -f "$dkms_mok_public_file" ] && [ -f "$dkms_mok_private_file" ]; then
+            mok_keys_present='y'
+            printf '%s\n' "INFO: File '$dkms_mok_public_file' and '$dkms_mok_private_file' successfully created: yes"
+         else
+            printf '%s\n' "ERROR: 'dkms generate_mok' failed. ${third_party_kernel_module_warning}"
+         fi
       else
          printf '%s\n' "WARNING: File '$dkms_mok_public_file' and '$dkms_mok_private_file' successfully created: no ${third_party_kernel_module_warning}"
          exit 1
