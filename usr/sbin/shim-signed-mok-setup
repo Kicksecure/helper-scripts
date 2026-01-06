@@ -35,6 +35,8 @@ More information:
 https://www.kicksecure.com/wiki/Secure_Boot"
 
    printf '%s\n' "$0: INFO: Preparing Secure Boot module-signing keys (used only if Secure Boot is enabled)..."
+   printf '%s\n' "$0: INFO: See also:"
+   printf '%s\n' "https://www.kicksecure.com/wiki/Secure_Boot"
    printf '%s\n' "$0: INFO: Expected DKMS key files: '${dkms_mok_public_file}' and '${dkms_mok_private_file}'"
    printf '%s\n' "$0: INFO: Expected shim key links: '${shim_mok_public_file}' and '${shim_mok_private_file}'"
 
