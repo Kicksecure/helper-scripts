@@ -34,25 +34,26 @@ main() {
    shim_mok_private_file="${shim_mok_dir}/MOK.priv"
    mok_keys_present='n'
    third_party_kernel_module_warning="
+
 Third-party kernel modules and applications that depend on them may not \
 function if Secure Boot is enabled. See also:
 https://www.kicksecure.com/wiki/Secure_Boot"
 
-   if [ -f "$dkms_mok_public_file" ] && [ -f "$dkms_mok_private_file" ]; then
-      printf '%s\n' "INFO: File '$dkms_mok_public_file' and '$dkms_mok_private_file' already exist: yes"
+   if [ -f "${dkms_mok_public_file}" ] && [ -f "${dkms_mok_private_file}" ]; then
+      printf '%s\n' "INFO: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' already exist: yes"
       mok_keys_present='y'
    else
-      printf '%s\n' "INFO: File '$dkms_mok_public_file' and '$dkms_mok_private_file' already exist: no - Creating..."
+      printf '%s\n' "INFO: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' already exist: no - Creating..."
       if dkms generate_mok; then
-         if [ -f "$dkms_mok_public_file" ] && [ -f "$dkms_mok_private_file" ]; then
+         if [ -f "${dkms_mok_public_file}" ] && [ -f "${dkms_mok_private_file}" ]; then
             mok_keys_present='y'
-            printf '%s\n' "INFO: File '$dkms_mok_public_file' and '$dkms_mok_private_file' successfully created: yes"
+            printf '%s\n' "INFO: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' successfully created: yes"
          else
             printf '%s\n' "ERROR: 'dkms generate_mok' failed. ${third_party_kernel_module_warning}"
             exit 1
          fi
       else
-         printf '%s\n' "WARNING: File '$dkms_mok_public_file' and '$dkms_mok_private_file' successfully created: no ${third_party_kernel_module_warning}"
+         printf '%s\n' "WARNING: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' successfully created: no ${third_party_kernel_module_warning}"
          exit 1
       fi
    fi
