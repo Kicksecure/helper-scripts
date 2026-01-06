@@ -21,11 +21,6 @@ main() {
 
    printf '%s\n' "INFO: Setting up MOK secure boot keys if necessary..."
 
-   if ! has dkms; then
-      printf '%s\n' "ERROR: 'dkms' unavailable. ${third_party_kernel_module_warning}"
-      exit 1
-   fi
-
    dkms_mok_dir='/var/lib/dkms'
    dkms_mok_public_file="${dkms_mok_dir}/mok.pub"
    dkms_mok_private_file="${dkms_mok_dir}/mok.key"
@@ -38,6 +33,11 @@ main() {
 Third-party kernel modules and applications that depend on them may not \
 function if Secure Boot is enabled. See also:
 https://www.kicksecure.com/wiki/Secure_Boot"
+
+   if ! has dkms; then
+      printf '%s\n' "ERROR: 'dkms' unavailable. ${third_party_kernel_module_warning}"
+      exit 1
+   fi
 
    if [ -f "${dkms_mok_public_file}" ] && [ -f "${dkms_mok_private_file}" ]; then
       printf '%s\n' "INFO: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' already exist: yes"
