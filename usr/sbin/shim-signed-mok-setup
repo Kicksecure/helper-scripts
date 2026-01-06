@@ -91,7 +91,7 @@ ${third_party_kernel_module_warning}"
    fi
    printf '%s\n' "INFO: Symlinks '${shim_mok_public_file}' and '${shim_mok_private_file}' exist: yes"
 
-   printf '%s\n' "INFO: Done setting up MOK secure boot keys."
+   printf '%s\n' "INFO: Successfully created MOK secure boot keys."
 }
 
 as_root
