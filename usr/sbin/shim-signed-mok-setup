@@ -71,17 +71,22 @@ ${third_party_kernel_module_warning}"
       exit 1
    fi
 
-   if ! ln -s -- "${dkms_mok_public_file}" "${shim_mok_public_file}"; then
-      printf '%s\n' "WARNING: Unable to create symlink from \
+   if ! test -L "${shim_mok_public_file}"; then
+      if ! ln -s -- "${dkms_mok_public_file}" "${shim_mok_public_file}"; then
+         printf '%s\n' "WARNING: Unable to create symlink from \
 '${dkms_mok_public_file}' to '${shim_mok_public_file}'! \
 ${third_party_kernel_module_warning}"
-      exit 1
+        exit 1
+      fi
    fi
-   if ! ln -s -- "${dkms_mok_private_file}" "${shim_mok_private_file}" ; then
-      printf '%s\n' "WARNING: Unable to create symlink from \
+
+   if ! test -L "${shim_mok_private_file}"; then
+      if ! ln -s -- "${dkms_mok_private_file}" "${shim_mok_private_file}" ; then
+         printf '%s\n' "WARNING: Unable to create symlink from \
 '${dkms_mok_private_file}' to '${shim_mok_private_file}'! \
 ${third_party_kernel_module_warning}"
-      exit 1
+         exit 1
+      fi
    fi
 
    printf '%s\n' "INFO: Done setting up MOK secure boot keys."
