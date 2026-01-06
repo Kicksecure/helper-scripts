@@ -11,6 +11,9 @@ set -o pipefail
 # shellcheck source=../libexec/helper-scripts/as_root.sh
 source /usr/libexec/helper-scripts/as_root.sh
 
+# shellcheck source=../libexec/helper-scripts/has.sh
+source /usr/libexec/helper-scripts/has.sh
+
 main() {
    local dkms_mok_dir dkms_mok_public_file dkms_mok_private_file \
       shim_mok_dir shim_mok_public_file shim_mok_private_file \
@@ -18,7 +21,7 @@ main() {
 
    printf '%s\n' "INFO: Setting up MOK secure boot keys if necessary..."
 
-   if ! command -v dkms >/dev/null 2>&1; then
+   if ! has dkms; then
       printf '%s\n' "ERROR: 'dkms' unavailable. ${third_party_kernel_module_warning}"
       exit 1
    fi
