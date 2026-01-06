@@ -49,7 +49,8 @@ https://www.kicksecure.com/wiki/Secure_Boot"
             mok_keys_present='y'
             printf '%s\n' "INFO: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' successfully created: yes"
          else
-            printf '%s\n' "ERROR: 'dkms generate_mok' failed. ${third_party_kernel_module_warning}"
+            printf '%s\n' "ERROR: File '${dkms_mok_public_file}' and '${dkms_mok_private_file}' successfully created: no
+Command 'dkms generate_mok' exited success but failed to create the key files. ${third_party_kernel_module_warning}"
             exit 1
          fi
       else
