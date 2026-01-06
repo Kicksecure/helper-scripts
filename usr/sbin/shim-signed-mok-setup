@@ -37,7 +37,7 @@ https://www.kicksecure.com/wiki/Secure_Boot"
          printf '%s\n' "INFO: File '$dkms_mok_public_file' and '$dkms_mok_private_file' successfully created: yes"
       else
          printf '%s\n' "WARNING: File '$dkms_mok_public_file' and '$dkms_mok_private_file' successfully created: no ${third_party_kernel_module_warning}"
-         return
+         exit 1
       fi
    fi
 
@@ -45,26 +45,26 @@ https://www.kicksecure.com/wiki/Secure_Boot"
       printf '%s\n' "WARNING: '${dkms_mok_public_file}' and/or \
 '${dkms_mok_private_file}' do not exist, and DKMS errored out while trying \
 to generate them! ${third_party_kernel_module_warning}"
-      return
+      exit 1
    fi
 
    if ! mkdir -p "${shim_mok_dir}"; then
       printf '%s\n' "WARNING: Unable to create directory '${shim_mok_dir}'! \
 ${third_party_kernel_module_warning}"
-      return
+      exit 1
    fi
 
    if ! ln -s "${dkms_mok_public_file}" "${shim_mok_public_file}"; then
       printf '%s\n' "WARNING: Unable to create symlink from \
 '${dkms_mok_public_file}' to '${shim_mok_public_file}'! \
 ${third_party_kernel_module_warning}"
-      return
+      exit 1
    fi
    if ! ln -s "${dkms_mok_private_file}" "${shim_mok_private_file}" ; then
       printf '%s\n' "WARNING: Unable to create symlink from \
 '${dkms_mok_private_file}' to '${shim_mok_private_file}'! \
 ${third_party_kernel_module_warning}"
-      return
+      exit 1
    fi
 
    printf '%s\n' "INFO: Done setting up MOK secure boot keys."
