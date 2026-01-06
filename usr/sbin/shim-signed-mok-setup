@@ -46,6 +46,7 @@ https://www.kicksecure.com/wiki/Secure_Boot"
             printf '%s\n' "INFO: File '$dkms_mok_public_file' and '$dkms_mok_private_file' successfully created: yes"
          else
             printf '%s\n' "ERROR: 'dkms generate_mok' failed. ${third_party_kernel_module_warning}"
+            exit 1
          fi
       else
          printf '%s\n' "WARNING: File '$dkms_mok_public_file' and '$dkms_mok_private_file' successfully created: no ${third_party_kernel_module_warning}"
