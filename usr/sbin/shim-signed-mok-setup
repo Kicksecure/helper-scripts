@@ -19,7 +19,7 @@ main() {
       shim_mok_dir shim_mok_public_file shim_mok_private_file \
       mok_keys_present third_party_kernel_module_warning
 
-   printf '%s\n' "INFO: Setting up MOK secure boot keys if necessary..."
+   printf '%s\n' "INFO: Setting up MOK secure boot keys..."
 
    dkms_mok_dir='/var/lib/dkms'
    dkms_mok_public_file="${dkms_mok_dir}/mok.pub"
