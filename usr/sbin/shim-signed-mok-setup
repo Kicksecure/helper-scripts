@@ -3,28 +3,36 @@
 ## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-set -o errexit
-set -o nounset
-set -o errtrace
-set -o pipefail
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+   set -o errexit
+   set -o nounset
+   set -o errtrace
+   set -o pipefail
 
-# shellcheck source=../libexec/helper-scripts/as_root.sh
-source /usr/libexec/helper-scripts/as_root.sh
+   # shellcheck source=../libexec/helper-scripts/as_root.sh
+   source /usr/libexec/helper-scripts/as_root.sh
 
-# shellcheck source=../libexec/helper-scripts/has.sh
-source /usr/libexec/helper-scripts/has.sh
+   # shellcheck source=../libexec/helper-scripts/has.sh
+   source /usr/libexec/helper-scripts/has.sh
+fi
 
-main() {
-   local dkms_mok_dir dkms_mok_public_file dkms_mok_private_file \
-      shim_mok_dir shim_mok_public_file shim_mok_private_file \
-      mok_keys_present third_party_kernel_module_warning
-
+dkms_mok_variables_set() {
    dkms_mok_dir='/var/lib/dkms'
    dkms_mok_public_file="${dkms_mok_dir}/mok.pub"
    dkms_mok_private_file="${dkms_mok_dir}/mok.key"
    shim_mok_dir='/var/lib/shim-signed/mok'
    shim_mok_public_file="${shim_mok_dir}/MOK.der"
    shim_mok_private_file="${shim_mok_dir}/MOK.priv"
+}
+
+main() {
+   local dkms_mok_dir dkms_mok_public_file dkms_mok_private_file \
+      shim_mok_dir shim_mok_public_file shim_mok_private_file \
+      mok_keys_present third_party_kernel_module_warning
+
+   as_root
+   dkms_mok_variables_set
+
    mok_keys_present='n'
    third_party_kernel_module_warning="
 
@@ -97,5 +105,6 @@ https://www.kicksecure.com/wiki/Secure_Boot"
    printf '%s\n' "$0: INFO: Successfully prepared Secure Boot module-signing keys/links."
 }
 
-as_root
-main
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+   main
+fi
