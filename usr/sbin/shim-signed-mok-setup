@@ -8,6 +8,9 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
+# shellcheck source=../libexec/helper-scripts/as_root.sh
+source /usr/libexec/helper-scripts/as_root.sh
+
 main() {
    local dkms_mok_dir dkms_mok_public_file dkms_mok_private_file \
       shim_mok_dir shim_mok_public_file shim_mok_private_file \
@@ -79,4 +82,5 @@ ${third_party_kernel_module_warning}"
    printf '%s\n' "INFO: Done setting up MOK secure boot keys."
 }
 
+as_root
 main
