@@ -26,8 +26,8 @@ source /usr/libexec/helper-scripts/secure_boot_enabled_check.bsh
 source /usr/sbin/shim-signed-mok-setup
 
 usage() {
-  printf '%s\n' "Usage: $0 [-n|--non-interactive]"
-  printf '%s\n' "  -n, --non-interactive   Do not ask for user input (assume yes)."
+  log notice "Usage: $0 [-n|--non-interactive]"
+  log notice "  -n, --non-interactive   Do not ask for user input (assume yes)."
 }
 
 non_interactive='0'
@@ -95,7 +95,7 @@ Therefore Secure Boot is unavailable and no need to set up or enroll a MOK. Exit
   fi
   log notice "Secure Boot is enabled."
 
-  log notice '%s\n' "
+  log notice "
 This tool will help you set up and enroll a Machine Owner Key (MOK). This will
 allow you to use software that relies on third-party kernel modules (such as
 tirdad and VirtualBox) with Secure Boot enabled.
@@ -129,7 +129,7 @@ https://www.kicksecure.com/wiki/Secure_Boot
   fi
 
   log notice "Setting up MOK..."
-  if ! log_run notice shim_signed_mok_setup; then
+  if ! log_run notice shim-signed-mok-setup; then
     log error "MOK setup failed! Exiting."
     return 1
   fi
@@ -142,7 +142,7 @@ https://www.kicksecure.com/wiki/Secure_Boot
     return 0
   fi
 
-  printf '%s\n' "\
+  log notice "\
 $0: INFO: Enrolling MOK.
 Enter a short, memorable password when prompted. You will only need this once,
 to finish the enrollment process."
@@ -151,7 +151,7 @@ to finish the enrollment process."
     return 1
   fi
 
-  printf '%s\n' "\
+  log notice "\
 $0: INFO: MOK enrollment started.
 To finish the process:
 
