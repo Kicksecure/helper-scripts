@@ -41,6 +41,18 @@ shim_enroll_mok() {
     return 1
   fi
 
+  if ! [ -d /sys/firmware/efi ]; then
+    if test -e /usr/share/qubes/marker-vm; then
+      reason="Not booted in EFI mode. Qubes detected. Qubes issue:
+https://github.com/QubesOS/qubes-issues/issues/5241"
+    else
+      reason="Not booted in EFI mode."
+    fi
+    log notice "$reason
+Therefore Secure Boot is unavailable and no need to set up or enroll a MOK. Exiting, ok."
+    return 0
+  fi
+
   secure_boot_enabled_check_retcode='0'
   mokutil_sbstate_output="$(check_secure_boot_enabled)" || secure_boot_enabled_check_retcode="$?"
   if [ "${secure_boot_enabled_check_retcode}" = '1' ]; then
