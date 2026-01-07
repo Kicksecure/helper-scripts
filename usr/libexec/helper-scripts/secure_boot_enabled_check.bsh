@@ -1,0 +1,33 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Return codes:
+## 0: Secure Boot enabled.
+## 1: Secure Boot disabled.
+## 2: Secure Boot state unknown (mokutil not installed or gave inconclusive output)
+## Also echoes mokutil's output for debugging purposes.
+check_secure_boot_enabled() {
+  local mokutil_output
+
+  if ! command -v mokutil >/dev/null; then
+    printf '%s\n' 'mokutil not installed.'
+    return 2
+  fi
+
+  if [ "$(id -u)" = '0' ]; then
+    mokutil_output="$(mokutil --sb-state 2>&1)" || true
+  else
+    mokutil_output="$(leaprun mokutil-sb-state 2>&1)" || true
+  fi
+  printf '%s\n' "${mokutil_output}"
+
+  if [[ "${mokutil_output}" = *enabled* ]]; then
+    return 0
+  elif [[ "${mokutil_output}" = *disabled* ]]; then
+    return 1
+  else
+    return 2
+  fi
+}

@@ -25,8 +25,8 @@ dkms_mok_variables_set() {
    shim_mok_private_file="${shim_mok_dir}/MOK.priv"
 }
 
-main() {
-   local dkms_mok_dir dkms_mok_public_file dkms_mok_private_file \
+shim_signed_mok_setup() {
+   local dkms_mok_public_file dkms_mok_private_file \
       shim_mok_dir shim_mok_public_file shim_mok_private_file \
       mok_keys_present third_party_kernel_module_warning
 
@@ -50,7 +50,7 @@ https://www.kicksecure.com/wiki/Secure_Boot"
 
    if ! has dkms; then
       printf '%s\n' "$0: ERROR: The 'dkms' tool is not available, so keys cannot be prepared.${third_party_kernel_module_warning}"
-      exit 1
+      return 1
    fi
 
    if [ -f "${dkms_mok_public_file}" ] && [ -f "${dkms_mok_private_file}" ]; then
@@ -65,36 +65,36 @@ https://www.kicksecure.com/wiki/Secure_Boot"
          else
             printf '%s\n' "$0: ERROR: The command 'dkms generate_mok' reported success, but the expected key files were not found afterwards:"
             printf '%s\n' "$0: ERROR: Missing one or both of: '${dkms_mok_public_file}', '${dkms_mok_private_file}'.${third_party_kernel_module_warning}"
-            exit 1
+            return 1
          fi
       else
          printf '%s\n' "$0: ERROR: The command 'dkms generate_mok' failed, so the key files could not be created.${third_party_kernel_module_warning}"
-         exit 1
+         return 1
       fi
    fi
 
    if [ "${mok_keys_present}" != 'y' ]; then
       printf '%s\n' "$0: ERROR: Key files are still missing, so setup cannot continue."
       printf '%s\n' "$0: ERROR: Expected: '${dkms_mok_public_file}' and '${dkms_mok_private_file}'.${third_party_kernel_module_warning}"
-      exit 1
+      return 1
    fi
 
    if ! mkdir --parents -- "${shim_mok_dir}"; then
       printf '%s\n' "$0: ERROR: Could not create the folder '${shim_mok_dir}'.${third_party_kernel_module_warning}"
-      exit 1
+      return 1
    fi
 
    if ! test -L "${shim_mok_public_file}"; then
       if ! ln -s -- "${dkms_mok_public_file}" "${shim_mok_public_file}"; then
          printf '%s\n' "$0: ERROR: Could not create the symlink '${shim_mok_public_file}' -> '${dkms_mok_public_file}'.${third_party_kernel_module_warning}"
-         exit 1
+         return 1
       fi
    fi
 
    if ! test -L "${shim_mok_private_file}"; then
       if ! ln -s -- "${dkms_mok_private_file}" "${shim_mok_private_file}"; then
          printf '%s\n' "$0: ERROR: Could not create the symlink '${shim_mok_private_file}' -> '${dkms_mok_private_file}'.${third_party_kernel_module_warning}"
-         exit 1
+         return 1
       fi
    fi
 
@@ -106,5 +106,5 @@ https://www.kicksecure.com/wiki/Secure_Boot"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-   main
+   shim_signed_mok_setup
 fi
