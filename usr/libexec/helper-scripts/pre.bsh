@@ -16,7 +16,7 @@
 
 ## Error log:
 ## - implement trap ERR if function exception_handler_general does not exist
-## - implements a simple error handler if non exists
+## - implements a simple error handler if none exists
 ## - run silent by default
 ## - write xtrace to temporary log
 ## - show full xtrace on unexpected non-zero exit code
@@ -305,7 +305,7 @@ else
 
    ## Check if any trap is already declared.
    if [ "$(trap -p ERR)" = "" ]; then
-      ## No trap exist yet.
+      ## No trap exists yet.
       ## Fall back to a simpler error handler.
       trap "error_handler_pre" ERR
    fi
