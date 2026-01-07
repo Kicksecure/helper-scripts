@@ -31,24 +31,24 @@ usage() {
 }
 
 return_maybe() {
-  if [ "$dev_mode" = 1 ]; then
-    log notice "Ignoring non-zero return code in --dev mode."
+  if [ "$dev_mode" = "true" ]; then
+    log notice "DEVELOPMENT: Ignoring non-zero return code in --dev mode."
     return 0
   fi
   return 1
 }
 
-dev_mode='0'
-non_interactive='0'
+dev_mode="false"
+non_interactive="false"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     -n|--non-interactive)
-      non_interactive='1'
+      non_interactive="true"
       shift
       ;;
      --dev)
-      dev_mode='1'
+      dev_mode="true"
       shift
       ;;
     -h|--help)
@@ -123,7 +123,7 @@ See also:
 https://www.kicksecure.com/wiki/Secure_Boot
 "
 
-  if [ "${non_interactive}" = '1' ]; then
+  if [ "${non_interactive}" = "true" ]; then
     log notice "Non-interactive mode selected (-n|--non-interactive). Proceeding with MOK setup and enrollment without asking for confirmation."
     do_generate_mok='yes'
   else
