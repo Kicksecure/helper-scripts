@@ -8,7 +8,7 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-# shellcheck source=../libexec/helper-scripts/package_installed_check.sh
-source /usr/libexec/helper-scripts/package_installed_check.sh
+# shellcheck source=../libexec/helper-scripts/secure_boot_enabled_check.bsh
+source /usr/libexec/helper-scripts/secure_boot_enabled_check.bsh
 
-pkg_installed "${1}"
+check_secure_boot_enabled
