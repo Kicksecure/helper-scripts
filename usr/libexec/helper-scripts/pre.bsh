@@ -150,6 +150,8 @@ colors() {
 }
 
 source_config_folder() {
+  local pre_bsh_settings_folder i
+
   ## dpkg sets environment variables
   ## example:
   ## DPKG_MAINTSCRIPT_PACKAGE=security-misc-shared
@@ -165,7 +167,6 @@ source_config_folder() {
   ## pre_bsh_settings_folder=security-misc-shared_maint.d
 
   shopt -s nullglob
-  local i
 
   ## example:
   ## /etc/panic-on-oops_pre.d/*.conf
@@ -174,13 +175,9 @@ source_config_folder() {
   true "folder 1: /etc/${pre_bsh_settings_folder}/*.conf"
   true "folder 2: /usr/local/etc/${pre_bsh_settings_folder}/*.conf"
 
-  for i in /etc/${pre_bsh_settings_folder}/*.conf /usr/local/etc/${pre_bsh_settings_folder}/*.conf; do
+  for i in "/etc/${pre_bsh_settings_folder}/"*.conf "/usr/local/etc/${pre_bsh_settings_folder}/"*.conf; do
     bash_n_exit_code="0"
-    bash_n_output="$(bash -n "$i" 2>&1)" || {
-      bash_n_exit_code="$?"
-      true
-    }
-    if [ ! "$bash_n_exit_code" = "0" ]; then
+    if ! bash_n_output="$(bash -n "$i" 2>&1)"; then
       force_output "Invalid config file: $i
    bash_n_exit_code: $bash_n_exit_code
    bash_n_output:
@@ -190,6 +187,7 @@ source_config_folder() {
     fi
     source "$i"
   done
+
   shopt -u nullglob
 }
 
@@ -248,7 +246,7 @@ error_handler_pre() {
   [[ -v DEBDEBUG ]] || DEBDEBUG=""
   if [ ! "$DEBDEBUG" = "1" ]; then
     local error_message
-    error_message="$(cat "$TEMP_FILE_PRE_BSH")"
+    error_message="$(cat -- "$TEMP_FILE_PRE_BSH")"
   fi
 
   [[ -v error_message ]] || error_message=""
