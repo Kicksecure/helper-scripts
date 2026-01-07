@@ -10,6 +10,9 @@ set -o pipefail
 
 export LC_ALL='C'
 
+# shellcheck source=../libexec/helper-scripts/log.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
 # shellcheck source=../libexec/helper-scripts/as_root.sh
 source /usr/libexec/helper-scripts/as_root.sh
 
@@ -24,7 +27,7 @@ source /usr/sbin/shim-signed-mok-setup
 
 shim_enroll_mok() {
   local do_generate_mok mokutil_sbstate_output \
-    secure_boot_enabled_check_retcode mokutil_import_output
+    secure_boot_enabled_check_retcode
 
   as_root
   dkms_mok_variables_set
@@ -58,14 +61,27 @@ allow you to use software that relies on third-party kernel modules (such as
 tirdad and VirtualBox) with Secure Boot enabled.
 
 See also:
-https://www.kicksecure.com/wiki/Secure_Boot"
-  printf '\n'
-  read -r -p 'Set up and start enrolling a MOK now? [Y/N] ' do_generate_mok
+https://www.kicksecure.com/wiki/Secure_Boot
+"
 
-  if [ "${do_generate_mok,,}" != 'y' ]; then
-    printf '%s\n' "$0: INFO: Exiting without setting up a MOK, as requested by user, ok."
+  if ! read -r -p 'QUESTION: Set up and start enrolling a MOK now? [y/yes/n/no] ' do_generate_mok; then
+    printf '%s\n' "$0: INFO: No input available. Exiting without setting up a MOK, ok."
     return 0
   fi
+
+  case "${do_generate_mok,,}" in
+    y|yes)
+      true
+      ;;
+    n|no)
+      printf '%s\n' "$0: INFO: Exiting without setting up a MOK, as requested by user, ok."
+      return 0
+      ;;
+    *)
+      printf '%s\n' "$0: ERROR: Please answer y/yes or n/no."
+      return 1
+      ;;
+  esac
 
   printf '%s\n' "$0: INFO: Setting up MOK..."
   if ! shim_signed_mok_setup; then
@@ -76,7 +92,7 @@ https://www.kicksecure.com/wiki/Secure_Boot"
 
   ## Confusingly, 'mokutil --test-key' returns 1 if the key is already
   ## enrolled, and 0 if it is not.
-  if ! mokutil --test-key "${dkms_mok_public_file}"; then
+  if ! log_run notice mokutil --test-key "${dkms_mok_public_file}"; then
     printf '%s\n' "$0: INFO: MOK already enrolled. Exiting, ok."
     return 0
   fi
@@ -85,7 +101,7 @@ https://www.kicksecure.com/wiki/Secure_Boot"
 $0: INFO: Enrolling MOK.
 Enter a short, memorable password when prompted. You will only need this once,
 to finish the enrollment process."
-  if ! mokutil --import "${dkms_mok_public_file}"; then
+  if ! log_run notice mokutil --import "${dkms_mok_public_file}"; then
     printf '%s\n' "$0: ERROR: MOK enrollment failed! Exiting."
     return 1
   fi
