@@ -25,6 +25,35 @@ source /usr/libexec/helper-scripts/secure_boot_enabled_check.bsh
 # shellcheck source=../sbin/shim-signed-mok-setup
 source /usr/sbin/shim-signed-mok-setup
 
+usage() {
+  printf '%s\n' "Usage: $0 [-n|--non-interactive]"
+  printf '%s\n' "  -n, --non-interactive   Do not ask for user input (assume yes)."
+}
+
+non_interactive='0'
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -n|--non-interactive)
+      non_interactive='1'
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      log error "Unknown option: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
 shim_enroll_mok() {
   local do_generate_mok mokutil_sbstate_output \
     secure_boot_enabled_check_retcode
@@ -75,24 +104,29 @@ See also:
 https://www.kicksecure.com/wiki/Secure_Boot
 "
 
-  if ! read -r -p 'QUESTION: Set up and start enrolling a MOK now? [y/yes/n/no] ' do_generate_mok; then
-    log notice "No input available. Exiting without setting up a MOK, ok."
-    return 0
-  fi
-
-  case "${do_generate_mok,,}" in
-    y|yes)
-      true
-      ;;
-    n|no)
-      log notice "Exiting without setting up a MOK, as requested by user, ok."
+  if [ "${non_interactive}" = '1' ]; then
+    log notice "Non-interactive mode selected. Proceeding with MOK setup and enrollment."
+    do_generate_mok='yes'
+  else
+    if ! read -r -p 'QUESTION: Set up and start enrolling a MOK now? [y/yes/n/no] ' do_generate_mok; then
+      log notice "No input available. Exiting without setting up a MOK, ok."
       return 0
-      ;;
-    *)
-      log error "Please answer y/yes or n/no."
-      return 1
-      ;;
-  esac
+    fi
+
+    case "${do_generate_mok,,}" in
+      y|yes)
+        true
+        ;;
+      n|no)
+        log notice "Exiting without setting up a MOK, as requested by user, ok."
+        return 0
+        ;;
+      *)
+        log error "Please answer y/yes or n/no."
+        return 1
+        ;;
+    esac
+  fi
 
   log notice "Setting up MOK..."
   if ! shim_signed_mok_setup; then
