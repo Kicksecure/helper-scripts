@@ -129,7 +129,7 @@ https://www.kicksecure.com/wiki/Secure_Boot
   fi
 
   log notice "Setting up MOK..."
-  if ! shim_signed_mok_setup; then
+  if ! log_run notice shim_signed_mok_setup; then
     log error "MOK setup failed! Exiting."
     return 1
   fi

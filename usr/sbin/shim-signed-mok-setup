@@ -61,7 +61,7 @@ https://www.kicksecure.com/wiki/Secure_Boot"
     mok_keys_present='y'
   else
     log notice "Key files already exist: no - trying to create them using 'dkms generate_mok'..."
-    if dkms generate_mok; then
+    if log_run notice dkms generate_mok; then
       if [ -f "${dkms_mok_public_file}" ] && [ -f "${dkms_mok_private_file}" ]; then
         mok_keys_present='y'
         log notice "Key files created: yes"
