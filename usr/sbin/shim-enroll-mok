@@ -67,6 +67,11 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
+see_also() {
+  log notice "See also:"
+  printf '%s\n' "https://www.kicksecure.com/wiki/Secure_Boot"
+}
+
 shim_enroll_mok() {
   local do_generate_mok mokutil_sbstate_output \
     secure_boot_enabled_check_retcode reason
@@ -77,11 +82,13 @@ shim_enroll_mok() {
   if ! has dkms; then
     log error "Missing required tool: 'dkms' (Dynamic Kernel Module Support)."
     log error "Without it, DKMS signing keys cannot be prepared. Please install 'dkms' and run this tool again."
+    see_also
     return 1
   fi
   if ! has mokutil; then
     log error "Missing required tool: 'mokutil' (manages Machine Owner Keys (MOK) for shim and Secure Boot)."
     log error "Without it, Secure Boot state cannot be checked and keys cannot be enrolled. Please install 'mokutil' and run this tool again."
+    see_also
     return 1
   fi
 
@@ -94,6 +101,7 @@ https://github.com/QubesOS/qubes-issues/issues/5241"
     fi
     log notice "$reason
 Therefore Secure Boot is unavailable and there is no need to set up or enroll a MOK. Exiting, ok."
+    see_also
     return_maybe 0
   fi
 
@@ -106,9 +114,11 @@ Therefore Secure Boot is unavailable and there is no need to set up or enroll a 
     log warn "Cannot detect Secure Boot state! Exiting."
     log warn "'mokutil --sb-state' output:"
     printf '%s\n' "${mokutil_sbstate_output}"
+    see_also
     return_maybe 1
   fi
   log notice "Secure Boot is enabled."
+  see_also
 
   log notice "
 This tool will help you set up and enroll a Machine Owner Key (MOK).
