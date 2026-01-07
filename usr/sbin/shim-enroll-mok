@@ -56,29 +56,31 @@ done
 
 shim_enroll_mok() {
   local do_generate_mok mokutil_sbstate_output \
-    secure_boot_enabled_check_retcode
+    secure_boot_enabled_check_retcode reason
 
   as_root
   dkms_mok_variables_set
 
   if ! has dkms; then
-    log error "The 'dkms' tool is not available, so keys cannot be prepared! Exiting."
+    log error "Missing required tool: 'dkms' (Dynamic Kernel Module Support)."
+    log error "Without it, DKMS signing keys cannot be prepared. Please install 'dkms' and run this tool again."
     return 1
   fi
   if ! has mokutil; then
-    log error "The 'mokutil' tool is not available, so keys cannot be enrolled! Exiting."
+    log error "Missing required tool: 'mokutil' (manages Machine Owner Keys (MOK) for shim and Secure Boot)."
+    log error "Without it, Secure Boot state cannot be checked and keys cannot be enrolled. Please install 'mokutil' and run this tool again."
     return 1
   fi
 
   if ! [ -d /sys/firmware/efi ]; then
     if test -e /usr/share/qubes/marker-vm; then
-      reason="Not booted in EFI mode. Qubes detected. Qubes issue:
+      reason="Not booted in EFI (UEFI) mode. Secure Boot is only available in EFI (UEFI) mode. Qubes detected. Qubes issue:
 https://github.com/QubesOS/qubes-issues/issues/5241"
     else
-      reason="Not booted in EFI mode."
+      reason="Not booted in EFI (UEFI) mode. Secure Boot is only available in EFI (UEFI) mode."
     fi
     log notice "$reason
-Therefore Secure Boot is unavailable and no need to set up or enroll a MOK. Exiting, ok."
+Therefore Secure Boot is unavailable and there is no need to set up or enroll a MOK. Exiting, ok."
     return 0
   fi
 
@@ -96,8 +98,12 @@ Therefore Secure Boot is unavailable and no need to set up or enroll a MOK. Exit
   log notice "Secure Boot is enabled."
 
   log notice "
-This tool will help you set up and enroll a Machine Owner Key (MOK). This will
-allow you to use software that relies on third-party kernel modules (such as
+This tool will help you set up and enroll a Machine Owner Key (MOK).
+A MOK is a signing key used by shim (the Secure Boot loader) to allow loading
+third-party kernel modules (kernel drivers not built into the Linux kernel,
+often installed via DKMS), while Secure Boot is enabled.
+
+This is useful for software that relies on third-party kernel modules (such as
 tirdad and VirtualBox) with Secure Boot enabled.
 
 See also:
@@ -105,11 +111,11 @@ https://www.kicksecure.com/wiki/Secure_Boot
 "
 
   if [ "${non_interactive}" = '1' ]; then
-    log notice "Non-interactive mode selected. Proceeding with MOK setup and enrollment."
+    log notice "Non-interactive mode selected (-n|--non-interactive). Proceeding with MOK setup and enrollment without asking for confirmation."
     do_generate_mok='yes'
   else
     if ! read -r -p 'QUESTION: Set up and start enrolling a MOK now? [y/yes/n/no] ' do_generate_mok; then
-      log notice "No input available. Exiting without setting up a MOK, ok."
+      log notice "No input available (for example, not running in a terminal). Exiting without setting up a MOK, ok."
       return 0
     fi
 
@@ -122,7 +128,7 @@ https://www.kicksecure.com/wiki/Secure_Boot
         return 0
         ;;
       *)
-        log error "Please answer y/yes or n/no."
+        log error "Invalid answer. Please type y/yes or n/no."
         return 1
         ;;
     esac
@@ -144,7 +150,8 @@ https://www.kicksecure.com/wiki/Secure_Boot
 
   log notice "\
 $0: INFO: Enrolling MOK.
-Enter a short, memorable password when prompted. You will only need this once,
+You will be prompted to create a password for enrollment (used by shim).
+Choose a short, memorable password. You will only need it once, at the next reboot,
 to finish the enrollment process."
   if ! log_run notice mokutil --import "${dkms_mok_public_file}"; then
     log error "MOK enrollment failed! Exiting."
