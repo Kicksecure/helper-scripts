@@ -176,10 +176,8 @@ source_config_folder() {
   true "folder 2: /usr/local/etc/${pre_bsh_settings_folder}/*.conf"
 
   for i in "/etc/${pre_bsh_settings_folder}/"*.conf "/usr/local/etc/${pre_bsh_settings_folder}/"*.conf; do
-    bash_n_exit_code="0"
     if ! bash_n_output="$(bash -n "$i" 2>&1)"; then
       force_output "Invalid config file: $i
-   bash_n_exit_code: $bash_n_exit_code
    bash_n_output:
    $bash_n_output" >&2
       rm -f -- "$TEMP_FILE_PRE_BSH"
