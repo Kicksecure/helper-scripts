@@ -179,7 +179,7 @@ source_config_folder() {
    bash_n_exit_code: $bash_n_exit_code
    bash_n_output:
    $bash_n_output" >&2
-         rm -f "$TEMP_FILE_PRE_BSH"
+         rm -f -- "$TEMP_FILE_PRE_BSH"
          exit 1
       fi
       source "$i"
@@ -193,7 +193,7 @@ check_scripts_to_skip() {
    for skip_script in $SKIP_SCRIPTS; do
       if [ "$skip_script" = "$own_filename" ]; then
          force_output "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
-         rm -f "$TEMP_FILE_PRE_BSH"
+         rm -f -- "$TEMP_FILE_PRE_BSH"
          exit 0
       fi
    done
@@ -265,7 +265,7 @@ $error_message
 ####################################################################
 " 1>&2
 
-   rm -f "$TEMP_FILE_PRE_BSH"
+   rm -f -- "$TEMP_FILE_PRE_BSH"
    exit 1
 }
 
