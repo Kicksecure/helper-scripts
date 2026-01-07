@@ -10,7 +10,7 @@ set -o pipefail
 
 export LC_ALL='C'
 
-# shellcheck source=../libexec/helper-scripts/log.sh
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
 source /usr/libexec/helper-scripts/log_run_die.sh
 
 # shellcheck source=../libexec/helper-scripts/as_root.sh
