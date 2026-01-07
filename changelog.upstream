@@ -1,3 +1,106 @@
+commit be510dc024663c4e32ab6ae7834c8c32de58e549
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 05:09:47 2026 -0500
+
+    improve
+
+commit 67d8b5bbc981473d9bb5dc406ba2e2057d8be0f4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 04:49:25 2026 -0500
+
+    improve
+
+commit fc92aa6e6e2496bac0c633efd16355d271c4ed31
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 04:35:02 2026 -0500
+
+    fix
+
+commit 87ce3bd63ce8d39570ac0581e8fae87ef875cf8b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 04:32:37 2026 -0500
+
+    improve
+
+commit 69a87997a5c980ac10784696ecb69c3804e7156e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 04:29:56 2026 -0500
+
+    improve
+
+commit 70496d55fbf5687556c52a4a2b422c4c90a597f0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 04:21:01 2026 -0500
+
+    improve
+
+commit afc6e59126249db80cca9bb539572832d610daf6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 04:10:52 2026 -0500
+
+    improve
+
+commit 61305eec939a92589a0b192c66e3ed9e131f1254
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 04:08:17 2026 -0500
+
+    improve
+
+commit 0f8478953abc4f64f29cac26fa74608338700e7d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 04:04:39 2026 -0500
+
+    improve
+
+commit 84a72afcb400c48d1e4db457ddfe8891b6082fb8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 03:56:49 2026 -0500
+
+    improve
+
+commit 73dc7450c608144191fe910b13c5f04e5651c75f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 03:55:20 2026 -0500
+
+    indent
+
+commit 08c384c96285c653407617feb479f4dc68c82730
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 03:50:41 2026 -0500
+
+    improve
+
+commit 1f5157b516d689cea7d2249e0f9ef5290fe8a861
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 03:49:29 2026 -0500
+
+    improve
+
+commit c1de55734cb27c97815a4d39d61f964297cef514
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 03:46:20 2026 -0500
+
+    improve
+
+commit 55d968578c8e0f86a2725ac65232ef43f76fbeea
+Merge: e5ccbfb 36efff1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 03:22:19 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 36efff170659ef6b25b1297b494141dfede3f2eb
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Jan 6 22:38:11 2026 -0600
+
+    Add additional Secure Boot utilities, polish shim-signed-mok-setup and make its main function able to be called as a library function
+
+commit e5ccbfb912f88d3c40dfb29a128a44f8031a0bc7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 6 13:00:29 2026 +0000
+
+    bumped changelog version
+
 commit 7357c392299ea045c0877104a8baec732795913b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Jan 6 07:20:14 2026 -0500
