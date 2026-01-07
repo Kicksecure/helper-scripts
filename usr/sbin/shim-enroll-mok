@@ -30,12 +30,24 @@ usage() {
   log notice "  -n, --non-interactive   Do not ask for user input (assume yes)."
 }
 
+return_maybe() {
+  if [ "$dev_mode" = 1 ]; then
+    log notice "Ignoring non-zero return code in --dev mode."
+    return 0
+  fi
+  return 1
+}
+
 non_interactive='0'
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     -n|--non-interactive)
       non_interactive='1'
+      shift
+      ;;
+     --dev)
+      dev_mode='1'
       shift
       ;;
     -h|--help)
@@ -81,19 +93,19 @@ https://github.com/QubesOS/qubes-issues/issues/5241"
     fi
     log notice "$reason
 Therefore Secure Boot is unavailable and there is no need to set up or enroll a MOK. Exiting, ok."
-    return 0
+    return_maybe 0
   fi
 
   secure_boot_enabled_check_retcode='0'
   mokutil_sbstate_output="$(check_secure_boot_enabled)" || secure_boot_enabled_check_retcode="$?"
   if [ "${secure_boot_enabled_check_retcode}" = '1' ]; then
     log notice "Secure Boot is disabled, therefore no need to set up or enroll a MOK. Exiting, ok."
-    return 0
+    return_maybe 0
   elif [ "${secure_boot_enabled_check_retcode}" = '2' ]; then
     log warn "Cannot detect Secure Boot state! Exiting."
     log warn "'mokutil --sb-state' output:"
     printf '%s\n' "${mokutil_sbstate_output}"
-    return 1
+    return_maybe 1
   fi
   log notice "Secure Boot is enabled."
 
@@ -145,7 +157,7 @@ https://www.kicksecure.com/wiki/Secure_Boot
   ## enrolled, and 0 if it is not.
   if ! log_run notice mokutil --test-key "${dkms_mok_public_file}"; then
     log notice "MOK already enrolled. Exiting, ok."
-    return 0
+    return_maybe 0
   fi
 
   log notice "\
