@@ -62,195 +62,201 @@
 ## bash script fragment
 
 colors() {
-   alt=""
-   ealt=""
-   hide=""
-   show=""
-   save=""
-   load=""
-   bold=""
-   stout=""
-   estout=""
-   under=""
-   eunder=""
-   reset=""
-   blink=""
-   italic=""
-   eitalic=""
-   red=""
-   green=""
-   yellow=""
-   blue=""
-   magenta=""
-   cyan=""
-   white=""
-   default=""
-   eed=""
-   eel=""
-   ebl=""
-   ewl=""
-   draw=""
-   back=""
+  alt=""
+  ealt=""
+  hide=""
+  show=""
+  save=""
+  load=""
+  bold=""
+  stout=""
+  estout=""
+  under=""
+  eunder=""
+  reset=""
+  blink=""
+  italic=""
+  eitalic=""
+  red=""
+  green=""
+  yellow=""
+  blue=""
+  magenta=""
+  cyan=""
+  white=""
+  default=""
+  eed=""
+  eel=""
+  ebl=""
+  ewl=""
+  draw=""
+  back=""
 
-   if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}"; then
-      true "$0: INFO: A color disabling type environment variable is set. Not using colors."
-      return 0
-   fi
+  if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}"; then
+    true "$0: INFO: A color disabling type environment variable is set. Not using colors."
+    return 0
+  fi
 
-   [[ -v TERM ]] || TERM=""
-   if [ "$TERM" = "" ]; then
-      true "$0: INFO: TERM unset. Not using colors."
-      return 0
-   fi
+  [[ -v TERM ]] || TERM=""
+  if [ "$TERM" = "" ]; then
+    true "$0: INFO: TERM unset. Not using colors."
+    return 0
+  fi
 
-   ## Thanks to:
-   ## http://mywiki.wooledge.org/BashFAQ/037
-   ## Variables for terminal requests.
-   [[ -t 2 ]] && {
-       alt=$(      tput smcup  || tput ti      ) # Start alt display
-       ealt=$(     tput rmcup  || tput te      ) # End   alt display
-       hide=$(     tput civis  || tput vi      ) # Hide cursor
-       show=$(     tput cnorm  || tput ve      ) # Show cursor
-       save=$(     tput sc                     ) # Save cursor
-       load=$(     tput rc                     ) # Load cursor
-       bold=$(     tput bold   || tput md      ) # Start bold
-       stout=$(    tput smso   || tput so      ) # Start stand-out
-       estout=$(   tput rmso   || tput se      ) # End stand-out
-       under=$(    tput smul   || tput us      ) # Start underline
-       eunder=$(   tput rmul   || tput ue      ) # End   underline
-       reset=$(    tput sgr0   || tput me      ) # Reset cursor
-       blink=$(    tput blink  || tput mb      ) # Start blinking
-       italic=$(   tput sitm   || tput ZH      ) # Start italic
-       eitalic=$(  tput ritm   || tput ZR      ) # End   italic
-   [[ $TERM != *-m ]] && {
-       red=$(      tput setaf 1|| tput AF 1    )
-       green=$(    tput setaf 2|| tput AF 2    )
-       yellow=$(   tput setaf 3|| tput AF 3    )
-       blue=$(     tput setaf 4|| tput AF 4    )
-       magenta=$(  tput setaf 5|| tput AF 5    )
-       cyan=$(     tput setaf 6|| tput AF 6    )
-   }
-       white=$(    tput setaf 7|| tput AF 7    )
-       default=$(  tput op                     )
-       eed=$(      tput ed     || tput cd      )   # Erase to end of display
-       eel=$(      tput el     || tput ce      )   # Erase to end of line
-       ebl=$(      tput el1    || tput cb      )   # Erase to beginning of line
-       ewl=$eel$ebl                                # Erase whole line
-       draw=$(     tput -S <<< '   enacs
+  ## Thanks to:
+  ## http://mywiki.wooledge.org/BashFAQ/037
+  ## Variables for terminal requests.
+  [[ -t 2 ]] && {
+    alt=$(tput smcup || tput ti)    # Start alt display
+    ealt=$(tput rmcup || tput te)   # End   alt display
+    hide=$(tput civis || tput vi)   # Hide cursor
+    show=$(tput cnorm || tput ve)   # Show cursor
+    save=$(tput sc)                 # Save cursor
+    load=$(tput rc)                 # Load cursor
+    bold=$(tput bold || tput md)    # Start bold
+    stout=$(tput smso || tput so)   # Start stand-out
+    estout=$(tput rmso || tput se)  # End stand-out
+    under=$(tput smul || tput us)   # Start underline
+    eunder=$(tput rmul || tput ue)  # End   underline
+    reset=$(tput sgr0 || tput me)   # Reset cursor
+    blink=$(tput blink || tput mb)  # Start blinking
+    italic=$(tput sitm || tput ZH)  # Start italic
+    eitalic=$(tput ritm || tput ZR) # End   italic
+    [[ $TERM != *-m ]] && {
+      red=$(tput setaf 1 || tput AF 1)
+      green=$(tput setaf 2 || tput AF 2)
+      yellow=$(tput setaf 3 || tput AF 3)
+      blue=$(tput setaf 4 || tput AF 4)
+      magenta=$(tput setaf 5 || tput AF 5)
+      cyan=$(tput setaf 6 || tput AF 6)
+    }
+    white=$(tput setaf 7 || tput AF 7)
+    default=$(tput op)
+    eed=$(tput ed || tput cd)  # Erase to end of display
+    eel=$(tput el || tput ce)  # Erase to end of line
+    ebl=$(tput el1 || tput cb) # Erase to beginning of line
+    ewl=$eel$ebl               # Erase whole line
+    draw=$(tput -S <<<'   enacs
                                    smacs
                                    acsc
-                                   rmacs' || { \
-                   tput eA; tput as;
-                   tput ac; tput ae;         } )   # Drawing characters
-       back=$'\b'
-   } 2>/dev/null ||:
+                                   rmacs' || {
+      tput eA
+      tput as
+      tput ac
+      tput ae
+    }) # Drawing characters
+    back=$'\b'
+  } 2>/dev/null || :
 }
 
 source_config_folder() {
-   ## dpkg sets environment variables
-   ## example:
-   ## DPKG_MAINTSCRIPT_PACKAGE=security-misc-shared
+  ## dpkg sets environment variables
+  ## example:
+  ## DPKG_MAINTSCRIPT_PACKAGE=security-misc-shared
 
-   [[ -v DPKG_MAINTSCRIPT_PACKAGE ]] || DPKG_MAINTSCRIPT_PACKAGE=""
-   if [ "$DPKG_MAINTSCRIPT_PACKAGE" = "" ]; then
-      pre_bsh_settings_folder="${own_filename}_pre.d"
-   else
-      pre_bsh_settings_folder="${DPKG_MAINTSCRIPT_PACKAGE}_maint.d"
-   fi
+  [[ -v DPKG_MAINTSCRIPT_PACKAGE ]] || DPKG_MAINTSCRIPT_PACKAGE=""
+  if [ "$DPKG_MAINTSCRIPT_PACKAGE" = "" ]; then
+    pre_bsh_settings_folder="${own_filename}_pre.d"
+  else
+    pre_bsh_settings_folder="${DPKG_MAINTSCRIPT_PACKAGE}_maint.d"
+  fi
 
-   ## example:
-   ## pre_bsh_settings_folder=security-misc-shared_maint.d
+  ## example:
+  ## pre_bsh_settings_folder=security-misc-shared_maint.d
 
-   shopt -s nullglob
-   local i
+  shopt -s nullglob
+  local i
 
-   ## example:
-   ## /etc/panic-on-oops_pre.d/*.conf
-   ## /usr/local/etc/panic-on-oops_pre.d/*.conf
+  ## example:
+  ## /etc/panic-on-oops_pre.d/*.conf
+  ## /usr/local/etc/panic-on-oops_pre.d/*.conf
 
-   true "folder 1: /etc/${pre_bsh_settings_folder}/*.conf"
-   true "folder 2: /usr/local/etc/${pre_bsh_settings_folder}/*.conf"
+  true "folder 1: /etc/${pre_bsh_settings_folder}/*.conf"
+  true "folder 2: /usr/local/etc/${pre_bsh_settings_folder}/*.conf"
 
-   for i in /etc/${pre_bsh_settings_folder}/*.conf /usr/local/etc/${pre_bsh_settings_folder}/*.conf; do
-      bash_n_exit_code="0"
-      bash_n_output="$(bash -n "$i" 2>&1)" || { bash_n_exit_code="$?" ; true; };
-      if [ ! "$bash_n_exit_code" = "0" ]; then
-         force_output "Invalid config file: $i
+  for i in /etc/${pre_bsh_settings_folder}/*.conf /usr/local/etc/${pre_bsh_settings_folder}/*.conf; do
+    bash_n_exit_code="0"
+    bash_n_output="$(bash -n "$i" 2>&1)" || {
+      bash_n_exit_code="$?"
+      true
+    }
+    if [ ! "$bash_n_exit_code" = "0" ]; then
+      force_output "Invalid config file: $i
    bash_n_exit_code: $bash_n_exit_code
    bash_n_output:
    $bash_n_output" >&2
-         rm -f -- "$TEMP_FILE_PRE_BSH"
-         exit 1
-      fi
-      source "$i"
-   done
-   shopt -u nullglob
+      rm -f -- "$TEMP_FILE_PRE_BSH"
+      exit 1
+    fi
+    source "$i"
+  done
+  shopt -u nullglob
 }
 
 check_scripts_to_skip() {
-   [[ -v SKIP_SCRIPTS ]] || SKIP_SCRIPTS=""
-   local skip_script
-   for skip_script in $SKIP_SCRIPTS; do
-      if [ "$skip_script" = "$own_filename" ]; then
-         force_output "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
-         rm -f -- "$TEMP_FILE_PRE_BSH"
-         exit 0
-      fi
-   done
+  [[ -v SKIP_SCRIPTS ]] || SKIP_SCRIPTS=""
+  local skip_script
+  for skip_script in $SKIP_SCRIPTS; do
+    if [ "$skip_script" = "$own_filename" ]; then
+      force_output "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
+      rm -f -- "$TEMP_FILE_PRE_BSH"
+      exit 0
+    fi
+  done
 }
 
 disable_echo() {
-   [[ -v disabled_echo ]] || disabled_echo=""
-   if [ "$disabled_echo" = "true" ]; then
-      return 0
-   fi
-   exec 5>&1 1>> "$TEMP_FILE_PRE_BSH"
-   exec 6>&2 2>> "$TEMP_FILE_PRE_BSH"
-   disabled_echo=true
+  [[ -v disabled_echo ]] || disabled_echo=""
+  if [ "$disabled_echo" = "true" ]; then
+    return 0
+  fi
+  exec 5>&1 1>>"$TEMP_FILE_PRE_BSH"
+  exec 6>&2 2>>"$TEMP_FILE_PRE_BSH"
+  disabled_echo=true
 }
 
 enable_echo() {
-   [[ -v disabled_echo ]] || disabled_echo=""
-   if [ "$disabled_echo" = "true" ]; then
-      exec 1>&5
-      exec 2>&6
-      disabled_echo=false
-   fi
+  [[ -v disabled_echo ]] || disabled_echo=""
+  if [ "$disabled_echo" = "true" ]; then
+    exec 1>&5
+    exec 2>&6
+    disabled_echo=false
+  fi
 }
 
 force_output() {
-   [[ -v disabled_echo ]] || disabled_echo=""
-   if [ "$disabled_echo" = "true" ]; then
-      redisable_echo="true"
-      enable_echo
-   fi
-   ## If xtrace is set, calling force_output will have already shown the output.
-   if ! test -o xtrace ; then
-      ## xtrace is not set, therefore echo.
-      printf '%s\n' "$*"
-   fi
-   [[ -v redisable_echo ]] || redisable_echo=""
-   if [ "$redisable_echo" = "true" ]; then
-      disable_echo
-   fi
+  [[ -v disabled_echo ]] || disabled_echo=""
+  if [ "$disabled_echo" = "true" ]; then
+    redisable_echo="true"
+    enable_echo
+  fi
+  ## If xtrace is set, calling force_output will have already shown the output.
+  if ! test -o xtrace; then
+    ## xtrace is not set, therefore echo.
+    printf '%s\n' "$*"
+  fi
+  [[ -v redisable_echo ]] || redisable_echo=""
+  if [ "$redisable_echo" = "true" ]; then
+    disable_echo
+  fi
 }
 
 error_handler_pre() {
-   local exit_code="$?"
-   local last_err="$BASH_COMMAND"
+  local exit_code="$?"
+  local last_err="$BASH_COMMAND"
 
-   [[ -v DEBDEBUG ]] || DEBDEBUG=""
-   if [ ! "$DEBDEBUG" = "1" ]; then
-      local error_message
-      error_message="$(cat "$TEMP_FILE_PRE_BSH")"
-   fi
+  [[ -v DEBDEBUG ]] || DEBDEBUG=""
+  if [ ! "$DEBDEBUG" = "1" ]; then
+    local error_message
+    error_message="$(cat "$TEMP_FILE_PRE_BSH")"
+  fi
 
-   [[ -v error_message ]] || error_message=""
-   if [ "$error_message" = "" ]; then
-      error_message="## See above."
-   fi
+  [[ -v error_message ]] || error_message=""
+  if [ "$error_message" = "" ]; then
+    error_message="## See above."
+  fi
 
-   force_output "
+  force_output "
 ####################################################################
 ## ${red}${bold}BEGIN ERROR in $0 detected!${reset}
 ##
@@ -265,8 +271,8 @@ $error_message
 ####################################################################
 " 1>&2
 
-   rm -f -- "$TEMP_FILE_PRE_BSH"
-   exit 1
+  rm -f -- "$TEMP_FILE_PRE_BSH"
+  exit 1
 }
 
 ## config-package-dev doesn't like 'set -o pipefail'
@@ -277,38 +283,38 @@ set -o errtrace
 
 TEMP_FILE_PRE_BSH="$(mktemp)"
 
-if test -o xtrace ; then
-   true "INFO: Setting DEBDEBUG to 1, because xtrace (-x) is set."
-   DEBDEBUG="1"
+if test -o xtrace; then
+  true "INFO: Setting DEBDEBUG to 1, because xtrace (-x) is set."
+  DEBDEBUG="1"
 fi
 
 [[ -v DEBDEBUG ]] || DEBDEBUG=""
 if [ "$DEBDEBUG" = "1" ]; then
-   set -x
+  set -x
 fi
 
 [[ -v disable_echo ]] || disable_echo=""
 if [ "$disable_echo" = "true" ]; then
-   disable_echo
+  disable_echo
 fi
 
 colors
 
 ## {{ Set up error handler.
 if [ "$(type -t exception_handler_general)" = "function" ]; then
-   ## Function exception_handler_general exists (declared in
-   ## help-steps/pre). Prefer to use the more feature rich version of the error
-   ## handler.
-   trap "exception_handler_general" ERR
+  ## Function exception_handler_general exists (declared in
+  ## help-steps/pre). Prefer to use the more feature rich version of the error
+  ## handler.
+  trap "exception_handler_general" ERR
 else
-   ## Function exception_handler_general does not exist.
+  ## Function exception_handler_general does not exist.
 
-   ## Check if any trap is already declared.
-   if [ "$(trap -p ERR)" = "" ]; then
-      ## No trap exists yet.
-      ## Fall back to a simpler error handler.
-      trap "error_handler_pre" ERR
-   fi
+  ## Check if any trap is already declared.
+  if [ "$(trap -p ERR)" = "" ]; then
+    ## No trap exists yet.
+    ## Fall back to a simpler error handler.
+    trap "error_handler_pre" ERR
+  fi
 fi
 ## }}
 
