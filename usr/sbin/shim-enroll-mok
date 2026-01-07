@@ -38,6 +38,7 @@ return_maybe() {
   return 1
 }
 
+dev_mode='0'
 non_interactive='0'
 
 while [ "$#" -gt 0 ]; do
