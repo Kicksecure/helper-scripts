@@ -69,8 +69,10 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   set -o pipefail
 fi
 
-# shellcheck source=/usr/libexec/helper-scripts/get_colors.sh
-source /usr/libexec/helper-scripts/get_colors.sh
+if test -r /usr/libexec/helper-scripts/get_colors.sh; then
+  # shellcheck source=/usr/libexec/helper-scripts/get_colors.sh
+  source /usr/libexec/helper-scripts/get_colors.sh || true "$0: ERROR: Failed to source /usr/libexec/helper-scripts/get_colors.sh"
+fi
 
 source_config_folder() {
   local pre_bsh_settings_folder i

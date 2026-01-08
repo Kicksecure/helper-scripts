@@ -86,7 +86,7 @@ get_colors() {
 get_colors_test() {
   ## This function is only meant for manual visual verification.
   ## It prints one feature per line, resetting after each line so styles
-  ## don’t “leak” into the next output.
+  ## does not leak into the next output.
 
   printf '%s\n' "$0: test mode"
 
@@ -137,7 +137,7 @@ get_colors_test() {
 
   ## --- Cursor / screen control --------------------------------------
   ## Hide cursor, print "hide", then show cursor again.
-  ## Useful to confirm the escape sequences don’t break output.
+  ## Useful to confirm the escape sequences do not break output.
   printf '%b\n' "${hide}hide${show}${nocolor}"
 
   ## Cursor save/restore (not tested by default because it can look odd
@@ -145,7 +145,7 @@ get_colors_test() {
   #printf '%b\n' "${save}save${load}${nocolor}"
 
   ## Erase to end of display (J) / end of line (K) / beginning of line (1K)
-  ## / whole line (2K). These are hard to “see” in a simple print, but
+  ## / whole line (2K). These are hard to "see" in a simple print, but
   ## included for completeness.
   #printf '%b\n' "${eed}eed${nocolor}"
   #printf '%b\n' "${eel}eel${nocolor}"
