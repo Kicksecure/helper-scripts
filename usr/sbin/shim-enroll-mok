@@ -39,7 +39,8 @@ dev_mode_function() {
 }
 
 exit_function() {
-  if [ "$?" = 0 ]; then
+  local exit_code="$?"
+  if [ "$exit_code" = 0 ]; then
     log notice "See also:"
     printf '%s\n' "https://www.kicksecure.com/wiki/Secure_Boot"
     log notice "END: Success."
@@ -48,7 +49,7 @@ exit_function() {
     printf '%s\n' "https://www.kicksecure.com/wiki/Secure_Boot"
     log error "END: Fail."
   fi
-  exit "$?"
+  exit "$exit_code"
 }
 
 trap exit_function EXIT
@@ -155,7 +156,7 @@ tirdad and VirtualBox) with Secure Boot enabled.
     do_generate_mok='yes'
   else
     if ! read -r -p 'QUESTION: Set up and start enrolling a MOK now? [y/yes/n/no] ' do_generate_mok; then
-      log error "No input available (for example, not running in a terminal). Exiting without setting up a MOK, ok."
+      log error "No input available (for example, not running in a terminal). Exiting without setting up a MOK"
       return 1
     fi
 
