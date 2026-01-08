@@ -32,7 +32,7 @@ usage() {
 
 return_maybe() {
   if [ "$dev_mode" = "true" ]; then
-    log notice "DEVELOPMENT: Ignoring non-zero return code in --dev mode."
+    log notice "DEVELOPMENT: Ignoring non-zero return code in '--dev' mode."
     return 0
   fi
   return 1
