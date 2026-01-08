@@ -14,6 +14,7 @@ source /usr/libexec/helper-scripts/has.sh
 check_secure_boot_enabled() {
   local mokutil_output
 
+  ## leaprun uses hardcoded full path 'leaprun', so also use 'has' on the full path.
   if ! has '/usr/bin/mokutil'; then
     printf '%s\n' "$0: 'mokutil' not installed or not executable."
     return 2
