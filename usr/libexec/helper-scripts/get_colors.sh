@@ -3,13 +3,14 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  true "$0: START"
-  set -o errexit
-  set -o nounset
-  set -o errtrace
-  set -o pipefail
-fi
+## Not possible because 'dist-installer-cli' includes this script verbatim in full.
+# if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+#   true "$0: START"
+#   set -o errexit
+#   set -o nounset
+#   set -o errtrace
+#   set -o pipefail
+# fi
 
 # shellcheck disable=SC2034
 get_colors() {
@@ -165,7 +166,7 @@ if test "${get_colors_sourced:-}" != "1"; then
   get_colors
 fi
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  get_colors_test
-  true "$0: END"
-fi
+# if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+#   get_colors_test
+#   true "$0: END"
+# fi
