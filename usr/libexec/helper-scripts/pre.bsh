@@ -57,97 +57,20 @@
 ## - /etc/panic-on-oops_pre.d/*.conf
 ## - /usr/local/etc/panic-on-oops_pre.d/*.conf
 
-## {{{ pre.bsh 1.0
+## {{{ pre.bsh 1.1
 
 ## bash script fragment
 
-colors() {
-  alt=""
-  ealt=""
-  hide=""
-  show=""
-  save=""
-  load=""
-  bold=""
-  stout=""
-  estout=""
-  under=""
-  eunder=""
-  reset=""
-  blink=""
-  italic=""
-  eitalic=""
-  red=""
-  green=""
-  yellow=""
-  blue=""
-  magenta=""
-  cyan=""
-  white=""
-  default=""
-  eed=""
-  eel=""
-  ebl=""
-  ewl=""
-  draw=""
-  back=""
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  true "$0: START"
+  set -o errexit
+  set -o nounset
+  set -o errtrace
+  set -o pipefail
+fi
 
-  if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}"; then
-    true "$0: INFO: A color disabling type environment variable is set. Not using colors."
-    return 0
-  fi
-
-  [[ -v TERM ]] || TERM=""
-  if [ "$TERM" = "" ]; then
-    true "$0: INFO: TERM unset. Not using colors."
-    return 0
-  fi
-
-  ## Thanks to:
-  ## http://mywiki.wooledge.org/BashFAQ/037
-  ## Variables for terminal requests.
-  [[ -t 2 ]] && {
-    alt=$(tput smcup || tput ti)    # Start alt display
-    ealt=$(tput rmcup || tput te)   # End   alt display
-    hide=$(tput civis || tput vi)   # Hide cursor
-    show=$(tput cnorm || tput ve)   # Show cursor
-    save=$(tput sc)                 # Save cursor
-    load=$(tput rc)                 # Load cursor
-    bold=$(tput bold || tput md)    # Start bold
-    stout=$(tput smso || tput so)   # Start stand-out
-    estout=$(tput rmso || tput se)  # End stand-out
-    under=$(tput smul || tput us)   # Start underline
-    eunder=$(tput rmul || tput ue)  # End   underline
-    reset=$(tput sgr0 || tput me)   # Reset cursor
-    blink=$(tput blink || tput mb)  # Start blinking
-    italic=$(tput sitm || tput ZH)  # Start italic
-    eitalic=$(tput ritm || tput ZR) # End   italic
-    [[ $TERM != *-m ]] && {
-      red=$(tput setaf 1 || tput AF 1)
-      green=$(tput setaf 2 || tput AF 2)
-      yellow=$(tput setaf 3 || tput AF 3)
-      blue=$(tput setaf 4 || tput AF 4)
-      magenta=$(tput setaf 5 || tput AF 5)
-      cyan=$(tput setaf 6 || tput AF 6)
-    }
-    white=$(tput setaf 7 || tput AF 7)
-    default=$(tput op)
-    eed=$(tput ed || tput cd)  # Erase to end of display
-    eel=$(tput el || tput ce)  # Erase to end of line
-    ebl=$(tput el1 || tput cb) # Erase to beginning of line
-    ewl=$eel$ebl               # Erase whole line
-    draw=$(tput -S <<<'   enacs
-                                   smacs
-                                   acsc
-                                   rmacs' || {
-      tput eA
-      tput as
-      tput ac
-      tput ae
-    }) # Drawing characters
-    back=$'\b'
-  } 2>/dev/null || :
-}
+# shellcheck source=/usr/libexec/helper-scripts/get_colors.sh
+source /usr/libexec/helper-scripts/get_colors.sh
 
 source_config_folder() {
   local pre_bsh_settings_folder i
@@ -294,8 +217,6 @@ if [ "$disable_echo" = "true" ]; then
   disable_echo
 fi
 
-colors
-
 ## {{ Set up error handler.
 if [ "$(type -t exception_handler_general)" = "function" ]; then
   ## Function exception_handler_general exists (declared in
@@ -325,5 +246,9 @@ own_filename="${0##*/}"
 source_config_folder
 
 check_scripts_to_skip
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  true "$0: END"
+fi
 
 ## }}}
