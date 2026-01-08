@@ -30,13 +30,28 @@ usage() {
   log notice "  -n, --non-interactive   Do not ask for user input (assume yes)."
 }
 
-return_maybe() {
+dev_mode_function() {
   if [ "$dev_mode" = "true" ]; then
-    log notice "DEVELOPMENT: Ignoring non-zero return code in '--dev' mode."
+    log warn "DEVELOPMENT: Ignoring non-zero return code in '--dev' mode."
     return 0
   fi
   return 1
 }
+
+exit_function() {
+  if [ "$?" = 0 ]; then
+    log notice "See also:"
+    printf '%s\n' "https://www.kicksecure.com/wiki/Secure_Boot"
+    log notice "END: Success."
+  else
+    log error "See also:"
+    printf '%s\n' "https://www.kicksecure.com/wiki/Secure_Boot"
+    log error "END: Fail."
+  fi
+  exit "$?"
+}
+
+trap exit_function EXIT
 
 dev_mode="false"
 non_interactive="false"
@@ -60,17 +75,12 @@ while [ "$#" -gt 0 ]; do
       break
       ;;
     *)
-      log error "Unknown option: $1"
+      log error "Unknown option: '$1'"
       usage
       exit 1
       ;;
   esac
 done
-
-see_also() {
-  log notice "See also:"
-  printf '%s\n' "https://www.kicksecure.com/wiki/Secure_Boot"
-}
 
 shim_enroll_mok() {
   local do_generate_mok mokutil_sbstate_output \
@@ -82,13 +92,11 @@ shim_enroll_mok() {
   if ! has dkms; then
     log error "Missing required tool: 'dkms' (Dynamic Kernel Module Support)."
     log error "Without it, DKMS signing keys cannot be prepared. Please install 'dkms' and run this tool again."
-    see_also
     return 1
   fi
   if ! has mokutil; then
     log error "Missing required tool: 'mokutil' (manages Machine Owner Keys (MOK) for shim and Secure Boot)."
     log error "Without it, Secure Boot state cannot be checked and keys cannot be enrolled. Please install 'mokutil' and run this tool again."
-    see_also
     return 1
   fi
 
@@ -99,23 +107,21 @@ https://github.com/QubesOS/qubes-issues/issues/5241"
     else
       reason="Not booted in EFI (UEFI) mode. Secure Boot is only available in EFI (UEFI) mode."
     fi
-    log notice "$reason
-Therefore Secure Boot is unavailable and there is no need to set up or enroll a MOK. Exiting, ok."
-    see_also
-    return_maybe 0
+    log error "$reason
+Therefore Secure Boot is unavailable and there is no need to set up or enroll a MOK. Exiting."
+    dev_mode_function || return 1
   fi
 
   secure_boot_enabled_check_retcode='0'
   mokutil_sbstate_output="$(check_secure_boot_enabled)" || secure_boot_enabled_check_retcode="$?"
   if [ "${secure_boot_enabled_check_retcode}" = '1' ]; then
-    log notice "Secure Boot is disabled, therefore no need to set up or enroll a MOK. Exiting, ok."
-    return_maybe 0
+    log error "Secure Boot is disabled, therefore no need to set up or enroll a MOK. Exiting."
+    dev_mode_function || return 1
   elif [ "${secure_boot_enabled_check_retcode}" = '2' ]; then
-    log warn "Cannot detect Secure Boot state! Exiting."
-    log warn "'mokutil --sb-state' output:"
+    log error "Cannot detect Secure Boot state! Exiting."
+    log error "'mokutil --sb-state' output:"
     printf '%s\n' "${mokutil_sbstate_output}"
-    see_also
-    return_maybe 1
+    dev_mode_function || return 1
   fi
   log notice "Secure Boot is enabled."
 
@@ -125,27 +131,23 @@ Therefore Secure Boot is unavailable and there is no need to set up or enroll a 
     && ! mokutil_test_key_output="$(log_run notice mokutil --test-key "${dkms_mok_public_file}" 2>&1)"; then
     if [ "${mokutil_test_key_output}" = "${dkms_mok_public_file} is already enrolled" ]; then
       log notice "MOK already enrolled. Exiting, ok."
-      return_maybe 0
+      dev_mode_function || return 0
     else
-      log warn 'Cannot detect MOK enrollment state! Exiting.'
-      log warn "'mokutil --test-key ${dkms_mok_public_file}' output:"
+      log error 'Cannot detect MOK enrollment state! Exiting.'
+      log error "'mokutil --test-key ${dkms_mok_public_file}' output:"
       printf '%s\n' "${mokutil_test_key_output}"
-      see_also
-      return_maybe 1
+      dev_mode_function || return 1
     fi
   fi
 
   log notice "
 This tool will help you set up and enroll a Machine Owner Key (MOK).
 A MOK is a signing key used by shim (the Secure Boot loader) to allow loading
-third-party kernel modules (kernel drivers not built into the Linux kernel,
+non-mainline kernel modules (kernel drivers not built into the Linux kernel,
 often installed via DKMS), while Secure Boot is enabled.
 
-This is useful for software that relies on third-party kernel modules (such as
+This is useful for software that relies on non-mainline kernel modules (such as
 tirdad and VirtualBox) with Secure Boot enabled.
-
-See also:
-https://www.kicksecure.com/wiki/Secure_Boot
 "
 
   if [ "${non_interactive}" = "true" ]; then
