@@ -164,7 +164,6 @@ force_output() {
 
 error_handler_pre() {
   local exit_code="$?"
-  local last_err="$BASH_COMMAND"
 
   [[ -v DEBDEBUG ]] || DEBDEBUG=""
   if [ ! "$DEBDEBUG" = "1" ]; then
@@ -238,7 +237,7 @@ fi
 ## }}
 
 ## syntax check this script
-bash -n "$BASH_SOURCE"
+bash -n "${BASH_SOURCE[0]}"
 
 ## syntax check script that sourced this script
 bash -n "$0"
