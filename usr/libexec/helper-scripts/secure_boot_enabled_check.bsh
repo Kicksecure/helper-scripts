@@ -3,17 +3,19 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# shellcheck source=/usr/libexec/helper-scripts/has.sh
+source /usr/libexec/helper-scripts/has.sh
+
 ## Return codes:
 ## 0: Secure Boot enabled.
 ## 1: Secure Boot disabled.
-## 2: Secure Boot state unknown (mokutil not installed or gave inconclusive output)
+## 2: Secure Boot state unknown ('mokutil' not installed or gave inconclusive output)
 ## Also echoes mokutil's output for debugging purposes.
 check_secure_boot_enabled() {
   local mokutil_output
 
-  if ! [ -f '/usr/bin/mokutil' ] \
-    || ! [ -x '/usr/bin/mokutil' ]; then
-    printf '%s\n' 'mokutil not installed or not executable.'
+  if ! has '/usr/bin/mokutil'; then
+    printf '%s\n' "$0: 'mokutil' not installed or not executable."
     return 2
   fi
 
