@@ -153,8 +153,8 @@ https://www.kicksecure.com/wiki/Secure_Boot
     do_generate_mok='yes'
   else
     if ! read -r -p 'QUESTION: Set up and start enrolling a MOK now? [y/yes/n/no] ' do_generate_mok; then
-      log notice "No input available (for example, not running in a terminal). Exiting without setting up a MOK, ok."
-      return 0
+      log error "No input available (for example, not running in a terminal). Exiting without setting up a MOK, ok."
+      return 1
     fi
 
     case "${do_generate_mok,,}" in
