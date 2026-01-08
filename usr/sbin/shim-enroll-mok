@@ -103,7 +103,9 @@ shim_enroll_mok() {
 
   if ! [ -d /sys/firmware/efi ]; then
     if test -e /usr/share/qubes/marker-vm; then
-      reason="Not booted in EFI (UEFI) mode. Secure Boot is only available in EFI (UEFI) mode. Qubes detected. Qubes issue:
+      reason="Not booted in EFI (UEFI) mode. Secure Boot is only available in EFI (UEFI) mode.
+Qubes detected: yes
+Qubes issue:
 https://github.com/QubesOS/qubes-issues/issues/5241"
     else
       reason="Not booted in EFI (UEFI) mode. Secure Boot is only available in EFI (UEFI) mode."
