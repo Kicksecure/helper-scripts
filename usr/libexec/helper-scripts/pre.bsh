@@ -108,6 +108,7 @@ source_config_folder() {
       rm -f -- "$TEMP_FILE_PRE_BSH"
       exit 1
     fi
+    # shellcheck disable=SC1090
     source "$i"
   done
 
@@ -237,9 +238,11 @@ fi
 ## }}
 
 ## syntax check this script
+# shellcheck disable=SC1090
 bash -n "${BASH_SOURCE[0]}"
 
 ## syntax check script that sourced this script
+# shellcheck disable=SC1090
 bash -n "$0"
 
 own_filename="${0##*/}"
