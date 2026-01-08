@@ -177,16 +177,16 @@ error_handler_pre() {
 
   force_output "
 ####################################################################
-## ${red}${bold}BEGIN ERROR in $0 detected!${reset}
+## ${red-}${bold-}BEGIN ERROR in $0 detected!${reset-}
 ##
-## ${under}ERROR LOG${reset}:
+## ${under-}ERROR LOG${reset-}:
 $error_message
 ##
-## ${under}BASH_COMMAND${reset}: $BASH_COMMAND
-## ${under}EXIT_CODE${reset}: $exit_code
+## ${under-}BASH_COMMAND${reset-}: ${BASH_COMMAND-}
+## ${under-}EXIT_CODE${reset-}: ${exit_code-}
 ##
-## ${red}${bold}END ERROR in $0 detected!${reset}
-## ${red}${bold}Please report this bug!${reset}
+## ${red-}${bold-}END ERROR in $0 detected!${reset-}
+## ${red-}${bold-}Please report this bug!${reset-}
 ####################################################################
 " 1>&2
 
