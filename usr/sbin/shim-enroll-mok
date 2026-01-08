@@ -128,18 +128,22 @@ Therefore Secure Boot is unavailable and there is no need to set up or enroll a 
   fi
   log notice "Secure Boot is enabled."
 
-  ## Confusingly, 'mokutil --test-key' returns 1 if the key is already
-  ## enrolled, and 0 if it is not.
-  if [ -f "${dkms_mok_public_file}" ] \
-    && ! mokutil_test_key_output="$(log_run notice mokutil --test-key "${dkms_mok_public_file}" 2>&1)"; then
-    if [ "${mokutil_test_key_output}" = "${dkms_mok_public_file} is already enrolled" ]; then
-      log notice "MOK already enrolled. Exiting, ok."
-      dev_mode_function || return 0
-    else
-      log error 'Cannot detect MOK enrollment state! Exiting.'
-      log error "'mokutil --test-key ${dkms_mok_public_file}' output:"
-      printf '%s\n' "'${mokutil_test_key_output}'"
-      dev_mode_function || return 1
+
+  if [ -f "${dkms_mok_public_file}" ]; then
+    ## - Confusingly, 'mokutil --test-key' returns 1 if the key is already
+    ##   enrolled, and 0 if it is not.
+    ## - 'log_run notice' is problematic because it adds its own output.
+    log notice "EXECUTING: mokutil --test-key '${dkms_mok_public_file}'"
+    if ! mokutil_test_key_output="$(mokutil --test-key "${dkms_mok_public_file}" 2>&1)"; then
+      if [ "${mokutil_test_key_output}" = "${dkms_mok_public_file} is already enrolled" ]; then
+        log notice "MOK already enrolled. Exiting, ok."
+        dev_mode_function || return 0
+      else
+        log error 'Cannot detect MOK enrollment state! Exiting.'
+        log error "'mokutil --test-key ${dkms_mok_public_file}' output:"
+        printf '%s\n' "'${mokutil_test_key_output}'"
+        dev_mode_function || return 1
+      fi
     fi
   fi
 
