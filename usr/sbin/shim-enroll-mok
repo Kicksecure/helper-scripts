@@ -122,7 +122,7 @@ Therefore Secure Boot is unavailable and there is no need to set up or enroll a 
   ## Confusingly, 'mokutil --test-key' returns 1 if the key is already
   ## enrolled, and 0 if it is not.
   if [ -f "${dkms_mok_public_file}" ] \
-    && ! mokutil_test_key_output="$(log_run notice mokutil --test-key "${dkms_mok_public_file}")"; then
+    && ! mokutil_test_key_output="$(log_run notice mokutil --test-key "${dkms_mok_public_file}" 2>&1)"; then
     if [ "${mokutil_test_key_output}" = "${dkms_mok_public_file} is already enrolled" ]; then
       log notice "MOK already enrolled. Exiting, ok."
       return_maybe 0
