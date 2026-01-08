@@ -146,6 +146,7 @@ enable_echo() {
 }
 
 force_output() {
+  local redisable_echo=""
   [[ -v disabled_echo ]] || disabled_echo=""
   if [ "$disabled_echo" = "true" ]; then
     redisable_echo="true"
@@ -156,7 +157,6 @@ force_output() {
     ## xtrace is not set, therefore echo.
     printf '%s\n' "$*"
   fi
-  [[ -v redisable_echo ]] || redisable_echo=""
   if [ "$redisable_echo" = "true" ]; then
     disable_echo
   fi
