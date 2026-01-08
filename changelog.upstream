@@ -1,3 +1,57 @@
+commit 35fceb7d1642b10d6027040ffe9c943db1910372
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 11:09:58 2026 -0500
+
+    fix
+
+commit c1b6bdd7e439e8530ae773a0a6d3e7c3063fd5db
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 11:05:24 2026 -0500
+
+    shellcheck
+
+commit 970b10aa200984407f8192932312c384c05ffb5f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 11:03:39 2026 -0500
+
+    fix
+
+commit ecb591bf7f029bd5f45303675b28ee4140665fca
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 11:02:14 2026 -0500
+
+    fix
+
+commit 644c678784c268004658037e75e2cdb1ac180140
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 10:52:23 2026 -0500
+
+    fix
+
+commit 04a9e9c8716aa5a333ba55397166477c27827122
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 10:49:55 2026 -0500
+
+    fix
+
+commit 9bb9c2be21d0969583529c10feba1c00ced3d28a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 09:45:17 2026 -0500
+
+    port to get_colors.sh
+
+commit 9ead25b4f32dd3d556242e813210e16a319e9dda
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 09:40:43 2026 -0500
+
+    merge `colors` function
+
+commit d3ff823a03868d069715205e6e008c706049e373
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 09:42:37 2026 +0000
+
+    bumped changelog version
+
 commit 284fa7d4d22c130c20657c679a0ac575b99326ca
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 8 04:17:43 2026 -0500
