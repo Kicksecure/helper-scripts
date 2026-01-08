@@ -1,3 +1,142 @@
+commit 284fa7d4d22c130c20657c679a0ac575b99326ca
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 04:17:43 2026 -0500
+
+    comment
+
+commit cd3549e24234aa03b1bb47e67104f3d238c07dbf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 03:42:43 2026 -0500
+
+    fix
+
+commit 6c764479a71e6cf86fa72f885fb5efaee4e276d0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 03:38:27 2026 -0500
+
+    output
+
+commit e97b6ba3cf0004f2c096f6c57e55560b2293ab53
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 03:33:03 2026 -0500
+
+    output
+
+commit c4c0341009b0e92bac6b3d7db86070b689f77ea2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 03:32:17 2026 -0500
+
+    fix
+
+commit 0c72855b08e4bb5bedaf2f1e9269c000b880974c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 03:26:31 2026 -0500
+
+    fix
+
+commit 8c8ea9f4146ac182a66cee8f0cf0c55b6ccb3795
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 02:56:42 2026 -0500
+
+    fix
+
+commit 715260bd97573f2fd8294f82a400504c2a25bfd9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 02:52:48 2026 -0500
+
+    output
+
+commit a2a4b518ff90151859ffbe926d8b16e1998f179c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 02:46:12 2026 -0500
+
+    fix
+
+commit e14445f4644904db66bf79b003b727754be27dff
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 02:36:10 2026 -0500
+
+    comment
+
+commit ab3072f1d0793de86a9db0c7d5600403602ef83d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 02:35:18 2026 -0500
+
+    improve
+
+commit 20e51d897b55ed7ed800d50d4be02467422cf48a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 02:27:22 2026 -0500
+
+    fix
+
+commit 1f3bd21afee47b0013ea1a615a1cf2b0a453824c
+Merge: 8f776ed faec463
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 02:26:30 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit faec463dc483cca3f9263c2ef8614ba50dc61d7d
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jan 7 21:39:17 2026 -0600
+
+    shim-enroll-mok: Minor fixes, move mokutil key test earlier and make it more robust
+
+commit 6026519dfd51c5fd9fa9269004181ec1a4049879
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jan 7 21:38:30 2026 -0600
+
+    Fix mokutil executable detection in secure_boot_enabled_check.bsh
+
+commit 2f1522deb409f8712a0ba86b8ddf657eb44486f4
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jan 7 21:38:08 2026 -0600
+
+    Add mokutil-test-key privleap action
+
+commit 4f323c456dde9a2472bd12381c4d65b5f8abb487
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jan 7 21:37:43 2026 -0600
+
+    Move mokutil-sb-state from systemcheck to helper-scripts
+
+commit 8f776ed86ac5ca13a398a321a06e5e59a01c3868
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 06:37:04 2026 -0500
+
+    fix
+
+commit 74729fb7a35df5d19face3a325c828358d3a838a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 06:24:22 2026 -0500
+
+    refactoring
+
+commit 9d189e8372114feb900d29471c1dc66168e08880
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 06:21:06 2026 -0500
+
+    refactoring
+
+commit 4f2764c606351ac47c07aadeefff8899fa26c184
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 06:19:40 2026 -0500
+
+    comments
+
+commit a7da95bae142cf30926a43e562ecc461533dba30
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 06:16:32 2026 -0500
+
+    end-of-options
+
+commit 4b37627226f28f25ef454ab4fdcf14b0e2660104
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 7 10:19:30 2026 +0000
+
+    bumped changelog version
+
 commit be510dc024663c4e32ab6ae7834c8c32de58e549
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jan 7 05:09:47 2026 -0500
