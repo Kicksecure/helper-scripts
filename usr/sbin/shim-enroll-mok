@@ -123,7 +123,7 @@ Therefore Secure Boot is unavailable and there is no need to set up or enroll a 
   elif [ "${secure_boot_enabled_check_retcode}" = '2' ]; then
     log error "Cannot detect Secure Boot state! Exiting."
     log error "'mokutil --sb-state' output:"
-    printf '%s\n' "${mokutil_sbstate_output}"
+    printf '%s\n' "'${mokutil_sbstate_output}'"
     dev_mode_function || return 1
   fi
   log notice "Secure Boot is enabled."
@@ -138,7 +138,7 @@ Therefore Secure Boot is unavailable and there is no need to set up or enroll a 
     else
       log error 'Cannot detect MOK enrollment state! Exiting.'
       log error "'mokutil --test-key ${dkms_mok_public_file}' output:"
-      printf '%s\n' "${mokutil_test_key_output}"
+      printf '%s\n' "'${mokutil_test_key_output}'"
       dev_mode_function || return 1
     fi
   fi
