@@ -32,6 +32,14 @@ usage() {
 
 dev_mode_function() {
   if [ "$dev_mode" = "true" ]; then
+    ## This means the script intentionally continues execution even after
+    ## conditions that normally stop the tool, including:
+    ## * Not booted in EFI (UEFI) mode
+    ## * Secure Boot disabled
+    ## * Cannot detect Secure Boot state
+    ## * MOK already enrolled (normally exits early as success)
+    ## Purpose: allow developers to exercise later code paths and observe
+    ## behavior/output even when earlier preconditions are not met.
     log warn "DEVELOPMENT: Ignoring non-zero return code in '--dev' mode."
     return 0
   fi
