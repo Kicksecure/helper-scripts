@@ -74,7 +74,7 @@ see_also() {
 
 shim_enroll_mok() {
   local do_generate_mok mokutil_sbstate_output \
-    secure_boot_enabled_check_retcode reason
+    secure_boot_enabled_check_retcode reason mokutil_test_key_output
 
   as_root
   dkms_mok_variables_set
@@ -118,7 +118,22 @@ Therefore Secure Boot is unavailable and there is no need to set up or enroll a 
     return_maybe 1
   fi
   log notice "Secure Boot is enabled."
-  see_also
+
+  ## Confusingly, 'mokutil --test-key' returns 1 if the key is already
+  ## enrolled, and 0 if it is not.
+  if [ -f "${dkms_mok_public_file}" ] \
+    && ! mokutil_test_key_output="$(log_run notice mokutil --test-key "${dkms_mok_public_file}")"; then
+    if [ "${mokutil_test_key_output}" = "${dkms_mok_public_file} is already enrolled" ]; then
+      log notice "MOK already enrolled. Exiting, ok."
+      return_maybe 0
+    else
+      log warn 'Cannot detect MOK enrollment state! Exiting.'
+      log warn "'mokutil --test-key ${dkms_mok_public_file}' output:"
+      printf '%s\n' "${mokutil_test_key_output}"
+      see_also
+      return_maybe 1
+    fi
+  fi
 
   log notice "
 This tool will help you set up and enroll a Machine Owner Key (MOK).
@@ -164,18 +179,11 @@ https://www.kicksecure.com/wiki/Secure_Boot
   fi
   log notice "MOK setup succeeded, ok."
 
-  ## Confusingly, 'mokutil --test-key' returns 1 if the key is already
-  ## enrolled, and 0 if it is not.
-  if ! log_run notice mokutil --test-key "${dkms_mok_public_file}"; then
-    log notice "MOK already enrolled. Exiting, ok."
-    return_maybe 0
-  fi
-
   log notice "\
 $0: INFO: Enrolling MOK.
 You will be prompted to create a password for enrollment (used by shim).
-Choose a short, memorable password. You will only need it once, at the next reboot,
-to finish the enrollment process."
+Choose a short, memorable password. You will only need it once, at the next
+reboot, to finish the enrollment process."
   if ! log_run notice mokutil --import "${dkms_mok_public_file}"; then
     log error "MOK enrollment failed! Exiting."
     return 1
