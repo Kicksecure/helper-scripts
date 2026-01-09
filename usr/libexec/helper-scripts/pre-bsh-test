@@ -13,11 +13,11 @@ true "$0: START"
 
 source /usr/libexec/helper-scripts/pre.bsh
 
-disable_echo
+#disable_echo
 
-echo a
+echo test
 
-enable_echo
+#enable_echo
 
 false
 

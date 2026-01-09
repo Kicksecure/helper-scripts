@@ -149,8 +149,12 @@ disable_echo() {
     return 0
   fi
 
+  ## Use 'printf '%s\n' message >/dev/null' for xtrace debug output.
+  printf '%s\n' "INFO: exec {PRE_BSH_STDOUT_SAVE_FD}>&1" >/dev/null
   exec {PRE_BSH_STDOUT_SAVE_FD}>&1
+  printf '%s\n' "INFO: exec {PRE_BSH_STDERR_SAVE_FD}>&2" >/dev/null
   exec {PRE_BSH_STDERR_SAVE_FD}>&2
+  printf '%s\n' "INFO: 1>>'$TEMP_FILE_PRE_BSH' 2>>'$TEMP_FILE_PRE_BSH'" >/dev/null
   exec 1>>"$TEMP_FILE_PRE_BSH" 2>>"$TEMP_FILE_PRE_BSH"
 
   PRE_BSH_ECHO_DISABLED=true
@@ -161,7 +165,9 @@ enable_echo() {
   if [ "$PRE_BSH_ECHO_DISABLED" = "true" ]; then
     ## Be defensive if internal variables were mis-set.
     if [[ -n "${PRE_BSH_STDOUT_SAVE_FD-}" && -n "${PRE_BSH_STDERR_SAVE_FD-}" ]]; then
+      printf '%s\n' "INFO: 1>&'${PRE_BSH_STDOUT_SAVE_FD}' 2>&'${PRE_BSH_STDERR_SAVE_FD}'"  >/dev/null
       exec 1>&"${PRE_BSH_STDOUT_SAVE_FD}" 2>&"${PRE_BSH_STDERR_SAVE_FD}"
+      printf '%s\n' "INFO exec {PRE_BSH_STDOUT_SAVE_FD}>&- {PRE_BSH_STDERR_SAVE_FD}>&-"  >/dev/null
       exec {PRE_BSH_STDOUT_SAVE_FD}>&- {PRE_BSH_STDERR_SAVE_FD}>&-
     fi
     PRE_BSH_ECHO_DISABLED=false
