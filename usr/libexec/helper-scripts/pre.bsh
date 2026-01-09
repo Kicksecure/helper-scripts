@@ -230,15 +230,15 @@ if [ "$(type -t exception_handler_general)" = "function" ]; then
   ## Function exception_handler_general exists (declared in
   ## help-steps/pre). Prefer to use the more feature rich version of the error
   ## handler.
+  true "INFO: function exception_handler_general exists: yes - Using it."
   trap "exception_handler_general" ERR
 else
-  ## Function exception_handler_general does not exist.
+  true "INFO: function exception_handler_general exists: no."
 
   ## Check if any trap is already declared.
   ## 'trap -p' does not exit non-zero if there is no trap.
   if [ -z "$(trap -p ERR)" ]; then
-    ## No trap exists yet.
-    ## Fall back to a simpler error handler.
+    true "INFO: any trap exists yet: no - Enabling a simple error handler trap."
     trap "error_handler_pre" ERR
   fi
 fi
