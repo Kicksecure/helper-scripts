@@ -1,3 +1,100 @@
+commit 26465321da79d7b428ca59f6996aaa55168324fb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 04:59:13 2026 -0500
+
+    comments
+
+commit 0598e05e49a3f5b8e39648fc874bb5ca1b3985fc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 04:58:05 2026 -0500
+
+    comment
+
+commit 3ccfdf93d3999aaa954bb38c45660b5f35b835c7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 04:00:00 2026 -0500
+
+    output
+
+commit 87ce536246e9bf96c767aa7991a30c4f93ad0ba3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 03:53:13 2026 -0500
+
+    comments
+
+commit 6a4168e2886fc97a4d0dca7d12011cf734430e7c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 03:50:22 2026 -0500
+
+    code simplification
+
+commit d2ff1026f6949aefbb42a7cf856d731bbaa6d089
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 03:46:08 2026 -0500
+
+    comments
+
+commit 9412c674fc2c7c3790a813d37ec5f08acc42f182
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 03:14:25 2026 -0500
+
+    improve
+
+commit a6c0ae9794e3a8bef41c1b404a44f5669e65a49e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 03:08:23 2026 -0500
+
+    debugging
+
+commit 8199b15d5786e483869a2d7be4894320676c2084
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 03:02:43 2026 -0500
+
+    improve
+
+commit cf2a61a188191effb6eed5b7057b99d0944dc17a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 01:54:01 2026 -0500
+
+    improve
+
+commit e7a83364e837369e0285867c3ab48c4e0fca24e0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 01:51:43 2026 -0500
+
+    fix
+
+commit 6cff912de8cad65d329497592918e6d117592bb6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 01:37:28 2026 -0500
+
+    debugging
+
+commit 71fdc2515514629af79f792cb1e4bce124adce81
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 01:32:44 2026 -0500
+
+    output
+
+commit 3ab1737e61a82474b588a24dfab60b4bb975ea75
+Merge: ed318a1 ced6057
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 01:27:47 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit ced60570c34c7e641b786576d4ceee8eaa3e62a2
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Jan 8 20:13:16 2026 -0600
+
+    Minor improvements to pre.sh, get_colors.sh
+
+commit ed318a112ea45292ae0f5c58500edafda8aca9fd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 8 16:14:10 2026 +0000
+
+    bumped changelog version
+
 commit 35fceb7d1642b10d6027040ffe9c943db1910372
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 8 11:09:58 2026 -0500
