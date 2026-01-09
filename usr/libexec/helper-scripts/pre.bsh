@@ -25,9 +25,7 @@
 
 ## Error log / features:
 ## - enables errtrace (set -o errtrace)
-## - installs an ERR trap:
-##     - prefers exception_handler_general if it exists
-##     - otherwise installs error_handler_pre only if no ERR trap exists yet
+## - installs an ERR error_handler_pre only if no ERR trap exists yet
 ## - output capture ("silent by default") is OPT-IN by the caller (disable_echo/enable_echo)
 ## - when output capture is enabled, write stdout/stderr (incl xtrace) to a temporary log
 ## - when output capture is enabled, dump the full captured log on unexpected non-zero exit code
@@ -265,24 +263,12 @@ if [ "$DEBDEBUG" = "1" ]; then
   set -x
 fi
 
-## {{ Set up error handler.
-if [ "$(type -t exception_handler_general)" = "function" ]; then
-  ## Function exception_handler_general exists (declared in
-  ## help-steps/pre). Prefer to use the more feature rich version of the error
-  ## handler.
-  true "INFO: function exception_handler_general exists: yes - Using it."
-  trap "exception_handler_general" ERR
-else
-  true "INFO: function exception_handler_general exists: no."
-
-  ## Check if any trap is already declared.
-  ## 'trap -p' does not exit non-zero if there is no trap.
-  if [ -z "$(trap -p ERR)" ]; then
-    true "INFO: any trap exists yet: no - Enabling a simple error handler trap."
-    trap "error_handler_pre" ERR
-  fi
+## Check if any trap is already declared.
+## 'trap -p' does not exit non-zero if there is no trap.
+if [ -z "$(trap -p ERR)" ]; then
+  true "INFO: any trap exists yet: no - Enabling a simple error handler trap."
+  trap "error_handler_pre" ERR
 fi
-## }}
 
 ## syntax check this script
 # shellcheck disable=SC1090
