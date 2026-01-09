@@ -17,16 +17,17 @@
 #
 ## Assumptions / supported usage:
 ## - Intended to be sourced by Debian maintainer scripts (non-interactive).
-## - Caller is expected to already enable 'set -o errexit' (set -e) as desired.
+## - Caller is expected to already enable 'set -o errexit' ('set -e') as desired.
+##   This is useful in case 'pre.bsh' is unavailable.
 ## - Output capture ("silent by default") is OPT-IN by the caller:
-##     Call disable_echo to redirect stdout/stderr (including xtrace output) into
-##     TEMP_FILE_PRE_BSH.
-##     Call enable_echo to restore stdout/stderr.
+##     Call 'disable_echo' to redirect stdout/stderr (including xtrace output) into
+##     environment variable 'TEMP_FILE_PRE_BSH'.
+##     Call 'enable_echo' to restore stdout/stderr.
 
 ## Error log / features:
-## - enables errtrace (set -o errtrace)
-## - installs an ERR error_handler_pre only if no ERR trap exists yet
-## - output capture ("silent by default") is OPT-IN by the caller (disable_echo/enable_echo)
+## - enables 'errtrace' ('set -o errtrace')
+## - installs an ERR trap 'error_handler_pre' only if no ERR trap exists yet
+## - output capture ("silent by default") is OPT-IN by the caller ('disable_echo'/'enable_echo')
 ## - when output capture is enabled, write stdout/stderr (incl xtrace) to a temporary log
 ## - when output capture is enabled, dump the full captured log on unexpected non-zero exit code
 ## - always shows exit code on unexpected non-zero exit code
@@ -42,7 +43,7 @@
 ##    sudo DEBDEBUG=1 dpkg -i /path/to/package.deb
 ##
 ## Note: xtrace output is only collected into TEMP_FILE_PRE_BSH if the caller
-## enabled output capture using disable_echo.
+## enabled output capture using 'disable_echo'.
 
 ## SKIP_SCRIPTS
 ##
