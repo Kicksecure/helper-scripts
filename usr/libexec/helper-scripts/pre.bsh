@@ -164,13 +164,12 @@ disable_echo() {
 
   [[ -v TEMP_FILE_PRE_BSH ]] || TEMP_FILE_PRE_BSH="$(mktemp)"
 
-  ## Use 'printf '%s\n' message >/dev/null' for xtrace debug output.
-  printf '%s\n' "INFO: exec {PRE_BSH_STDOUT_SAVE_FD}>&1" >/dev/null
+  true "INFO: exec {PRE_BSH_STDOUT_SAVE_FD}>&1"
   exec {PRE_BSH_STDOUT_SAVE_FD}>&1
-  printf '%s\n' "INFO: exec {PRE_BSH_STDERR_SAVE_FD}>&2" >/dev/null
+  true "INFO: exec {PRE_BSH_STDERR_SAVE_FD}>&2"
   exec {PRE_BSH_STDERR_SAVE_FD}>&2
-  printf '%s\n' "INFO: 1>>'$TEMP_FILE_PRE_BSH' 2>>'$TEMP_FILE_PRE_BSH'" >/dev/null
-  exec 1>>"$TEMP_FILE_PRE_BSH" 2>>"$TEMP_FILE_PRE_BSH"
+  true "INFO: exec 1>>${TEMP_FILE_PRE_BSH} 2>>${TEMP_FILE_PRE_BSH}"
+  exec 1>>"${TEMP_FILE_PRE_BSH}" 2>>"${TEMP_FILE_PRE_BSH}"
 
   PRE_BSH_ECHO_DISABLED=true
 }
@@ -180,9 +179,9 @@ enable_echo() {
   if [ "$PRE_BSH_ECHO_DISABLED" = "true" ]; then
     ## Be defensive if internal variables were mis-set.
     if [[ -n "${PRE_BSH_STDOUT_SAVE_FD-}" && -n "${PRE_BSH_STDERR_SAVE_FD-}" ]]; then
-      printf '%s\n' "INFO: 1>&'${PRE_BSH_STDOUT_SAVE_FD}' 2>&'${PRE_BSH_STDERR_SAVE_FD}'"  >/dev/null
+      true "INFO: 1>&'${PRE_BSH_STDOUT_SAVE_FD}' 2>&'${PRE_BSH_STDERR_SAVE_FD}'"
       exec 1>&"${PRE_BSH_STDOUT_SAVE_FD}" 2>&"${PRE_BSH_STDERR_SAVE_FD}"
-      printf '%s\n' "INFO exec {PRE_BSH_STDOUT_SAVE_FD}>&- {PRE_BSH_STDERR_SAVE_FD}>&-"  >/dev/null
+      true "INFO: exec {PRE_BSH_STDOUT_SAVE_FD}>&- {PRE_BSH_STDERR_SAVE_FD}>&-"
       exec {PRE_BSH_STDOUT_SAVE_FD}>&- {PRE_BSH_STDERR_SAVE_FD}>&-
     fi
     PRE_BSH_ECHO_DISABLED=false
@@ -220,7 +219,7 @@ error_handler_pre() {
     error_message="$(cat -- "$TEMP_FILE_PRE_BSH" 2>/dev/null || true)"
   fi
 
-  if [ "$error_message" = "" ]; then
+  if [ -z "${error_message}" ]; then
     error_message="## Empty."
   fi
 
@@ -243,10 +242,9 @@ $error_message
 }
 
 exit_handler_pre() {
-  if [ -n "${TEMP_FILE_PRE_BSH-}" ];  then
-    if test -f "${TEMP_FILE_PRE_BSH-}"; then
-      rm -f -- "${TEMP_FILE_PRE_BSH-}" || true
-    fi
+  if [ -n "${TEMP_FILE_PRE_BSH-}" ] \
+    && [ -f "${TEMP_FILE_PRE_BSH-}" ]; then
+    rm -f -- "${TEMP_FILE_PRE_BSH-}" || true
   fi
   true "$0: END."
 }
@@ -259,6 +257,7 @@ set -o errtrace
 
 ## Cleanup temp file on normal exit, but do not clobber an existing EXIT trap.
 if [ -z "$(trap -p EXIT)" ]; then
+  true "INFO: exit trap exists yet: no - Enabling a simple exit handler trap."
   trap exit_handler_pre EXIT
 fi
 
@@ -275,7 +274,7 @@ fi
 ## Check if any trap is already declared.
 ## 'trap -p' does not exit non-zero if there is no trap.
 if [ -z "$(trap -p ERR)" ]; then
-  true "INFO: any trap exists yet: no - Enabling a simple error handler trap."
+  true "INFO: error trap exists yet: no - Enabling a simple error handler trap."
   trap "error_handler_pre" ERR
 fi
 
