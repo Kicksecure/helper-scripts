@@ -57,7 +57,7 @@
 ##     export SKIP_SCRIPTS+=" security-misc-shared.postinst "
 ##     sudo --preserve-env dpkg -i /path/to/package.deb
 
-## Provides colors.
+## Provides colors by 'source'ing 'get_colors.sh'.
 
 ## Shell options: enables errtrace
 
