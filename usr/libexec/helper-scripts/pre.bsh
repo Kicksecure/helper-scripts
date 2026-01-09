@@ -5,14 +5,21 @@
 
 ## The idea of this bash fragment is:
 ## Say nothing, if everything goes well, but dump everything on error.
-
+##
 ## It allows to easily look inside the xtrace of a (Debian maintainer) script,
 ## when the DEBDEBUG environment variable is set to 1.
-
+##
 ## To use it in other scripts, use something like this:
 # if [ -f /usr/libexec/helper-scripts/pre.bsh ]; then
 #    source /usr/libexec/helper-scripts/pre.bsh
 # fi
+#
+## Assumptions / supported usage:
+## - Intended to be sourced by Debian maintainer scripts (non-interactive).
+## - Caller is expected to already enable 'set -o errexit' (set -e) as desired.
+## - Output capture ("silent by default") is OPT-IN by the caller:
+##     Call disable_echo to redirect stdout/stderr into TEMP_FILE_PRE_BSH.
+##     Call enable_echo to restore stdout/stderr.
 
 ## Error log:
 ## - implement trap ERR if function exception_handler_general does not exist
@@ -43,7 +50,7 @@
 ##     export SKIP_SCRIPTS+=" security-misc-shared.postinst "
 ##     sudo --preserve-env dpkg -i /path/to/package.deb
 
-## Colorful output: provides color function
+## Provides colors.
 
 ## Shell options: enables errtrace
 
@@ -111,7 +118,7 @@ source_config_folder() {
       force_output "Invalid config file: '$i'
    bash_n_output:
    $bash_n_output" >&2
-      rm -f -- "$TEMP_FILE_PRE_BSH"
+      rm -f -- "$TEMP_FILE_PRE_BSH" || true
       exit 1
     fi
     # shellcheck disable=SC1090
@@ -127,41 +134,51 @@ check_scripts_to_skip() {
   for skip_script in $SKIP_SCRIPTS; do
     if [ "$skip_script" = "$own_filename" ]; then
       force_output "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
-      rm -f -- "$TEMP_FILE_PRE_BSH"
+      rm -f -- "$TEMP_FILE_PRE_BSH" || true
       exit 0
     fi
   done
 }
 
 disable_echo() {
-  [[ -v PRE_BSH_DISABLED_ECHO ]] || PRE_BSH_DISABLED_ECHO=""
-  if [ "$PRE_BSH_DISABLED_ECHO" = "true" ]; then
+  ## Internal state variables (do NOT set from env/config):
+  ## - PRE_BSH_ECHO_DISABLED: "true" iff stdout/stderr are redirected and fds saved
+  ## - PRE_BSH_STDOUT_SAVE_FD / PRE_BSH_STDERR_SAVE_FD: saved fd numbers for restore
+  [[ -v PRE_BSH_ECHO_DISABLED ]] || PRE_BSH_ECHO_DISABLED=""
+  if [ "$PRE_BSH_ECHO_DISABLED" = "true" ]; then
     return 0
   fi
-  exec 5>&1 1>>"$TEMP_FILE_PRE_BSH"
-  exec 6>&2 2>>"$TEMP_FILE_PRE_BSH"
-  PRE_BSH_DISABLED_ECHO=true
+
+  exec {PRE_BSH_STDOUT_SAVE_FD}>&1
+  exec {PRE_BSH_STDERR_SAVE_FD}>&2
+  exec 1>>"$TEMP_FILE_PRE_BSH" 2>>"$TEMP_FILE_PRE_BSH"
+
+  PRE_BSH_ECHO_DISABLED=true
 }
 
 enable_echo() {
-  [[ -v PRE_BSH_DISABLED_ECHO ]] || PRE_BSH_DISABLED_ECHO=""
-  if [ "$PRE_BSH_DISABLED_ECHO" = "true" ]; then
-    exec 1>&5
-    exec 2>&6
-    PRE_BSH_DISABLED_ECHO=false
+  [[ -v PRE_BSH_ECHO_DISABLED ]] || PRE_BSH_ECHO_DISABLED=""
+  if [ "$PRE_BSH_ECHO_DISABLED" = "true" ]; then
+    ## Be defensive if internal variables were mis-set.
+    if [[ -n "${PRE_BSH_STDOUT_SAVE_FD-}" && -n "${PRE_BSH_STDERR_SAVE_FD-}" ]]; then
+      exec 1>&"${PRE_BSH_STDOUT_SAVE_FD}" 2>&"${PRE_BSH_STDERR_SAVE_FD}"
+      exec {PRE_BSH_STDOUT_SAVE_FD}>&- {PRE_BSH_STDERR_SAVE_FD}>&-
+    fi
+    PRE_BSH_ECHO_DISABLED=false
   fi
 }
 
 force_output() {
   local echo_setting_undo=""
-  [[ -v PRE_BSH_DISABLED_ECHO ]] || PRE_BSH_DISABLED_ECHO=""
-  if [ "$PRE_BSH_DISABLED_ECHO" = "true" ]; then
+  [[ -v PRE_BSH_ECHO_DISABLED ]] || PRE_BSH_ECHO_DISABLED=""
+  if [ "$PRE_BSH_ECHO_DISABLED" = "true" ]; then
     echo_setting_undo="true"
     enable_echo
   fi
-  ## If xtrace is set, calling force_output will have already shown the output.
-  if ! test -o xtrace; then
-    ## xtrace is not set, therefore echo.
+
+  ## If xtrace is set and output was NOT captured, force_output would be redundant.
+  ## But if output was captured (echo_setting_undo=true), we must print regardless.
+  if ! test -o xtrace || [ "$echo_setting_undo" = "true" ]; then
     printf '%s\n' "$*"
   fi
   if [ "$echo_setting_undo" = "true" ]; then
@@ -172,15 +189,18 @@ force_output() {
 error_handler_pre() {
   local exit_code="$?"
 
-  [[ -v DEBDEBUG ]] || DEBDEBUG=""
-  if [ ! "$DEBDEBUG" = "1" ]; then
-    local error_message
-    error_message="$(cat -- "$TEMP_FILE_PRE_BSH")"
+  ## Prevent recursion if anything fails inside the handler under caller 'set -e'.
+  trap - ERR
+  set +e
+
+  local error_message="## See above."
+
+  if [[ -r "${TEMP_FILE_PRE_BSH-}" ]]; then
+    error_message="$(cat -- "$TEMP_FILE_PRE_BSH" 2>/dev/null || true)"
   fi
 
-  [[ -v error_message ]] || error_message=""
   if [ "$error_message" = "" ]; then
-    error_message="## See above."
+    error_message="## Empty."
   fi
 
   force_output "
@@ -188,7 +208,7 @@ error_handler_pre() {
 ## ${red-}${bold-}BEGIN ERROR in '$0' detected!${reset-}
 ##
 ## ${under-}ERROR LOG${reset-}:
-'$error_message'
+$error_message
 ##
 ## ${under-}BASH_COMMAND${reset-}: '${BASH_COMMAND-}'
 ## ${under-}EXIT_CODE${reset-}: '${exit_code-}'
@@ -198,7 +218,7 @@ error_handler_pre() {
 ####################################################################
 " 1>&2
 
-  rm -f -- "$TEMP_FILE_PRE_BSH"
+  rm -f -- "$TEMP_FILE_PRE_BSH" || true
   exit 1
 }
 
@@ -209,6 +229,11 @@ error_handler_pre() {
 set -o errtrace
 
 TEMP_FILE_PRE_BSH="$(mktemp)"
+
+## Cleanup temp file on normal exit, but do not clobber an existing EXIT trap.
+if [ -z "$(trap -p EXIT)" ]; then
+  trap 'rm -f -- "$TEMP_FILE_PRE_BSH" || true' EXIT
+fi
 
 if test -o xtrace; then
   true "INFO: Setting DEBDEBUG to 1, because xtrace (-x) is set."
@@ -244,8 +269,11 @@ fi
 bash -n "${BASH_SOURCE[0]}"
 
 ## syntax check script that sourced this script
+## Non-interactive usage expected; if $0 is not a readable script file, skip this check.
 # shellcheck disable=SC1090
-bash -n "$0"
+if [[ -f "$0" && -r "$0" ]]; then
+  bash -n "$0"
+fi
 
 own_filename="${0##*/}"
 
@@ -255,6 +283,7 @@ check_scripts_to_skip
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   true "$0: END"
+  rm -f -- "$TEMP_FILE_PRE_BSH" || true
 fi
 
 ## }}}

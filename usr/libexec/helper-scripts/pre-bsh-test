@@ -1,0 +1,24 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+#set -x
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+true "$0: START"
+
+source /usr/libexec/helper-scripts/pre.bsh
+
+disable_echo
+
+echo a
+
+enable_echo
+
+false
+
+true "$0: END"
