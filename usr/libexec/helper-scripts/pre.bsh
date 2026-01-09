@@ -134,29 +134,29 @@ check_scripts_to_skip() {
 }
 
 disable_echo() {
-  [[ -v disabled_echo ]] || disabled_echo=""
-  if [ "$disabled_echo" = "true" ]; then
+  [[ -v PRE_BSH_DISABLED_ECHO ]] || PRE_BSH_DISABLED_ECHO=""
+  if [ "$PRE_BSH_DISABLED_ECHO" = "true" ]; then
     return 0
   fi
   exec 5>&1 1>>"$TEMP_FILE_PRE_BSH"
   exec 6>&2 2>>"$TEMP_FILE_PRE_BSH"
-  disabled_echo=true
+  PRE_BSH_DISABLED_ECHO=true
 }
 
 enable_echo() {
-  [[ -v disabled_echo ]] || disabled_echo=""
-  if [ "$disabled_echo" = "true" ]; then
+  [[ -v PRE_BSH_DISABLED_ECHO ]] || PRE_BSH_DISABLED_ECHO=""
+  if [ "$PRE_BSH_DISABLED_ECHO" = "true" ]; then
     exec 1>&5
     exec 2>&6
-    disabled_echo=false
+    PRE_BSH_DISABLED_ECHO=false
   fi
 }
 
 force_output() {
-  local redisable_echo=""
-  [[ -v disabled_echo ]] || disabled_echo=""
-  if [ "$disabled_echo" = "true" ]; then
-    redisable_echo="true"
+  local echo_setting_undo=""
+  [[ -v PRE_BSH_DISABLED_ECHO ]] || PRE_BSH_DISABLED_ECHO=""
+  if [ "$PRE_BSH_DISABLED_ECHO" = "true" ]; then
+    echo_setting_undo="true"
     enable_echo
   fi
   ## If xtrace is set, calling force_output will have already shown the output.
@@ -164,7 +164,7 @@ force_output() {
     ## xtrace is not set, therefore echo.
     printf '%s\n' "$*"
   fi
-  if [ "$redisable_echo" = "true" ]; then
+  if [ "$echo_setting_undo" = "true" ]; then
     disable_echo
   fi
 }
@@ -218,11 +218,6 @@ fi
 [[ -v DEBDEBUG ]] || DEBDEBUG=""
 if [ "$DEBDEBUG" = "1" ]; then
   set -x
-fi
-
-[[ -v disable_echo ]] || disable_echo=""
-if [ "$disable_echo" = "true" ]; then
-  disable_echo
 fi
 
 ## {{ Set up error handler.

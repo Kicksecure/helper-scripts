@@ -40,15 +40,20 @@ get_colors() {
 
   ## Use printf -v so xtrace shows "\033" text, not raw escape bytes.
   printf -v nocolor     '%b' "\033[0m"
-  reset="${nocolor}"
+  ## Effects in xtrace.
+  #reset="${nocolor}"
+  printf -v reset       '%b' "\033[0m"
 
   printf -v bold        '%b' "\033[1m"
   printf -v nobold      '%b' "\033[22m"
 
   printf -v underline   '%b' "\033[4m"
   printf -v nounderline '%b' "\033[24m"
-  under="${underline}"
-  eunder="${nounderline}"
+  ## Effects in xtrace.
+  #under="${underline}"
+  #eunder="${nounderline}"
+  printf -v under       '%b' "\033[4m"
+  printf -v eunder      '%b' "\033[24m"
 
   printf -v stout       '%b' "\033[7m"
   printf -v estout      '%b' "\033[27m"
