@@ -4,7 +4,8 @@
 ## See the file COPYING for copying conditions.
 
 ## The idea of this bash fragment is:
-## Say nothing, if everything goes well, but dump everything on error.
+## Say nothing (when output capture is enabled), if everything goes well,
+## but dump everything on error.
 ##
 ## It allows to easily look inside the xtrace of a (Debian maintainer) script,
 ## when the DEBDEBUG environment variable is set to 1.
@@ -18,18 +19,22 @@
 ## - Intended to be sourced by Debian maintainer scripts (non-interactive).
 ## - Caller is expected to already enable 'set -o errexit' (set -e) as desired.
 ## - Output capture ("silent by default") is OPT-IN by the caller:
-##     Call disable_echo to redirect stdout/stderr into TEMP_FILE_PRE_BSH.
+##     Call disable_echo to redirect stdout/stderr (including xtrace output) into
+##     TEMP_FILE_PRE_BSH.
 ##     Call enable_echo to restore stdout/stderr.
 
-## Error log:
-## - implement trap ERR if function exception_handler_general does not exist
-## - implements a simple error handler if none exists
-## - run silent by default
-## - write xtrace to temporary log
-## - show full xtrace on unexpected non-zero exit code
-## - show exit code on unexpected non-zero exit code
+## Error log / features:
+## - enables errtrace (set -o errtrace)
+## - installs an ERR trap:
+##     - prefers exception_handler_general if it exists
+##     - otherwise installs error_handler_pre only if no ERR trap exists yet
+## - output capture ("silent by default") is OPT-IN by the caller (disable_echo/enable_echo)
+## - when output capture is enabled, write stdout/stderr (incl xtrace) to a temporary log
+## - when output capture is enabled, dump the full captured log on unexpected non-zero exit code
+## - always shows exit code on unexpected non-zero exit code
+## - cleanup temporary log on normal exit (without clobbering an existing EXIT trap)
 ## - run syntax check "bash -n" on this script
-## - run syntax check "bash -n" on the script that sourced this script
+## - run syntax check "bash -n" on the script that sourced this script (if readable)
 
 ## DEBDEBUG:
 ##
@@ -37,6 +42,9 @@
 ## variable is set to 1.
 ## For example:
 ##    sudo DEBDEBUG=1 dpkg -i /path/to/package.deb
+##
+## Note: xtrace output is only collected into TEMP_FILE_PRE_BSH if the caller
+## enabled output capture using disable_echo.
 
 ## SKIP_SCRIPTS
 ##
