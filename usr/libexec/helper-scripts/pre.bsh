@@ -24,6 +24,12 @@
 ##     environment variable 'TEMP_FILE_PRE_BSH'.
 ##     Call 'enable_echo' to restore stdout/stderr.
 
+## Practical use case:
+## The ability to easily tell users
+## > use `sudo DEBDEBUG=1 apt dist-upgrade`
+## and seeing the xtrace. Otherwise debugging Debian maintainer scripts
+## (enabling xtrace) is complicated.
+
 ## Error log / features:
 ## - enables 'errtrace' ('set -o errtrace')
 ## - installs an ERR trap 'error_handler_pre' only if no ERR trap exists yet
