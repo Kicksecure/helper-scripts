@@ -70,12 +70,13 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 fi
 
 if test -r /usr/libexec/helper-scripts/get_colors.sh; then
-  # shellcheck source=/usr/libexec/helper-scripts/get_colors.sh
+  # shellcheck source=./get_colors.sh
   source /usr/libexec/helper-scripts/get_colors.sh || true "$0: ERROR: Failed to source /usr/libexec/helper-scripts/get_colors.sh"
 fi
 
 source_config_folder() {
-  local pre_bsh_settings_folder i
+  local pre_bsh_settings_folder i etc_config_dir usr_local_etc_config_dir \
+    bash_n_output
 
   ## dpkg sets environment variables
   ## example:
@@ -96,11 +97,16 @@ source_config_folder() {
   ## example:
   ## /etc/panic-on-oops_pre.d/*.conf
   ## /usr/local/etc/panic-on-oops_pre.d/*.conf
+  etc_config_dir="/etc/${pre_bsh_settings_folder}"
+  usr_local_etc_config_dir="/usr/local/etc/${pre_bsh_settings_folder}"
 
-  true "folder 1: /etc/${pre_bsh_settings_folder}/*.conf"
-  true "folder 2: /usr/local/etc/${pre_bsh_settings_folder}/*.conf"
+  true "folder 1: ${etc_config_dir}"
+  true "folder 2: ${usr_local_etc_config_dir}"
 
-  for i in "/etc/${pre_bsh_settings_folder}/"*.conf "/usr/local/etc/${pre_bsh_settings_folder}/"*.conf; do
+  for i in "${etc_config_dir}/"*.conf "${usr_local_etc_config_dir}/"*.conf; do
+    if ! [ -f "${i}" ]; then
+      continue
+    fi
     if ! bash_n_output="$(bash -n "$i" 2>&1)"; then
       force_output "Invalid config file: $i
    bash_n_output:
@@ -229,7 +235,7 @@ else
   ## Function exception_handler_general does not exist.
 
   ## Check if any trap is already declared.
-  if [ "$(trap -p ERR)" = "" ]; then
+  if [ -z "$(trap -p ERR)" ]; then
     ## No trap exists yet.
     ## Fall back to a simpler error handler.
     trap "error_handler_pre" ERR

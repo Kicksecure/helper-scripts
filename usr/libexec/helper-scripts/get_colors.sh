@@ -29,12 +29,12 @@ get_colors() {
   hide=""; show=""
   save=""; load=""
   eed=""; eel=""; ebl=""; ewl=""
-  draw=""
   back=""
+  draw="" ## Intentionally not implemented, see below
 
   if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}" || \
-     test -z "${TERM:-}" || test "${TERM:-}" = "dumb" || test "${TERM:-}" = "unknown" || \
-     ! test -t 2; then
+    test -z "${TERM:-}" || test "${TERM:-}" = "dumb" || test "${TERM:-}" = "unknown" || \
+    ! test -t 2; then
     return 0
   fi
 
@@ -50,6 +50,14 @@ get_colors() {
   under="${underline}"
   eunder="${nounderline}"
 
+  printf -v stout       '%b' "\033[7m"
+  printf -v estout      '%b' "\033[27m"
+
+  printf -v blink       '%b' "\033[5m"
+
+  printf -v italic      '%b' "\033[3m"
+  printf -v eitalic     '%b' "\033[23m"
+
   printf -v red         '%b' "\033[31m"
   printf -v green       '%b' "\033[32m"
   printf -v yellow      '%b' "\033[33m"
@@ -58,14 +66,6 @@ get_colors() {
   printf -v cyan        '%b' "\033[36m"
   printf -v white       '%b' "\033[37m"
   printf -v default     '%b' "\033[39m"
-
-  printf -v stout       '%b' "\033[7m"
-  printf -v estout      '%b' "\033[27m"
-
-  printf -v blink       '%b' "\033[5m"
-
-  printf -v italic      '%b' "\033[3m"
-  printf -v eitalic     '%b' "\033[23m"
 
   printf -v alt         '%b' "\033[?1049h"
   printf -v ealt        '%b' "\033[?1049l"
@@ -133,7 +133,7 @@ get_colors_test() {
   ## Cancel standout / reverse video.
   printf '%b\n' "${estout}estout${nocolor}"
 
-  ## Blinking text (often ignored by modern terminals; sometimes implemented).
+  ## Blinking text.
   printf '%b\n' "${blink}blink${nocolor}"
 
   ## --- Cursor / screen control --------------------------------------
