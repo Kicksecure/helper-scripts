@@ -16,25 +16,24 @@
 get_colors() {
   get_colors_sourced=1
 
-  nocolor=""; reset=""
-  bold=""; nobold=""
-  underline=""; nounderline=""
-  under=""; eunder=""
-  stout=""; estout=""
-  blink=""
-  italic=""; eitalic=""
-  red=""; green=""; yellow=""; blue=""; magenta=""; cyan=""; white=""
-  default=""
-  alt=""; ealt=""
-  hide=""; show=""
-  save=""; load=""
-  eed=""; eel=""; ebl=""; ewl=""
-  back=""
-  draw="" ## Intentionally not implemented, see below
-
   if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}" || \
     test -z "${TERM:-}" || test "${TERM:-}" = "dumb" || test "${TERM:-}" = "unknown" || \
     ! test -t 2; then
+      nocolor=""; reset=""
+      bold=""; nobold=""
+      underline=""; nounderline=""
+      under=""; eunder=""
+      stout=""; estout=""
+      blink=""
+      italic=""; eitalic=""
+      red=""; green=""; yellow=""; blue=""; magenta=""; cyan=""; white=""
+      default=""
+      alt=""; ealt=""
+      hide=""; show=""
+      save=""; load=""
+      eed=""; eel=""; ebl=""; ewl=""
+      back=""
+      draw="" ## Intentionally not implemented, see below
     return 0
   fi
 
