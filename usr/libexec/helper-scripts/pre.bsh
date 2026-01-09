@@ -118,7 +118,6 @@ source_config_folder() {
       force_output "Invalid config file: '$i'
    bash_n_output:
    $bash_n_output" >&2
-      rm -f -- "$TEMP_FILE_PRE_BSH" || true
       exit 1
     fi
     # shellcheck disable=SC1090
@@ -134,7 +133,6 @@ check_scripts_to_skip() {
   for skip_script in $SKIP_SCRIPTS; do
     if [ "$skip_script" = "$own_filename" ]; then
       force_output "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
-      rm -f -- "$TEMP_FILE_PRE_BSH" || true
       exit 0
     fi
   done
@@ -148,6 +146,8 @@ disable_echo() {
   if [ "$PRE_BSH_ECHO_DISABLED" = "true" ]; then
     return 0
   fi
+
+  [[ -v TEMP_FILE_PRE_BSH ]] || TEMP_FILE_PRE_BSH="$(mktemp)"
 
   ## Use 'printf '%s\n' message >/dev/null' for xtrace debug output.
   printf '%s\n' "INFO: exec {PRE_BSH_STDOUT_SAVE_FD}>&1" >/dev/null
@@ -224,8 +224,16 @@ $error_message
 ####################################################################
 " 1>&2
 
-  rm -f -- "$TEMP_FILE_PRE_BSH" || true
   exit 1
+}
+
+exit_handler_pre() {
+  if [ -n "${TEMP_FILE_PRE_BSH-}" ];  then
+    if test -f "${TEMP_FILE_PRE_BSH-}"; then
+      rm -f -- "${TEMP_FILE_PRE_BSH-}" || true
+    fi
+  fi
+  true "$0: END."
 }
 
 ## config-package-dev doesn't like 'set -o pipefail'
@@ -234,11 +242,9 @@ $error_message
 
 set -o errtrace
 
-TEMP_FILE_PRE_BSH="$(mktemp)"
-
 ## Cleanup temp file on normal exit, but do not clobber an existing EXIT trap.
 if [ -z "$(trap -p EXIT)" ]; then
-  trap 'rm -f -- "$TEMP_FILE_PRE_BSH" || true' EXIT
+  trap exit_handler_pre EXIT
 fi
 
 if test -o xtrace; then
@@ -289,7 +295,6 @@ check_scripts_to_skip
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   true "$0: END"
-  rm -f -- "$TEMP_FILE_PRE_BSH" || true
 fi
 
 ## }}}
