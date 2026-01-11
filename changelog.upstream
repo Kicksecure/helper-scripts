@@ -1,3 +1,22 @@
+commit 4bfad6f232784d948ffcb3ae96a06e812b06a24d
+Merge: d4539fb eb7ac2a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jan 11 05:33:27 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit eb7ac2aaeb40fcb949359eb005115caf5518143b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jan 9 14:44:03 2026 -0600
+
+    Minor polish on pre.bsh, get_colors.sh
+
+commit d4539fb6e921902ef27345e17f750fb90045c33d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 9 10:33:22 2026 +0000
+
+    bumped changelog version
+
 commit 26465321da79d7b428ca59f6996aaa55168324fb
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 9 04:59:13 2026 -0500
