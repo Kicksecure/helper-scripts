@@ -30,11 +30,11 @@ light_sleep() {
     || [ "${sleep_seconds}" = 'infinity' ]; then
     ## Hang forever
     read -u "${light_sleep_fd}" || true
-  elif [[ "${sleep_seconds}" =~ ^[0-9]+$ ]]; then
+  elif [[ "${sleep_seconds}" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
     ## Hang for the specified number of seconds
     read -t "${sleep_seconds}" -u "${light_sleep_fd}" || true
   else
-    printf '%s\n' 'Sleep duration is not an integer or infinity!'
+    printf '%s\n' 'Sleep duration is not an integer, floating point value, or infinity!'
     return 1
   fi
 
