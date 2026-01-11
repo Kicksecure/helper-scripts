@@ -1,0 +1,26 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+# shellcheck source=./light_sleep.bsh
+source /usr/libexec/helper-scripts/light_sleep.bsh
+
+# shellcheck source=./has.sh
+source /usr/libexec/helper-scripts/has.sh
+
+## Wait for the default audio sink to be found, giving up after about two
+## seconds.
+try_wait_for_audio_ready() {
+  local max_audio_wait_count current_audio_wait_count
+
+  if has pactl; then
+    max_audio_wait_count=20
+    current_audio_wait_count=0
+    while [ "$(timeout --kill-after="1" "1" pactl get-default-sink 2>/dev/null)" = '@DEFAULT_SINK@' ] \
+      && (( current_audio_wait_count <= max_audio_wait_count )); do
+      light_sleep 0.1
+      (( current_audio_wait_count++ )) || true
+    done
+  fi
+}
