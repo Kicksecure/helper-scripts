@@ -103,7 +103,7 @@ else
    if [ "$terminal_emulator_app" = "konsole" ]; then
       ## Do not use '--fullscreen' since this starts the window without window
       ## controls (no window close button) which is confusing.
-      ## '-e' needs to be the last paramater.
+      ## '-e' needs to be the last parameter.
       [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e ${terminal_wrapper_helper}"
    fi
 fi

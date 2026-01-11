@@ -47,7 +47,7 @@ check_package_manager_running_helper() {
       ## package_manager_waiting_msg used by cli-only applications.
       package_manager_waiting_msg="A package manager (such as apt-get) is currently running. Waiting for it to finish...
 
-If you are not aware of any package mangers running, exit now, find out if there are any issues with dpkg or apt-get. Run in the terminal for example:
+If you are not aware of any package managers running, exit now, find out if there are any issues with dpkg or apt-get. Run in the terminal for example:
 sudo dpkg --audit
 sudo dpkg --configure -a
 sudo apt-get dist-upgrade
@@ -57,7 +57,7 @@ Technical Info:
       ## package_manager_waiting_msg_x used applications using msgcollector.
       package_manager_waiting_msg_x="<p>A package manager (such as <code>apt-get</code>) is currently running. Waiting for it to finish...
 <br></br>
-If you are not aware of any package mangers running, exit now, find out if there are any issues with <code>dpkg</code> or <code>apt-get</code>. Run in the terminal for example:
+If you are not aware of any package managers running, exit now, find out if there are any issues with <code>dpkg</code> or <code>apt-get</code>. Run in the terminal for example:
 <code>sudo dpkg --audit</code>
 <code>sudo dpkg --configure -a</code>
 <code>sudo apt-get dist-upgrade</code>
@@ -65,7 +65,7 @@ If you are not aware of any package mangers running, exit now, find out if there
 Technical Info:
 \"<code>sudo --non-interactive fuser /var/lib/dpkg/lock /var/cache/apt/archives/lock</code>\" exit code: <code>$fuser_exit_code</code></p>"
    else
-      package_manager_waiting_msg="No package manger currently running."
+      package_manager_waiting_msg="No package manager currently running."
       package_manager_waiting_msg_x="$package_manager_waiting_msg"
    fi
 

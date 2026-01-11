@@ -166,7 +166,7 @@ def find_backing_items(path):
                         )
                         return output_objs
             else:
-                ## Out-commented. This may happen if mutliple filesystems are
+                ## Out-commented. This may happen if multiple filesystems are
                 ## mounted to the same location and the mount we're looking
                 ## for is shadowing an earlier mount. This scenario occurs
                 ## when booting in live mode under at least Trixie.

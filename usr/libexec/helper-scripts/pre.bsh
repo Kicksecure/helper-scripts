@@ -30,7 +30,7 @@
 ##   and seeing the xtrace. Otherwise debugging Debian maintainer scripts
 ##   (enabling xtrace) is complicated.
 ## - Skipping broken Debian maintainer scripts.
-## - Re-usable configuration code for Debian maintainer scripts.
+## - Reusable configuration code for Debian maintainer scripts.
 
 ## Error log / features:
 ## - enables 'errtrace' ('set -o errtrace')
