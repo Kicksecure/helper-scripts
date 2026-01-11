@@ -16,6 +16,8 @@
 get_colors() {
   get_colors_sourced=1
 
+  draw="" ## Intentionally not implemented, see below
+
   if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}" || \
     test -z "${TERM:-}" || test "${TERM:-}" = "dumb" || test "${TERM:-}" = "unknown" || \
     ! test -t 2; then
@@ -33,7 +35,6 @@ get_colors() {
       save=""; load=""
       eed=""; eel=""; ebl=""; ewl=""
       back=""
-      draw="" ## Intentionally not implemented, see below
     return 0
   fi
 
