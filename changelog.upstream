@@ -1,8 +1,33 @@
+commit 1d6a533d814de3fd1f0af88d779687190795bb58
+Merge: 94ba371 c57cce9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 12 10:14:01 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 94ba3712e7ff1d0fbbc734995bfb7d1846927d70
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 12 13:10:56 2026 +0000
+
+    bumped changelog version
+
 commit c7398ceb68d23a64833b58b9f448ac14df077a8b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Jan 12 06:19:44 2026 -0500
 
     fix
+
+commit c57cce92bd49aaaf42363baaa6a18ced492956ac
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jan 11 12:38:31 2026 -0600
+
+    Allow light_sleep to take a float as an argument
+
+commit 1d822232898913cb10270c49b749380a00075a21
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jan 11 12:26:04 2026 -0600
+
+    Add library for waiting for audio to be functional
 
 commit 26846cf98e6ac3b1484d4f46f86a756de167e55f
 Author: Patrick Schleizer <adrelanos@whonix.org>
