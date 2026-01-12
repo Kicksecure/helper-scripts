@@ -44,10 +44,11 @@ __log_level_num() {
 
 ## Logging mechanism with easy customization of message format as well as
 ## standardization on how the messages are delivered.
+## usage: log_type message
 ## usage: log [info|notice|warn|error|debug|bug|echo|null] "X occurred."
-## Variable to define by calling script: log_level
+## Variable to define by calling script (caller_level_num): log_level
 log() {
-  : "${log_level:=notice}"
+  local log_level="${log_level:-notice}"
 
   ## Avoid clogging output if log() is working alright.
   disable_xtrace
@@ -119,14 +120,17 @@ log() {
       ;;
   esac
 
+  true "${FUNCNAME[0]}: INFO: log_level: $log_level | log_type: $log_type"
   caller_level_num="$(__log_level_num "${log_level}")"
+  true "${FUNCNAME[0]}: INFO: log_level: $log_level | caller_level_num: $caller_level_num"
   msg_level_num="$(__log_level_num "${log_type}")"
+  true "${FUNCNAME[0]}: INFO: log_type: $log_type | msg_level_num: $msg_level_num"
 
   if (( msg_level_num <= caller_level_num )); then
     should_print=1
   fi
 
-  if (( should_print == 1 )); then
+  if [ "$should_print" = 1 ]; then
     stecho "${log_full}" >&2
   fi
 
