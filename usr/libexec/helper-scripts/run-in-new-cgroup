@@ -1,0 +1,85 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/log_run_die.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
+run_in_new_cgroup() {
+  local do_detach cgroup_root cgroup_name random_uuid_file cgroup_path
+
+  do_detach='false'
+  while [ -n "${1:-}" ]; do
+    case "$1" in
+      --detach)
+        do_detach='true'
+        shift
+        ;;
+      --)
+        shift
+        break
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  if [ "$#" = '0' ]; then
+    log error "No command specified to run in new cgroup!"
+    exit 1
+  fi
+
+  cgroup_root='/sys/fs/cgroup'
+  if [ "$(findmnt --output FSTYPE --noheadings -- "${cgroup_root}")" \
+    != 'cgroup2' ]; then
+    log error "'${cgroup_root}' is not a cgroup2 filesystem! Exiting."
+    exit 1
+  fi
+
+  random_uuid_file='/proc/sys/kernel/random/uuid'
+  cgroup_name="$(cat "${random_uuid_file}")"
+  if [ -z "${cgroup_name}" ]; then
+    log error "Cannot get random UUID from '${random_uuid_file}'!"
+    exit 1
+  fi
+
+  cgroup_path="${cgroup_root}/${cgroup_name}"
+  if ! mkdir "${cgroup_path}"; then
+    log error "Cannot create new cgroup at '${cgroup_path}'!"
+    exit 1
+  fi
+
+  ## TODO: Add other features here if desirable (adding CPU or memory
+  ## constraints, for instance)
+  ##
+  ## https://forums.whonix.org/t/constrained-system-resources-program-starter-wrapper/10914
+
+  if ! printf '%s\n' "$$" > "${cgroup_path}/cgroup.procs"; then
+    log error "Cannot add parent process to cgroup '${cgroup_name}'!"
+    rmdir "${cgroup_path}" \
+      || log warning "Cannot cleanup unnecessary cgroup '${cgroup_name}'!"
+    exit 1
+  fi
+
+  ## Pass cgroup path to the parent so it can manage it as needed. Note that
+  ## at this point, it is the caller's responsibility to clean up the cgroup!
+  ## This script will not automatically clean it up if the child process fails
+  ## for some reason.
+  printf '%s\n' "${cgroup_path}"
+
+  if [ "${do_detach}" = 'true' ]; then
+    ## Detach and exit. This is mostly useful for shell scripts that need this
+    ## wrapper to exit to read the cgroup path via stdout capturing.
+    ## stdout/stderr from child is discarded to ensure only the cgroup path is
+    ## output.
+    "$@" >/dev/null 2>&1 &
+    exit 0
+  fi
+
+  ## Not detaching.
+  "$@"
+}
+
+run_in_new_cgroup "$@"
