@@ -107,13 +107,16 @@ log() {
   esac
   ## uniform log format
   log_color="${bold}${log_color}"
-  log_source_script="${0##*/}: "
-  log_level_colorized="[${log_color}${log_type_up}${nocolor}]: "
+  log_source_script="${0##*/}"
+  if [ -n "${who_ami-}" ]; then
+    log_who_ami_maybe="(${who_ami-}) "
+  fi
+  log_level_colorized="[${log_color}${log_type_up}${nocolor}]"
   log_content="${*}"
   ## error logs are the minimum and should always be printed, even if
   ## failing to assign a correct log type
   ## send bugs and error to stdout and stderr
-  log_full="${log_source_script}${log_level_colorized}${log_content}"
+  log_full="${log_source_script} ${log_who_ami_maybe-}${log_level_colorized}: ${log_content}"
   case "${log_type}" in
     bug|error)
       stecho "${log_full}" >&2
