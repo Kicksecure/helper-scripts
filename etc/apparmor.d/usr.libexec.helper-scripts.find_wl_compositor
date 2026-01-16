@@ -5,7 +5,7 @@ include <tunables/global>
 ## See the file COPYING for copying conditions.
 
 ## Code duplication. Entire file is almost identical to
-## kloak/etc/apparmor.d/usr.libexec.kloak.find_wl_compositor.
+## kloak /etc/apparmor.d/usr.libexec.kloak.find_wl_compositor
 
 /usr/libexec/helper-scripts/find_wl_compositor flags=(attach_disconnected.path=/disconnected) {
   include <local/usr.libexec.helper-scripts.find_wl_compositor>
@@ -31,7 +31,7 @@ include <tunables/global>
   /{,usr/}lib{,32,64}/** mr,
   /usr/bin/fgconsole rix,
 
-  /proc/sys/vm/overcommit_memory r,
+  @{PROC}/sys/vm/overcommit_memory r,
   /usr/share/zoneinfo/** r,
   /usr{,/local}/lib/python*/dist-packages/ r,
   /usr{,/local}/lib/python*/dist-packages/** r,
@@ -46,10 +46,10 @@ include <tunables/global>
   /disconnected/dev/zero rw,
   /disconnected/dev/null rw,
 
-  /proc/ r,
-  /proc/*/stat r,
-  /proc/*/comm r,
-  /proc/*/environ r,
+  @{PROC}/ r,
+  @{PROC}/*/stat r,
+  @{PROC}/*/comm r,
+  @{PROC}/*/environ r,
 
   /run/user/*/ r,
   /run/user/*/wayland-* r,
