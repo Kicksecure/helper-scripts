@@ -12,6 +12,7 @@ override_dh_install:
 	dh_apparmor --profile-name=usr.sbin.anondate-get
 	dh_apparmor --profile-name=usr.sbin.anondate-set
 	dh_apparmor --profile-name=usr.bin.tor-circuit-established-check
+	dh_apparmor --profile-name=usr.libexec.helper-scripts.find_wl_compositor
 	dh_install
 
 override_dh_installman:
