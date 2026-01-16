@@ -3,7 +3,8 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Code duplication. Copied from kloak/usr/libexec/kloak/find_wl_compositor
+## Code duplication. Copied from
+## kloak /usr/libexec/kloak/find_wl_compositor
 ## and adapted to print the full path to the Wayland socket. Also uses the
 ## query_sock_pid library already in helper-scripts.
 
