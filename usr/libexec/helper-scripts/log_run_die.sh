@@ -31,6 +31,7 @@ xtrace_reenable_maybe() {
 __log_level_num() {
   case "${1:-notice}" in
     bug|error) printf '%s' 0 ;;
+    question)  printf '%s' 0 ;;
     warn)      printf '%s' 1 ;;
     notice)    printf '%s' 2 ;;
     info)      printf '%s' 3 ;;
@@ -71,6 +72,9 @@ log() {
   case "${log_type}" in
     bug)
       log_color="${yellow}"
+      ;;
+    question)
+      log_color="${blue}"
       ;;
     error)
       log_color="${red}"
