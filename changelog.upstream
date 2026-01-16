@@ -1,3 +1,46 @@
+commit 5ab7b16048834550154fd5bf5059890cd430d169
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 16 06:27:41 2026 -0500
+
+    add support for logging of who_ami
+
+commit 340bac06f44d93e87b676931b22f18955d22cb4b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 16 06:16:13 2026 -0500
+
+    add 'log question'
+
+commit 5fc5bca4a7fa554cdebcef19b37caf130b40069c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 16 05:07:54 2026 -0500
+
+    comment
+
+commit d93fade7e28b99fd5a5330cb0c11d586dd54abb9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 16 05:03:45 2026 -0500
+
+    apparmor
+
+commit 9396f68d7fb19f417a02b28883f3a145a2fd96b1
+Merge: fe843d8 fe6228d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 16 05:02:24 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit fe6228db3748414100dbd6e9fb708d091a8fff4b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jan 14 23:06:45 2026 -0600
+
+    Add variant of find_wl_compositor script from kloak
+
+commit fe843d81f9ad4d27336f31ff4c8488dacbeaab37
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 12 15:16:05 2026 +0000
+
+    bumped changelog version
+
 commit 1d6a533d814de3fd1f0af88d779687190795bb58
 Merge: 94ba371 c57cce9
 Author: Patrick Schleizer <adrelanos@whonix.org>
