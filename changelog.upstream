@@ -1,3 +1,15 @@
+commit d6fbe7a8ebf63d88d254b89f502c745432bc89cd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 17 11:22:19 2026 -0500
+
+    `grep-find-unicode-wrapper`: fix
+
+commit 58bd2220d694e19c4d318799ca9c55f4464281ac
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 17 14:59:32 2026 +0000
+
+    bumped changelog version
+
 commit 76b49e067a2e279c46c70d274fe311729ee47f4f
 Merge: 3ad6b81 8d32010
 Author: Patrick Schleizer <adrelanos@whonix.org>
