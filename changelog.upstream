@@ -1,3 +1,22 @@
+commit 76b49e067a2e279c46c70d274fe311729ee47f4f
+Merge: 3ad6b81 8d32010
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 17 02:48:44 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 8d32010974e7b2e951bc4e6eb5952a27bc3f1639
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jan 16 16:02:22 2026 -0600
+
+    Add run-in-new-cgroup helper
+
+commit 3ad6b811a84d0c5a96324053a716a301e62615cd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 16 12:09:03 2026 +0000
+
+    bumped changelog version
+
 commit 5ab7b16048834550154fd5bf5059890cd430d169
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 16 06:27:41 2026 -0500
