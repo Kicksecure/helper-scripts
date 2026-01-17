@@ -52,7 +52,32 @@ check_grep_status "$?"
 ## Not using 'grep's '--perl-regexp' option for three.
 ## Because not mentioned in above links and can lead to the following error message:
 # grep: PCRE2 does not support \F, \L, \l, \N{name}, \U, or \u
-three="$(LC_ALL=C grep "${grep_args[@]}" $'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]' "$@")"
+#three="$(LC_ALL=C grep "${grep_args[@]}" $'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]' "$@")"
+## Using different syntax to avoid encoding issue.
+##
+## testfile content:
+## 15.0.4
+##
+## hexdump:
+## 0000000 3531 302e 342e 000a
+## 0000007
+##
+## sha512sum testfile
+## 0196f0043f8a77fb1d757acae601b460026b02857341c3ec407fbf0a88471882eae5beaa517afebabc63fabe21c84d10a2a67f9655ea2026d9b9b8f61969f585
+three="$(LC_ALL=C grep "${grep_args[@]}" --fixed-strings \
+  -e $'\xD8\x9C' \
+  -e $'\xE2\x80\x8E' \
+  -e $'\xE2\x80\x8F' \
+  -e $'\xE2\x80\xAA' \
+  -e $'\xE2\x80\xAB' \
+  -e $'\xE2\x80\xAC' \
+  -e $'\xE2\x80\xAD' \
+  -e $'\xE2\x80\xAE' \
+  -e $'\xE2\x81\xA6' \
+  -e $'\xE2\x81\xA7' \
+  -e $'\xE2\x81\xA8' \
+  -e $'\xE2\x81\xA9' \
+  "$@")"
 check_grep_status "$?"
 
 ## ASCII control characters.
