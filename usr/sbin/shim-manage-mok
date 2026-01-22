@@ -194,8 +194,8 @@ shim_reset_mok() {
   log notice "Checking for non-Debian enrolled MOKs..."
   non_debian_mok_enrolled='false'
   mok_test_dir="$(mktemp -d)"
-  log_run notice pushd "${mok_test_dir}"
-  log_run notice mokutil --export
+  log_run notice pushd -- "${mok_test_dir}"
+  log_run notice mokutil --export || dev_mode_function || return 1
   for mok_file in *; do
     if ! [ -f "${mok_file}" ]; then
       continue
