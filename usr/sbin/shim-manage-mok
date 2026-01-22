@@ -205,7 +205,7 @@ shim_reset_mok() {
   log notice "Checking for non-Debian enrolled MOKs..."
   non_debian_mok_enrolled='false'
   mok_test_dir="$(mktemp -d)"
-  log_run notice pushd -- "${mok_test_dir}" >/dev/null
+  log_run notice pushd -- "${mok_test_dir}"
   log_run notice mokutil --export || dev_mode_function_ignore_error
   for mok_file in *; do
     if ! [ -f "${mok_file}" ]; then
@@ -222,13 +222,13 @@ shim_reset_mok() {
     fi
   done
   if [ "${non_debian_mok_enrolled}" = 'false' ]; then
-    log_run notice popd >/dev/null
+    log_run notice popd
     log notice "No non-Debian enrolled MOKs found, therefore nothing to reset. Exiting."
     safe-rm --recursive --force -- "${mok_test_dir}"
     #return 0
     dev_mode_function_ignore_success || return 0
   fi
-  log_run notice popd >/dev/null || dev_mode_function_ignore_error
+  log_run notice popd || dev_mode_function_ignore_error
   log notice "One or more non-Debian enrolled MOKs are present."
   safe-rm --recursive --force -- "${mok_test_dir}"
 
