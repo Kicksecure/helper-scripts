@@ -1,3 +1,82 @@
+commit f0ea9b6da6e02211fa6038187b5b676ffb9f4816
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 05:55:04 2026 -0500
+
+    code simplification
+
+commit f77610fc42ccb3c96e13ab7582e9f075b2606428
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 05:48:15 2026 -0500
+
+    avoid subshell. fix shellcheck
+
+commit 974fc5b44484cc03eb020242ad6c8f6e4b3d76a4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 05:44:57 2026 -0500
+
+    fix
+
+commit e15bab4db1740697f92db9b66a69c7f759b4e492
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 05:27:56 2026 -0500
+
+    output
+
+commit 1da5cd457644f125257cf54844e61cf4ca84546f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 05:27:34 2026 -0500
+
+    fix
+
+commit 75cb48962b93a16fc62b8a4f65224c8729b530e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 05:27:01 2026 -0500
+
+    output
+
+commit 029a8d1e4750c40048a205b92f42279844e70cfd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 05:24:24 2026 -0500
+
+    improve
+
+commit 772190d0f8d5529357e84bae1c59ef9dee64606d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 05:01:56 2026 -0500
+
+    fix
+
+commit 19111b87120ccf3012d8047ab5b05a97b2c33793
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 04:39:59 2026 -0500
+
+    fix
+
+commit c9a8ab42c1423a6053b79e14bbd1b862a23f4f52
+Merge: 7c5bf98 5612664
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 04:21:51 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 561266475055c8526e8627620abac91edb633dff
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Jan 19 20:34:36 2026 -0600
+
+    Rename shim-enroll-mok to shim-manage-mok, add reset functionality, allow use on UEFI systems with Secure Boot disabled
+
+commit 8f064c7faedda37ce65e7b67b4dca6ef9c8d8ef3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jan 18 15:51:33 2026 -0600
+
+    Add Python wrapper for get_colors.sh
+
+commit 7c5bf981a203e32cad69b6124fd38306eaee538d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 17 16:23:47 2026 +0000
+
+    bumped changelog version
+
 commit d6fbe7a8ebf63d88d254b89f502c745432bc89cd
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Jan 17 11:22:19 2026 -0500
