@@ -14,13 +14,39 @@
 
 # shellcheck disable=SC2034
 get_colors() {
+  local color_yes_or_no
+
   get_colors_sourced=1
 
   draw="" ## Intentionally not implemented, see below
 
-  if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}" || \
-    test -z "${TERM:-}" || test "${TERM:-}" = "dumb" || test "${TERM:-}" = "unknown" || \
-    ! test -t 2 || ! test "${ASSUME_TERM_PRESENT-}" = 'true'; then
+  if test -n "${NO_COLOR:-}"; then
+    color_yes_or_no=no
+  fi
+  if test -n "${ANSI_COLORS_DISABLED:-}"; then
+    color_yes_or_no=no
+  fi
+  if test -z "${TERM:-}"; then
+    color_yes_or_no=no
+  fi
+  if test "${TERM:-}" = "dumb"; then
+    color_yes_or_no=no
+  fi
+  if test "${TERM:-}" = "unknown"; then
+    color_yes_or_no=no
+  fi
+  if ! test -t 2; then
+    color_yes_or_no=no
+  fi
+
+  ## TODO: Rename to 'COLOR_FORCE_YES=true'?
+  if test "${ASSUME_TERM_PRESENT-}" = 'true'; then
+    color_yes_or_no=yes
+  fi
+
+  [[ -v color_yes_or_no ]] || color_yes_or_no="yes"
+
+  if test "${color_yes_or_no}" = "no"; then
       nocolor=""; reset=""
       bold=""; nobold=""
       underline=""; nounderline=""
