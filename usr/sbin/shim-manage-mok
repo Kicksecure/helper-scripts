@@ -319,6 +319,7 @@ shim_manage_mok() {
   if ! has openssl; then
     log error "Missing require tool: 'openssl' (extracts info from MOK keys)."
     log error "Without it, DKMS signing keys cannot be checked for when resetting MOKs. Please install 'openssl' and run this tool again."
+    return 1
   fi
 
   if ! [ -d /sys/firmware/efi ]; then
