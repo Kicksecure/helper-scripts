@@ -20,7 +20,7 @@ get_colors() {
 
   if test -n "${NO_COLOR:-}" || test -n "${ANSI_COLORS_DISABLED:-}" || \
     test -z "${TERM:-}" || test "${TERM:-}" = "dumb" || test "${TERM:-}" = "unknown" || \
-    { ! test -t 2 && test "${ASSUME_TERM_PRESENT-}" != 'true' }; then
+    ! test -t 2 || ! test "${ASSUME_TERM_PRESENT-}" = 'true'; then
       nocolor=""; reset=""
       bold=""; nobold=""
       underline=""; nounderline=""
