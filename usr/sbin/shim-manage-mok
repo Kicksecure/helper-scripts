@@ -25,7 +25,7 @@ source /usr/sbin/shim-signed-mok-setup
 usage() {
   log notice "Usage: $0 (--enroll|--reset) [-n|--non-interactive]"
   log notice "  --enroll                Enroll MOK keys into the firmware."
-  log notice "  --reset                 Delete MOK keys from disk and unenroll all MOK keys "
+  log notice "  --reset                 Delete MOK keys from disk and unenroll all non-Debian MOK keys "
   log notice "                          present in the firmware."
   log notice "  -n, --non-interactive   Do not ask for user input (assume yes)."
 }
