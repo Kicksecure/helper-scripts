@@ -1,0 +1,345 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+export LC_ALL='C'
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
+# shellcheck source=../libexec/helper-scripts/as_root.sh
+source /usr/libexec/helper-scripts/as_root.sh
+
+# shellcheck source=../libexec/helper-scripts/has.sh
+source /usr/libexec/helper-scripts/has.sh
+
+# shellcheck source=../sbin/shim-signed-mok-setup
+source /usr/sbin/shim-signed-mok-setup
+
+usage() {
+  log notice "Usage: $0 (--enroll|--reset) [-n|--non-interactive]"
+  log notice "  --enroll                Enroll MOK keys into the firmware."
+  log notice "  --reset                 Delete MOK keys from disk and unenroll all MOK keys "
+  log notice "                          present in the firmware."
+  log notice "  -n, --non-interactive   Do not ask for user input (assume yes)."
+}
+
+dev_mode_function() {
+  if [ "$dev_mode" = "true" ]; then
+    ## This means the script intentionally continues execution even after
+    ## conditions that normally stop the tool, including:
+    ## * Not booted in EFI (UEFI) mode
+    ## * Secure Boot disabled
+    ## * Cannot detect Secure Boot state
+    ## * MOK already enrolled (normally exits early as success)
+    ## Purpose: allow developers to exercise later code paths and observe
+    ## behavior/output even when earlier preconditions are not met.
+    log warn "DEVELOPMENT: Ignoring non-zero return code in '--dev' mode."
+    return 0
+  fi
+  return 1
+}
+
+exit_function() {
+  local exit_code="$?"
+  if [ "$exit_code" = 0 ]; then
+    log notice "See also:"
+    printf '%s\n' "https://www.kicksecure.com/wiki/Secure_Boot"
+    log notice "END: Success."
+  else
+    log error "See also:"
+    printf '%s\n' "https://www.kicksecure.com/wiki/Secure_Boot"
+    log error "END: Fail."
+  fi
+  exit "$exit_code"
+}
+
+trap exit_function EXIT
+
+dev_mode="false"
+non_interactive="false"
+manage_mode="none"
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -n|--non-interactive)
+      non_interactive="true"
+      shift
+      ;;
+    --enroll)
+      manage_mode="enroll"
+      shift
+      ;;
+    --reset)
+      manage_mode="reset"
+      shift
+      ;;
+    --dev)
+      dev_mode="true"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      log error "Unknown option: '$1'"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+shim_enroll_mok() {
+  local do_generate_mok mokutil_test_key_output
+
+  if [ -f "${dkms_mok_public_file}" ]; then
+    ## - Confusingly, 'mokutil --test-key' returns 1 if the key is already
+    ##   enrolled, and 0 if it is not.
+    ## - 'log_run notice' is problematic because it adds its own output.
+    log notice "EXECUTING: mokutil --test-key '${dkms_mok_public_file}'"
+    if ! mokutil_test_key_output="$(mokutil --test-key "${dkms_mok_public_file}" 2>&1)"; then
+      if [ "${mokutil_test_key_output}" = "${dkms_mok_public_file} is already enrolled" ]; then
+        log notice "MOK already enrolled. Exiting, ok."
+        dev_mode_function || return 0
+      else
+        log error 'Cannot detect MOK enrollment state! Exiting.'
+        log error "'mokutil --test-key ${dkms_mok_public_file}' output:"
+        printf '%s\n' "'${mokutil_test_key_output}'"
+        dev_mode_function || return 1
+      fi
+    fi
+  fi
+
+  log notice "
+This tool will help you set up and enroll a Machine Owner Key (MOK).
+A MOK is a signing key used by shim (the Secure Boot loader) to allow loading
+non-mainline kernel modules (kernel drivers not built into the Linux kernel,
+often installed via DKMS), while Secure Boot is enabled.
+
+This is useful for software that relies on non-mainline kernel modules (such as
+tirdad and VirtualBox) with Secure Boot enabled.
+"
+
+  if [ "${non_interactive}" = "true" ]; then
+    log notice "Non-interactive mode selected (-n|--non-interactive). Proceeding with MOK setup and enrollment without asking for confirmation."
+    do_generate_mok='yes'
+  else
+    if ! read -r -p 'QUESTION: Set up and start enrolling a MOK now? [y/yes/n/no] ' do_generate_mok; then
+      log error "No input available (for example, not running in a terminal). Exiting without setting up a MOK."
+      return 1
+    fi
+
+    case "${do_generate_mok,,}" in
+      y|yes)
+        true
+        ;;
+      n|no)
+        log notice "Exiting without setting up a MOK, as requested by user, ok."
+        return 0
+        ;;
+      *)
+        log error "Invalid answer. Please type y/yes or n/no."
+        return 1
+        ;;
+    esac
+  fi
+
+  log notice "Setting up MOK..."
+  if ! log_run notice shim-signed-mok-setup; then
+    log error "MOK setup failed! Exiting."
+    return 1
+  fi
+  log notice "MOK setup succeeded, ok."
+
+  log notice "\
+$0: INFO: Enrolling MOK.
+You will be prompted to create a password for enrollment (used by shim).
+Choose a short, memorable password. You will only need it once, at the next
+reboot, to finish the enrollment process."
+  if ! log_run notice mokutil --import "${dkms_mok_public_file}"; then
+    log error "MOK enrollment failed! Exiting."
+    return 1
+  fi
+
+  log notice "\
+$0: INFO: MOK enrollment started.
+To finish the process:
+
+1. Reboot the system.
+2. When a blue 'SHIM UEFI key management' screen appears, press any key, then select 'Enroll MOK'.
+3. Then select 'Continue'.
+4. Confirm with 'Yes' when prompted.
+5. After this, enter the password you set up just now.
+6. At this point, you are done. Select 'Reboot'.
+
+To view these steps on a different device, or for more information, see:
+https://www.kicksecure.com/wiki/Secure_Boot#Secure_Boot_DKMS_Signing_Key_Enrollment"
+}
+
+shim_reset_mok() {
+  local do_reset_mok mok_test_dir mok_file mok_file_issuer \
+    non_debian_mok_enrolled
+
+  log notice "Checking for non-Debian enrolled MOKs..."
+  non_debian_mok_enrolled='false'
+  mok_test_dir="$(mktemp -d)"
+  log_run notice pushd "${mok_test_dir}"
+  log_run notice mokutil --export
+  for mok_file in *; do
+    if ! [ -f "${mok_file}" ]; then
+      continue
+    fi
+    if ! [[ "${mok_file}" =~ \.der$ ]]; then
+      continue
+    fi
+    mok_file_issuer="$(openssl x509 -inform der -in "${mok_file}" -issuer \
+      -noout)"
+    if [ "${mok_file_issuer}" != 'issuer=CN=Debian Secure Boot CA' ]; then
+      non_debian_mok_enrolled='true'
+      break
+    fi
+  done
+  if [ "${non_debian_mok_enrolled}" = 'false' ]; then
+    log_run notice popd
+    log notice "No non-Debian enrolled MOKs found, therefore nothing to reset. Exiting."
+    safe-rm --recursive --force -- "${mok_test_dir}"
+    return 0
+  fi
+  log_run notice popd
+  log notice "One or more non-Debian enrolled MOKs are present."
+  safe-rm --recursive --force -- "${mok_test_dir}"
+
+  log notice "
+This tool will help you reset the system's Machine Owner Keys (MOKs). A MOK
+is a signing key used by shim (the Secure Boot loader) to allow loading
+non-mainline kernel modules (kernel drivers not built into the Linux kernel,
+often installed via DKMS), while Secure Boot is enabled.
+
+Resetting MOKs is useful if an attacker may have had access to a MOK key
+enrolled in the firmware. Once the process is complete, you may generate a new
+MOK to allow non-mainline kernel modules to function.
+"
+
+  if [ "${non_interactive}" = "true" ]; then
+    log notice "Non-interactive mode selected (-n|--non-interactive). Proceeding with MOK reset without asking for confirmation."
+    do_reset_mok='yes'
+  else
+    if ! read -r -p 'QUESTION: Reset MOKs now? [y/yes/n/no] ' do_reset_mok; then
+      log error "No input available (for example, not running in a terminal). Exiting without resetting MOKs."
+      return 1
+    fi
+
+    case "${do_reset_mok,,}" in
+      y|yes)
+        true
+        ;;
+      n|no)
+        log notice "Exiting without resetting MOKs, as requested by user, ok."
+        return 0
+        ;;
+      *)
+        log error "Invalid answer. Please type y/yes or n/no."
+        return 1
+        ;;
+    esac
+  fi
+
+  log notice "\
+$0: INFO: Resetting MOKs.
+You will be prompted to create a password for enrollment (used by shim).
+Choose a short, memorable password. You will only need it once, at the next
+reboot, to finish the enrollment process."
+  if ! log_run notice mokutil --reset; then
+    log error "MOK reset failed! Exiting."
+    return 1
+  fi
+
+  log notice "Deleting existing MOK..."
+  if ! log_run notice safe-rm --force -- "${dkms_mok_public_file}" "${dkms_mok_private_file}"; then
+    log error "Deletion of existing MOKs failed! Exiting."
+    return 1
+  fi
+  log notice "Deletion of existing MOKs succeeded, ok."
+
+  log notice "\
+$0: INFO: MOK reset started.
+To finish the process:
+
+1. Reboot the system.
+2. When a blue 'SHIM UEFI key management' screen appears, press any key, then select 'Reset MOK'.
+3. Then select 'Continue'.
+4. Confirm with 'Yes' when prompted.
+5. After this, enter the password you set up just now.
+6. At this point, you are done. Select 'Reboot'.
+
+To view these steps on a different device, or for more information, see:
+https://www.kicksecure.com/wiki/Secure_Boot#Secure_Boot_DKMS_Signing_Key_Reset"
+}
+
+shim_manage_mok() {
+  local reason mokutil_sbstate_output
+
+  as_root
+  dkms_mok_variables_set
+
+  if ! has dkms; then
+    log error "Missing required tool: 'dkms' (Dynamic Kernel Module Support)."
+    log error "Without it, DKMS signing keys cannot be prepared. Please install 'dkms' and run this tool again."
+    return 1
+  fi
+  if ! has mokutil; then
+    log error "Missing required tool: 'mokutil' (manages Machine Owner Keys (MOK) for shim and Secure Boot)."
+    log error "Without it, Secure Boot state cannot be checked and keys cannot be enrolled. Please install 'mokutil' and run this tool again."
+    return 1
+  fi
+  if ! has openssl; then
+    log error "Missing require tool: 'openssl' (extracts info from MOK keys)."
+    log error "Without it, DKMS signing keys cannot be checked for when resetting MOKs. Please install 'openssl' and run this tool again."
+  fi
+
+  if ! [ -d /sys/firmware/efi ]; then
+    if test -e /usr/share/qubes/marker-vm; then
+      reason="Not booted in EFI (UEFI) mode. Secure Boot is only available in EFI (UEFI) mode.
+Qubes detected: yes
+Qubes issue:
+https://github.com/QubesOS/qubes-issues/issues/5241"
+    else
+      reason="Not booted in EFI (UEFI) mode. Secure Boot is only available in EFI (UEFI) mode."
+    fi
+    log error "$reason
+Therefore Secure Boot is unavailable and there is no need to set up or enroll a MOK. Exiting."
+    dev_mode_function || return 1
+  fi
+
+  if ! [ -d /sys/firmware/efi ]; then
+    log error "UEFI is not in use, therefore no need to manage MOKs. Exiting."
+    dev_mode_function || return 1
+  fi
+  log notice "UEFI is in use."
+
+  if [ "${manage_mode}" = 'enroll' ]; then
+    shim_enroll_mok
+  elif [ "${manage_mode}" = 'reset' ]; then
+    shim_reset_mok
+  elif [ "${manage_mode}" = 'none' ]; then
+    log error "One of --enroll or --reset must be specified."
+    usage
+    return 1
+  else
+    log error "Invalid management mode '${manage_mode}' detected! Please report this bug!"
+    return 1
+  fi
+}
+
+shim_manage_mok
