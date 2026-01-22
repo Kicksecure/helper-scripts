@@ -30,7 +30,7 @@ usage() {
   log notice "  -n, --non-interactive   Do not ask for user input (assume yes)."
 }
 
-dev_mode_function() {
+dev_mode_function_ignore_error() {
   if [ "$dev_mode" = "true" ]; then
     ## This means the script intentionally continues execution even after
     ## conditions that normally stop the tool, including:
@@ -40,9 +40,20 @@ dev_mode_function() {
     ## * MOK already enrolled (normally exits early as success)
     ## Purpose: allow developers to exercise later code paths and observe
     ## behavior/output even when earlier preconditions are not met.
-    log warn "DEVELOPMENT: Ignoring non-zero return code in '--dev' mode."
+    log warn "DEVELOPMENT: Ignoring error."
     return 0
   fi
+  return 1
+}
+
+dev_mode_function_ignore_success() {
+  if [ "$dev_mode" = "true" ]; then
+    log warn "DEVELOPMENT: Ignoring success."
+    return 0
+  fi
+  ## 'return 1' here. because the caller will run
+  ## 'dev_mode_function_ignore_success || return 0' which will actually result in
+  ## 'return 0' and returning from the function.
   return 1
 }
 
@@ -111,12 +122,12 @@ shim_enroll_mok() {
     if ! mokutil_test_key_output="$(mokutil --test-key "${dkms_mok_public_file}" 2>&1)"; then
       if [ "${mokutil_test_key_output}" = "${dkms_mok_public_file} is already enrolled" ]; then
         log notice "MOK already enrolled. Exiting, ok."
-        dev_mode_function || return 0
+        dev_mode_function_ignore_success || return 0
       else
         log error 'Cannot detect MOK enrollment state! Exiting.'
         log error "'mokutil --test-key ${dkms_mok_public_file}' output:"
         printf '%s\n' "'${mokutil_test_key_output}'"
-        dev_mode_function || return 1
+        dev_mode_function_ignore_error || return 1
       fi
     fi
   fi
@@ -194,8 +205,8 @@ shim_reset_mok() {
   log notice "Checking for non-Debian enrolled MOKs..."
   non_debian_mok_enrolled='false'
   mok_test_dir="$(mktemp -d)"
-  log_run notice pushd -- "${mok_test_dir}"
-  log_run notice mokutil --export || dev_mode_function || return 1
+  log_run notice pushd -- "${mok_test_dir}" >/dev/null
+  log_run notice mokutil --export || dev_mode_function_ignore_error
   for mok_file in *; do
     if ! [ -f "${mok_file}" ]; then
       continue
@@ -211,12 +222,13 @@ shim_reset_mok() {
     fi
   done
   if [ "${non_debian_mok_enrolled}" = 'false' ]; then
-    log_run notice popd
+    log_run notice popd >/dev/null
     log notice "No non-Debian enrolled MOKs found, therefore nothing to reset. Exiting."
     safe-rm --recursive --force -- "${mok_test_dir}"
-    return 0
+    #return 0
+    dev_mode_function_ignore_success || return 0
   fi
-  log_run notice popd
+  log_run notice popd >/dev/null || dev_mode_function_ignore_error
   log notice "One or more non-Debian enrolled MOKs are present."
   safe-rm --recursive --force -- "${mok_test_dir}"
 
@@ -235,7 +247,8 @@ MOK to allow non-mainline kernel modules to function.
     log notice "Non-interactive mode selected (-n|--non-interactive). Proceeding with MOK reset without asking for confirmation."
     do_reset_mok='yes'
   else
-    if ! read -r -p 'QUESTION: Reset MOKs now? [y/yes/n/no] ' do_reset_mok; then
+    log question "Reset MOKs now? [y/yes/n/no]"
+    if ! read -r do_reset_mok; then
       log error "No input available (for example, not running in a terminal). Exiting without resetting MOKs."
       return 1
     fi
@@ -262,7 +275,7 @@ Choose a short, memorable password. You will only need it once, at the next
 reboot, to finish the enrollment process."
   if ! log_run notice mokutil --reset; then
     log error "MOK reset failed! Exiting."
-    return 1
+    dev_mode_function_ignore_error || return 1
   fi
 
   log notice "Deleting existing MOK..."
@@ -319,12 +332,12 @@ https://github.com/QubesOS/qubes-issues/issues/5241"
     fi
     log error "$reason
 Therefore Secure Boot is unavailable and there is no need to set up or enroll a MOK. Exiting."
-    dev_mode_function || return 1
+    dev_mode_function_ignore_error || return 1
   fi
 
   if ! [ -d /sys/firmware/efi ]; then
     log error "UEFI is not in use, therefore no need to manage MOKs. Exiting."
-    dev_mode_function || return 1
+    dev_mode_function_ignore_error || return 1
   fi
   log notice "UEFI is in use."
 
