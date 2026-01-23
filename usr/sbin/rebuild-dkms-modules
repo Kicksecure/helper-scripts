@@ -30,7 +30,7 @@ rebuild_dkms_modules() {
     return 1
   fi
 
-  log info 'Rebuilding DKMS modules...'
+  log notice 'Rebuilding DKMS modules...'
 
   while IFS= read -r dkms_mod_status_item; do
     if ! [[ "${dkms_mod_status_item}" \
@@ -41,13 +41,13 @@ rebuild_dkms_modules() {
     dkms_mod_name="${BASH_REMATCH[1]}"
     dkms_mod_kernel="${BASH_REMATCH[2]}"
     dkms_mod_status="${BASH_REMATCH[3]}"
-    log info "DKMS module status info: name: '${dkms_mod_name}', kernel: '${dkms_mod_kernel}', status: '${dkms_mod_status}'"
+    log notice "DKMS module status info: name: '${dkms_mod_name}', kernel: '${dkms_mod_kernel}', status: '${dkms_mod_status}'"
 
     if [[ "${dkms_mod_status}" != installed* ]]; then
-      log info "DKMS module '${dkms_mod_name}' not installed for kernel '${dkms_mod_kernel}', skipping, ok."
+      log notice "DKMS module '${dkms_mod_name}' not installed for kernel '${dkms_mod_kernel}', skipping, ok."
       continue
     fi
-    log info "Rebuilding DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'..."
+    log notice "Rebuilding DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'..."
     if ! dkms build "${dkms_mod_name}" -k "${dkms_mod_kernel}" --force; then
       log warning "DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}' failed to build! Skipping."
       continue
@@ -56,10 +56,10 @@ rebuild_dkms_modules() {
       log warning "DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}' failed to install! Skipping."
       continue
     fi
-    log info "Successfully rebuilt DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'."
+    log notice "Successfully rebuilt DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'."
   done < <(dkms status)
 
-  log info 'Done rebuilding DKMS modules.'
+  log notice 'Done rebuilding DKMS modules.'
 }
 
 rebuild_dkms_modules
