@@ -1,0 +1,86 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Many earlier Kicksecure and Whonix images unintentionally shipped with DKMS
+## public and private keys built into the image by the build process, due to
+## the fact that DKMS auto-generates these keys when tirdad is initially
+## installed. This script detects if the system uses UEFI, and if so, if there
+## are potentially vulnerable keys present.
+##
+## Exit codes:
+## 0: Vulnerable keys are not present or could not be detected.
+## 1: Vulnerable keys are present but may be safely deleted.
+## 2: Vulnerable keys are present and user intervention is required to delete
+##    them.
+
+# shellcheck source=../../sbin/shim-signed-mok-setup
+source /usr/sbin/shim-signed-mok-setup
+# shellcheck source=./has.sh
+source /usr/libexec/helper-scripts/has.sh
+# shellcheck source=./secure_boot_enabled_check.bsh
+source /usr/libexec/helper-scripts/secure_boot_enabled_check.bsh
+
+check_image_builtin_mok() {
+  ## Where to put the do_once file? helper-scripts is intended for
+  ## non-intrusive code, so having a do_once directory for helper-scripts
+  ## seems out of place. systemcheck is not guaranteed to be installed, so
+  ## putting the file there seems strange. legacy-dist does the unsafe key
+  ## deletion, and is guaranteed to be installed, so we put the file in its
+  ## do_once dir.
+  if [ -f "/var/lib/legacy-dist/do_once/${FUNCNAME[0]}_version_1" ]; then
+    return 0
+  fi
+
+  dkms_mok_variables_set
+
+  if ! has mokutil >/dev/null; then
+    ## Intentionally do not set the do_once file yet, as the user might be
+    ## using a build-generated MOK key and uninstalled mokutil before
+    ## this ran.
+    return 0
+  fi
+  if ! [ -d /sys/firmware/efi ]; then
+    ## UEFI is not in use, so any MOK keys shouldn't be a problem.
+    if [ -f "${dkms_mok_public_file}" ] \
+      || [ -f "${dkms_mok_private_file}" ]; then
+      ## Tell legacy-dist that it can safely delete the keys, and tell
+      ## systemcheck that the keys need deleted.
+      return 1
+    fi
+    ## Fall through to the place where we mark the system "safe".
+  else
+    ## UEFI is in use, see if the key is enrolled.
+    ##
+    ## Note that we run through these steps even if Secure Boot is disabled,
+    ## since the MOK management tooling works even with Secure Boot disabled,
+    ## and if the user has a vulnerable key enrolled and then enables Secure
+    ## Boot later, they will be vulnerable.
+    if [ -f "${dkms_mok_public_file}" ] \
+      && ! mokutil_test_key_output="$(mokutil --test-key "${dkms_mok_public_file}" 2>&1)"; then
+      if [ "${mokutil_test_key_output}" = "${dkms_mok_public_file} is already enrolled" ]; then
+        ## The keys are already enrolled. Because of MOKManager's intentional
+        ## design, we cannot rotate the keys without user intervention.
+        return 2
+      else
+        ## We couldn't detect if the keys were enrolled. Exit zero, but
+        ## intentionally do not set the do_once file yet, as we might
+        ## successfully detect the key state later.
+        return 0
+      fi
+    fi
+    if [ -f "${dkms_mok_public_file}" ] \
+      || [ -f "${dkms_mok_private_file}" ]; then
+      ## Delete keys in legacy-dist, warn in systemcheck
+      return 1
+    fi
+    ## Fall through to the place where we mark the system 'safe'.
+  fi
+
+  mkdir --parents '/var/lib/legacy-dist/do_once'
+  touch "/var/lib/legacy-dist/do_once/${FUNCNAME[0]}_version_1"
+  return 0
+}
+
+check_image_builtin_mok
