@@ -20,6 +20,8 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 fi
 
 dkms_mok_variables_set() {
+  ## NOTE: This function is 'source'ed by other scripts. It should stay simple.
+  ##       I.e. it should not depend to 'source' other scripts.
   dkms_mok_dir='/var/lib/dkms'
   dkms_mok_public_file="${dkms_mok_dir}/mok.pub"
   dkms_mok_private_file="${dkms_mok_dir}/mok.key"
