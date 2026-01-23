@@ -20,7 +20,8 @@ source /usr/libexec/helper-scripts/as_root.sh
 source /usr/libexec/helper-scripts/has.sh
 
 rebuild_dkms_modules() {
-  local dkms_mod_status_item dkms_mod_name dkms_mod_kernel dkms_mod_status
+  local dkms_mod_status_item dkms_mod_name dkms_mod_kernel dkms_mod_status \
+    dkms_build_count
 
   as_root
 
@@ -32,6 +33,7 @@ rebuild_dkms_modules() {
 
   log info 'Rebuilding DKMS modules...'
 
+  dkms_build_count='0'
   while IFS= read -r dkms_mod_status_item; do
     if ! [[ "${dkms_mod_status_item}" \
       =~ ^([^,]*),\ ([^,]*),\ [^:]*:\ (.*)$ ]]; then
@@ -57,9 +59,14 @@ rebuild_dkms_modules() {
       continue
     fi
     log info "Successfully rebuilt DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'."
+    (( dkms_build_count++ )) || true
   done < <(dkms status)
 
-  log info 'Done rebuilding DKMS modules.'
+  if [ "${dkms_build_count}" = '0' ]; then
+    log info 'No DKMS modules to rebuild, ok.'
+  else
+    log info 'Done rebuilding DKMS modules.'
+  fi
 }
 
 rebuild_dkms_modules
