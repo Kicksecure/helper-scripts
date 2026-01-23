@@ -1,3 +1,40 @@
+commit 268523b30d5626d4c4b053c42952ec6348f20809
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 23 04:45:09 2026 -0500
+
+    comment
+
+commit c1ece0e0ee2f374d852ec67bb0a1e8a0f9c294f3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 23 04:37:11 2026 -0500
+
+    output
+
+commit 0ca275fef4d5849ec5d655735cb0971da4d5bb46
+Merge: ced057f b4bc3ed
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 23 04:34:47 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit b4bc3ed0722c6a292dc633786454daea46baef48
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Jan 22 23:25:33 2026 -0600
+
+    Add helper script for rebuilding all DKMS modules, integrate into shim-manage-mok
+
+commit eeee76d6e815433121cac89f8abab6e99bec46c9
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Jan 22 22:20:23 2026 -0600
+
+    Minor polish for shim-manage-mok, add check-image-builtin-mok helper script and privleap action
+
+commit ced057f95764db4bdfe64f516503d7b95653d1d6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 22 10:58:06 2026 +0000
+
+    bumped changelog version
+
 commit f0ea9b6da6e02211fa6038187b5b676ffb9f4816
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 22 05:55:04 2026 -0500
