@@ -35,11 +35,14 @@ dev_mode_function_ignore_error() {
     ## This means the script intentionally continues execution even after
     ## conditions that normally stop the tool, including:
     ## * Not booted in EFI (UEFI) mode
-    ## * Secure Boot disabled
-    ## * Cannot detect Secure Boot state
+    ## * Cannot check if MOK is enrolled
     ## * MOK already enrolled (normally exits early as success)
+    ## * Only Debian MOKs present
     ## Purpose: allow developers to exercise later code paths and observe
     ## behavior/output even when earlier preconditions are not met.
+    ##
+    ## This function is specifically for ignoring error cases. Use
+    ## dev_mode_function_ignore_success for other situations.
     log warn "DEVELOPMENT: Ignoring error."
     return 0
   fi
@@ -146,7 +149,8 @@ tirdad and VirtualBox) with Secure Boot enabled.
     log notice "Non-interactive mode selected (-n|--non-interactive). Proceeding with MOK setup and enrollment without asking for confirmation."
     do_generate_mok='yes'
   else
-    if ! read -r -p 'QUESTION: Set up and start enrolling a MOK now? [y/yes/n/no] ' do_generate_mok; then
+    log question 'QUESTION: Set up and start enrolling a MOK now? [y/yes/n/no]'
+    if ! read -r do_generate_mok; then
       log error "No input available (for example, not running in a terminal). Exiting without setting up a MOK."
       return 1
     fi
@@ -183,6 +187,13 @@ reboot, to finish the enrollment process."
     return 1
   fi
 
+  log notice "Rebuilding DKMS modules..."
+  if ! rebuild-dkms-modules; then
+    log warning "Some DKMS modules failed to build!"
+    ## Do not return 1 here, the user probably wants to finish enrolling the
+    ## MOK, and fix DKMS later.
+  fi
+
   log notice "\
 $0: INFO: MOK enrollment started.
 To finish the process:
@@ -207,7 +218,7 @@ shim_reset_mok() {
   mok_test_dir="$(mktemp -d)"
   log_run notice pushd -- "${mok_test_dir}"
   log_run notice mokutil --export || dev_mode_function_ignore_error
-  for mok_file in *; do
+  for mok_file in ./*.der; do
     if ! [ -f "${mok_file}" ]; then
       continue
     fi
@@ -225,7 +236,6 @@ shim_reset_mok() {
     log_run notice popd
     log notice "No non-Debian enrolled MOKs found, therefore nothing to reset. Exiting."
     safe-rm --recursive --force -- "${mok_test_dir}"
-    #return 0
     dev_mode_function_ignore_success || return 0
   fi
   log_run notice popd || dev_mode_function_ignore_error
@@ -335,12 +345,6 @@ https://github.com/QubesOS/qubes-issues/issues/5241"
 Therefore Secure Boot is unavailable and there is no need to set up or enroll a MOK. Exiting."
     dev_mode_function_ignore_error || return 1
   fi
-
-  if ! [ -d /sys/firmware/efi ]; then
-    log error "UEFI is not in use, therefore no need to manage MOKs. Exiting."
-    dev_mode_function_ignore_error || return 1
-  fi
-  log notice "UEFI is in use."
 
   if [ "${manage_mode}" = 'enroll' ]; then
     shim_enroll_mok
