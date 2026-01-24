@@ -462,16 +462,21 @@ fi
 ## safely manage those
 ## TODO: consider cases with leading spaces
 ## TODO: ignore comments
-if grep --quiet --recursive --ignore-case -- '^\[Seat:[^*]' /etc/lightdm; then
-   printf '%s\n' "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
-   exit 1
+if [ -d /etc/lightdm ]; then
+   if grep --quiet --recursive --ignore-case -- '^\[Seat:[^*]' /etc/lightdm; then
+      printf '%s\n' "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
+      exit 1
+   fi
 fi
 
-readarray -t autologin_users_lightdm < <(
-   grep --recursive --ignore-case -- '^autologin-user=' /etc/lightdm \
-      | filter_out_sysmaint_maybe \
-      | awk -F'=' '{ print $NF }' || true
-) || true
+autologin_users_lightdm=()
+if [ -d /etc/lightdm ]; then
+   readarray -t autologin_users_lightdm < <(
+      grep --recursive --ignore-case -- '^autologin-user=' /etc/lightdm \
+         | filter_out_sysmaint_maybe \
+         | awk -F'=' '{ print $NF }' || true
+   ) || true
+fi
 true "INFO: Collected list of users with lightdm autologin enabled."
 
 readarray -t autologin_users_sddm < <(
@@ -487,11 +492,23 @@ readarray -t autologin_users_sddm < <(
 ) || true
 true "INFO: Collected list of users with sddm autologin enabled."
 
+readarray -t autologin_users_greetd < <(
+   for file_name in /etc/greetd/config.toml.d/*; do
+      if ! [ -f "${file_name}" ]; then
+         continue
+      fi
+      get_config_section "${file_name}" 'initial_session' \
+         | grep -- '^user\s*=\s*"[^"]*"$' \
+         | filter_out_sysmaint_maybe \
+         | sed 's/^.*"\([^"]*\)"$/\1/' || true
+   done
+) || true
+
 readarray -t autologin_users < <(
-  IFS=$'\n'
-  printf '%s\n%s\n' \
-     "${autologin_users_lightdm[*]}" \
-     "${autologin_users_sddm[*]}" \
+  printf '%s\n' \
+     "${autologin_users_lightdm[@]}" \
+     "${autologin_users_sddm[@]}" \
+     "${autologin_users_greetd[@]}" \
      | sed '/^$/d' \
      | sort -u
 )
