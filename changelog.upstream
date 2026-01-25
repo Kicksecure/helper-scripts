@@ -1,3 +1,35 @@
+commit b16f3a96d22c0ea3d5fcc331158dbe4c4b25f4d3
+Merge: cae3d45 a864d7e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 23 19:09:36 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit a864d7e44fc44a3c01d26beb49deaa057467fd21
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jan 23 15:19:21 2026 -0600
+
+    Avoid spurious autologinchange error when /etc/lightdm doesn't exist, take greetd configuration into account when looking for autologin users, simplify convoluted printf statement
+
+commit 1c174df6b8d37d1428e3c88f4c285402af03c1ce
+Merge: 2222267 cae3d45
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jan 23 14:49:18 2026 -0600
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 2222267fa97380fbecd04ce05e1fe298aa241836
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jan 23 14:30:05 2026 -0600
+
+    If no DKMS modules were rebuilt in rebuild-dkms-modules, tell the user that
+
+commit cae3d45a5490406cf147921140c0f9addf833c8c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 23 09:47:05 2026 +0000
+
+    bumped changelog version
+
 commit 268523b30d5626d4c4b053c42952ec6348f20809
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 23 04:45:09 2026 -0500
