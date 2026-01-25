@@ -34,10 +34,12 @@ get_config_section() {
 }
 
 remove_from_config_section() {
-   local file_name section remove_line filter_stage line lines output line_was_removed
+   local file_name section remove_entity do_literal_remove filter_stage line \
+     lines output line_was_removed
    file_name="$1"
    section="$2"
-   remove_line="$3"
+   remove_entity="$3"
+   do_literal_remove="$4"
    filter_stage='1'
    line_was_removed=""
 
@@ -51,10 +53,18 @@ remove_from_config_section() {
             filter_stage='2'
          fi
       elif [ "${filter_stage}" = '2' ]; then
-         ## TODO: Avoid a literal match here so we can use regex if needed?
-         if [[ "${line}" =~ ^"${remove_line}"$ ]]; then
-            line_was_removed="true"
-            continue
+         if [ "${do_literal_remove}" = 'true' ]; then
+            ## 'remove_entity' is treated as a string literal here.
+            if [[ "${line}" =~ ^"${remove_entity}"$ ]]; then
+               line_was_removed="true"
+               continue
+            fi
+         else
+            ## 'remove_entity' is treated as a regex here.
+            if [[ "${line}" =~ ^${remove_entity}$ ]]; then
+               line_was_removed="true"
+               continue
+            fi
          fi
          output+=( "${line}" )
          if [[ "${line}" =~ ^\[.*\]$ ]]; then
@@ -68,8 +78,10 @@ remove_from_config_section() {
    printf '%s\n' "${output[@]}" | sponge -- "$file_name"
 
    if [ "$line_was_removed" = "true" ]; then
-      printf '%s\n' "INFO: Removed line '$remove_line' from section '$section' of file '$file_name'." >&2
+      printf '%s\n' "INFO: Removed lines matching '$remove_entity' from section '$section' of file '$file_name'." >&2
+      return 0
    fi
+   return 1
 }
 
 enable_autologin() {
@@ -144,7 +156,7 @@ disable_autologin() {
       if ! [ -f "${file_name}" ]; then
          continue
       fi
-      remove_from_config_section "${file_name}" 'Autologin' "User=${user}"
+      remove_from_config_section "${file_name}" 'Autologin' "User=${user}" 'true' || true
       true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
@@ -158,8 +170,9 @@ disable_autologin() {
       if ! [ -f "${file_name}" ]; then
          continue
       fi
-      remove_from_config_section "${file_name}" 'initial_session' "command = \"/usr/libexec/desktop-config-dist/start-lxqt-session\""
-      remove_from_config_section "${file_name}" 'initial_session' "user = \"${user}\""
+      if remove_from_config_section "${file_name}" 'initial_session' "user = \"${user}\"" 'true'; then
+         remove_from_config_section "${file_name}" 'initial_session' "command = \".*\"" 'false' || true
+      fi
       true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
       file_contents="$(cat -- "${file_name}")"
       if [ -z "${file_contents}" ] \
