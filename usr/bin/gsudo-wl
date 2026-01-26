@@ -1,0 +1,134 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+  printf '%s\n' "ERROR: Do not source this script ('${BASH_SOURCE[0]}')!"
+  exit 1
+fi
+
+if [ "$(id --user)" != '0' ]; then
+  sudo -- "$0" "$@"
+  exit "$?"
+fi
+
+root_xdg_runtime_dir='/run/user/0'
+root_wayland_lock_dir="${root_xdg_runtime_dir}/gsudo-wl-lock"
+source_wayland_socket=''
+target_wayland_socket=''
+target_wayland_read_lockfile=''
+target_wayland_write_lockfile=''
+target_wayland_socket_name=''
+read_lock_fd=''
+write_lock_fd=''
+
+setup() {
+  local source_wayland_socket_basename source_wayland_socket_uid
+
+  if ! source_wayland_socket="$(/usr/libexec/helper-scripts/find_wl_compositor)"; then
+    log error 'Cannot find active Wayland compositor!'
+    return 1
+  fi
+  if ! [[ "${source_wayland_socket}" =~ ^/run/user/([0-9]+)/([^/]+)$ ]]; then
+    log error "Active Wayland compositor socket is at unexpected path '${source_wayland_socket}'!"
+    return 1
+  fi
+  source_wayland_socket_uid="${BASH_REMATCH[1]}"
+  source_wayland_socket_basename="${BASH_REMATCH[2]}"
+  target_wayland_socket_name="${source_wayland_socket_uid}-${source_wayland_socket_basename}"
+  target_wayland_socket="${root_xdg_runtime_dir}/${target_wayland_socket_name}"
+  target_wayland_read_lockfile="${root_wayland_lock_dir}/${target_wayland_socket_name}.read.lock"
+  target_wayland_write_lockfile="${root_wayland_lock_dir}/${target_wayland_socket_name}.write.lock"
+
+  ## We don't want Wayland sockets to remain eternally bind-mounted into
+  ## root_xdg_runtime_dir, but we also have to be careful about when we
+  ## unmount them since we might have multiple GUI applications running
+  ## alongside each other. The following locking mechanism is used to make
+  ## this work:
+  ##
+  ## - Ensure the Wayland socket mountpoint and lockfiles exist.
+  ## - Open both lockfiles.
+  ## - Grab an exclusive lock on the "write" lockfile, waiting indefinitely
+  ##   until the lock can be grabbed.
+  ## - Check if the socket is mounted, and mount it if not.
+  ## - Grab a shared lock on the "read" lockfile, waiting indefinitely until
+  ##   the lock can be grabbed.
+  ## - Release the exclusive "write" lock if held.
+  ## - Use the socket.
+  ## - Release the shared lock on the "read" lockfile.
+  ## - Make a non-blocking attempt to grab an exclusive lock on the "read"
+  ##   lockfile. If the attempt fails, exit and do nothing else.
+  ## - If the attempt succeeds, make a non-blocking attempt to grab an
+  ##   exclusive lock on the "write" lock file. If the attempt fails, exit
+  ##   and do nothing else (this will automatically release our lock on the
+  ##   "read" lockfile).
+  ## - If both lock attempts are successful, unmount the Wayland socket,
+  ##   remove the file it was mounted on top of, then exit.
+  ##
+  ## Two lockfiles are necessary because of a race between read lock and write
+  ## locks that occurs if using only a single lockfile. When preparing to
+  ## check if the socket is mounted, using blocking write locks means that new
+  ## gsudo-wl instances will not be able to grab an exclusive lock until an
+  ## existing gsudo-wl instance exits. Using non-blocking write locks means
+  ## that gsudo-wl instances would have to ignore lock grab failure. If the
+  ## write lock was grabbed by the unmount step, one gsudo-wl instance could
+  ## see that the socket was mounted and attempt to use it immediately before
+  ## it was unmounted. Using two locks allows synchronizing all mount/unmount
+  ## operations properly.
+  ##
+  ## Note that the lockfiles are never deleted. This is on purpose, as
+  ## otherwise one gsudo-wl instance could delete the lockfile after another
+  ## instance opens it but before that other instance locks it.
+
+  install --directory --mode=0700 --owner=root --group=root -- "${root_xdg_runtime_dir}"
+  mkdir --parents -- "${root_wayland_lock_dir}"
+  touch -- "${target_wayland_socket}"
+  touch -- "${target_wayland_read_lockfile}"
+  touch -- "${target_wayland_write_lockfile}"
+
+  exec {read_lock_fd}>"${target_wayland_read_lockfile}"
+  exec {write_lock_fd}>"${target_wayland_write_lockfile}"
+
+  flock --exclusive -- "${write_lock_fd}"
+  if ! mountpoint -- "${target_wayland_socket}" >/dev/null 2>&1; then
+    mount --bind -- "${source_wayland_socket}" "${target_wayland_socket}"
+  fi
+
+  flock --shared -- "${read_lock_fd}"
+  flock --unlock -- "${write_lock_fd}"
+}
+
+teardown() {
+  local exit_code="$?"
+
+  trap '' EXIT INT TERM
+
+  flock --unlock -- "${read_lock_fd}" || true
+  if flock --nonblock --exclusive -- "${read_lock_fd}" \
+    && flock --nonblock --exclusive -- "${write_lock_fd}" \
+    && umount -- "${target_wayland_socket}"; then
+    safe-rm --force -- "${target_wayland_socket}" || true
+  fi
+
+  exit "${exit_code}"
+}
+
+trap teardown EXIT INT TERM
+
+setup
+unset WAYLAND_SOCKET
+XDG_RUNTIME_DIR="${root_xdg_runtime_dir}" \
+  WAYLAND_DISPLAY="${target_wayland_socket_name}" \
+  QT_QPA_PLATFORM='wayland' \
+  GDK_BACKEND='wayland' \
+  "$@"
+teardown
