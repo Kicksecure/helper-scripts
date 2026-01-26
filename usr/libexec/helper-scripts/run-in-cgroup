@@ -6,8 +6,12 @@
 ## shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/log_run_die.sh
 source /usr/libexec/helper-scripts/log_run_die.sh
 
-run_in_new_cgroup() {
-  local do_detach cgroup_root cgroup_name random_uuid_file cgroup_path
+run_in_cgroup() {
+  local do_detach cgroup_root cgroup_name random_uuid_file cgroup_path \
+    cgroup_name_option_used
+
+  cgroup_name=''
+  cgroup_name_option_used='false'
 
   do_detach='false'
   while [ -n "${1:-}" ]; do
@@ -15,6 +19,11 @@ run_in_new_cgroup() {
       --detach)
         do_detach='true'
         shift
+        ;;
+      --cgroup-name)
+        cgroup_name="${2:-}"
+        cgroup_name_option_used='true'
+        shift 2
         ;;
       --)
         shift
@@ -38,15 +47,17 @@ run_in_new_cgroup() {
     exit 1
   fi
 
-  random_uuid_file='/proc/sys/kernel/random/uuid'
-  cgroup_name="$(cat "${random_uuid_file}")"
   if [ -z "${cgroup_name}" ]; then
-    log error "Cannot get random UUID from '${random_uuid_file}'!"
-    exit 1
+    random_uuid_file='/proc/sys/kernel/random/uuid'
+    cgroup_name="$(cat "${random_uuid_file}")"
+    if [ -z "${cgroup_name}" ]; then
+      log error "Cannot get random UUID from '${random_uuid_file}'!"
+      exit 1
+    fi
   fi
 
   cgroup_path="${cgroup_root}/${cgroup_name}"
-  if ! mkdir "${cgroup_path}"; then
+  if ! [ -d "${cgroup_path}" ] && ! mkdir "${cgroup_path}"; then
     log error "Cannot create new cgroup at '${cgroup_path}'!"
     exit 1
   fi
@@ -67,7 +78,12 @@ run_in_new_cgroup() {
   ## at this point, it is the caller's responsibility to clean up the cgroup!
   ## This script will not automatically clean it up if the child process fails
   ## for some reason.
-  printf '%s\n' "${cgroup_path}"
+  ##
+  ## Skip printing the cgroup path if the caller already set the name. If the
+  ## caller knows the name, the caller knows the path.
+  if [ "${cgroup_name_option_used}" != 'true' ]; then
+    printf '%s\n' "${cgroup_path}"
+  fi
 
   if [ "${do_detach}" = 'true' ]; then
     ## Detach and exit. This is mostly useful for shell scripts that need this
@@ -82,4 +98,4 @@ run_in_new_cgroup() {
   "$@"
 }
 
-run_in_new_cgroup "$@"
+run_in_cgroup "$@"
