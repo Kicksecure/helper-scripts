@@ -17,6 +17,7 @@ if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
 fi
 
 if [ "$(id --user)" != '0' ]; then
+  true "INFO: Not running as root. Re-executing using sudo."
   sudo -- "$0" "$@"
   exit "$?"
 fi
@@ -114,11 +115,15 @@ teardown() {
 
   trap '' EXIT INT TERM
 
-  flock --unlock -- "${read_lock_fd}" || true
-  if flock --nonblock --exclusive -- "${read_lock_fd}" \
-    && flock --nonblock --exclusive -- "${write_lock_fd}" \
-    && umount -- "${target_wayland_socket}"; then
-    safe-rm --force -- "${target_wayland_socket}" || true
+  if [ -n "${read_lock_fd}" ]; then
+    flock --unlock -- "${read_lock_fd}" || true
+  fi
+  if [ -n "${read_lock_fd}" ]; then
+    if flock --nonblock --exclusive -- "${read_lock_fd}" \
+      && flock --nonblock --exclusive -- "${write_lock_fd}" \
+      && umount -- "${target_wayland_socket}"; then
+      safe-rm --force -- "${target_wayland_socket}" || true
+    fi
   fi
 
   exit "${exit_code}"
@@ -133,4 +138,3 @@ XDG_RUNTIME_DIR="${root_xdg_runtime_dir}" \
   QT_QPA_PLATFORM='wayland' \
   GDK_BACKEND='wayland' \
   "$@"
-teardown
