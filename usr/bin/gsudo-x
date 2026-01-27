@@ -73,6 +73,7 @@ setup() {
   target_x_lockfile="${root_x_lock_dir}/${display_hash}.lock"
   touch -- "${target_x_lockfile}"
 
+  true "exec {x_lock_fd}>${target_x_lockfile}"
   exec {x_lock_fd}>"${target_x_lockfile}"
 
   flock --shared -- "${x_lock_fd}"

@@ -95,7 +95,9 @@ setup() {
   touch -- "${target_wayland_read_lockfile}"
   touch -- "${target_wayland_write_lockfile}"
 
+  true "exec {read_lock_fd}>${target_wayland_read_lockfile}"
   exec {read_lock_fd}>"${target_wayland_read_lockfile}"
+  true "exec {write_lock_fd}>${target_wayland_write_lockfile}"
   exec {write_lock_fd}>"${target_wayland_write_lockfile}"
 
   flock --exclusive -- "${write_lock_fd}"
