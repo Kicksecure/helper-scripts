@@ -16,6 +16,11 @@ if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
   exit 1
 fi
 
+if (($# == 0)); then
+  log error "No command specified."
+  exit 2
+fi
+
 if [ "$(id --user)" != '0' ]; then
   true "INFO: Not running as root. Re-executing using sudo."
   sudo -- "$0" "$@"

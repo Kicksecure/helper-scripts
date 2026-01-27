@@ -16,12 +16,18 @@ if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
   exit 1
 fi
 
+if (($# == 0)); then
+  log error "No command specified."
+  exit 2
+fi
+
 if [ -z "${DISPLAY-}" ]; then
   log error "'\$DISPLAY' environment variable not set before elevating privileges!"
   exit 1
 fi
 
 if [ "$(id --user)" != '0' ]; then
+  true "INFO: Not running as root. Re-executing using sudo."
   sudo DISPLAY="${DISPLAY-}" "$0" "$@"
   exit "$?"
 fi
