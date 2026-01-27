@@ -1,0 +1,105 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+  printf '%s\n' "ERROR: Do not source this script ('${BASH_SOURCE[0]}')!"
+  exit 1
+fi
+
+if [ -z "${DISPLAY-}" ]; then
+  log error "'\$DISPLAY' environment variable not set before elevating privileges!"
+  exit 1
+fi
+
+if [ "$(id --user)" != '0' ]; then
+  sudo DISPLAY="${DISPLAY-}" "$0" "$@"
+  exit "$?"
+fi
+
+if [ -z "${SUDO_USER-}" ]; then
+  log error "'\$SUDO_USER' environment variable not set after elevating privileges!"
+  exit 1
+fi
+
+root_xdg_runtime_dir='/run/user/0'
+root_x_lock_dir="${root_xdg_runtime_dir}/gsudo-x-lock"
+target_x_lockfile=''
+x_lock_fd=''
+
+setup() {
+  local display_hash
+
+  ## We don't want the X server to always allow root access, as that would
+  ## allow AppArmor-confined applications that run as "root" to hijack the
+  ## user's session. We want to open up permissions for as short a time as
+  ## possible.
+  ##
+  ## Unlike gsudo-wl, we only need one lockfile, as there are no negative
+  ## consequences for running 'xhost +si:localuser:root' when the root
+  ## account is already permitted to access the X server. The lock file is
+  ## only needed to synchronize revoking permissions later.
+  ##
+  ## The following locking mechanism is used:
+  ##
+  ## - Ensure the X lockfile exists.
+  ## - Grab a shared lock on the lockfile, waiting indefinitely until the lock
+  ##   can be grabbed.
+  ## - Run 'xhost +si:localuser:root'.
+  ## - Run the application that needs X11 access.
+  ## - Release the shared lock.
+  ## - Make a non-blocking attempt to grab an exclusive lock on the lockfile.
+  ##   If the attempt fails, exit and do nothing else.
+  ## - If the attempt succeeds, run 'xhost -si:localuser:root', then exit.
+  ##
+  ## Note that the lockfile is never deleted. This is on purpose, as otherwise
+  ## one gsudo-x instance could delete the lockfile after another instance
+  ## opens it but before that other instance locks it.
+
+  install --directory --mode=0700 --owner=root --group=root -- "${root_xdg_runtime_dir}"
+  mkdir --parents -- "${root_x_lock_dir}"
+  ## $DISPLAY is unsafe to trust, as it may contain characters like `../`.
+  ## Hash it to get a stable ID we can use in the lockfile name.
+  display_hash="$(sha256sum <<< "${DISPLAY}" | cut -d' ' -f1)"
+  target_x_lockfile="${root_x_lock_dir}/${display_hash}.lock"
+  touch -- "${target_x_lockfile}"
+
+  exec {x_lock_fd}>"${target_x_lockfile}"
+
+  flock --shared -- "${x_lock_fd}"
+  ## It is assumed the X server will have `SI:localuser:${SUDO_USER}` already
+  ## configured in its ACL, and that the application being run as root is
+  ## running on the local machine. We do not support other X11 configurations.
+  sudo --user="${SUDO_USER}" -- xhost '+si:localuser:root' >/dev/null
+}
+
+teardown() {
+  local exit_code="$?"
+
+  trap '' EXIT INT TERM
+
+  flock --unlock -- "${x_lock_fd}" || true
+  if flock --nonblock --exclusive -- "${x_lock_fd}"; then
+    sudo --user="${SUDO_USER}" -- xhost '-si:localuser:root' >/dev/null
+  fi
+
+  exit "${exit_code}"
+}
+
+trap teardown EXIT INT TERM
+
+setup
+XDG_RUNTIME_DIR="${root_xdg_runtime_dir}" \
+  QT_QPA_PLATFORM='xcb' \
+  GDK_BACKEND='x11' \
+  "$@"
+teardown
