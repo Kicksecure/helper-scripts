@@ -49,7 +49,7 @@ run_in_cgroup() {
 
   if [ -z "${cgroup_name}" ]; then
     random_uuid_file='/proc/sys/kernel/random/uuid'
-    cgroup_name="$(cat "${random_uuid_file}")"
+    cgroup_name="$(cat -- "${random_uuid_file}")"
     if [ -z "${cgroup_name}" ]; then
       log error "Cannot get random UUID from '${random_uuid_file}'!"
       exit 1
@@ -57,7 +57,7 @@ run_in_cgroup() {
   fi
 
   cgroup_path="${cgroup_root}/${cgroup_name}"
-  if ! [ -d "${cgroup_path}" ] && ! mkdir "${cgroup_path}"; then
+  if ! [ -d "${cgroup_path}" ] && ! mkdir -- "${cgroup_path}"; then
     log error "Cannot create new cgroup at '${cgroup_path}'!"
     exit 1
   fi
@@ -69,7 +69,7 @@ run_in_cgroup() {
 
   if ! printf '%s\n' "$$" > "${cgroup_path}/cgroup.procs"; then
     log error "Cannot add parent process to cgroup '${cgroup_name}'!"
-    rmdir "${cgroup_path}" \
+    rmdir -- "${cgroup_path}" \
       || log warning "Cannot cleanup unnecessary cgroup '${cgroup_name}'!"
     exit 1
   fi
