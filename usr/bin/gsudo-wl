@@ -23,7 +23,12 @@ fi
 
 if [ "$(id --user)" != '0' ]; then
   true "INFO: Not running as root. Re-executing using sudo."
-  sudo -- "$0" "$@"
+  if test -o xtrace; then
+    ## XXX: Might add a superfluous ':xtrace'.
+    sudo -- env SHELLOPTS="${SHELLOPTS-}:xtrace" "$0" "$@"
+  else
+    sudo -- "$0" "$@"
+  fi
   exit "$?"
 fi
 
