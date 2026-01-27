@@ -103,4 +103,3 @@ XDG_RUNTIME_DIR="${root_xdg_runtime_dir}" \
   QT_QPA_PLATFORM='xcb' \
   GDK_BACKEND='x11' \
   "$@"
-teardown
