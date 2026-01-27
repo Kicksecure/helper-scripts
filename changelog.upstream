@@ -1,3 +1,77 @@
+commit 64b5873cc65c16ac42374e292c2390e5c4baeeec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 27 12:13:23 2026 -0500
+
+    improve
+
+commit 1f7772189838e7e288c2fe87df1c7c9275276816
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 27 12:00:18 2026 -0500
+
+    fix
+
+commit 25e2a1dfd019f9d0a6eeeb29fade58221bf9ca3b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 27 11:57:15 2026 -0500
+
+    fix
+
+commit 6b3adc146f7a7c8633a5a4d4a434a1bd1c749925
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 27 11:56:34 2026 -0500
+
+    remove superfluous `teardown` function call since already called by trap
+
+commit 77a5f8734dd348e8e94ef38f8bb83ea80b4aca9e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 27 11:25:01 2026 -0500
+
+    end-of-options
+
+commit b2d0c2e80f8d1a5350781643094e0c070b73f60f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 27 11:23:19 2026 -0500
+
+    debugging
+
+commit eb2e6119c8787d72a0a636cd8fba32c595771c19
+Merge: 628b6ca 6687fd6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jan 27 11:17:53 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 6687fd62c61f0e1abfd2f8bd5c231fbdcbfb84d7
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jan 25 19:47:07 2026 -0600
+
+    Rename run-in-new-cgroup to run-in-cgroup, allow running commands in an existing cgroup
+
+commit a4d677ce63fb509df500557da3851ee6ba7c13e1
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jan 25 18:05:38 2026 -0600
+
+    Add gsudo-wl and gsudo-x scripts
+
+commit 1e3072afa8472b77decf0afe01ffb12d9a6c61e2
+Merge: c8420f8 628b6ca
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jan 25 13:24:12 2026 -0600
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit c8420f8710056157c5f98491d40223b3a9c167b0
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jan 25 11:08:25 2026 -0600
+
+    Fix autologin disable mechanism for greetd
+
+commit 628b6ca07f6772b749b9a005238de4caae74d3ca
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jan 25 07:42:33 2026 +0000
+
+    bumped changelog version
+
 commit b16f3a96d22c0ea3d5fcc331158dbe4c4b25f4d3
 Merge: cae3d45 a864d7e
 Author: Patrick Schleizer <adrelanos@whonix.org>
