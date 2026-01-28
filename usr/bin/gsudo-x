@@ -77,8 +77,8 @@ setup() {
   ## opens it but before that other instance locks it.
 
   install --directory --mode=0700 --owner=root --group=root -- "${root_xdg_runtime_dir}"
-  mkdir --parents -- "${root_x_lock_dir}"
-  ## $DISPLAY is unsafe to trust, as it may contain characters like `../`.
+  install --directory --mode=0700 --owner=root --group=root -- "${root_x_lock_dir}"
+  ## $DISPLAY is unsafe to trust, as it may contain substrings like `../`.
   ## Hash it to get a stable ID we can use in the lockfile name.
   display_hash="$(sha256sum <<< "${DISPLAY}" | cut -d' ' -f1)"
   target_x_lockfile="${root_x_lock_dir}/${display_hash}.lock"
