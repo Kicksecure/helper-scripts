@@ -22,7 +22,7 @@ zsh_yes_or_no() {
       return 0
    fi
 
-   if grep --quiet 'nozsh' /proc/cmdline; then
+   if grep --quiet -- 'nozsh' /proc/cmdline; then
       printf '%s\n' "$0: INFO: No shell change because nozsh in kernel command line, ok."
       zsh_enable=no
       return 0
