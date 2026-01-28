@@ -40,7 +40,7 @@ zsh_yes_or_no() {
 }
 
 add_linux_user_account() {
-  if id "$USER_CREATE_USERNAME" &>/dev/null ; then
+  if id -- "$USER_CREATE_USERNAME" &>/dev/null ; then
     true "INFO: User '$USER_CREATE_USERNAME' already exists, skip creation."
     return 0
   fi
@@ -70,7 +70,7 @@ add_linux_user_account() {
   ## --disabled-password
   ## Do not run passwd(1) to set a password. In most situations, logins are still possible though
   ## (for example using SSH keys or through PAM) for reasons that are beyond adduser's scope.
-  adduser --no-create-home --disabled-password --comment "" "$USER_CREATE_USERNAME"
+  adduser --no-create-home --disabled-password --comment "" -- "$USER_CREATE_USERNAME"
   true "INFO: User created."
 }
 
@@ -95,7 +95,7 @@ password_empty_for_user_account() {
   #user:!:19932:0:99999:7:::
 
   printf '%s\n' "INFO: Set empty password for account '$USER_CREATE_USERNAME'..."
-  passwd --delete "$USER_CREATE_USERNAME"
+  passwd --delete -- "$USER_CREATE_USERNAME"
   ## /etc/shadow:
   #user::19932:0:99999:7:::
 }
@@ -106,10 +106,10 @@ add_groups_to_linux_user_account() {
     ## Use '&>/dev/null' to suppress error from 'is_group'.
     #log error "Group does not exist: '${group}'"
     if ! is_group "$group_item" &>/dev/null; then
-      addgroup --system "$group_item"
+      addgroup --system -- "$group_item"
     fi
 
-    adduser "$USER_CREATE_USERNAME" "$group_item"
+    adduser -- "$USER_CREATE_USERNAME" "$group_item"
   done
 }
 
@@ -128,7 +128,7 @@ linux_user_account_shell_to_zsh() {
   fi
 
   ## Use getent to retrieve the account's entry from /etc/passwd
-  user_passwd_entry=$(getent passwd "$USER_CREATE_USERNAME")
+  user_passwd_entry=$(getent passwd -- "$USER_CREATE_USERNAME")
 
   ## Extract the shell field (the last field) from the account's entry
   user_default_shell=$(printf '%s\n' "$user_passwd_entry" | awk -F: '{print $NF}')
@@ -140,18 +140,18 @@ linux_user_account_shell_to_zsh() {
 
   printf '%s\n' "$0: INFO: Setting shell for account '$USER_CREATE_USERNAME' to 'zsh'..."
   ## Use 'timeout' to prevent unexplained bug password prompt caused by 'chsh'.
-  if timeout --kill-after 5 5 chsh --shell /usr/bin/zsh "$USER_CREATE_USERNAME" ; then
+  if timeout --kill-after 5 5 chsh --shell /usr/bin/zsh -- "$USER_CREATE_USERNAME" ; then
      printf '%s\n' "$0: INFO: Shell for account '$USER_CREATE_USERNAME' has been set to 'zsh', ok."
   else
     if [ "$derivative_maker" = "true" ]; then
-      printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh $USER_CREATE_USERNAME' failed during the build process. (return 1 because derivative_maker=true)"
+      printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh -- $USER_CREATE_USERNAME' failed during the build process. (return 1 because derivative_maker=true)"
       return 1
     fi
     if [ -f '/var/lib/dist-base-files/live_build' ]; then
-      printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh $USER_CREATE_USERNAME' failed during the build process. (return 1 because /var/lib/dist-base-files/live_build exists)"
+      printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh -- $USER_CREATE_USERNAME' failed during the build process. (return 1 because /var/lib/dist-base-files/live_build exists)"
       return 1
     fi
-    printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh $USER_CREATE_USERNAME' failed. This is only a minor issue."
+    printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh -- $USER_CREATE_USERNAME' failed. This is only a minor issue."
     return 0
   fi
 }
