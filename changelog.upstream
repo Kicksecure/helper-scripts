@@ -1,3 +1,28 @@
+commit 21a21e4c1adb45b2d10cd5adb7d080f364f63829
+Merge: d6d8c90 9add9a2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 28 04:40:06 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 9add9a281c40223f1d142aa33ffdd8eec41d4dd5
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jan 28 02:01:58 2026 -0600
+
+    Use 'install' to make lockfile directories in gsudo-*, fix a comment
+
+commit 122de3ef368718c13b5af347e9b292d19e591afc
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Jan 28 01:55:53 2026 -0600
+
+    fix
+
+commit d6d8c905cdd7b23f10b5fcaeab1022f1d80c453b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 28 06:44:20 2026 +0000
+
+    bumped changelog version
+
 commit 87d8539c859ca307588a035db3aa1925d7b3dfe6
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jan 28 01:06:02 2026 -0500
