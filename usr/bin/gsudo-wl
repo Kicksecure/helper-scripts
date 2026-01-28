@@ -101,7 +101,7 @@ setup() {
   ## instance opens it but before that other instance locks it.
 
   install --directory --mode=0700 --owner=root --group=root -- "${root_xdg_runtime_dir}"
-  mkdir --parents -- "${root_wayland_lock_dir}"
+  install --directory --mode=0700 --owner=root --group=root -- "${root_wayland_lock_dir}"
   touch -- "${target_wayland_socket}"
   touch -- "${target_wayland_read_lockfile}"
   touch -- "${target_wayland_write_lockfile}"
@@ -127,12 +127,12 @@ teardown() {
 
   if [ -n "${read_lock_fd}" ]; then
     flock --unlock -- "${read_lock_fd}" || true
-  fi
-  if [ -n "${read_lock_fd}" ]; then
-    if flock --nonblock --exclusive -- "${read_lock_fd}" \
-      && flock --nonblock --exclusive -- "${write_lock_fd}" \
-      && umount -- "${target_wayland_socket}"; then
-      safe-rm --force -- "${target_wayland_socket}" || true
+    if [ -n "${write_lock_fd}" ] && [ -n "${target_wayland_socket}" ]; then
+      if flock --nonblock --exclusive -- "${read_lock_fd}" \
+        && flock --nonblock --exclusive -- "${write_lock_fd}" \
+        && umount -- "${target_wayland_socket}"; then
+        safe-rm --force -- "${target_wayland_socket}" || true
+      fi
     fi
   fi
 
