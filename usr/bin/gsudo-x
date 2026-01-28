@@ -99,9 +99,11 @@ teardown() {
 
   trap '' EXIT INT TERM
 
-  flock --unlock -- "${x_lock_fd}" || true
-  if flock --nonblock --exclusive -- "${x_lock_fd}"; then
-    sudo --user="${SUDO_USER}" -- xhost '-si:localuser:root' >/dev/null
+  if [ -n "${x_lock_fd}" ]; then
+    flock --unlock -- "${x_lock_fd}" || true
+    if flock --nonblock --exclusive -- "${x_lock_fd}"; then
+      sudo --user="${SUDO_USER}" -- xhost '-si:localuser:root' >/dev/null
+    fi
   fi
 
   exit "${exit_code}"

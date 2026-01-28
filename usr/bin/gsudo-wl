@@ -127,12 +127,12 @@ teardown() {
 
   if [ -n "${read_lock_fd}" ]; then
     flock --unlock -- "${read_lock_fd}" || true
-  fi
-  if [ -n "${read_lock_fd}" ]; then
-    if flock --nonblock --exclusive -- "${read_lock_fd}" \
-      && flock --nonblock --exclusive -- "${write_lock_fd}" \
-      && umount -- "${target_wayland_socket}"; then
-      safe-rm --force -- "${target_wayland_socket}" || true
+    if [ -n "${write_lock_fd}" ] && [ -n "${target_wayland_socket}" ]; then
+      if flock --nonblock --exclusive -- "${read_lock_fd}" \
+        && flock --nonblock --exclusive -- "${write_lock_fd}" \
+        && umount -- "${target_wayland_socket}"; then
+        safe-rm --force -- "${target_wayland_socket}" || true
+      fi
     fi
   fi
 
