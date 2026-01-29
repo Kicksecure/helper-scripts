@@ -265,23 +265,23 @@ run_test() {
 tests() {
    local input_string expected_result actual_result
 
-   ## run_test test_name function expected_exit_code var_name value
+   ## run_test <test_name> <function> <expected_exit_code> <var_name> <value...>
 
-   run_test "1" check_is_alpha_numeric 1 test_value ""
-   run_test "2" check_is_alpha_numeric 1 test_value "."
-   run_test "3" check_is_alpha_numeric 0 test_value "test"
+   run_test "alpha_numeric: rejects empty"                   check_is_alpha_numeric 1 test_value ""
+   run_test "alpha_numeric: rejects dot"                     check_is_alpha_numeric 1 test_value "."
+   run_test "alpha_numeric: accepts simple token"            check_is_alpha_numeric 0 test_value "test"
 
-   run_test "a" validate_safe_filename 0 test_value "test"
-   run_test "b" validate_safe_filename 1 test_value "."
-   run_test "c" validate_safe_filename 1 test_value ".."
-   run_test "d" validate_safe_filename 1 test_value "test..test"
+   run_test "safe_filename: accepts simple name"             validate_safe_filename 0 test_value "test"
+   run_test "safe_filename: rejects dot"                     validate_safe_filename 1 test_value "."
+   run_test "safe_filename: rejects double dot"              validate_safe_filename 1 test_value ".."
+   run_test "safe_filename: rejects embedded double dot"     validate_safe_filename 1 test_value "test..test"
 
-   run_test "4" check_is_not_empty_and_only_one_line 1 test_value ""
-   run_test "5" check_is_not_empty_and_only_one_line 1 test_value $'\n\n   '
-   run_test "6" check_is_not_empty_and_only_one_line 1 test_value "   "
-   run_test "7" check_is_not_empty_and_only_one_line 0 test_value "Hello, World!"
-   run_test "8" check_is_not_empty_and_only_one_line 1 test_value $'Hello\nWorld'
-   run_test "9" check_is_not_empty_and_only_one_line 0 test_value "  Hello  "
+   run_test "one_line: rejects empty"                        check_is_not_empty_and_only_one_line 1 test_value ""
+   run_test "one_line: rejects only whitespace/newlines"     check_is_not_empty_and_only_one_line 1 test_value $'\n\n   '
+   run_test "one_line: rejects only spaces"                  check_is_not_empty_and_only_one_line 1 test_value "   "
+   run_test "one_line: accepts normal text"                  check_is_not_empty_and_only_one_line 0 test_value "Hello, World!"
+   run_test "one_line: rejects multi-line string"            check_is_not_empty_and_only_one_line 1 test_value $'Hello\nWorld'
+   run_test "one_line: accepts text with surrounding spaces" check_is_not_empty_and_only_one_line 0 test_value "  Hello  "
 
    input_string=$'test1\ntest2'
    expected_result=$'test1<br />\ntest2'
