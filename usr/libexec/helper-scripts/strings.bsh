@@ -232,62 +232,60 @@ random_alpha_numeric() {
 }
 
 run_test() {
-   local test_name function_name var_name expected_exit_code var_name value actual_exit_code
-   test_name="$1"
-   shift
-   function_name="$1"
-   shift
-   expected_exit_code="$1"
-   shift
-   var_name="$1"
-   shift
-   value="$@"
+   local test_id function_name expected_exit_code var_name
+   local -a input_parts
+   local input_value actual_exit_code=0
 
-   eval "$var_name=\"\$value\""
-   printf '%s\n' "$0: Running test: $test_name"
+   test_id="$1"; shift
+   function_name="$1"; shift
+   expected_exit_code="$1"; shift
+   var_name="$1"; shift
 
-   actual_exit_code=0
-   true "Running: $function_name $var_name"
-   $function_name "$var_name" || { actual_exit_code=$? ; true; };
+   # Preserve whitespace/newlines in the value by keeping the remainder as an array
+   input_parts=("$@")
+   input_value="${input_parts[*]}"
 
-   if [ "$actual_exit_code" -eq "$expected_exit_code" ]; then
+   # Assign without eval (works for simple variable names like testvar/a/etc.)
+   printf -v "$var_name" '%s' "$input_value"
+
+   printf '%s\n' "$0: Running test $test_id: $function_name ($var_name)"
+
+   "$function_name" "$var_name" || actual_exit_code=$?
+
+   if [[ "$actual_exit_code" -eq "$expected_exit_code" ]]; then
       printf '%s\n' "$0: Test Passed"
    else
-      printf '%s\n' "$0: Test Failed (Expected exit code: '$expected_exit_code', Got: '$actual_exit_code')" >&2
+      printf '%s\n' "$0: Test Failed (Expected: $expected_exit_code, Got: $actual_exit_code)" >&2
       return 1
    fi
+
    printf '%s\n' "---------------------------------"
 }
 
 tests() {
    local input_string expected_result actual_result
 
-   #run_test test_name function expected_exit_code var_name value
+   ## run_test test_name function expected_exit_code var_name value
 
-   run_test 1 check_is_alpha_numeric 1 testvar ""
-   run_test 2 check_is_alpha_numeric 1 testvar "."
-   run_test 3 check_is_alpha_numeric 0 testvar "test"
+   run_test "1" check_is_alpha_numeric 1 test_value ""
+   run_test "2" check_is_alpha_numeric 1 test_value "."
+   run_test "3" check_is_alpha_numeric 0 test_value "test"
 
-   run_test a validate_safe_filename 0 testvar "test"
-   run_test b validate_safe_filename 1 testvar "."
-   run_test c validate_safe_filename 1 testvar ".."
+   run_test "a" validate_safe_filename 0 test_value "test"
+   run_test "b" validate_safe_filename 1 test_value "."
+   run_test "c" validate_safe_filename 1 test_value ".."
+   run_test "d" validate_safe_filename 1 test_value "test..test"
 
-   run_test 4 check_is_not_empty_and_only_one_line 1 a ""
-   run_test 5 check_is_not_empty_and_only_one_line 1 a "
+   run_test "4" check_is_not_empty_and_only_one_line 1 test_value ""
+   run_test "5" check_is_not_empty_and_only_one_line 1 test_value $'\n\n   '
+   run_test "6" check_is_not_empty_and_only_one_line 1 test_value "   "
+   run_test "7" check_is_not_empty_and_only_one_line 0 test_value "Hello, World!"
+   run_test "8" check_is_not_empty_and_only_one_line 1 test_value $'Hello\nWorld'
+   run_test "9" check_is_not_empty_and_only_one_line 0 test_value "  Hello  "
 
+   input_string=$'test1\ntest2'
+   expected_result=$'test1<br />\ntest2'
 
-   " 1
-   run_test 6 check_is_not_empty_and_only_one_line 1 a "   "
-   run_test 7 check_is_not_empty_and_only_one_line 0 a "Hello, World!"
-   run_test 8 check_is_not_empty_and_only_one_line 1 a "Hello
-   World" 1
-   run_test 9 check_is_not_empty_and_only_one_line 0 a "  Hello  "
-
-
-   input_string="test1
-test2"
-   expected_result="test1<br />
-test2"
    actual_result="$(br_add "$input_string")"
    if ! [ "$expected_result" = "$actual_result" ]; then
       error "br_add command failed!"
