@@ -140,20 +140,21 @@ validate_safe_filename() {
     ## Allow: letters/digits (locale-aware), underscore, dash, dot, space,
     ## plus, comma, equals, @, parentheses, braces, square brackets
     re='^[[:alnum:]_.@+=,(){}\[\] -]+$'
-    if ! [[ "$value" =~ $re ]]; then
-      reason="Invalid character!"
+    if [[ "$value" =~ $re ]]; then
+      return 0
     fi
+    reason="Invalid character!"
   fi
 
-  if [[ -n "${reason-}" ]]; then
-    stecho "$0: ${FUNCNAME[0]}
+  printf 'RAW: <%q>\n' "$value"
+  LC_ALL=C od -An -tx1 <<<"$value"
+
+  stecho "$0: ${FUNCNAME[0]}
 \$1 (variable name): '$varname'
 \$2 (variable content): '$value'
 $reason" >&2
-    return 1
-  fi
 
-  return 0
+  return 1
 }
 
 check_is_not_empty_and_only_one_line() {
