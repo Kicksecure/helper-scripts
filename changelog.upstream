@@ -1,3 +1,15 @@
+commit 10ffd991a1a54c3646413785e5b4471578be2495
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 02:55:10 2026 -0500
+
+    add `check_is_alpha_numeric`
+
+commit e596ed029dc25f42db36a39556524b2f92f1baa3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jan 28 09:41:24 2026 +0000
+
+    bumped changelog version
+
 commit 21a21e4c1adb45b2d10cd5adb7d080f364f63829
 Merge: d6d8c90 9add9a2
 Author: Patrick Schleizer <adrelanos@whonix.org>
