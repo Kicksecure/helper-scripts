@@ -114,6 +114,48 @@ Invalid character!" >&2
    return 0
 }
 
+validate_safe_filename() {
+  local varname value re
+
+  varname="$1"
+  value="${!varname}"
+
+  if [[ -z "$value" ]]; then
+    reason="Empty value!"
+  elif [[ "$value" == *"/"* || "$value" == *\\* ]]; then
+    reason="Path separator not allowed!"
+  elif [[ "$value" == "." ]]; then
+    reason="Dot path not allowed!"
+  elif [[ "$value" == ".." ]]; then
+    reason="Double dot path not allowed!"
+  elif [[ "$value" == *".."* ]]; then
+    reason="Contains '..'!"
+  elif [[ "$value" =~ [[:cntrl:]] ]]; then
+    reason="Control character not allowed!"
+  elif [[ "$value" == -* ]]; then
+    reason="Leading '-' not allowed!"
+  elif (( ${#value} > 255 )); then
+    reason="Too long (>255 chars)!"
+  else
+    ## Allow: letters/digits (locale-aware), underscore, dash, dot, space,
+    ## plus, comma, equals, @, parentheses, braces, square brackets
+    re='^[[:alnum:]_.@+=,(){}\[\] -]+$'
+    if ! [[ "$value" =~ $re ]]; then
+      reason="Invalid character!"
+    fi
+  fi
+
+  if [[ -n "${reason-}" ]]; then
+    stecho "$0: ${FUNCNAME[0]}
+\$1 (variable name): '$varname'
+\$2 (variable content): '$value'
+$reason" >&2
+    return 1
+  fi
+
+  return 0
+}
+
 check_is_not_empty_and_only_one_line() {
    local varname value number_of_lines
 
@@ -205,7 +247,7 @@ run_test() {
 
    actual_exit_code=0
    true "Running: $function_name $var_name"
-   $function_name "$var_name" 2>/dev/null || { actual_exit_code=$? ; true; };
+   $function_name "$var_name" || { actual_exit_code=$? ; true; };
 
    if [ "$actual_exit_code" -eq "$expected_exit_code" ]; then
       printf '%s\n' "$0: Test Passed"
@@ -217,18 +259,17 @@ run_test() {
 }
 
 tests() {
-   set -o errexit
-   set -o errtrace
-   set -o pipefail
-   set -o nounset
-
    local input_string expected_result actual_result
 
    #run_test test_name function expected_exit_code var_name value
 
-   run_test 1 check_is_alpha_numeric 1 a ""
-   run_test 2 check_is_alpha_numeric 1 a "."
-   run_test 3 check_is_alpha_numeric 0 a "test"
+   run_test 1 check_is_alpha_numeric 1 testvar ""
+   run_test 2 check_is_alpha_numeric 1 testvar "."
+   run_test 3 check_is_alpha_numeric 0 testvar "test"
+
+   run_test a validate_safe_filename 0 testvar "test"
+   run_test b validate_safe_filename 1 testvar "."
+   run_test c validate_safe_filename 1 testvar ".."
 
    run_test 4 check_is_not_empty_and_only_one_line 1 a ""
    run_test 5 check_is_not_empty_and_only_one_line 1 a "
@@ -259,7 +300,18 @@ test2"
    printf '%s\n' "$0: All Tests Passed"
 }
 
+strings_bsh_error_trap() {
+  local last_exit_code="$?"
+  echo "$0: ERROR: failed: '$BASH_COMMAND'"
+  exit 1
+}
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+   set -o errexit
+   set -o errtrace
+   set -o pipefail
+   set -o nounset
+   trap strings_bsh_error_trap ERR
    tests
 fi
 
