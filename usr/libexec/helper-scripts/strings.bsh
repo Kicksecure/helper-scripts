@@ -139,7 +139,7 @@ validate_safe_filename() {
   else
     ## Allow: letters/digits (locale-aware), underscore, dash, dot, space,
     ## plus, comma, equals, @, parentheses, braces, square brackets
-    re='^[[:alnum:]_.@+=,(){}\[\] -]+$'
+    re='^[][:alnum:]_.@+=,(){}\[ -]+$'
     if [[ "$value" =~ $re ]]; then
       return 0
     fi
