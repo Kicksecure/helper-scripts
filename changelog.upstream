@@ -1,3 +1,57 @@
+commit 78e249fa8ceb7620f79eabaf0bc39318bd402485
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 05:33:48 2026 -0500
+
+    fix
+
+commit 5fde7ba9029dc3f35df88169828d1d8ecf64957e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 05:24:23 2026 -0500
+
+    improve
+
+commit 340ca0b87ec12a9666598183ac02741aea3218cc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 05:21:49 2026 -0500
+
+    improve
+
+commit db196a2fe56fa742621bd9197e73f7e8389dea89
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 05:20:08 2026 -0500
+
+    improve
+
+commit fef28450d547de7275044f71e72e1e9a246cd0b1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 05:12:17 2026 -0500
+
+    fix
+
+commit 5665445552323fccc7669fb01b9104d300a8bcf4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 04:57:50 2026 -0500
+
+    fix
+
+commit 24a8932ed84ec76a3d98a5c01d70ea0011c41342
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 04:55:34 2026 -0500
+
+    fix
+
+commit 138fff6cce7bf1c783ff293cffda9aa2cec717e2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 04:54:39 2026 -0500
+
+    add `validate_safe_filename`
+
+commit a72b52cb46df78d6a0a92c21a47574f947a84426
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 07:56:12 2026 +0000
+
+    bumped changelog version
+
 commit 10ffd991a1a54c3646413785e5b4471578be2495
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 29 02:55:10 2026 -0500
