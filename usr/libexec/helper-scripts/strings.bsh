@@ -270,8 +270,9 @@ tests() {
    run_test "alpha_numeric: rejects empty"                   check_is_alpha_numeric 1 test_value ""
    run_test "alpha_numeric: rejects dot"                     check_is_alpha_numeric 1 test_value "."
    run_test "alpha_numeric: rejects space"                   check_is_alpha_numeric 1 test_value "plain text"
-   #run_test "alpha_numeric: rejects unicode"                 check_is_alpha_numeric 1 test_value "cafe"
-   run_test "alpha_numeric: accepts token with dash/underscore" check_is_alpha_numeric 0 test_value "test_123-OK"
+   run_test "alpha_numeric: accepts dash/underscore"         check_is_alpha_numeric 0 test_value "test_123-OK"
+   ## TODO: unclear if this is possible without unicode-show
+   #run_test "alpha_numeric: rejects unicode"                 check_is_alpha_numeric 1 test_value $'caf\xC3\xA9'
 
    run_test "safe_filename: accepts simple name"             validate_safe_filename 0 test_value "test"
    run_test "safe_filename: accepts spaces and punctuation"  validate_safe_filename 0 test_value "plain text (v1) [ok].txt"
@@ -283,6 +284,8 @@ tests() {
    run_test "safe_filename: rejects control char newline"    validate_safe_filename 1 test_value $'hello\nworld'
    run_test "safe_filename: rejects leading dash"            validate_safe_filename 1 test_value "-rf"
    run_test "safe_filename: rejects overlong name"           validate_safe_filename 1 test_value "$(printf 'a%.0s' {1..256})"
+   ## TODO: unclear if this is possible without unicode-show
+   #run_test "safe_filename: rejects unicode"                 validate_safe_filename 1 test_value $'caf\xC3\xA9'
 
    run_test "one_line: rejects empty"                        check_is_not_empty_and_only_one_line 1 test_value ""
    run_test "one_line: rejects only whitespace/newlines"     check_is_not_empty_and_only_one_line 1 test_value $'\n\n   '
