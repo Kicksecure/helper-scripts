@@ -115,7 +115,7 @@ Invalid character!" >&2
 }
 
 validate_safe_filename() {
-  local varname value re
+  local varname value reason re
 
   varname="$1"
   value="${!varname}"
