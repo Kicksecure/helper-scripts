@@ -139,7 +139,7 @@ validate_safe_filename() {
   else
     ## Allow: letters/digits (locale-aware), underscore, dash, dot, space,
     ## plus, comma, equals, @, parentheses, braces, square brackets
-    re='^[][:alnum:]_.@+=,(){}\[ -]+$'
+    re='^[][:alnum:]_.:@+=,(){}\[ -]+$'
     if [[ "$value" =~ $re ]]; then
       return 0
     fi
@@ -282,7 +282,8 @@ tests() {
    run_test "safe_filename: rejects slash"                   validate_safe_filename 1 test_value "dir/file"
    run_test "safe_filename: rejects backslash"               validate_safe_filename 1 test_value $'dir\\file'
    run_test "safe_filename: rejects control char newline"    validate_safe_filename 1 test_value $'hello\nworld'
-   run_test "safe_filename: rejects leading dash"            validate_safe_filename 1 test_value "-rf"
+   run_test "safe_filename: rejects leading dash"            validate_safe_filename 1 test_value "-option"
+   run_test "safe_filename: accepts colon"                   validate_safe_filename 0 test_value "test:test"
    run_test "safe_filename: rejects overlong name"           validate_safe_filename 1 test_value "$(printf 'a%.0s' {1..256})"
    ## TODO: unclear if this is possible without unicode-show
    #run_test "safe_filename: rejects unicode"                 validate_safe_filename 1 test_value $'caf\xC3\xA9'
