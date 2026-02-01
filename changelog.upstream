@@ -1,3 +1,40 @@
+commit 8687b2c989122d8b2be3c6cda2366b8ec33650a2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Feb 1 08:29:58 2026 -0500
+
+    refactoring
+
+commit f9de913cf638d780e0b713615375331662b0c851
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Feb 1 08:28:03 2026 -0500
+
+    fix
+
+commit 9f2f7af3d4da761cd34976c9b361a8fcc73e87ce
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Feb 1 08:22:44 2026 -0500
+
+    shellcheck
+
+commit f0326443b68af235d058b75351c1c86ce23a4d9f
+Merge: c7b4703 d1aaecf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Feb 1 08:16:07 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit d1aaecf14df1996e47348af2bf82a30d6a116ee3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Feb 1 05:58:12 2026 -0600
+
+    Remove unnecessary user-sysmaint-split-check script, rename boot-session-detection.sh to boot-session-detection.bsh, make boot-session-detection.bsh usable as a normal executable
+
+commit c7b47031937c92edc3f6a5f6e092976472a035af
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 29 10:45:41 2026 +0000
+
+    bumped changelog version
+
 commit b0c02050fe7c8cf0b16dbb1f9cb9d2fed0a4660e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 29 05:45:12 2026 -0500
