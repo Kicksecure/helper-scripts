@@ -188,7 +188,7 @@ reboot, to finish the enrollment process."
   fi
 
   log notice "Rebuilding DKMS modules..."
-  if ! rebuild-dkms-modules; then
+  if ! log_run notice rebuild-dkms-modules; then
     log warning "Some DKMS modules failed to build!"
     ## Do not return 1 here, the user probably wants to finish enrolling the
     ## MOK, and fix DKMS later.
