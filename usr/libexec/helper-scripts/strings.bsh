@@ -329,6 +329,11 @@ strings_bsh_error_trap() {
 
 ## Useful in case this script is copied verbatim into another script such as
 ## in package 'usability-misc' file 'dist-installer-cli-standalone'.
+if ! [ "${SKIP_UNIT_TESTS-}" = "true" ]; then
+  ## TODO
+  #string_bsh_tests
+  true
+fi
 
 #trim_collapse_split " aaa  bbb ccc ddd "
 #flavor_meta_packages_to_install='kicksecure-baremetal-gui-lxqt kicksecure-baremetal-server'
