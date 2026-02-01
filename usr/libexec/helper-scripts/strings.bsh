@@ -262,8 +262,15 @@ run_test() {
    printf '%s\n' "---------------------------------"
 }
 
-tests() {
+string_bsh_tests() {
    local input_string expected_result actual_result
+
+   ## Should be inside a function to avoid doing this if this script gets 'source'ed.
+   set -o errexit
+   set -o errtrace
+   set -o pipefail
+   set -o nounset
+   trap strings_bsh_error_trap ERR
 
    ## run_test <test_name> <function> <expected_exit_code> <var_name> <value...>
 
@@ -316,13 +323,11 @@ strings_bsh_error_trap() {
   exit 1
 }
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-   set -o errexit
-   set -o errtrace
-   set -o pipefail
-   set -o nounset
-   trap strings_bsh_error_trap ERR
-   tests
+if [[ "usr/libexec/helper-scripts/strings.bsh" == "${0}" ]]; then
+  string_bsh_tests
+fi
+if [[ "/usr/libexec/helper-scripts/strings.bsh" == "${0}" ]]; then
+  string_bsh_tests
 fi
 
 #trim_collapse_split " aaa  bbb ccc ddd "
