@@ -25,3 +25,7 @@ boot_session_detection() {
 }
 
 boot_session_detection
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  printf '%s\n' "${boot_session}"
+fi

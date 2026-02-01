@@ -24,7 +24,7 @@ sudo_useable_test() {
 
    ## Debugging.
    ## sets: boot_session
-   source /usr/libexec/helper-scripts/boot-session-detection.sh
+   source /usr/libexec/helper-scripts/boot-session-detection.bsh
 
    if ! test -x "$sudo_exe"; then
       true "$0: INFO: sudo is not executable. Cannot use sudo."
