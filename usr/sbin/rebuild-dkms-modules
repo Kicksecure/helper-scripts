@@ -54,11 +54,13 @@ rebuild_dkms_modules() {
       log warning "DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}' failed to build! Skipping."
       continue
     fi
+    log notice "Successfully rebuilt DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'."
+    log notice "Installing DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'..."
     if ! log_run notice dkms install "${dkms_mod_name}" -k "${dkms_mod_kernel}" --force; then
       log warning "DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}' failed to install! Skipping."
       continue
     fi
-    log notice "Successfully rebuilt DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'."
+    log notice "Successfully installed DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'."
     (( dkms_build_count++ )) || true
   done < <(dkms status)
 
