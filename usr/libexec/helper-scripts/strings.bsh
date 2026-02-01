@@ -327,10 +327,9 @@ strings_bsh_error_trap() {
   exit 1
 }
 
-if [[ "usr/libexec/helper-scripts/strings.bsh" == "${0}" ]]; then
-  string_bsh_tests
-fi
-if [[ "/usr/libexec/helper-scripts/strings.bsh" == "${0}" ]]; then
+## Useful in case this script is copied verbatim into another script such as
+## in package 'usability-misc' file 'dist-installer-cli-standalone'.
+if ! [ "${SKIP_UNIT_TESTS-}" = "true" ]; then
   string_bsh_tests
 fi
 
