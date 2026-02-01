@@ -312,7 +312,7 @@ tests() {
 
 strings_bsh_error_trap() {
   local last_exit_code="$?"
-  echo "$0: ERROR: failed: '$BASH_COMMAND'"
+  echo "$0: ERROR: failed: '$BASH_COMMAND' | exit code: '$last_exit_code'"
   exit 1
 }
 
