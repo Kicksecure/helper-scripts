@@ -4,35 +4,35 @@
 ## See the file COPYING for copying conditions.
 
 br_add() {
-   local in out
+  local in out
 
-   if (( $# > 1 )); then
-      printf '%s\n' "br_add: too many arguments" >&2
-      return 1
-   fi
+  if (($# > 1)); then
+    printf '%s\n' "br_add: too many arguments" >&2
+    return 1
+  fi
 
-   if (( $# == 1 )); then
-      in="$1"
-   else
-      in="$(cat)"
-   fi
+  if (($# == 1)); then
+    in="$1"
+  else
+    in="$(cat)"
+  fi
 
-   ## Replace each newline with "<br />\n"
-   out="${in//$'\n'/'<br />'$'\n'}"
-   printf '%s\n' "$out"
+  ## Replace each newline with "<br />\n"
+  out="${in//$'\n'/'<br />'$'\n'}"
+  printf '%s\n' "$out"
 }
 
 br_add_to_file() {
-   local file_name="$1"
+  local file_name="$1"
 
-   test -f "${file_name}"
-   safe-rm -f -- "${file_name}_br"
-   touch -- "${file_name}_br"
+  test -f "${file_name}"
+  safe-rm -f -- "${file_name}_br"
+  touch -- "${file_name}_br"
 
-   local line
-   while IFS= read -r line ; do
-      printf '%s\n' "$line<br />" | tee -a -- "${file_name}_br" >/dev/null
-   done < "${file_name}"
+  local line
+  while IFS= read -r line; do
+    printf '%s\n' "$line<br />" | tee -a -- "${file_name}_br" >/dev/null
+  done <"${file_name}"
 }
 
 read_integer_file() {
@@ -54,15 +54,15 @@ read_integer_file() {
     return 1
   fi
 
-  if ! test -f "$target_file" ; then
+  if ! test -f "$target_file"; then
     printf '%s\n' "$0: ERROR: Target file '$target_file' does not exist!" >&2
     return 1
   fi
-  if ! test -r "$target_file" ; then
+  if ! test -r "$target_file"; then
     printf '%s\n' "$0: ERROR: Target file '$target_file' not readable!" >&2
     return 1
   fi
-  if ! file_contents="$(stcat "$target_file")" ; then
+  if ! file_contents="$(stcat "$target_file")"; then
     printf '%s\n' "$0: ERROR: Cannot stcat target file '$target_file'!" >&2
     return 1
   fi
@@ -74,11 +74,11 @@ read_integer_file() {
     printf '%s\n' "$0: ERROR: Non-numeric value in target file '$target_file'!" >&2
     return 1
   fi
-  if [ -n "$lower_bound" ] && (( file_contents < lower_bound )); then
+  if [ -n "$lower_bound" ] && ((file_contents < lower_bound)); then
     printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is below the lower bound '$lower_bound'!" >&2
     return 1
   fi
-  if [ -n "$upper_bound" ] && (( file_contents > upper_bound )); then
+  if [ -n "$upper_bound" ] && ((file_contents > upper_bound)); then
     printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is above the upper bound '$upper_bound'!" >&2
     return 1
   fi
@@ -87,31 +87,31 @@ read_integer_file() {
 }
 
 check_is_alpha_numeric() {
-   local varname value
+  local varname value
 
-   if [ -z "$1" ]; then
-      printf '%s\n' "$0: ERROR: No variable name provided to check_is_alpha_numeric." >&2
-      return 1
-   fi
+  if [ -z "$1" ]; then
+    printf '%s\n' "$0: ERROR: No variable name provided to check_is_alpha_numeric." >&2
+    return 1
+  fi
 
-   varname="$1"
-   value="${!varname}"
+  varname="$1"
+  value="${!varname}"
 
-   if ! [[ "$value" =~ ^[0-9a-zA-Z_-]+$ ]]; then
-      stecho "$0:
+  if ! [[ "$value" =~ ^[0-9a-zA-Z_-]+$ ]]; then
+    stecho "$0:
 \$1 (variable name): '$varname'
 \$2 (variable content): '$value'
 Invalid character!" >&2
-      return 1
-   fi
-   if [ "$value" = "" ]; then
-      stecho "$0:
+    return 1
+  fi
+  if [ "$value" = "" ]; then
+    stecho "$0:
 \$1 (variable name): '$varname'
 \$2 (variable content): empty!" >&2
-      return 1
-   fi
+    return 1
+  fi
 
-   return 0
+  return 0
 }
 
 validate_safe_filename() {
@@ -134,7 +134,7 @@ validate_safe_filename() {
     reason="Control character not allowed!"
   elif [[ "$value" == -* ]]; then
     reason="Leading '-' not allowed!"
-  elif (( ${#value} > 255 )); then
+  elif ((${#value} > 255)); then
     reason="Too long (>255 chars)!"
   else
     ## Allow: letters/digits (locale-aware), underscore, dash, dot, space,
@@ -158,36 +158,36 @@ $reason" >&2
 }
 
 check_is_not_empty_and_only_one_line() {
-   local varname value number_of_lines
+  local varname value number_of_lines
 
-   if [ -z "$1" ]; then
-      printf '%s\n' "$0: ERROR: No variable name provided to check_is_not_empty_and_only_one_line." >&2
-      return 1
-   fi
+  if [ -z "$1" ]; then
+    printf '%s\n' "$0: ERROR: No variable name provided to check_is_not_empty_and_only_one_line." >&2
+    return 1
+  fi
 
-   varname="$1"
-   value="${!varname}"
+  varname="$1"
+  value="${!varname}"
 
-   ## Trim leading/trailing spaces while preserving newlines.
-   IFS= read -r trimmed_value <<< "$value"
+  ## Trim leading/trailing spaces while preserving newlines.
+  IFS= read -r trimmed_value <<<"$value"
 
-   ## Check if value is empty or only contains spaces/newlines.
-   if [[ -z "$trimmed_value" || -z "${value//[[:space:]]/}" ]]; then
-      printf '%s\n' "$0: ERROR: Variable '$varname' is empty or contains only whitespace/newlines." >&2
-      return 1
-   fi
+  ## Check if value is empty or only contains spaces/newlines.
+  if [[ -z "$trimmed_value" || -z "${value//[[:space:]]/}" ]]; then
+    printf '%s\n' "$0: ERROR: Variable '$varname' is empty or contains only whitespace/newlines." >&2
+    return 1
+  fi
 
-   ## Count the number of lines using mapfile.
-   mapfile -t lines <<< "$value"
-   number_of_lines="${#lines[@]}"
+  ## Count the number of lines using mapfile.
+  mapfile -t lines <<<"$value"
+  number_of_lines="${#lines[@]}"
 
-   if [ "$number_of_lines" -ne 1 ]; then
-      printf '%s\n' "$0: ERROR: Variable '$varname' contains more than one line. Content:
+  if [ "$number_of_lines" -ne 1 ]; then
+    printf '%s\n' "$0: ERROR: Variable '$varname' contains more than one line. Content:
 '$value'" >&2
-      return 1
-   fi
+    return 1
+  fi
 
-   return 0
+  return 0
 }
 
 ## Converts $1 to a newline-separated, properly escaped list.
@@ -195,19 +195,19 @@ check_is_not_empty_and_only_one_line() {
 ## consecutive spaces into single spaces, then converts spaces to newlines
 ## and adds spaces and backslashes where necessary.
 trim_collapse_split() {
-   local input_list="$1"
-   local trimmed_list cleaned_list formatted_list
+  local input_list="$1"
+  local trimmed_list cleaned_list formatted_list
 
-   ## Step 1: Trim leading and trailing spaces.
-   trimmed_list="$(printf '%s\n' "$input_list" | sed 's/^\s\+//g; s/\s\+$//g')"
+  ## Step 1: Trim leading and trailing spaces.
+  trimmed_list="$(printf '%s\n' "$input_list" | sed 's/^\s\+//g; s/\s\+$//g')"
 
-   ## Step 2: Replace multiple spaces with a single space.
-   cleaned_list="$(printf '%s\n' "$trimmed_list" | sed 's/\s\+/ /g')"
+  ## Step 2: Replace multiple spaces with a single space.
+  cleaned_list="$(printf '%s\n' "$trimmed_list" | sed 's/\s\+/ /g')"
 
-   ## Step 3: Replace spaces with ' \n' (newline prefixed by space).
-   formatted_list="$(printf '%s\n' "$cleaned_list" | sed 's/\s/ \\\n/g')"
+  ## Step 3: Replace spaces with ' \n' (newline prefixed by space).
+  formatted_list="$(printf '%s\n' "$cleaned_list" | sed 's/\s/ \\\n/g')"
 
-   printf '%s\n' "$formatted_list"
+  printf '%s\n' "$formatted_list"
 }
 
 ## success: whole numbers such as 1 2 3 456 etc. (purely numeric only) (isnum)
@@ -221,100 +221,104 @@ trim_collapse_split() {
 ## scientific notation such as 1.23e10
 ## negative numbers such as -1
 is_whole_number() {
-   [[ "$1" =~ ^[0-9]+$ ]]
+  [[ "$1" =~ ^[0-9]+$ ]]
 }
 
 ## NOTE: Duplicated in package 'uwt' file 'curl.anondist'.
 random_alpha_numeric() {
   local n="${1:-43}"
-  LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/random | head --bytes="$n" || true
+  LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="$n" || true
   printf '%s\n' ""
 }
 
 run_test() {
-   local test_id function_name expected_exit_code var_name
-   local -a input_parts
-   local input_value actual_exit_code=0
+  local test_id function_name expected_exit_code var_name
+  local -a input_parts
+  local input_value actual_exit_code=0
 
-   test_id="$1"; shift
-   function_name="$1"; shift
-   expected_exit_code="$1"; shift
-   var_name="$1"; shift
+  test_id="$1"
+  shift
+  function_name="$1"
+  shift
+  expected_exit_code="$1"
+  shift
+  var_name="$1"
+  shift
 
-   # Preserve whitespace/newlines in the value by keeping the remainder as an array
-   input_parts=("$@")
-   input_value="${input_parts[*]}"
+  # Preserve whitespace/newlines in the value by keeping the remainder as an array
+  input_parts=("$@")
+  input_value="${input_parts[*]}"
 
-   # Assign without eval (works for simple variable names like testvar/a/etc.)
-   printf -v "$var_name" '%s' "$input_value"
+  # Assign without eval (works for simple variable names like testvar/a/etc.)
+  printf -v "$var_name" '%s' "$input_value"
 
-   printf '%s\n' "$0: Running test $test_id: $function_name ($var_name)"
+  printf '%s\n' "$0: Running test $test_id: $function_name ($var_name)"
 
-   "$function_name" "$var_name" || actual_exit_code=$?
+  "$function_name" "$var_name" || actual_exit_code=$?
 
-   if [[ "$actual_exit_code" -eq "$expected_exit_code" ]]; then
-      printf '%s\n' "$0: Test Passed"
-   else
-      printf '%s\n' "$0: Test Failed (Expected: $expected_exit_code, Got: $actual_exit_code)" >&2
-      return 1
-   fi
+  if [[ "$actual_exit_code" -eq "$expected_exit_code" ]]; then
+    printf '%s\n' "$0: Test Passed"
+  else
+    printf '%s\n' "$0: Test Failed (Expected: $expected_exit_code, Got: $actual_exit_code)" >&2
+    return 1
+  fi
 
-   printf '%s\n' "---------------------------------"
+  printf '%s\n' "---------------------------------"
 }
 
 string_bsh_tests() {
-   local input_string expected_result actual_result
+  local input_string expected_result actual_result
 
-   ## Should be inside a function to avoid doing this if this script gets 'source'ed.
-   set -o errexit
-   set -o errtrace
-   set -o pipefail
-   set -o nounset
-   trap strings_bsh_error_trap ERR
+  ## Should be inside a function to avoid doing this if this script gets 'source'ed.
+  set -o errexit
+  set -o errtrace
+  set -o pipefail
+  set -o nounset
+  trap strings_bsh_error_trap ERR
 
-   ## run_test <test_name> <function> <expected_exit_code> <var_name> <value...>
+  ## run_test <test_name> <function> <expected_exit_code> <var_name> <value...>
 
-   run_test "alpha_numeric: rejects empty"                   check_is_alpha_numeric 1 test_value ""
-   run_test "alpha_numeric: rejects dot"                     check_is_alpha_numeric 1 test_value "."
-   run_test "alpha_numeric: rejects space"                   check_is_alpha_numeric 1 test_value "plain text"
-   run_test "alpha_numeric: accepts dash/underscore"         check_is_alpha_numeric 0 test_value "test_123-OK"
-   ## TODO: unclear if this is possible without unicode-show
-   #run_test "alpha_numeric: rejects unicode"                 check_is_alpha_numeric 1 test_value $'caf\xC3\xA9'
+  run_test "alpha_numeric: rejects empty" check_is_alpha_numeric 1 test_value ""
+  run_test "alpha_numeric: rejects dot" check_is_alpha_numeric 1 test_value "."
+  run_test "alpha_numeric: rejects space" check_is_alpha_numeric 1 test_value "plain text"
+  run_test "alpha_numeric: accepts dash/underscore" check_is_alpha_numeric 0 test_value "test_123-OK"
+  ## TODO: unclear if this is possible without unicode-show
+  #run_test "alpha_numeric: rejects unicode"                 check_is_alpha_numeric 1 test_value $'caf\xC3\xA9'
 
-   run_test "safe_filename: accepts simple name"             validate_safe_filename 0 test_value "test"
-   run_test "safe_filename: accepts spaces and punctuation"  validate_safe_filename 0 test_value "plain text (v1) [ok].txt"
-   run_test "safe_filename: rejects dot"                     validate_safe_filename 1 test_value "."
-   run_test "safe_filename: rejects double dot"              validate_safe_filename 1 test_value ".."
-   run_test "safe_filename: rejects embedded double dot"     validate_safe_filename 1 test_value "test..test"
-   run_test "safe_filename: rejects slash"                   validate_safe_filename 1 test_value "dir/file"
-   run_test "safe_filename: rejects backslash"               validate_safe_filename 1 test_value $'dir\\file'
-   run_test "safe_filename: rejects control char newline"    validate_safe_filename 1 test_value $'hello\nworld'
-   run_test "safe_filename: rejects leading dash"            validate_safe_filename 1 test_value "-option"
-   run_test "safe_filename: accepts colon"                   validate_safe_filename 0 test_value "test:test"
-   run_test "safe_filename: rejects overlong name"           validate_safe_filename 1 test_value "$(printf 'a%.0s' {1..256})"
-   ## TODO: unclear if this is possible without unicode-show
-   #run_test "safe_filename: rejects unicode"                 validate_safe_filename 1 test_value $'caf\xC3\xA9'
+  run_test "safe_filename: accepts simple name" validate_safe_filename 0 test_value "test"
+  run_test "safe_filename: accepts spaces and punctuation" validate_safe_filename 0 test_value "plain text (v1) [ok].txt"
+  run_test "safe_filename: rejects dot" validate_safe_filename 1 test_value "."
+  run_test "safe_filename: rejects double dot" validate_safe_filename 1 test_value ".."
+  run_test "safe_filename: rejects embedded double dot" validate_safe_filename 1 test_value "test..test"
+  run_test "safe_filename: rejects slash" validate_safe_filename 1 test_value "dir/file"
+  run_test "safe_filename: rejects backslash" validate_safe_filename 1 test_value $'dir\\file'
+  run_test "safe_filename: rejects control char newline" validate_safe_filename 1 test_value $'hello\nworld'
+  run_test "safe_filename: rejects leading dash" validate_safe_filename 1 test_value "-option"
+  run_test "safe_filename: accepts colon" validate_safe_filename 0 test_value "test:test"
+  run_test "safe_filename: rejects overlong name" validate_safe_filename 1 test_value "$(printf 'a%.0s' {1..256})"
+  ## TODO: unclear if this is possible without unicode-show
+  #run_test "safe_filename: rejects unicode"                 validate_safe_filename 1 test_value $'caf\xC3\xA9'
 
-   run_test "one_line: rejects empty"                        check_is_not_empty_and_only_one_line 1 test_value ""
-   run_test "one_line: rejects only whitespace/newlines"     check_is_not_empty_and_only_one_line 1 test_value $'\n\n   '
-   run_test "one_line: rejects multi-line string"            check_is_not_empty_and_only_one_line 1 test_value $'Hello\nWorld'
-   run_test "one_line: accepts normal text"                  check_is_not_empty_and_only_one_line 0 test_value "Hello, World!"
-   run_test "one_line: accepts text with surrounding spaces" check_is_not_empty_and_only_one_line 0 test_value "  Hello  "
+  run_test "one_line: rejects empty" check_is_not_empty_and_only_one_line 1 test_value ""
+  run_test "one_line: rejects only whitespace/newlines" check_is_not_empty_and_only_one_line 1 test_value $'\n\n   '
+  run_test "one_line: rejects multi-line string" check_is_not_empty_and_only_one_line 1 test_value $'Hello\nWorld'
+  run_test "one_line: accepts normal text" check_is_not_empty_and_only_one_line 0 test_value "Hello, World!"
+  run_test "one_line: accepts text with surrounding spaces" check_is_not_empty_and_only_one_line 0 test_value "  Hello  "
 
-   input_string=$'test1\ntest2'
-   expected_result=$'test1<br />\ntest2'
+  input_string=$'test1\ntest2'
+  expected_result=$'test1<br />\ntest2'
 
-   actual_result="$(br_add "$input_string")"
-   if ! [ "$expected_result" = "$actual_result" ]; then
-      error "br_add command failed!"
-   fi
+  actual_result="$(br_add "$input_string")"
+  if ! [ "$expected_result" = "$actual_result" ]; then
+    error "br_add command failed!"
+  fi
 
-   actual_result="$(printf '%s\n' "$input_string" | br_add)"
-   if ! [ "$expected_result" = "$actual_result" ]; then
-      error "br_add pipe failed!"
-   fi
+  actual_result="$(printf '%s\n' "$input_string" | br_add)"
+  if ! [ "$expected_result" = "$actual_result" ]; then
+    error "br_add pipe failed!"
+  fi
 
-   printf '%s\n' "$0: All Tests Passed"
+  printf '%s\n' "$0: All Tests Passed"
 }
 
 strings_bsh_error_trap() {
