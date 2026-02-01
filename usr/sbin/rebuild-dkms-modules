@@ -50,11 +50,11 @@ rebuild_dkms_modules() {
       continue
     fi
     log notice "Rebuilding DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}'..."
-    if ! dkms build "${dkms_mod_name}" -k "${dkms_mod_kernel}" --force; then
+    if ! log_run notice dkms build "${dkms_mod_name}" -k "${dkms_mod_kernel}" --force; then
       log warning "DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}' failed to build! Skipping."
       continue
     fi
-    if ! dkms install "${dkms_mod_name}" -k "${dkms_mod_kernel}" --force; then
+    if ! log_run notice dkms install "${dkms_mod_name}" -k "${dkms_mod_kernel}" --force; then
       log warning "DKMS module '${dkms_mod_name}' for kernel '${dkms_mod_kernel}' failed to install! Skipping."
       continue
     fi
