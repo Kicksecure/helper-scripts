@@ -17,7 +17,7 @@ fi
 ## XXX: Unrelated unit test. Non-ideal location but OK.
 source /usr/libexec/helper-scripts/use_sudo.sh
 source /usr/libexec/helper-scripts/use_pkexec.sh
-source /usr/libexec/helper-scripts/boot-session-detection.sh
+source /usr/libexec/helper-scripts/boot-session-detection.bsh
 
 source /usr/libexec/helper-scripts/wc-test.sh
 
