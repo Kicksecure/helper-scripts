@@ -3,14 +3,16 @@
 ## Copyright (C) 2023 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-if [ "${BASH_SOURCE}" != "${0}" ]; then
-  ## Script was sourced.
-  ## This is useful for other programs / scripts to be able to `source` the
-  ## functions of this script for code reuse. dist-installer-gui will do this.
-  progress_bar_was_sourced="true"
+# shellcheck source=./check_runtime.bsh
+source /usr/libexec/helper-scripts/check_runtime.bsh
+
+if should_run_unit_tests "${BASH_SOURCE[0]}"; then
+  progress_bar_should_run_unit_tests='true'
 else
-  ## Script was executed.
-  progress_bar_was_sourced="false"
+  progress_bar_should_run_unit_tests='false'
+fi
+
+if [ "${progress_bar_should_run_unit_tests}" = 'true' ]; then
   # shellcheck disable=SC2317
   set -o pipefail
   set -o errtrace
@@ -58,8 +60,8 @@ main() {
   done
 }
 
-if [ "$progress_bar_was_sourced" = "true" ]; then
-  true "INFO: Not running because it was sourced by another script."
-else
+if [ "${progress_bar_should_run_unit_tests}" = 'true' ]; then
   main
+else
+  true "INFO: Not running because it was sourced by another script or SKIP_UNIT_TESTS is true."
 fi

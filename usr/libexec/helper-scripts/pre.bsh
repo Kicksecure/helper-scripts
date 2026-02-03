@@ -83,7 +83,16 @@
 
 ## bash script fragment
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+# shellcheck source=./check_runtime.bsh
+source /usr/libexec/helper-scripts/check_runtime.bsh
+
+if was_executed "${BASH_SOURCE[0]}"; then
+  pre_bsh_sourced='false'
+else
+  pre_bsh_sourced='true'
+fi
+
+if [ "${pre_bsh_sourced}" = 'false' ]; then
   true "$0: START"
   set -o errexit
   set -o nounset
@@ -295,7 +304,7 @@ source_config_folder
 
 check_scripts_to_skip
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if [ "${pre_bsh_sourced}" = 'false' ]; then
   true "$0: END"
 fi
 

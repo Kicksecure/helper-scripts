@@ -3,20 +3,14 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Not possible because 'dist-installer-cli' includes this script verbatim in full.
-# if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-#   true "$0: START"
-#   set -o errexit
-#   set -o nounset
-#   set -o errtrace
-#   set -o pipefail
-# fi
+# shellcheck source=./check_runtime.bsh
+source /usr/libexec/helper-scripts/check_runtime.bsh
 
 # shellcheck disable=SC2034
 get_colors() {
   local color_yes_or_no
 
-  get_colors_sourced=1
+  get_colors_was_run=1
 
   draw="" ## Intentionally not implemented, see below
 
@@ -47,20 +41,20 @@ get_colors() {
   [[ -v color_yes_or_no ]] || color_yes_or_no="yes"
 
   if test "${color_yes_or_no}" = "no"; then
-      nocolor=""; reset=""
-      bold=""; nobold=""
-      underline=""; nounderline=""
-      under=""; eunder=""
-      stout=""; estout=""
-      blink=""
-      italic=""; eitalic=""
-      red=""; green=""; yellow=""; blue=""; magenta=""; cyan=""; white=""
-      default=""
-      alt=""; ealt=""
-      hide=""; show=""
-      save=""; load=""
-      eed=""; eel=""; ebl=""; ewl=""
-      back=""
+    nocolor=""; reset=""
+    bold=""; nobold=""
+    underline=""; nounderline=""
+    under=""; eunder=""
+    stout=""; estout=""
+    blink=""
+    italic=""; eitalic=""
+    red=""; green=""; yellow=""; blue=""; magenta=""; cyan=""; white=""
+    default=""
+    alt=""; ealt=""
+    hide=""; show=""
+    save=""; load=""
+    eed=""; eel=""; ebl=""; ewl=""
+    back=""
     return 0
   fi
 
@@ -119,6 +113,12 @@ get_colors_test() {
   ## This function is only meant for manual visual verification.
   ## It prints one feature per line, resetting after each line so styles
   ## does not leak into the next output.
+
+  true "$0: START"
+  set -o errexit
+  set -o nounset
+  set -o errtrace
+  set -o pipefail
 
   printf '%s\n' "$0: test mode"
 
@@ -191,13 +191,14 @@ get_colors_test() {
   ## Drawing characters capability is intentionally unsupported in this
   ## modern implementation; kept for compatibility (usually empty).
   printf '%s\n' "draw: ${draw:-}"
+
+  true "$0: END"
 }
 
-if test "${get_colors_sourced:-}" != "1"; then
+if test "${get_colors_was_run:-}" != "1"; then
   get_colors
 fi
 
-# if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-#   get_colors_test
-#   true "$0: END"
-# fi
+if should_run_unit_tests "${BASH_SOURCE[0]}"; then
+  get_colors_test
+fi

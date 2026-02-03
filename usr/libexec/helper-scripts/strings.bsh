@@ -3,6 +3,29 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## Code duplication. Copied from
+## helper-scripts/usr/libexec/helper-scripts/check_runtime.bsh.
+##
+## Because check_runtime.bsh cannot be sourced here (this will be run when
+## derivative-maker is used, and the build host may not have helper-scripts
+## installed).
+was_executed() {
+  local caller_bash_source_zero="${1}"
+  if [[ "${caller_bash_source_zero}" == "${0}" ]] \
+    || [[ "${caller_bash_source_zero}" == "$(command -v "${0}")" ]]; then
+    return 0
+  fi
+  return 1
+}
+should_run_unit_tests() {
+  local caller_bash_source_zero="${1}"
+  if was_executed "${caller_bash_source_zero}" \
+    && ! [ "${SKIP_UNIT_TESTS-}" = 'true' ]; then
+    return 0
+  fi
+  return 1
+}
+
 br_add() {
   local in out
 
@@ -329,10 +352,8 @@ strings_bsh_error_trap() {
 
 ## Useful in case this script is copied verbatim into another script such as
 ## in package 'usability-misc' file 'dist-installer-cli-standalone'.
-if ! [ "${SKIP_UNIT_TESTS-}" = "true" ]; then
-  ## TODO
-  #string_bsh_tests
-  true
+if should_run_unit_tests "${BASH_SOURCE[0]}"; then
+  string_bsh_tests
 fi
 
 #trim_collapse_split " aaa  bbb ccc ddd "

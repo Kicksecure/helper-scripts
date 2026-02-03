@@ -1,0 +1,44 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## WARNING: Do NOT attempt to calculate the runtime once and store the result
+## in a global variable. If an executable sources this library and another
+## library sourced by the same executable sources this library again, the
+## variable will get overwritten by the second sourcing and cause breakage.
+##
+## WARNING 2: Do NOT use BASH_SOURCE in this script. It will always evaluate
+## to /usr/libexec/helper-scripts/check_runtime.bsh regardless of where the
+## functions are executed. The caller MUST pass BASH_SOURCE themselves.
+
+## Some functions are duplicated in:
+## - genmkfile/usr/share/genmkfile/make-helper-one.bsh
+## - helper-scripts/usr/libexec/helper-scripts/strings.bsh
+
+was_executed() {
+  local caller_bash_source_zero="${1}"
+  if [[ "${caller_bash_source_zero}" == "${0}" ]] \
+    || [[ "${caller_bash_source_zero}" == "$(command -v "${0}")" ]]; then
+    return 0
+  fi
+  return 1
+}
+
+was_sourced() {
+  local caller_bash_source_zero="${1}"
+  if [[ "${caller_bash_source_zero}" != "${0}" ]] \
+    && [[ "${caller_bash_source_zero}" != "$(command -v "${0}")" ]]; then
+    return 0
+  fi
+  return 1
+}
+
+should_run_unit_tests() {
+  local caller_bash_source_zero="${1}"
+  if was_executed "${caller_bash_source_zero}" \
+    && ! [ "${SKIP_UNIT_TESTS-}" = 'true' ]; then
+    return 0
+  fi
+  return 1
+}

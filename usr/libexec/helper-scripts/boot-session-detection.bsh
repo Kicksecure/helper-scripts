@@ -3,6 +3,9 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# shellcheck source=./check_runtime.bsh
+source /usr/libexec/helper-scripts/check_runtime.bsh
+
 boot_session_detection() {
   local kernel_cmdline
 
@@ -26,6 +29,6 @@ boot_session_detection() {
 
 boot_session_detection
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if was_executed "${BASH_SOURCE[0]}"; then
   printf '%s\n' "${boot_session}"
 fi

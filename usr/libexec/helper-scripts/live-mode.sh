@@ -5,7 +5,16 @@
 
 true "$0: START"
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+# shellcheck source=./check_runtime.bsh
+source /usr/libexec/helper-scripts/check_runtime.bsh
+
+if was_executed "${BASH_SOURCE[0]}"; then
+  live_mode_sourced='false'
+else
+  live_mode_sourced='true'
+fi
+
+if [ "${live_mode_sourced}" = 'false' ]; then
   set -o errexit
   set -o nounset
   set -o errtrace
@@ -167,7 +176,7 @@ if [ "$was_pipefail_enabled" = 'true' ]; then
   set -o pipefail
 fi
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if [ "${live_mode_sourced}" = 'false' ]; then
   var_list=(
     "live_status_detected_live_mode_environment_pretty"
     "live_status_detected_live_mode_environment_machine"

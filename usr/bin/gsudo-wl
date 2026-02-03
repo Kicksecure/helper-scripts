@@ -8,10 +8,13 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
+# shellcheck source=../libexec/helper-scripts/check_runtime.bsh
+source /usr/libexec/helper-scripts/check_runtime.bsh
+
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
 source /usr/libexec/helper-scripts/log_run_die.sh
 
-if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+if was_sourced "${BASH_SOURCE[0]}"; then
   printf '%s\n' "ERROR: Do not source this script ('${BASH_SOURCE[0]}')!"
   exit 1
 fi

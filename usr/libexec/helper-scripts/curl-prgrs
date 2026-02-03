@@ -99,11 +99,11 @@ initialize_variables() {
 
 check_variables() {
   if [ "$CURL_OUT_FILE" = "" ]; then
-    stecho "$BASH_SOURCE ERROR: Variable CURL_OUT_FILE is empty." >&4
+    stecho "${BASH_SOURCE[0]} ERROR: Variable CURL_OUT_FILE is empty." >&4
     exit 57
   fi
   if [ "$CURL_PRGRS_MAX_FILE_SIZE_BYTES" = "" ]; then
-    stecho "$BASH_SOURCE ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
+    stecho "${BASH_SOURCE[0]} ERROR: Variable CURL_PRGRS_MAX_FILE_SIZE_BYTES is empty." >&4
     exit 57
   fi
 
@@ -119,13 +119,13 @@ shutdown() {
   local signal="$1"
   local last_err="$BASH_COMMAND"
   if [ "$signal" = "err" ]; then
-    stecho "$BASH_SOURCE ERROR: Signal $signal received. Exiting." >&4
-    stecho "$BASH_SOURCE ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
+    stecho "${BASH_SOURCE[0]} ERROR: Signal $signal received. Exiting." >&4
+    stecho "${BASH_SOURCE[0]} ERROR: BASH_COMMAND '$BASH_COMMAND' exit code '$exit_code'." >&4
     error_exit_code=110
   elif [ "$signal" = "exit" ]; then
-    true "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
+    true "${BASH_SOURCE[0]} INFO: Signal $signal received. Exiting." >&4
   else
-    stecho "$BASH_SOURCE INFO: Signal $signal received. Exiting." >&4
+    stecho "${BASH_SOURCE[0]} INFO: Signal $signal received. Exiting." >&4
   fi
 
   trap - SIGHUP SIGINT SIGTERM ERR EXIT
@@ -138,15 +138,15 @@ shutdown() {
   local status
 
   if [ -f "$statusfile" ]; then
-    true "$BASH_SOURCE INFO: got status file"
+    true "${BASH_SOURCE[0]} INFO: got status file"
     status="$(stcat "$statusfile")"
     if ! is_whole_number "$status"; then
-      true "$BASH_SOURCE ERROR: status is not a number! status: '$status'"
+      true "${BASH_SOURCE[0]} ERROR: status is not a number! status: '$status'"
       status="111"
       error_exit_code="111"
     fi
   else
-    true "$BASH_SOURCE ERROR: no status file"
+    true "${BASH_SOURCE[0]} ERROR: no status file"
     status="112"
     error_exit_code="112"
   fi
@@ -178,11 +178,11 @@ shutdown() {
   done
 
   if [ -n "${error_exit_code-}" ]; then
-     true "$BASH_SOURCE INFO: exit with error_exit_code $error_exit_code"
+     true "${BASH_SOURCE[0]} INFO: exit with error_exit_code $error_exit_code"
      exit "$error_exit_code"
   fi
 
-  true "$BASH_SOURCE INFO: exit with status $status"
+  true "${BASH_SOURCE[0]} INFO: exit with status $status"
   exit "$status"
 }
 
@@ -216,8 +216,8 @@ print_progress() {
   # Calculate the progress percentage and the size of the filled and
   # unfilled portions of the progress bar.
   local percent
-  true "$BASH_SOURCE INFO: bytes: '$bytes'"
-  true "$BASH_SOURCE INFO: length: '$length'"
+  true "${BASH_SOURCE[0]} INFO: bytes: '$bytes'"
+  true "${BASH_SOURCE[0]} INFO: length: '$length'"
   percent=$(( $bytes * 100 / $length ))
 
   if ! is_whole_number "$percent" ; then
@@ -229,16 +229,16 @@ print_progress() {
   fi
 
   if [ "$percent_last" = "$percent" ]; then
-    true "$BASH_SOURCE INFO: percentage number unchanged. Not re-drawing progress bar to avoid flicker."
+    true "${BASH_SOURCE[0]} INFO: percentage number unchanged. Not re-drawing progress bar to avoid flicker."
   else
     draw_progress_bar "$percent" >&4
     if [ "$CURL_PRGRS_EXEC" = "" ]; then
-      true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
+      true "${BASH_SOURCE[0]} INFO: CURL_PRGRS_EXEC is empty. Not executing CURL_PRGRS_EXEC."
     else
-      true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC is set. Executing CURL_PRGRS_EXEC..."
-      true "$BASH_SOURCE INFO: $CURL_PRGRS_EXEC '$percent'"
+      true "${BASH_SOURCE[0]} INFO: CURL_PRGRS_EXEC is set. Executing CURL_PRGRS_EXEC..."
+      true "${BASH_SOURCE[0]} INFO: $CURL_PRGRS_EXEC '$percent'"
       $CURL_PRGRS_EXEC "$percent" >&4
-      true "$BASH_SOURCE INFO: CURL_PRGRS_EXEC success."
+      true "${BASH_SOURCE[0]} INFO: CURL_PRGRS_EXEC success."
     fi
   fi
 
@@ -247,7 +247,7 @@ print_progress() {
 
 curl_exit() {
   curl_exit_code="$1"
-  true "$BASH_SOURCE INFO: write $curl_exit_code to $statusfile"
+  true "${BASH_SOURCE[0]} INFO: write $curl_exit_code to $statusfile"
   stecho "$curl_exit_code" > "$statusfile"
   if [ "$curl_exit_code" = "0" ]; then
     return 0
@@ -296,7 +296,7 @@ curl_download() {
 
       if [ "$curl_prgrs_print_progress" = "yes" ]; then
         ## Need to print to stderr to avoid confusing the stdout output of this command.
-        #stecho "$BASH_SOURCE INFO: print_progress '$size_file_downloaded_bytes' '$curl_prgrs_content_length'" >&2
+        #stecho "${BASH_SOURCE[0]} INFO: print_progress '$size_file_downloaded_bytes' '$curl_prgrs_content_length'" >&2
         print_progress "$size_file_downloaded_bytes" "$curl_prgrs_content_length"
       fi
     fi
@@ -393,7 +393,7 @@ main() {
 
   header_file="$temporary_directory/header"
 
-  true "$BASH_SOURCE INFO: Download header..."
+  true "${BASH_SOURCE[0]} INFO: Download header..."
 
   ## Determine curl_prgrs_content_length.
   ## While we don't know the expected size of the header,
@@ -422,13 +422,13 @@ main() {
   ## Reset from previews invocation of curl_download, which calls print_progress.
   percent_last=""
 
-  true "$BASH_SOURCE INFO: Header download done."
+  true "${BASH_SOURCE[0]} INFO: Header download done."
 
   if ! is_whole_number "$curl_prgrs_content_length" ; then
     curl_exit 116
   fi
 
-  true "$BASH_SOURCE INFO: Download file..."
+  true "${BASH_SOURCE[0]} INFO: Download file..."
 
   ## Launching into the background required.
   ## If attempting to refactor this, make sure signal sigterm stops downloads.
@@ -436,8 +436,8 @@ main() {
 
   wait_exit_code=0
   wait "$!" &>/dev/null || { wait_exit_code=$? ; true; };
-  true "$BASH_SOURCE INFO: File download done."
-  true "$BASH_SOURCE INFO: END."
+  true "${BASH_SOURCE[0]} INFO: File download done."
+  true "${BASH_SOURCE[0]} INFO: END."
   exit "$wait_exit_code"
 }
 

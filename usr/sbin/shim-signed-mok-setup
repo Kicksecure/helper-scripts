@@ -3,7 +3,16 @@
 ## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+# shellcheck source=../libexec/helper-scripts/check_runtime.bsh
+source /usr/libexec/helper-scripts/check_runtime.bsh
+
+if was_executed "${BASH_SOURCE[0]}"; then
+  shim_signed_mok_setup_sourced='false'
+else
+  shim_signed_mok_setup_sourced='true'
+fi
+
+if [ "${shim_signed_mok_setup_sourced}" = 'false' ]; then
   set -o errexit
   set -o nounset
   set -o errtrace
@@ -110,6 +119,6 @@ https://www.kicksecure.com/wiki/Secure_Boot"
   log notice "Successfully prepared Secure Boot module-signing keys/links."
 }
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if [ "${shim_signed_mok_setup_sourced}" = 'false' ]; then
   shim_signed_mok_setup
 fi
