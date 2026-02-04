@@ -34,7 +34,12 @@ sudo $0 $source_file $target_file" >&2
    exit 4
 fi
 
-gpg-dearmor "$source_file" "$target_file"
+## 'gpg-dearmor' is no longer required.
+## Nowadays APT as of Debian 'trixie':
+## * Has native '.asc' (gpg armored file) support.
+## * Permits mixing '.asc' (gpg armored public key file) with '.gpg' (gpg binary public key file).
+#gpg-dearmor "$source_file" "$target_file"
+cp --verbose -- "$source_file" "$target_file"
 
 if ! test -r "$target_file" ; then
    echo "$0: ERROR: target_file '$target_file' not readable after writing!" >&2
