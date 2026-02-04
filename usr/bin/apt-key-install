@@ -34,6 +34,10 @@ sudo $0 $source_file $target_file" >&2
    exit 4
 fi
 
+if ! sq cert lint --cert-file "$source_file"; then
+   exit 5
+fi
+
 ## 'gpg-dearmor' is no longer required.
 ## Nowadays APT as of Debian 'trixie':
 ## * Has native '.asc' (gpg armored file) support.
@@ -44,6 +48,10 @@ cp --verbose -- "$source_file" "$target_file"
 if ! test -r "$target_file" ; then
    echo "$0: ERROR: target_file '$target_file' not readable after writing!" >&2
    exit 6
+fi
+
+if ! sq cert lint --cert-file "$target_file"; then
+   exit 7
 fi
 
 echo "$0: INFO: OK."
