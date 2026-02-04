@@ -3,6 +3,9 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# shellcheck source=./check_runtime.bsh
+source /usr/libexec/helper-scripts/check_runtime.bsh
+
 check_tempdir() {
   local id_of_user tmpdir_expected temp_file
 
@@ -44,7 +47,7 @@ check_tempdir() {
   return 0
 }
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if was_executed "${BASH_SOURCE[0]}"; then
   true "$0: START"
   set -o errexit
   set -o nounset
