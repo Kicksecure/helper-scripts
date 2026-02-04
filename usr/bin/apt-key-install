@@ -3,10 +3,12 @@
 ## Copyright (C) 2021 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## This script is used by package anon-shared-build-apt-sources-tpo.
+## This script is used by package 'anon-shared-build-apt-sources-tpo'.
 
 #set -x
-set -e
+set -o errexit
+set -o errtrace
+set -o nounset
 set -o pipefail
 
 source_file="$1"
