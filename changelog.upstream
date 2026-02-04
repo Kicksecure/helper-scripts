@@ -1,3 +1,57 @@
+commit 1599afd32ff1e4e2615507e8f306dc71b2f8ce52
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 06:31:31 2026 -0500
+
+    improve
+
+commit d13f6cc63c3bea8c6e3ec471b675eb79b2a3de61
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 06:25:51 2026 -0500
+
+    `Depends:` `sq`
+
+commit 6fca2006d704e6996bfbdf8c96ba354fb06be2df
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 06:21:57 2026 -0500
+
+    improve
+
+commit 5c6bfbfdad80ff33cdab337145cf0b2f4e685426
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 06:21:02 2026 -0500
+
+    improve
+
+commit 6542817c749a6cfa6cfa12044921649fb3159885
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 06:17:53 2026 -0500
+
+    refactoring
+
+commit ba3db8b6b062ad8cc32d56e98b129f8266f70082
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 06:17:28 2026 -0500
+
+    refactoring
+
+commit 7899dd1ba804f8251281c5715736fe5d486b7fa1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 06:16:37 2026 -0500
+
+    `apt-key-install`: lint keys before and after copying
+
+commit a4a45e15c6c56ae6af1ca35f316fe6ebc8a0a59d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 06:12:25 2026 -0500
+
+    `apt-key-install`: No longer use `gpg-dearmor` since no longer required.
+
+commit 06d0064de233b4d6a800fd4e95f00b1768fc5e69
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 10:30:05 2026 +0000
+
+    bumped changelog version
+
 commit dc85a4ef00490c681750ff754678bd90a2368948
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Feb 4 05:18:41 2026 -0500
