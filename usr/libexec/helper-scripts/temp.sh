@@ -18,7 +18,7 @@ check_tempdir() {
   tmpdir_expected="/tmp/user/${id_of_user}"
   true "TMPDIR: $TMPDIR"
 
-  if [ "$TMPDIR" != "$tmpdir_expected" ]; then
+  if ! [ "$TMPDIR" = "$tmpdir_expected" ]; then
     printf "%s\n" "ERROR: tmpdir_expected '$tmpdir_expected' does not match TMPDIR '$TMPDIR'!" >&2
     return 1
   fi
@@ -34,13 +34,13 @@ check_tempdir() {
   fi
 
   ## 'sponge' can cause error "mkstemp failed: No such file or directory" when $TMPDIR does not exist.
-  if ! printf "%s\n" "test" | sponge "$temp_file" ; then
+  if ! printf "%s\n" "test" | sponge -- "$temp_file" ; then
     printf "%s\n" "ERROR: Testing 'sponge' failed!" >&2
     return 1
   fi
 
-  if ! safe-rm -f "$temp_file" ; then
-    printf "%s\n" "ERROR: 'safe-rm -f $temp_file' failed!" >&2
+  if ! safe-rm --force -- "$temp_file" ; then
+    printf "%s\n" "ERROR: 'safe-rm --force -- $temp_file' failed!" >&2
     return 1
   fi
 
