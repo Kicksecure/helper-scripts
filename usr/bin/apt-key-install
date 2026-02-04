@@ -34,7 +34,7 @@ sudo $0 $source_file $target_file" >&2
    exit 4
 fi
 
-if ! sq cert lint --cert-file "$source_file"; then
+if ! sq cert lint --cert-file "$source_file" &>/dev/null; then
    exit 5
 fi
 
@@ -50,7 +50,7 @@ if ! test -r "$target_file" ; then
    exit 6
 fi
 
-if ! sq cert lint --cert-file "$target_file"; then
+if ! sq cert lint --cert-file "$target_file" &>/dev/null; then
    exit 7
 fi
 
