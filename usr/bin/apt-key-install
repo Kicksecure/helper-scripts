@@ -12,19 +12,19 @@ source_file="$1"
 target_file="$2"
 
 if [ "$source_file" = "" ] || [ "$target_file" = "" ]; then
-   echo "$0: ERROR: syntax: $0 source-file target-file" >&2
+   printf '%s\n' "$0: ERROR: syntax: $0 source-file target-file" >&2
    exit 2
 fi
 
 if ! test -r "$source_file" ; then
-   echo "$0: ERROR: source file '$source_file' does not exist or not readable!" >&2
+   printf '%s\n' "$0: ERROR: source file '$source_file' does not exist or not readable!" >&2
    exit 3
 fi
 
 target_folder="${target_file%/*}"
 
 if ! test -w "$target_folder" ; then
-   echo "$0: ERROR: target_folder '$target_folder' not writeable!
+   printf '%s\n' "$0: ERROR: target_folder '$target_folder' not writeable!
 
 By Debian default, root rights are required to write to folder '/etc/apt/trusted.gpg.d'.
 
@@ -46,7 +46,7 @@ fi
 cp --verbose -- "$source_file" "$target_file"
 
 if ! test -r "$target_file" ; then
-   echo "$0: ERROR: target_file '$target_file' not readable after writing!" >&2
+   printf '%s\n' "$0: ERROR: target_file '$target_file' not readable after writing!" >&2
    exit 6
 fi
 
@@ -54,4 +54,4 @@ if ! sq cert lint --cert-file "$target_file"; then
    exit 7
 fi
 
-echo "$0: INFO: OK."
+printf '%s\n' "$0: INFO: OK."
