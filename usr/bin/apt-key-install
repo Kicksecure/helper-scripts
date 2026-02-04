@@ -5,6 +5,7 @@
 
 ## This script is used by package anon-shared-build-apt-sources-tpo.
 
+#set -x
 set -e
 set -o pipefail
 
@@ -34,7 +35,10 @@ sudo $0 $source_file $target_file" >&2
    exit 4
 fi
 
-if ! sq cert lint --cert-file "$source_file" &>/dev/null; then
+command=( sq cert lint --cert-file "$source_file" )
+if ! "${command[@]}" &>/dev/null; then
+   printf '%s\n' "$0: ERROR: Command '${command[*]} failed.' Re-running to show output:"
+   "${command[@]}" || exit 5
    exit 5
 fi
 
@@ -45,12 +49,10 @@ fi
 #gpg-dearmor "$source_file" "$target_file"
 cp --verbose -- "$source_file" "$target_file"
 
-if ! test -r "$target_file" ; then
-   printf '%s\n' "$0: ERROR: target_file '$target_file' not readable after writing!" >&2
-   exit 6
-fi
-
-if ! sq cert lint --cert-file "$target_file" &>/dev/null; then
+command=( sq cert lint --cert-file "$target_file" )
+if ! "${command[@]}" &>/dev/null; then
+   printf '%s\n' "$0: ERROR: Command '${command[*]} failed.' Re-running to show output:"
+   "${command[@]}" || exit 5
    exit 7
 fi
 
