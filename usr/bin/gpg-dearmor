@@ -27,7 +27,7 @@ if ! test -w "$target_folder" ; then
 fi
 
 exit_handler() {
-   rm -rf "$temp_dir"
+   safe-rm -r -f -- "$temp_dir"
 }
 
 trap exit_handler EXIT
@@ -44,7 +44,7 @@ cat "$source_file" | \
         --no-options \
         --homedir "$temp_dir" \
         --no-default-keyring \
-        | tee "$target_file" >/dev/null
+        | tee -- "$target_file" >/dev/null
 
 if ! test -r "$target_file" ; then
    echo "$0: ERROR: target_file '$target_file' not readable after writing!" >&2
