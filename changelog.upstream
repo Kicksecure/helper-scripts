@@ -1,3 +1,22 @@
+commit d32b7a5b632de5b7bcb93873bd1fcf2f1e62c383
+Merge: 040fd2e 8dfc743
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 6 04:52:07 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 8dfc743877e9a376aeaebf9c3ef5419b82a8e611
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Feb 4 22:46:14 2026 -0600
+
+    Allow users to provide environment variables to gsudo-{wl,x}
+
+commit 040fd2eaaba031913b96a1820370b8a374353ace
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 11:53:10 2026 +0000
+
+    bumped changelog version
+
 commit 1599afd32ff1e4e2615507e8f306dc71b2f8ce52
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Feb 4 06:31:31 2026 -0500
