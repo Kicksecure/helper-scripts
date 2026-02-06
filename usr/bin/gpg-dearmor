@@ -38,7 +38,7 @@ if ! test -w "$temp_dir" ; then
    exit 5
 fi
 
-cat "$source_file" | \
+cat -- "$source_file" | \
     gpg \
         --dearmor \
         --no-options \
