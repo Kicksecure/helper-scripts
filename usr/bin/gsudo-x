@@ -115,7 +115,8 @@ teardown() {
 trap teardown EXIT INT TERM
 
 setup
-XDG_RUNTIME_DIR="${root_xdg_runtime_dir}" \
+env \
+  XDG_RUNTIME_DIR="${root_xdg_runtime_dir}" \
   QT_QPA_PLATFORM='xcb' \
   GDK_BACKEND='x11' \
   "$@"

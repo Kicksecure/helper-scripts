@@ -146,7 +146,8 @@ trap teardown EXIT INT TERM
 
 setup
 unset WAYLAND_SOCKET
-XDG_RUNTIME_DIR="${root_xdg_runtime_dir}" \
+env \
+  XDG_RUNTIME_DIR="${root_xdg_runtime_dir}" \
   WAYLAND_DISPLAY="${target_wayland_socket_name}" \
   QT_QPA_PLATFORM='wayland' \
   GDK_BACKEND='wayland' \
