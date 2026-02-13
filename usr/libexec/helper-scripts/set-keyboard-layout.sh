@@ -314,6 +314,14 @@ set_labwc_keymap() {
     return 1
   fi
 
+  if [ "${do_persist}" = 'false' ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: ephemeral '${labwc_config_path}' contents:"
+    stcat "${labwc_config_path}"
+  else
+    printf '%s\n' "${FUNCNAME[0]}: INFO: new '${labwc_config_path}' contents:"
+    stcat "${labwc_config_path}"
+  fi
+
   if [ "${no_reload}" = 'true' ]; then
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'labwc --reconfigure' due to '--no-reload' option."
   elif [ "${do_live_changes}" = 'false' ]; then
@@ -344,15 +352,11 @@ set_labwc_keymap() {
   ## configuration back (or just delete the new config file if there wasn't an
   ## old config file).
   if [ -n "${labwc_config_bak_path}" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: ephemeral '${labwc_config_path}' contents:"
-    stcat "${labwc_config_path}"
     if ! mv -- "${labwc_config_bak_path}" "${labwc_config_path}" ; then
       printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot move backup 'labwc' environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!" >&2
       return 1
     fi
-  elif [ "${do_persist}" = 'true' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: new '${labwc_config_path}' contents:"
-    stcat "${labwc_config_path}"
+  ## Nothing special to do if "${do_persist}" = 'true'.
   elif [ "${do_persist}" = 'false' ]; then
     printf '%s\n' "${FUNCNAME[0]}: INFO: Non-persistent configuration done. To persist, omit option: --no-persist"
     if ! safe-rm -- "${labwc_config_path}" ; then
