@@ -250,6 +250,65 @@ replace_file_variables() {
   printf '%s\n' "${file_lines[@]}"
 }
 
+extract_kloak_esc_key_combo() {
+  while [ -n "${1:-}" ]; do
+    case "$1" in
+      '-k')
+        if [ -n "${2:-}" ]; then
+          printf '%s\n' "$2"
+          return 0
+        fi
+        shift
+        ;;
+      --esc-key-combo=*)
+        local esc_key_combo
+        esc_key_combo="$(cut -d'=' -f2 <<< "$1")"
+        printf '%s\n' "${esc_key_combo}"
+        return 0
+        ;;
+      '--')
+        break
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+
+  ## Fallback if no escape key is found in the command line
+  printf '%s\n' 'KEY_RIGHTSHIFT,KEY_ESC'
+  return 0
+}
+
+warn_kloak_is_running() {
+  local esc_key_combo kloak_command_line_list
+
+  #esc_key_combo='KEY_RIGHTSHIFT,KEY_ESC'
+
+  ## See if kloak has been started with some non-standard escape key combo,
+  ## and show that combo to the user instead if so.
+  ##
+  ## The output format of 'systemctl show --no-pager --quiet --value
+  ## --property=ExecStart' will look like:
+  ##
+  ##     { path=/path/to/file ; argv[]=/path/to/file --arg1 --arg2=thing ;
+  ##     ignore_errors=no ; start_time=[Fri 2026-02-13 14:35:48 CST] ;
+  ##     stop_time=[n/a] ; pid=1751 ; code=(null) ; status=0/0 }
+  ##
+  ## We want just the bit between 'argv[]=' and the ending semicolon. This
+  ## will include an extra space at the end, but we can live with that.
+  IFS=' ' read -r -a kloak_command_line_list < <("${timeout_command[@]}" \
+    systemctl show --no-pager --quiet --value --property=ExecStart \
+    -- kloak.service \
+    | sed 's/.*argv\[\]=\([^;]\+\);.*/\1/')
+
+  esc_key_combo="$(extract_kloak_esc_key_combo "${kloak_command_line_list[@]}")"
+
+  printf '%s\n' "${FUNCNAME[0]}: WARNING: kloak is running to provide keyboard input pattern anonymization. This interferes with keyboard layout changes."
+  printf '%s\n' "${FUNCNAME[0]}: INFO: To ensure keyboard layout changes are fully applied, press the following key combination to restart kloak:"
+  printf '%s\n' "${FUNCNAME[0]}: INFO: '${esc_key_combo}'"
+}
+
 ## Sets the XKB layout(s), variant(s), and option(s) in 'labwc', either for just
 ## this session or persistently.
 set_labwc_keymap() {
@@ -363,6 +422,10 @@ set_labwc_keymap() {
       printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot remove temporary 'labwc' environment config '${labwc_config_path}'!" >&2
       return 1
     fi
+  fi
+
+  if [ "$("${timeout_command[@]}" systemctl is-active kloak.service &>/dev/null)" = 'active' ]; then
+    warn_kloak_is_running
   fi
 
   ## Can be for 'labwc' or 'greetd'.
