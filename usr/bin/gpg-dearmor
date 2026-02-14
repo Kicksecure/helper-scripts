@@ -8,6 +8,8 @@ set -o errtrace
 set -o nounset
 set -o pipefail
 
+command -v sq >/dev/null
+
 source_file="${1-}"
 target_file="${2-}"
 
@@ -43,13 +45,7 @@ if ! test -w "$temp_dir"; then
   exit 5
 fi
 
-cat -- "$source_file" |
-  gpg \
-    --dearmor \
-    --no-options \
-    --homedir "$temp_dir" \
-    --no-default-keyring |
-  tee -- "$target_file" >/dev/null
+sq packet dearmor --overwrite --output "$target_file" -- "$source_file"
 
 if ! test -r "$target_file"; then
   printf '%s\n' "$0: ERROR: target_file '$target_file' not readable after writing!" >&2
