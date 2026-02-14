@@ -30,21 +30,6 @@ if ! test -w "$target_folder"; then
   exit 4
 fi
 
-exit_handler() {
-  if [ -z "${temp_dir-}" ]; then
-    return 0
-  fi
-  safe-rm -r -f -- "$temp_dir"
-}
-
-trap exit_handler EXIT
-
-[ -n "${temp_dir-}" ] || temp_dir="$(mktemp --directory)"
-if ! test -w "$temp_dir"; then
-  printf '%s\n' "$0: ERROR: temp_dir '$temp_dir' not writeable!" >&2
-  exit 5
-fi
-
 sq packet dearmor --overwrite --output "$target_file" -- "$source_file"
 
 if ! test -r "$target_file"; then
