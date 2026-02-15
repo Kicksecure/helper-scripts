@@ -818,8 +818,8 @@ set_system_keymap() {
     else
       log warn "${FUNCNAME[0]}: Failed to restart 'kloak'!"
     fi
+    printf '%s\n' ""
   fi
-  printf '%s\n' ""
 
   ## Soft-fail.
   dracut_run
