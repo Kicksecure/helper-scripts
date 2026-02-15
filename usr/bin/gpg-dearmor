@@ -8,6 +8,8 @@ set -o errtrace
 set -o nounset
 set -o pipefail
 
+command -v sq >/dev/null
+
 source_file="${1-}"
 target_file="${2-}"
 
@@ -28,28 +30,7 @@ if ! test -w "$target_folder"; then
   exit 4
 fi
 
-exit_handler() {
-  if [ -z "${temp_dir-}" ]; then
-    return 0
-  fi
-  safe-rm -r -f -- "$temp_dir"
-}
-
-trap exit_handler EXIT
-
-[ -n "${temp_dir-}" ] || temp_dir="$(mktemp --directory)"
-if ! test -w "$temp_dir"; then
-  printf '%s\n' "$0: ERROR: temp_dir '$temp_dir' not writeable!" >&2
-  exit 5
-fi
-
-cat -- "$source_file" |
-  gpg \
-    --dearmor \
-    --no-options \
-    --homedir "$temp_dir" \
-    --no-default-keyring |
-  tee -- "$target_file" >/dev/null
+sq packet dearmor --overwrite --output "$target_file" -- "$source_file"
 
 if ! test -r "$target_file"; then
   printf '%s\n' "$0: ERROR: target_file '$target_file' not readable after writing!" >&2
