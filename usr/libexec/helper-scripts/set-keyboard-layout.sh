@@ -10,6 +10,9 @@
 ## set-system-keymap
 ## This script acts as a "main program", not as a library.
 
+# shellcheck source=./log_run_die.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
 # shellcheck source=./has.sh
 source /usr/libexec/helper-scripts/has.sh
 
@@ -20,8 +23,7 @@ set -o pipefail
 
 error_handler() {
   exit_code="${?}"
-  printf '%s\n' "\
-$0: error_handler:
+  log error "${FUNCNAME[0]}:
 BASH_COMMAND: ${BASH_COMMAND}
 exit_code: ${exit_code}"
   exit "${exit_code}"
@@ -31,9 +33,9 @@ exit_handler() {
   exit_code="${?}"
   printf '%s\n' ""
   if [ "$exit_code" = 0 ]; then
-    printf '%s\n' "$0: INFO: OK."
+    log notice "${FUNCNAME[0]}: OK."
   else
-    printf '%s\n' "$0: ERROR: Exiting with code '$exit_code'." >&2
+    log error "${FUNCNAME[0]}: Exiting with code '$exit_code'."
   fi
   exit "$exit_code"
 }
@@ -84,13 +86,13 @@ check_keyboard_layouts() {
 
   layout_str="${1:-}"
   if [ -z "${layout_str}" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Empty keyboard layout string provided!" >&2
+    log error "${FUNCNAME[0]}: Empty keyboard layout string provided!"
     return 1
   fi
   readarray -t layout_arr < <(printf '%s\n' "${layout_str}" | tr ',' '\n')
   for layout in "${layout_arr[@]}"; do
     if [ -z "${layout}" ]; then
-      printf '%s\n' "${FUNCNAME[0]}: ERROR: Empty element found in keyboard layouts!" >&2
+      log error "${FUNCNAME[0]}: Empty element found in keyboard layouts!"
       return 1
     fi
   done
@@ -101,16 +103,16 @@ check_keyboard_layouts() {
   ## the maximum number labwc appears to support).
   readarray -t kb_layout_list < <(printf '%s\n' "${layout_str}" | tr ',' '\n')
   if (( ${#kb_layout_list[@]} > 4 )); then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Too many keyboard layouts specified, must specify 4 or less!" >&2
+    log error "${FUNCNAME[0]}: Too many keyboard layouts specified, must specify 4 or less!"
     return 1
   fi
 
   ## Ensure the specified keyboard layout(s) are valid.
   if ! is_layout_data_valid "${layout_str}" \
     localectl-static --no-pager list-x11-keymap-layouts ; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Specified keyboard layout(s) '${layout_str}' are not all valid!" >&2
+    log error "${FUNCNAME[0]}: Specified keyboard layout(s) '${layout_str}' are not all valid!"
     if [ "${skl_interactive}" = 'false' ]; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Run 'localectl-static --no-pager list-x11-keymap-layouts' to get a list of valid layouts."
+      log notice "${FUNCNAME[0]}: Run 'localectl-static --no-pager list-x11-keymap-layouts' to get a list of valid layouts."
     fi
     return 1
   fi
@@ -124,11 +126,11 @@ check_keyboard_layout_variants() {
   layout_str="${1:-}"
   variant_str="${2:-}"
   if [ -z "${layout_str}" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Empty keyboard layout string provided!" >&2
+    log error "${FUNCNAME[0]}: Empty keyboard layout string provided!"
     return 1
   fi
   if [ -z "${variant_str}" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Empty keyboard layout variant string provided!" >&2
+    log error "${FUNCNAME[0]}: Empty keyboard layout variant string provided!"
     return 1
   fi
 
@@ -138,12 +140,12 @@ check_keyboard_layout_variants() {
   readarray -t kb_variant_list < <(printf '%s\n' "${variant_str}" | tr ',' '\n')
 
   if (( ${#kb_layout_list[@]} < ${#kb_variant_list[@]} )); then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Insufficient number of keyboard layouts specified for number of variants!" >&2
+    log error "${FUNCNAME[0]}: Insufficient number of keyboard layouts specified for number of variants!"
     return 1
   fi
 
   if (( ${#kb_layout_list[@]} > ${#kb_variant_list[@]} )); then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Too many keyboard layouts specified for number of variants!" >&2
+    log error "${FUNCNAME[0]}: Too many keyboard layouts specified for number of variants!"
     return 1
   fi
 
@@ -151,9 +153,9 @@ check_keyboard_layout_variants() {
     if [ -z "${kb_variant_list[kb_idx]}" ]; then continue; fi
     if ! is_layout_data_valid "${kb_variant_list[kb_idx]}" \
       localectl-static --no-pager list-x11-keymap-variants "${kb_layout_list[kb_idx]}" ; then
-      printf '%s\n' "${FUNCNAME[0]}: ERROR: Specified keyboard layout variant '${kb_variant_list[kb_idx]}' for layout '${kb_layout_list[kb_idx]}' is not valid!" >&2
+      log error "${FUNCNAME[0]}: Specified keyboard layout variant '${kb_variant_list[kb_idx]}' for layout '${kb_layout_list[kb_idx]}' is not valid!"
       if [ "${skl_interactive}" = 'false' ]; then
-        printf '%s\n' "${FUNCNAME[0]}: INFO: Run 'localectl-static --no-pager list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout."
+        log notice "${FUNCNAME[0]}: Run 'localectl-static --no-pager list-x11-keymap-variants ${kb_layout_list[kb_idx]}' to get a list of valid layout variants for the '${kb_layout_list[kb_idx]}' layout."
       fi
       return 1
     fi
@@ -165,22 +167,22 @@ check_keyboard_layout_options() {
 
   option_str="${1:-}"
   if [ -z "${option_str}" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Empty keyboard layout options string provided!" >&2
+    log error "${FUNCNAME[0]}: Empty keyboard layout options string provided!"
     return 1
   fi
   readarray -t option_arr < <(printf '%s\n' "${option_str}" | tr ',' '\n')
   for option in "${option_arr[@]}"; do
     if [ -z "${option}" ]; then
-      printf '%s\n' "${FUNCNAME[0]}: ERROR: Empty element found in keyboard layout options!" >&2
+      log error "${FUNCNAME[0]}: Empty element found in keyboard layout options!"
       return 1
     fi
   done
 
   if ! is_layout_data_valid "${option_str}" \
     localectl-static --no-pager list-x11-keymap-options ; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Specified keyboard layout option(s) are not valid!" >&2
+    log error "${FUNCNAME[0]}: Specified keyboard layout option(s) are not valid!"
     if [ "${skl_interactive}" = 'false' ]; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Run 'localectl-static --no-pager list-x11-keymap-options' to get a list of valid layout options."
+      log notice "${FUNCNAME[0]}: Run 'localectl-static --no-pager list-x11-keymap-options' to get a list of valid layout options."
     fi
     return 1
   fi
@@ -210,7 +212,7 @@ replace_file_variables() {
     shift 2
   done
   if [ "${#var_names[@]}" = '0' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: No new variables provided!" >&2
+    log error "${FUNCNAME[0]}: No new variables provided!"
     return 1
   fi
 
@@ -302,16 +304,16 @@ warn_kloak_is_running() {
   ##
   ## We want just the bit between 'argv[]=' and the ending semicolon. This
   ## will include an extra space at the end, but we can live with that.
-  IFS=' ' read -r -a kloak_command_line_list < <("${timeout_command[@]}" \
+  IFS=' ' read -r -a -- kloak_command_line_list < <("${timeout_command[@]}" \
     systemctl show --no-pager --quiet --value --property=ExecStart \
     -- kloak.service \
     | sed 's/.*argv\[\]=\([^;]\+\);.*/\1/')
 
   esc_key_combo="$(extract_kloak_esc_key_combo "${kloak_command_line_list[@]}")"
 
-  printf '%s\n' "${FUNCNAME[0]}: WARNING: kloak is running to provide keyboard input pattern anonymization. This interferes with keyboard layout changes."
-  printf '%s\n' "${FUNCNAME[0]}: INFO: To ensure keyboard layout changes are fully applied, press the following key combination to restart kloak:"
-  printf '%s\n' "${FUNCNAME[0]}: INFO: '${esc_key_combo}'"
+  log warn "${FUNCNAME[0]}: kloak is running to provide keyboard input pattern anonymization. This interferes with keyboard layout changes."
+  log notice "${FUNCNAME[0]}: To ensure keyboard layout changes are fully applied, press the following key combination to restart kloak:"
+  log notice "${FUNCNAME[0]}: '${esc_key_combo}'"
 }
 
 ## Sets the XKB layout(s), variant(s), and option(s) in 'labwc', either for just
@@ -325,7 +327,7 @@ set_labwc_keymap() {
   did_labwc_reconfigure='false'
 
   if test -d "${labwc_config_path}"; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: labwc configuration path '${labwc_config_path}' is a folder but should be a file!" >&2
+    log error "${FUNCNAME[0]}: labwc configuration path '${labwc_config_path}' is a folder but should be a file!"
     return 1
   fi
 
@@ -333,7 +335,7 @@ set_labwc_keymap() {
 
   ## Ensure the 'labwc' configuration directory exists.
   if ! mkdir --parents -- "${labwc_config_directory}" ; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot create 'labwc' config directory '${labwc_config_directory}'!" >&2
+    log error "${FUNCNAME[0]}: Cannot create 'labwc' config directory '${labwc_config_directory}'!"
     return 1
   fi
 
@@ -341,12 +343,12 @@ set_labwc_keymap() {
   labwc_existing_config=''
   if [ -f "${labwc_config_path}" ]; then
     if ! [ -r "${labwc_config_path}" ]; then
-      printf '%s\n' "${FUNCNAME[0]}: ERROR: No read permissions on 'labwc' environment config '${labwc_config_path}'!" >&2
+      log error "${FUNCNAME[0]}: No read permissions on 'labwc' environment config '${labwc_config_path}'!"
       return 1
     fi
 
     if ! labwc_existing_config="$(cat -- "${labwc_config_path}")" ; then
-      printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot read existing 'labwc' environment config '${labwc_config_path}'!" >&2
+      log error "${FUNCNAME[0]}: Cannot read existing 'labwc' environment config '${labwc_config_path}'!"
       return 1
     fi
 
@@ -355,7 +357,7 @@ set_labwc_keymap() {
     if [ "${do_persist}" = 'false' ]; then
       labwc_config_bak_path="$(mktemp)"
       if ! mv -- "${labwc_config_path}" "${labwc_config_bak_path}" ; then
-        printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot move existing 'labwc' environment config '${labwc_config_path}' to backup location '${labwc_config_bak_path}'!" >&2
+        log error "${FUNCNAME[0]}: Cannot move existing 'labwc' environment config '${labwc_config_path}' to backup location '${labwc_config_bak_path}'!"
         return 1
       fi
     fi
@@ -376,43 +378,43 @@ set_labwc_keymap() {
 
   ## Write the new config file contents and load them into 'labwc'.
   if ! overwrite "${labwc_config_path}" "${labwc_env_file_string}" >/dev/null ; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot write new 'labwc' environment config '${labwc_config_path}'!" >&2
+    log error "${FUNCNAME[0]}: Cannot write new 'labwc' environment config '${labwc_config_path}'!"
     return 1
   fi
 
   if [ "${do_persist}" = 'false' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: ephemeral '${labwc_config_path}' contents:"
+    log notice "${FUNCNAME[0]}: ephemeral '${labwc_config_path}' contents:"
     stcat "${labwc_config_path}"
   else
-    printf '%s\n' "${FUNCNAME[0]}: INFO: new '${labwc_config_path}' contents:"
+    log notice "${FUNCNAME[0]}: new '${labwc_config_path}' contents:"
     stcat "${labwc_config_path}"
   fi
 
   if [ "${no_reload}" = 'true' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'labwc --reconfigure' due to '--no-reload' option."
+    log notice "${FUNCNAME[0]}: Skipping command 'labwc --reconfigure' due to '--no-reload' option."
   elif [ "${do_live_changes}" = 'false' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'labwc --reconfigure' due to '--no-live-changes' option."
+    log notice "${FUNCNAME[0]}: Skipping command 'labwc --reconfigure' due to '--no-live-changes' option."
   elif ischroot --default-false; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping executing 'labwc --reconfigure' inside chroot, ok."
+    log notice "${FUNCNAME[0]}: Skipping executing 'labwc --reconfigure' inside chroot, ok."
   elif [ "$(id --user)" = 0 ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping executing 'labwc --reconfigure' because running as root, ok."
+    log notice "${FUNCNAME[0]}: Skipping executing 'labwc --reconfigure' because running as root, ok."
   elif pgrep -- labwc >/dev/null; then
     ## 'labwc' is running. So the user most likely wishes the change to instantly apply.
     ## Therefore let's run 'labwc --reconfigure'.
     if ! has labwc; then
       ## This would be weird. 'labwc' is running but unavailable in the PATH environment variable.
-      printf '%s\n' "${FUNCNAME[0]}: ERROR: The 'labwc' program is unavailable in the PATH environment variable or not installed." >&2
+      log error "${FUNCNAME[0]}: The 'labwc' program is unavailable in the PATH environment variable or not installed."
     else
       ## 'labwc' is running and available in the PATH environment variable.
       if labwc --reconfigure; then
-        printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc --reconfigure' OK."
+        log notice "${FUNCNAME[0]}: 'labwc --reconfigure' OK."
         did_labwc_reconfigure='true'
       else
-        printf '%s\n' "${FUNCNAME[0]}: WARNING: 'labwc --reconfigure' reconfiguration failed!" >&2
+        log warn "${FUNCNAME[0]}: 'labwc --reconfigure' reconfiguration failed!"
       fi
     fi
   else
-    printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc' not running, no need to execute 'labwc --reconfigure', OK."
+    log notice "${FUNCNAME[0]}: 'labwc' not running, no need to execute 'labwc --reconfigure', OK."
   fi
 
   ## If we do not want to persist the new configuration, put the old
@@ -420,14 +422,14 @@ set_labwc_keymap() {
   ## old config file).
   if [ -n "${labwc_config_bak_path}" ]; then
     if ! mv -- "${labwc_config_bak_path}" "${labwc_config_path}" ; then
-      printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot move backup 'labwc' environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!" >&2
+      log error "${FUNCNAME[0]}: Cannot move backup 'labwc' environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!"
       return 1
     fi
   ## Nothing special to do if "${do_persist}" = 'true'.
   elif [ "${do_persist}" = 'false' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Non-persistent configuration done. To persist, omit option: --no-persist"
+    log notice "${FUNCNAME[0]}: Non-persistent configuration done. To persist, omit option: --no-persist"
     if ! safe-rm -- "${labwc_config_path}" ; then
-      printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot remove temporary 'labwc' environment config '${labwc_config_path}'!" >&2
+      log error "${FUNCNAME[0]}: Cannot remove temporary 'labwc' environment config '${labwc_config_path}'!"
       return 1
     fi
   fi
@@ -438,13 +440,13 @@ set_labwc_keymap() {
   fi
 
   ## Can be for 'labwc' or 'greetd'.
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Configuration success."
+  log notice "${FUNCNAME[0]}: Configuration success."
 }
 
 dpkg_reconfigure_function() {
   local dpkg_reconfigure_exit_code dpkg_reconfigure_output_original \
     dpkg_reconfigure_output_filtered
-  printf '%s\n' "${FUNCNAME[0]}: EXECUTING: '${*}'"
+  log notice "Command executing: $ ${*}"
   dpkg_reconfigure_exit_code=0
   dpkg_reconfigure_output_original="$("${@}" 2>&1)" || { dpkg_reconfigure_exit_code="$?"; true; }
   ## dpkg-reconfigure can cause the following error message:
@@ -452,13 +454,12 @@ dpkg_reconfigure_function() {
   #cat: '/sys/bus/usb/devices/*:*/bInterfaceClass': No such file or directory
   #cat: '/sys/bus/usb/devices/*:*/bInterfaceSubClass': No such file or directory
   #cat: '/sys/bus/usb/devices/*:*/bInterfaceProtocol': No such file or directory
-  dpkg_reconfigure_output_filtered="$(
-    printf '%s\n' "${dpkg_reconfigure_output_original}" |
-      sed "\|^cat: '/sys/bus/usb/devices/\*:\*/bInterface|d"
-  )"
+  dpkg_reconfigure_output_filtered="$(printf '%s\n' "${dpkg_reconfigure_output_original}" \
+    | sed "\|^cat: '/sys/bus/usb/devices/\*:\*/bInterface|d")"
   if [ "${dpkg_reconfigure_output_filtered}" = "" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: OK."
+    log notice "${FUNCNAME[0]}: OK."
   else
+    log warn "${FUNCNAME[0]}: 'dpkg-reconfigure' output the following messages:"
     printf '%s\n' "${dpkg_reconfigure_output_filtered}" >&2
   fi
   exit_code="${dpkg_reconfigure_exit_code}"
@@ -469,24 +470,24 @@ dpkg_reconfigure_function() {
 
 dracut_run() {
   if [ "${do_live_changes}" = 'false' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'dracut --regenerate-all --force' due to '--no-live-changes' option."
+    log notice "${FUNCNAME[0]}: Skipping command 'dracut --regenerate-all --force' due to '--no-live-changes' option."
     return 0
   fi
   if ischroot --default-false; then
     ## Inside chroot such as during image builds it may be best to leave running dracut to the build tool.
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'dracut --regenerate-all --force' inside chroot, ok."
+    log notice "${FUNCNAME[0]}: Skipping command 'dracut --regenerate-all --force' inside chroot, ok."
     return 0
   fi
   if ! has dracut; then
-    printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. The 'dracut' program is unavailable in the PATH environment variable or not installed. Keyboard layout in initramfs unchanged." >&2
+    log warn "${FUNCNAME[0]}: Minor issue. The 'dracut' program is unavailable in the PATH environment variable or not installed. Keyboard layout in initramfs unchanged."
     return 0
   fi
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Rebuilding all dracut initramfs images... This will take a while..."
-  printf '%s\n' "${FUNCNAME[0]}: EXECUTING: 'dracut --regenerate-all --force'"
+  log notice "${FUNCNAME[0]}: Rebuilding all dracut initramfs images... This will take a while..."
+  log notice 'Command executing: $ dracut --regenerate-all --force'
   if dracut --regenerate-all --force &>/dev/null; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Rebuilding all initramfs images was successful."
+    log notice "${FUNCNAME[0]}: Rebuilding all initramfs images was successful."
   else
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Rebuilding all initramfs images was failed! Your system might be unbootable! This issue is very most likely not caused by '$0'. Please manually run 'sudo dracut --regenerate-all --force' to see this error for yourself." >&2
+    log error "${FUNCNAME[0]}: Rebuilding all initramfs images was failed! Your system might be unbootable! This issue is very most likely not caused by '$0'. Please manually run 'sudo dracut --regenerate-all --force' to see this error for yourself."
     exit_code=1
   fi
 }
@@ -514,15 +515,15 @@ prompt_for_luks_on_root_fs_maybe() {
   fi
 
   if ! tty &>/dev/null; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: OS disk is encrypted, cannot prompt user for confirmation, and --force not used! See:"
-    printf '%s\n' 'https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption'
-    printf '%s\n' 'If the keyboard layout change will not make the LUKS passphrase impossible to type, use --force to skip this check.'
-    printf '\n'
+    log error "${FUNCNAME[0]}: OS disk is encrypted, cannot prompt user for confirmation, and --force not used! See:"
+    log error "${FUNCNAME[0]}: https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption"
+    log notice "${FUNCNAME[0]}: If the keyboard layout change will not make the LUKS passphrase impossible to type, use --force to skip this check."
+    printf '%s\n' ""
     return 1
   fi
   if [ "${scriptname:-}" = 'set-system-keymap' ]; then
-    msg="\
-WARNING: This system's root filesystem is LUKS-encrypted. Changing the
+    msg="${FUNCNAME[0]}:
+This system's root filesystem is LUKS-encrypted. Changing the
 system-wide keyboard layout will also change the keyboard layout used at the
 disk decryption prompt. If your passphrase contains characters that cannot be
 typed using a new keyboard layout, special care must be taken to avoid a
@@ -530,8 +531,8 @@ system lockout! See:
 
 https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption"
   elif [ "${scriptname:-}" = 'set-console-keymap' ]; then
-    msg="\
-WARNING: This system's root filesystem is LUKS-encrypted. Changing the
+    msg="${FUNCNAME[0]}:
+This system's root filesystem is LUKS-encrypted. Changing the
 console keyboard layout will also change the keyboard layout used at the
 disk decryption prompt the next time the initramfs is regenerated. If your
 passphrase contains characters that cannot be typed using a new keyboard
@@ -539,17 +540,18 @@ layout, special care must be taken to avoid a system lockout! See:
 
 https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption"
   else
-    printf '%s\n' "ERROR: Expected script name 'set-system-keymap' or 'set-console-keymap', but got script name '${scriptname:-}'!"
+    log error "${FUNCNAME[0]}: Expected script name 'set-system-keymap' or 'set-console-keymap', but got script name '${scriptname:-}'!"
     return 1
   fi
-  printf '%s\n' "${msg}"
-  read -r -p "Are you sure you want to continue? [Y/N] " continue_despite_luks
+  log warn "${msg}"
+  log question "${FUNCNAME[0]}: Are you sure you want to continue? [Y/N]"
+  read -r -- continue_despite_luks
 
   if [ "${continue_despite_luks,,}" = 'y' ]; then
-    printf '%s\n' 'INFO: User confirmed keyboard layout change, continuing.'
+    log notice "${FUNCNAME[0]}: User confirmed keyboard layout change, continuing."
     return 0
   fi
-  printf '%s\n' 'INFO: User declined keyboard layout change, exiting.'
+  log notice "${FUNCNAME[0]}: User declined keyboard layout change, exiting."
   return 1
 }
 
@@ -587,13 +589,13 @@ set_console_keymap() {
 
   prompt_for_luks_on_root_fs_maybe || return 1
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Console keymap configuration..."
+  log notice "${FUNCNAME[0]}: Console keymap configuration..."
 
   kb_conf_dir='/etc/default'
   kb_conf_path="${kb_conf_dir}/keyboard"
 
   if ! mkdir --parents -- "${kb_conf_dir}" ; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot ensure the existence of '${kb_conf_dir}'!" >&2
+    log error "${FUNCNAME[0]}: Cannot ensure the existence of '${kb_conf_dir}'!"
     return 1
   fi
 
@@ -613,11 +615,11 @@ set_console_keymap() {
 
   ## Write the new config file contents.
   if ! overwrite "${kb_conf_path}" "${kb_conf_file_string}" >/dev/null ; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot write new keyboard config file '${kb_conf_path}'!" >&2
+    log error "${FUNCNAME[0]}: Cannot write new keyboard config file '${kb_conf_path}'!"
     return 1
   fi
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: new '${kb_conf_path}' contents:"
+  log notice "${FUNCNAME[0]}: new '${kb_conf_path}' contents:"
   stcat "${kb_conf_path}"
 
   dpkg_reconfigure_command=( "dpkg-reconfigure" "--frontend=noninteractive" "keyboard-configuration" )
@@ -627,28 +629,27 @@ set_console_keymap() {
   dpkg_reconfigure_function "${dpkg_reconfigure_command[@]}"
 
   if [ "${do_live_changes}" = 'false' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'systemctl --no-block --no-pager restart keyboard-setup.service' due to '--no-live-changes' option."
+    log notice "${FUNCNAME[0]}: Skipping command 'systemctl --no-block --no-pager restart keyboard-setup.service' due to '--no-live-changes' option."
     return 0
   fi
 
   if ischroot --default-false; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'systemctl --no-block --no-pager restart keyboard-setup.service' inside chroot, ok."
+    log notice "${FUNCNAME[0]}: Skipping command 'systemctl --no-block --no-pager restart keyboard-setup.service' inside chroot, ok."
     return 0
   fi
 
   ## TODO: Do not try this if not running as root.
   if "${timeout_command[@]}" systemctl --no-block --no-pager status keyboard-setup.service &>/dev/null; then
-    printf '%s\n' "${FUNCNAME[0]}: EXECUTING: 'systemctl --no-block --no-pager restart keyboard-setup.service'"
-    if "${timeout_command[@]}" systemctl --no-block --no-pager restart keyboard-setup.service; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Restart of systemd unit 'keyboard-setup.service' success."
+    if log_run notice "${timeout_command[@]}" systemctl --no-block --no-pager restart keyboard-setup.service; then
+      log notice "${FUNCNAME[0]}: Restart of systemd unit 'keyboard-setup.service' success."
     else
-      printf '%s\n' "${FUNCNAME[0]}: WARNING: Restart of systemd unit 'keyboard-setup.service' failed. Reboot may be required to change the virtual console keyboard layout." >&2
+      log warn "${FUNCNAME[0]}: Restart of systemd unit 'keyboard-setup.service' failed. Reboot may be required to change the virtual console keyboard layout."
     fi
   else
-    printf '%s\n' "${FUNCNAME[0]}: WARNING: Systemd unit 'keyboard-setup.service' is not running or does not exist. Reboot may be required to change the virtual console keyboard layout." >&2
+    log warn "${FUNCNAME[0]}: Systemd unit 'keyboard-setup.service' is not running or does not exist. Reboot may be required to change the virtual console keyboard layout."
   fi
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: system console configuration success."
+  log notice "${FUNCNAME[0]}: system console configuration success."
 }
 
 ## NOTE: This function assumes it is run as root.
@@ -656,15 +657,15 @@ labwc_kb_reload_root() {
   local loginctl_users_json loginctl_users_parsed user_list uid_list \
     user_name line uid wl_sock wl_pid wl_comm account_name counter
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Reloading keyboard layout..."
+  log notice "${FUNCNAME[0]}: Reloading keyboard layout..."
 
   if [ "${do_live_changes}" = 'false' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping sending SIGHUP to 'labwc' due to '--no-live-changes' option."
+    log notice "${FUNCNAME[0]}: Skipping sending SIGHUP to 'labwc' due to '--no-live-changes' option."
     return 0
   fi
 
   if ischroot --default-false; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping sending SIGHUP to 'labwc' inside chroot, ok."
+    log notice "${FUNCNAME[0]}: Skipping sending SIGHUP to 'labwc' inside chroot, ok."
     return 0
   fi
 
@@ -683,21 +684,21 @@ labwc_kb_reload_root() {
   )" || true
 
   if [ "$loginctl_users_json" = "" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout." >&2
+    log warn "${FUNCNAME[0]}: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
     return 0
   fi
 
   loginctl_users_parsed="$(jq -r '.[] | .user' <<< "$loginctl_users_json")" || true
 
   if [ "$loginctl_users_parsed" = "" ]; then
-    printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. Failed to parse 'loginctl_users_json' using 'jq'.
-loginctl_users_json: '$loginctl_users_json'
-Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout." >&2
+    log warn "${FUNCNAME[0]}: Minor issue. Failed to parse 'loginctl_users_json' using 'jq'.
+loginctl_users_json: '${loginctl_users_json}'
+Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
     return 0
   fi
 
   user_list=()
-  while IFS= read -r line; do
+  while IFS= read -r -- line; do
     user_list+=("$line")
   done <<< "$loginctl_users_parsed"
 
@@ -746,21 +747,21 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
         ##
         ## 'kill' is a shell built-in and does not support long option '--signal'.
         if kill -s 0 -- "${wl_pid}"; then
-          printf '%s\n' "${FUNCNAME[0]}: INFO: Sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' to trigger configuration reload..."
+          log notice "${FUNCNAME[0]}: Sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' to trigger configuration reload..."
           if kill -s SIGHUP -- "${wl_pid}"; then
-            printf '%s\n' "${FUNCNAME[0]}: INFO: Signal SIGHUP ok."
+            log notice "${FUNCNAME[0]}: Signal SIGHUP ok."
           else
-            printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. Sending signal SIGHUP failed. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout." >&2
+            log warn "${FUNCNAME[0]}: Minor issue. Sending signal SIGHUP failed. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
           fi
         else
-          printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. Not sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' because it is not running. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout." >&2
+          log warn "${FUNCNAME[0]}: Minor issue. Not sending signal SIGHUP for account '${account_name}' to process 'labwc' pid '${wl_pid}' because it is not running. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
         fi
       fi
     done
   done
 
   if [ "$counter" = 0 ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: No need to send SIGHUP to 'labwc' because none running."
+    log notice "${FUNCNAME[0]}: No need to send SIGHUP to 'labwc' because none running."
   fi
 }
 
@@ -778,11 +779,11 @@ set_system_keymap() {
   labwc_greeter_config_path="${labwc_greeter_config_dir}/environment"
 
   if ! mkdir --parents -- "${labwc_system_wide_config_dir}" ; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot ensure the existence of '${labwc_system_wide_config_dir}'!" >&2
+    log error "${FUNCNAME[0]}: Cannot ensure the existence of '${labwc_system_wide_config_dir}'!"
     return 1
   fi
   if ! mkdir --parents -- "${labwc_greeter_config_dir}" ; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot ensure the existence of '${labwc_greeter_config_dir}'!" >&2
+    log error "${FUNCNAME[0]}: Cannot ensure the existence of '${labwc_greeter_config_dir}'!"
     return 1
   fi
 
@@ -791,13 +792,13 @@ set_system_keymap() {
 
   ## {{{ Set the specified keyboard layout for labwc both system-wide and for the greeter.
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc' configuration..."
+  log notice "${FUNCNAME[0]}: 'labwc' configuration..."
 
   labwc_config_path="${labwc_system_wide_config_path}"
   set_labwc_keymap || return 1
   printf '%s\n' ""
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: 'greetd' configuration..."
+  log notice "${FUNCNAME[0]}: 'greetd' configuration..."
   labwc_config_path="${labwc_greeter_config_path}"
   set_labwc_keymap || return 1
   printf '%s\n' ""
@@ -811,11 +812,11 @@ set_system_keymap() {
   printf '%s\n' ""
 
   if [ "$("${timeout_command[@]}" systemctl is-active kloak.service)" = 'active' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Restarting 'kloak'..."
+    log notice "${FUNCNAME[0]}: Restarting 'kloak'..."
     if "${timeout_command[@]}" systemctl restart kloak.service; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Successfully restarted 'kloak'."
+      log notice "${FUNCNAME[0]}: Successfully restarted 'kloak'."
     else
-      printf '%s\n' "${FUNCNAME[0]}: WARNING: Failed to restart 'kloak'!"
+      log warn "${FUNCNAME[0]}: Failed to restart 'kloak'!"
     fi
   fi
   printf '%s\n' ""
@@ -825,72 +826,72 @@ set_system_keymap() {
   printf '%s\n' ""
 
   if [ "${exit_code:-0}" = 0 ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Keyboard layout change successful."
+    log notice "${FUNCNAME[0]}: Keyboard layout change successful."
     return 0
   fi
 
-  printf '%s\n' "${FUNCNAME[0]}: WARNING: Keyboard layout changes applied, but some steps failed, see above."
+  log warn "${FUNCNAME[0]}: Keyboard layout changes applied, but some steps failed, see above."
 }
 
 rebuild_grub_config() {
   local update_grub_output
 
   if [ "${do_live_changes}" = 'false' ]; then
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'update-grub' due to '--no-live-changes' option."
+    log notice "${FUNCNAME[0]}: Skipping command 'update-grub' due to '--no-live-changes' option."
     return 0
   fi
 
   if ischroot --default-false; then
     ## Inside chroot such as during image builds it may be best to leave running update-grub to the build tool.
-    printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'update-grub' inside chroot, ok."
+    log notice "${FUNCNAME[0]}: Skipping command 'update-grub' inside chroot, ok."
     return 0
   fi
 
   if ! has update-grub; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot proceed with updating GRUB configuration because requirements are unavailable. The 'update-grub' program is unavailable in the PATH environment variable or not installed. Is package 'grub2-common' installed?" >&2
+    log error "${FUNCNAME[0]}: Cannot proceed with updating GRUB configuration because requirements are unavailable. The 'update-grub' program is unavailable in the PATH environment variable or not installed. Is package 'grub2-common' installed?"
     return 1
   fi
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Rebuilding GRUB configuration... This will take a moment..."
-  printf '%s\n' "${FUNCNAME[0]}: EXECUTING: 'update-grub'"
+  log notice "${FUNCNAME[0]}: Rebuilding GRUB configuration... This will take a moment..."
+  log notice "Command executing: $ update-grub"
   if ! update_grub_output="$(update-grub 2>&1)"; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Failed to update GRUB configuration! Your system might be unbootable! This issue is very most likely not caused by '$0'. Please manually run 'sudo update-grub' to see this error for yourself." >&2
-    printf '%s\n' "${FUNCNAME[0]}: Output from command 'update-grub':" >&2
-    printf '%s\n' "${update_grub_output}" >&2
+    log error "${FUNCNAME[0]}: Failed to update GRUB configuration! Your system might be unbootable! This issue is very most likely not caused by '$0'. Please manually run 'sudo update-grub' to see this error for yourself."
+    log error "${FUNCNAME[0]}: Output from command 'update-grub':"
+    log error "${FUNCNAME[0]}: ${update_grub_output}"
     return 1
   fi
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Rebuilding GRUB configuration success."
+  log notice "${FUNCNAME[0]}: Rebuilding GRUB configuration success."
 }
 
 set_grub_keymap() {
   local grub_kbdcomp_output name_part_list name_part
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: GRUB keymap configuration..."
+  log notice "${FUNCNAME[0]}: GRUB keymap configuration..."
 
   if ! mkdir --parents -- "${grub_kb_layout_dir}"; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot create GRUB keyboard layout dir '${grub_kb_layout_dir}'!" >&2
+    log error "${FUNCNAME[0]}: Cannot create GRUB keyboard layout dir '${grub_kb_layout_dir}'!"
     return 1
   fi
 
   if ! has grub-kbdcomp; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. The 'grub-kbdcomp' program is unavailable in the PATH environment variable or not installed. Is package 'grub-common' installed?" >&2
+    log error "${FUNCNAME[0]}: Cannot proceed with generating GRUB keymap because requirements are unavailable. The 'grub-kbdcomp' program is unavailable in the PATH environment variable or not installed. Is package 'grub-common' installed?"
     return 1
   fi
 
   ## /usr/bin/grub-kbdcomp: 76: ckbcomp: not found
   if ! has ckbcomp; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. The 'ckbcomp' program is unavailable in the PATH environment variable or not installed. Is package 'console-setup' or 'console-setup-mini' installed?" >&2
+    log error "${FUNCNAME[0]}: Cannot proceed with generating GRUB keymap because requirements are unavailable. The 'ckbcomp' program is unavailable in the PATH environment variable or not installed. Is package 'console-setup' or 'console-setup-mini' installed?"
     return 1
   fi
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Generating GRUB keymap..."
-  printf '%s\n' "${FUNCNAME[0]}: EXECUTING: 'grub-kbdcomp -o ${grub_kb_layout_dir}/user-layout.gkb ${args[*]}'"
+  log notice "${FUNCNAME[0]}: Generating GRUB keymap..."
+  log notice "Command executing: $ grub-kbdcomp -o ${grub_kb_layout_dir}/user-layout.gkb ${args[*]}"
   if ! grub_kbdcomp_output="$(
     grub-kbdcomp -o "${grub_kb_layout_dir}/user-layout.gkb" "${args[@]}" 2>&1
   )"; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Failed to build GRUB keyboard layout!" >&2
-    printf '%s\n' "${FUNCNAME[0]}: Output from the 'grub-kbdcomp' command:" >&2
-    printf '%s\n' "${grub_kbdcomp_output}" >&2
+    log error "${FUNCNAME[0]}: Failed to build GRUB keyboard layout!"
+    log error "${FUNCNAME[0]}: Output from the 'grub-kbdcomp' command:"
+    log error "${FUNCNAME[0]}: ${grub_kbdcomp_output}"
     return 1
   fi
 
@@ -904,26 +905,26 @@ set_grub_keymap() {
 
   rebuild_grub_config
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: GRUB keymap configuration success."
+  log notice "${FUNCNAME[0]}: GRUB keymap configuration success."
 }
 
 build_all_grub_keymaps() {
   local keymap_list keymap old_keymap_file grub_kbdcomp_output
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Getting list of available keyboard layouts from 'localectl-static'."
+  log notice "${FUNCNAME[0]}: Getting list of available keyboard layouts from 'localectl-static'."
   readarray -t keymap_list <<< "${localectl_kb_layouts}"
 
   if ! mkdir --parents -- "${grub_kb_layout_dir}"; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot create GRUB keyboard layout dir '${grub_kb_layout_dir}'!" >&2
+    log error "${FUNCNAME[0]}: Cannot create GRUB keyboard layout dir '${grub_kb_layout_dir}'!"
     return 1
   fi
 
   if ! has grub-kbdcomp; then
-    printf '%s\n' "${FUNCNAME[0]}: ERROR: The 'grub-kbdcomp' program is unavailable in the PATH environment variable or not installed." >&2
+    log error "${FUNCNAME[0]}: The 'grub-kbdcomp' program is unavailable in the PATH environment variable or not installed."
     return 1
   fi
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Building keyboard layouts for GRUB."
+  log notice "${FUNCNAME[0]}: Building keyboard layouts for GRUB."
   for old_keymap_file in "${grub_kb_layout_dir}/"* ; do
     if ! [ -f "${old_keymap_file}" ]; then
       continue
@@ -942,19 +943,19 @@ build_all_grub_keymaps() {
     if ! grub_kbdcomp_output="$(
       grub-kbdcomp -o "${grub_kb_layout_dir}/${keymap}.gkb" "${keymap}" 2>&1
     )"; then
-      printf '%s\n' "${FUNCNAME[0]}: WARNING: 'grub-kbdcomp' failed to build keyboard layout '${keymap}'!" >&2
-      printf '%s\n' "${FUNCNAME[0]}: Output from command 'grub-kbdcomp -o ${grub_kb_layout_dir}/${keymap}.gkb ${keymap}':" >&2
-      printf '%s\n' "${grub_kbdcomp_output}" >&2
+      log warn "${FUNCNAME[0]}: 'grub-kbdcomp' failed to build keyboard layout '${keymap}'!"
+      log warn "${FUNCNAME[0]}: Output from command 'grub-kbdcomp -o ${grub_kb_layout_dir}/${keymap}.gkb ${keymap}':"
+      log warn "${FUNCNAME[0]}: ${grub_kbdcomp_output}"
     fi
   done
 
   rebuild_grub_config
 
-  printf '%s\n' "${FUNCNAME[0]}: INFO: Done building keyboard layouts for GRUB."
+  log notice "${FUNCNAME[0]}: Done building keyboard layouts for GRUB."
 }
 
 interactive_ui_help_layout() {
-  printf '%s\n' "\
+  log notice "${FUNCNAME[0]}:
 Each keyboard layout supported by the system has a short, usually two-letter
 code associated with it. The code generally corresponds to the nation the
 layout is most commonly used in. Some common layouts, in alphabetical order:
@@ -973,7 +974,7 @@ specify 'us,de,cz'.
 }
 
 interactive_ui_help_variant() {
-  printf '%s\n' "\
+  log notice "${FUNCNAME[0]}:
 Each keyboard layout may optionally have a variant associated with it.
 Variants are used to select alternate keyboard layouts for the same
 language, such as Dvorak and Colemak. You should only use variants if you
@@ -994,7 +995,7 @@ as the variants.
 }
 
 interactive_ui_help_option() {
-  printf '%s\n' "\
+  log notice "${FUNCNAME[0]}:
 A number of keyboard layout customizations may be applied using options.
 Some common options:
 - compose:ralt -> Sets the right Alt key as the Compose key, useful for
@@ -1016,7 +1017,7 @@ Alt+Shift the keyboard layout switch shortcut, specify
 interactive_ui() {
   local layout_str variant_str option_str variant_key_str
 
-  printf '%s\n' "\
+  log notice "${FUNCNAME[0]}:
 Type 'list' at any prompt to see a list of valid options.
 If the list is longer than will fit on the screen, use arrow keys to scroll.
 Press 'q' to exit the scrollable list.
@@ -1027,10 +1028,11 @@ Type 'exit' to quit without changing keyboard layout settings.
 "
 
   while true; do
-    read -r -p 'Enter the keyboard layout(s) you would like to use: ' -- layout_str
-    printf '\n'
+    log question "${FUNCNAME[0]}: Enter the keyboard layout(s) you would like to use:"
+    read -r -- layout_str
+    printf '%s\n' ""
     if [ -z "${layout_str}" ]; then
-      printf '%s\n' 'No keyboard layouts specified. Exiting.'
+      log notice "${FUNCNAME[0]}: No keyboard layouts specified. Exiting."
       return 0
     fi
     ## Normalize the layout string so it is all lowercase and has no spaces in
@@ -1056,7 +1058,7 @@ Type 'exit' to quit without changing keyboard layout settings.
       continue
     fi
     if [ "${layout_str}" = 'exit' ]; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Exiting without setting keyboard layout."
+      log notice "${FUNCNAME[0]}: Exiting without setting keyboard layout."
       return 0
     fi
     if check_keyboard_layouts "${layout_str}"; then
@@ -1065,8 +1067,9 @@ Type 'exit' to quit without changing keyboard layout settings.
   done
 
   while true; do
-    read -r -p 'Enter the keyboard layout variant(s) if desired, leave empty otherwise: ' -- variant_str
-    printf '\n'
+    log question "${FUNCNAME[0]}: Enter the keyboard layout variant(s) if desired, leave empty otherwise:"
+    read -r -- variant_str
+    printf '%s\n' ""
     if [ -z "${variant_str}" ]; then
       break
     fi
@@ -1078,14 +1081,15 @@ Type 'exit' to quit without changing keyboard layout settings.
       if ! grep --quiet ',' <<< "${layout_str}"; then
         "${timeout_command[@]}" localectl-static --no-pager list-x11-keymap-variants "${layout_str}"
       else
-        read -r -p 'Enter the keyboard layout to view variants for: ' -- variant_key_str
+        log question "${FUNCNAME[0]}: Enter the keyboard layout to view variants for:"
+        read -r -- variant_key_str
         variant_key_str="$(tr -d ' ' <<< "${variant_key_str,,}")"
         if grep -q ',' <<< "${variant_key_str}" ; then
-          printf '%s\n' "${FUNCNAME[0]}: ERROR: Only one layout may be specified to view the variants of!" >&2
+          log error "${FUNCNAME[0]}: Only one layout may be specified to view the variants of!"
           continue
         fi
         if ! [[ "${layout_str}" =~ (^|,)"${variant_key_str}"(,|$) ]]; then
-          printf '%s\n' "${FUNCNAME[0]}: ERROR: Specified layout is not in the previously specified layout list!" >&2
+          log error "${FUNCNAME[0]}: Specified layout is not in the previously specified layout list!"
           continue
         fi
         "${timeout_command[@]}" localectl-static --no-pager list-x11-keymap-variants "${variant_key_str}"
@@ -1097,7 +1101,7 @@ Type 'exit' to quit without changing keyboard layout settings.
       continue
     fi
     if [ "${variant_str}" = 'exit' ]; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Exiting without setting keyboard layout."
+      log notice "${FUNCNAME[0]}: Exiting without setting keyboard layout."
       return 0
     fi
     if check_keyboard_layout_variants "${layout_str}" "${variant_str}"; then
@@ -1106,7 +1110,8 @@ Type 'exit' to quit without changing keyboard layout settings.
   done
 
   while true; do
-    read -r -p 'Enter the keyboard layout option(s) if desired, leave empty otherwise: ' -- option_str
+    log question "${FUNCNAME[0]}: Enter the keyboard layout option(s) if desired, leave empty otherwise:"
+    read -r -- option_str
     printf '\n'
     if [ -z "${option_str}" ]; then
       break
@@ -1126,7 +1131,7 @@ Type 'exit' to quit without changing keyboard layout settings.
       continue
     fi
     if [ "${option_str}" = 'exit' ]; then
-      printf '%s\n' "${FUNCNAME[0]}: INFO: Exiting without setting keyboard layout."
+      log notice "${FUNCNAME[0]}: Exiting without setting keyboard layout."
       return 0
     fi
     if check_keyboard_layout_options "${option_str}"; then
@@ -1142,7 +1147,7 @@ Type 'exit' to quit without changing keyboard layout settings.
 }
 
 unknown_option_error() {
-  printf '%s\n' "parse_cmd: ERROR: Unknown option '$1'." >&2
+  log error "${FUNCNAME[0]}: Unknown option '$1'."
   print_usage
   exit 1
 }
@@ -1196,7 +1201,7 @@ parse_cmd() {
         fi
         labwc_config_path="$(cut -d'=' -f2- <<< "$1")"
         if [ -z "$labwc_config_path" ]; then
-          printf '%s\n' "${FUNCNAME[0]}: ERROR: No '--config=path' specified!" >&2
+          log error "${FUNCNAME[0]}: No '--config=path' specified!"
           exit 1
         fi
         shift
@@ -1282,7 +1287,7 @@ parse_cmd() {
 trap "error_handler" ERR
 trap "exit_handler" EXIT
 
-printf '%s\n' "$0: Start."
+log notice "$0: Start."
 printf '%s\n' ""
 
 has safe-rm
