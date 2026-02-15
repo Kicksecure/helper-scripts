@@ -10,6 +10,9 @@
 ## set-system-keymap
 ## This script acts as a "main program", not as a library.
 
+# shellcheck source=./has.sh
+source /usr/libexec/helper-scripts/has.sh
+
 set -o errexit
 set -o nounset
 set -o errtrace
@@ -396,7 +399,7 @@ set_labwc_keymap() {
   elif pgrep -- labwc >/dev/null; then
     ## 'labwc' is running. So the user most likely wishes the change to instantly apply.
     ## Therefore let's run 'labwc --reconfigure'.
-    if ! command -v labwc >/dev/null; then
+    if ! has labwc; then
       ## This would be weird. 'labwc' is running but unavailable in the PATH environment variable.
       printf '%s\n' "${FUNCNAME[0]}: ERROR: The 'labwc' program is unavailable in the PATH environment variable or not installed." >&2
     else
@@ -474,7 +477,7 @@ dracut_run() {
     printf '%s\n' "${FUNCNAME[0]}: INFO: Skipping command 'dracut --regenerate-all --force' inside chroot, ok."
     return 0
   fi
-  if ! command -v dracut >/dev/null; then
+  if ! has dracut; then
     printf '%s\n' "${FUNCNAME[0]}: WARNING: Minor issue. The 'dracut' program is unavailable in the PATH environment variable or not installed. Keyboard layout in initramfs unchanged." >&2
     return 0
   fi
@@ -843,7 +846,7 @@ rebuild_grub_config() {
     return 0
   fi
 
-  if ! command -v 'update-grub' >/dev/null 2>&1; then
+  if ! has update-grub; then
     printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot proceed with updating GRUB configuration because requirements are unavailable. The 'update-grub' program is unavailable in the PATH environment variable or not installed. Is package 'grub2-common' installed?" >&2
     return 1
   fi
@@ -869,13 +872,13 @@ set_grub_keymap() {
     return 1
   fi
 
-  if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
+  if ! has grub-kbdcomp; then
     printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. The 'grub-kbdcomp' program is unavailable in the PATH environment variable or not installed. Is package 'grub-common' installed?" >&2
     return 1
   fi
 
   ## /usr/bin/grub-kbdcomp: 76: ckbcomp: not found
-  if ! command -v 'ckbcomp' >/dev/null 2>&1; then
+  if ! has ckbcomp; then
     printf '%s\n' "${FUNCNAME[0]}: ERROR: Cannot proceed with generating GRUB keymap because requirements are unavailable. The 'ckbcomp' program is unavailable in the PATH environment variable or not installed. Is package 'console-setup' or 'console-setup-mini' installed?" >&2
     return 1
   fi
@@ -915,7 +918,7 @@ build_all_grub_keymaps() {
     return 1
   fi
 
-  if ! command -v 'grub-kbdcomp' >/dev/null 2>&1; then
+  if ! has grub-kbdcomp; then
     printf '%s\n' "${FUNCNAME[0]}: ERROR: The 'grub-kbdcomp' program is unavailable in the PATH environment variable or not installed." >&2
     return 1
   fi
@@ -1282,22 +1285,22 @@ trap "exit_handler" EXIT
 printf '%s\n' "$0: Start."
 printf '%s\n' ""
 
-command -v safe-rm >/dev/null
-command -v mktemp >/dev/null
-command -v mv >/dev/null
-command -v dirname >/dev/null
-command -v mkdir >/dev/null
-command -v overwrite >/dev/null
-command -v stcat >/dev/null
-command -v sponge >/dev/null
-command -v timeout >/dev/null
-command -v ischroot >/dev/null
-command -v jq >/dev/null
-command -v tr >/dev/null
-command -v loginctl >/dev/null
-command -v pgrep >/dev/null
-command -v /usr/libexec/helper-scripts/query-sock-pid >/dev/null
-command -v localectl-static >/dev/null
+has safe-rm
+has mktemp
+has mv
+has dirname
+has mkdir
+has overwrite
+has stcat
+has sponge
+has timeout
+has ischroot
+has jq
+has tr
+has loginctl
+has pgrep
+has /usr/libexec/helper-scripts/query-sock-pid
+has localectl-static
 
 timeout_command=("timeout" "--kill-after" "5" "5")
 
