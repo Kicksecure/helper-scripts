@@ -251,20 +251,18 @@ replace_file_variables() {
 }
 
 extract_kloak_esc_key_combo() {
+  local return_val
+
+  return_val=''
   while [ -n "${1:-}" ]; do
     case "$1" in
       '-k')
-        if [ -n "${2:-}" ]; then
-          printf '%s\n' "$2"
-          return 0
-        fi
-        shift
+        return_val="${2:-}"
+        shift 2
         ;;
       --esc-key-combo=*)
-        local esc_key_combo
-        esc_key_combo="$(cut -d'=' -f2 <<< "$1")"
-        printf '%s\n' "${esc_key_combo}"
-        return 0
+        return_val="$(cut -d'=' -f2 <<< "$1")"
+        shift
         ;;
       '--')
         break
@@ -275,15 +273,19 @@ extract_kloak_esc_key_combo() {
     esac
   done
 
-  ## Fallback if no escape key is found in the command line
-  printf '%s\n' 'KEY_RIGHTSHIFT,KEY_ESC'
+  ## Fallback if no escape key is found in the command line.
+  ## Note that kloak will reject an empty escape key argument, so we don't
+  ## need to be concerned that maybe the user has explicitly set the escape
+  ## key to an empty string.
+  if [ -z "${return_val}" ]; then
+    return_val='KEY_RIGHTSHIFT,KEY_ESC'
+  fi
+  printf '%s\n' "${return_val}"
   return 0
 }
 
 warn_kloak_is_running() {
   local esc_key_combo kloak_command_line_list
-
-  #esc_key_combo='KEY_RIGHTSHIFT,KEY_ESC'
 
   ## See if kloak has been started with some non-standard escape key combo,
   ## and show that combo to the user instead if so.
@@ -313,9 +315,11 @@ warn_kloak_is_running() {
 ## this session or persistently.
 set_labwc_keymap() {
   local labwc_config_bak_path var_idx labwc_env_file_string \
-    labwc_config_directory calc_replace_args labwc_existing_config
+    labwc_config_directory calc_replace_args labwc_existing_config \
+    did_labwc_reconfigure
 
   labwc_config_bak_path=''
+  did_labwc_reconfigure='false'
 
   if test -d "${labwc_config_path}"; then
     printf '%s\n' "${FUNCNAME[0]}: ERROR: labwc configuration path '${labwc_config_path}' is a folder but should be a file!" >&2
@@ -399,6 +403,7 @@ set_labwc_keymap() {
       ## 'labwc' is running and available in the PATH environment variable.
       if labwc --reconfigure; then
         printf '%s\n' "${FUNCNAME[0]}: INFO: 'labwc --reconfigure' OK."
+        did_labwc_reconfigure='true'
       else
         printf '%s\n' "${FUNCNAME[0]}: WARNING: 'labwc --reconfigure' reconfiguration failed!" >&2
       fi
@@ -424,7 +429,8 @@ set_labwc_keymap() {
     fi
   fi
 
-  if [ "$("${timeout_command[@]}" systemctl is-active kloak.service &>/dev/null)" = 'active' ]; then
+  if [ "${did_labwc_reconfigure}" = 'true' ] \
+    && [ "$("${timeout_command[@]}" systemctl is-active kloak.service)" = 'active' ]; then
     warn_kloak_is_running
   fi
 
@@ -799,6 +805,16 @@ set_system_keymap() {
   printf '%s\n' ""
 
   labwc_kb_reload_root
+  printf '%s\n' ""
+
+  if [ "$("${timeout_command[@]}" systemctl is-active kloak.service)" = 'active' ]; then
+    printf '%s\n' "${FUNCNAME[0]}: INFO: Restarting 'kloak'..."
+    if "${timeout_command[@]}" systemctl restart kloak.service; then
+      printf '%s\n' "${FUNCNAME[0]}: INFO: Successfully restarted 'kloak'."
+    else
+      printf '%s\n' "${FUNCNAME[0]}: WARNING: Failed to restart 'kloak'!"
+    fi
+  fi
   printf '%s\n' ""
 
   ## Soft-fail.
