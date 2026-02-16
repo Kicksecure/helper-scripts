@@ -1,3 +1,47 @@
+commit dc1cedeb6519c2b83a0c1720285c17f7833a99d8
+Merge: 18627f3 c8e07b9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Feb 16 05:14:51 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit c8e07b905989414119a5fffef016e73f7a3eca60
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Feb 15 11:03:16 2026 -0600
+
+    output
+
+commit 65b73f2118e126a27e2d01f90a04604ce323512a
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Feb 15 10:52:59 2026 -0600
+
+    Port set-keyboard-layout.sh to using 'log_run_die.sh'
+
+commit b7cca100934432466ccde1a3d8940de63f5d3f6a
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Feb 15 09:38:27 2026 -0600
+
+    Port set-keyboard-layout.sh to using 'has.sh'
+
+commit b4ee31582a813886463045eeb9b3aa034e369f67
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sat Feb 14 22:04:31 2026 -0600
+
+    Finish making set-keyboard-layout.sh warn about the need for a kloak restart, make it restart kloak itself if it can safely
+
+commit 8e8d3ea445034181cbf7e6e1323af3e4a7776ae7
+Merge: 0bc4acc 18627f3
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sat Feb 14 19:33:51 2026 -0600
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 18627f3eabfad5bf1ed237b8ba0b98dca4e1e53f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Feb 14 12:37:27 2026 +0000
+
+    bumped changelog version
+
 commit 793a1bb80cf4a27128f0e5143f312f5a5d8e9646
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Feb 14 05:42:01 2026 -0500
@@ -9,6 +53,18 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Feb 14 05:41:20 2026 -0500
 
     port to sequonia-pgp
+
+commit 0bc4acc3584b30100c9efac3af98bd9778a052b6
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Feb 13 17:33:24 2026 -0600
+
+    set-keyboard-layout.sh: WIP: Warn the user if kloak is running when the keyboard layout is changed and tell them how to restart it
+
+commit bf23caba9854d1af24d4ae9ad78340bc924935ec
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Feb 13 16:57:25 2026 -0600
+
+    set-keyboard-layout.sh: Print the contents of labwc's environment file before printing the reconfigure command's result
 
 commit 59a18d110ecde3341dfacdff4267d9e7e2619577
 Author: Patrick Schleizer <adrelanos@whonix.org>
