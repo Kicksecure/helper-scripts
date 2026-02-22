@@ -289,6 +289,17 @@ extract_kloak_esc_key_combo() {
   return 0
 }
 
+## We cannot safely allow non-root users to restart kloak, as malware could
+## repeatedly restart it in order to remove its anonymizing effects. However,
+## the user can still restart it without rebooting the system, as kloak can be
+## restarted with a key combination.
+##
+## A keypress-triggered action feels like it's accessible to non-root users,
+## but it's actually not; all keypresses go through evdev, which is only
+## accessible to root. When the user types on their keyboard, these keypresses
+## are effectively coming from root and can be treated as such. It does not
+## appear possible to create emulated input devices that allow fooling this
+## mechanism without root privileges.
 warn_kloak_is_running() {
   local esc_key_combo kloak_command_line_list
 

@@ -1,4 +1,4 @@
-# Helper scripts useful for Linux Distributions #
+# Helper scripts useful for Linux Distributions
 
 Contains a script for curl progress bar in terminal. Includes another script
 to convert curl exit codes to curl status messages. Implemented in bash.
