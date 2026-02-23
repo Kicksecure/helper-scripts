@@ -82,8 +82,7 @@ if ! test -d "$client_onion_auth_dir"; then
    chmod 0700 -- "$client_onion_auth_dir"
 fi
 
-chown "${tor_user}:${tor_group}" -- "$client_onion_auth_dir"
-
+chown -- "${tor_user}:${tor_group}" "$client_onion_auth_dir"
 
 if test -f /usr/share/anon-gw-base-files/gateway ; then
    true "INFO: Whonix detected, ok."
