@@ -27,13 +27,14 @@
 ## with correct access rights from template folder <code>/usr/share/anon-gw-anonymizer-config</code>.
 ##
 ## Guarantee the existence of:
-## /etc/tor/torrc
-## /etc/torrc.d/95_whonix.conf
-## /usr/local/etc/torrc.d/40_tor_control_panel.conf
-## /usr/local/etc/torrc.d/50_user.conf
 ##
-##           "%include /etc/torrc.d/*.conf" line in /etc/tor/torrc file
-## "%include /usr/local/etc/torrc.d/*.conf" line in /etc/torrc.d/95_whonix.conf
+## * <code>/etc/tor/torrc</code>
+## * <code>/etc/torrc.d/95_whonix.conf</code>
+## * <code>/usr/local/etc/torrc.d/40_tor_control_panel.conf</code>
+## * <code>/usr/local/etc/torrc.d/50_user.conf</code>
+##
+## <code>%include /etc/torrc.d/*.conf</code> line in <code>/etc/tor/torrc</code> file
+## <code>%include /usr/local/etc/torrc.d/*.conf</code> line in <code>/etc/torrc.d/95_whonix.conf</code>
 #### meta end
 
 set -x
