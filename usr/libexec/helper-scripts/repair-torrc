@@ -146,7 +146,7 @@ else
 fi
 
 if test -f "$torrc_user_file_path" ; then
-   true "INFO: file $torrc_user_file_path already exits, ok."
+   true "INFO: file $torrc_user_file_path already exists, ok."
 else
    true "INFO: file $torrc_user_file_path does not exist yet, creating..."
    printf '%s\n' "\
