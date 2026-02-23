@@ -20,7 +20,7 @@
 ## * <code>/etc/tor/torrc</code>
 ## * <code>/etc/torrc.d/95_whonix.conf</code>
 ## * <code>/usr/local/etc/torrc.d/40_tor_control_panel.conf</code>
-## * <code>/usr/share/anon-gw-anonymizer-config/user_torrc_template.conf /usr/local/etc/torrc.d/50_user.conf</code>
+## * <code>/usr/local/etc/torrc.d/50_user.conf</code> (from template <code>/usr/share/anon-gw-anonymizer-config/user_torrc_template.conf</code>)
 ##
 ## create folder <code>/var/lib/tor/authdir</code>
 ##
