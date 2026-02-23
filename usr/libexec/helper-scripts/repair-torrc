@@ -22,9 +22,11 @@
 ## * <code>/usr/local/etc/torrc.d/40_tor_control_panel.conf</code>
 ## * <code>/usr/local/etc/torrc.d/50_user.conf</code> (from template <code>/usr/share/anon-gw-anonymizer-config/user_torrc_template.conf</code>)
 ##
-## create folder <code>/var/lib/tor/authdir</code>
+## create folder <code>/var/lib/tor/authdir</code> by default
+## (or <code>${client_onion_auth_dir}</code> if overridden)
 ##
-## with correct access rights from template folder <code>/usr/share/anon-gw-anonymizer-config</code>.
+## with correct permissions and ownership (default <code>debian-tor:debian-tor</code>)
+## from template folder <code>/usr/share/anon-gw-anonymizer-config</code>.
 ##
 ## Guarantee the existence of:
 ##
@@ -35,6 +37,8 @@
 ##
 ## <code>%include /etc/torrc.d/*.conf</code> line in <code>/etc/tor/torrc</code> file
 ## <code>%include /usr/local/etc/torrc.d/*.conf</code> line in <code>/etc/torrc.d/95_whonix.conf</code>
+##
+## on non-Whonix systems, prints a warning and exits
 #### meta end
 
 set -x
