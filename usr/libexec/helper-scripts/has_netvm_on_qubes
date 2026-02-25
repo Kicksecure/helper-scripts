@@ -1,0 +1,20 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## On non-Qubes systems, exits 0. On Qubes systems, exits 0 if the system
+## has a NetVM, 1 otherwise.
+
+source /usr/libexec/helper-scripts/has.sh
+
+if ! has qubesdb-read; then
+  exit 0
+fi
+if ! [ -f /usr/share/qubes/marker-vm ]; then
+  exit 0
+fi
+if qubesdb-read /qubes-gateway >/dev/null 2>&1; then
+  exit 0
+fi
+exit 1
