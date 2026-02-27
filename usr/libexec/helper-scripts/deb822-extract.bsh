@@ -1,0 +1,214 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## This function extracts data from a deb822-formatted file (such as a Debian
+## source package control file). It looks through at each stanza of the file,
+## and places the desired fields from each stanza that matches provided
+## constraints into an array variable specified by the caller. It should be
+## called as follows:
+##
+##     deb822_extract /path/to/file output_var desired_field1,desired_field2,... constraint_field1|constraint_regex1 constraint_field|constraint_regex2 ...
+##
+## For instance, to get the name and architecture of every binary package in a
+## control file:
+##
+##    deb822_extract /path/to/file package_arch_list Package,Architecture Package|
+##
+## To get the name of every binary package that conflicts with lxqt-policykit:
+##
+##    deb822_extract /path/to/file name_list Package 'Conflicts|([[:space:]]|^)lxqt-policykit([[:space:]]|$)'
+##
+## In the event more than one matching stanza is present in the file, the
+## output array will be populated with all of the requested fields from all of
+## the stanzas. For instance, if you asked for three fields from three
+## stanzas, the output array will be nine items long, with the first three
+## items corresponding to the first stanza, the second three corresponding to
+## the second stanza, and so on.
+##
+## The output variable should not be given a name that starts with
+## 'deb822_extract'. The output variable must also be an array.
+
+deb822_extract() {
+  local deb822_extract_input_file deb822_extract_output_var \
+    deb822_extract_desired_field_list deb822_extract_constraint_key_list \
+    deb822_extract_constraint_regex_list deb822_extract_stanza_line \
+    deb822_extract_key_list deb822_extract_key deb822_extract_val \
+    deb822_extract_val_list deb822_extract_last_idx deb822_extract_constraint \
+    deb822_extract_constraint_key deb822_extract_constraint_regex
+
+  ## Process arguments
+  deb822_extract_input_file="${1:-}"
+  deb822_extract_output_var="${2:-}"
+  IFS=',' read -r -a deb822_extract_desired_field_list <<< "${3:-}"
+  shift 3
+  if ! [ -f "${deb822_extract_input_file}" ]; then
+    return 1
+  fi
+  if [ -z "${deb822_extract_output_var}" ]; then
+    return 2
+  fi
+  if [[ "${deb822_extract_output_var}" =~ ^deb822_extract ]]; then
+    return 2
+  fi
+  if (( ${#deb822_extract_desired_field_list[@]} == 0 )); then
+    return 2
+  fi
+  for deb822_extract_desired_field \
+    in "${deb822_extract_desired_field_list[@]}"; do
+    if [ -z "${deb822_extract_desired_field}" ]; then
+      return 2
+    fi
+  done
+
+  ## From the output of 'help declare':
+  ##
+  ##   -n        make NAME a reference to the variable named by its value
+  ##
+  ## This will therefore make deb822_extract_output_var into an array
+  ## (assuming an array was passed in), and modifications made to it
+  ## will be propagated to the passed-in list.
+  declare -n deb822_extract_output_var
+
+  deb822_extract_constraint_key_list=()
+  deb822_extract_constraint_regex_list=()
+
+  ## Process constraints into key / regex lists
+  for deb822_extract_constraint in "$@"; do
+    if [[ "${deb822_extract_constraint}" != *'|'* ]]; then
+      return 2
+    fi
+    deb822_extract_constraint_key="${deb822_extract_constraint%%|*}"
+    if [ -z "${deb822_extract_constraint_key}" ]; then
+      return 2
+    fi
+    deb822_extract_constraint_regex="${deb822_extract_constraint#*|}"
+
+    deb822_extract_constraint_key_list+=( "${deb822_extract_constraint_key}" )
+    deb822_extract_constraint_regex_list+=(
+      "${deb822_extract_constraint_regex}"
+    )
+  done
+  if (( ${#deb822_extract_constraint_key_list[@]} == 0 )); then
+    return 2
+  fi
+
+  ## Break the input file into chunks.
+  deb822_extract_key_list=()
+  deb822_extract_val_list=()
+  while IFS= read -r deb822_extract_stanza_line; do
+    ## Process a loaded stanza once a blank line is hit.
+    if [ -z "${deb822_extract_stanza_line}" ]; then
+      deb822_extract_one
+      deb822_extract_key_list=()
+      deb822_extract_val_list=()
+      continue
+    fi
+    if [ "${deb822_extract_stanza_line:0:1}" = '#' ]; then
+      ## Skip comments
+      continue
+    fi
+    if [ "${deb822_extract_stanza_line:0:1}" = ' ' ]; then
+      ## One-space-indented lines are part of the last recorded value.
+      if (( ${#deb822_extract_val_list[@]} == 0 )); then
+        return 3
+      fi
+      ## This technically will try to grab one character past the end of
+      ## deb822_extract_val, but in practice Bash simply returns the rest of
+      ## the string.
+      deb822_extract_val="${deb822_extract_stanza_line:1:${#deb822_extract_stanza_line}}"
+      deb822_extract_last_idx=$(( ${#deb822_extract_val_list[@]} - 1 ))
+      deb822_extract_val_list[deb822_extract_last_idx]+=$'\n'"${deb822_extract_val}"
+    else
+      ## Lines with no leading spaces are (the start of) key/value pairs.
+      if ! [[ "${deb822_extract_stanza_line}" = *:* ]]; then
+        return 3
+      fi
+      deb822_extract_key="${deb822_extract_stanza_line%%:*}"
+      deb822_extract_val="${deb822_extract_stanza_line#*:}"
+      if [ -z "${deb822_extract_key}" ]; then
+        return 3
+      fi
+      if [ "${deb822_extract_val:0:1}" = ' ' ]; then
+        deb822_extract_val="${deb822_extract_val:1:${#deb822_extract_val}}"
+      fi
+      deb822_extract_key_list+=( "${deb822_extract_key}" )
+      deb822_extract_val_list+=( "${deb822_extract_val}" )
+    fi
+  done < "${deb822_extract_input_file}"
+
+  ## Process the last stanza in the file.
+  deb822_extract_one
+}
+
+## This function should NOT be called directly, it is an implementation detail
+## of deb822_extract.
+deb822_extract_one() {
+  local deb822_extract_constraint_idx deb822_extract_regex_mismatch \
+    deb822_extract_stanza_idx deb822_extract_found_key \
+    deb822_extract_desired_field
+  ## This function also inherits the local variables from deb822_extract.
+
+  ## Ignore empty stanzas, this can happen if there's an extra trailing
+  ## newline in the file or multiple newlines in a row.
+  if (( ${#deb822_extract_key_list[@]} == 0 )); then
+    return
+  fi
+
+  ## Check each constraint against the current stanza. If a key is missing, or
+  ## the regex in the constraint doesn't match the corresponding value, skip
+  ## the stanza.
+  deb822_extract_regex_mismatch='false'
+  for deb822_extract_constraint_idx \
+    in "${!deb822_extract_constraint_key_list[@]}"; do
+    deb822_extract_constraint_key="${deb822_extract_constraint_key_list[deb822_extract_constraint_idx]}"
+    deb822_extract_found_key='false'
+
+    for deb822_extract_stanza_idx in "${!deb822_extract_key_list[@]}"; do
+      deb822_extract_key="${deb822_extract_key_list[deb822_extract_stanza_idx]}"
+      if [ "${deb822_extract_key}" != "${deb822_extract_constraint_key}" ]; then
+        continue
+      fi
+
+      deb822_extract_found_key='true'
+      ## It would have been more intuitive to load
+      ## deb822_extract_constraint_regex in the outer loop, but it's only ever
+      ## needed here and the loop isn't going to run again at this point, so
+      ## it's more efficient to load it here.
+      deb822_extract_constraint_regex="${deb822_extract_constraint_regex_list[deb822_extract_constraint_idx]}"
+      deb822_extract_val="${deb822_extract_val_list[deb822_extract_stanza_idx]}"
+      if ! [[ "${deb822_extract_val}" \
+        =~ ${deb822_extract_constraint_regex} ]]; then
+        deb822_extract_regex_mismatch='true'
+      fi
+      break
+    done
+
+    if [ "${deb822_extract_regex_mismatch}" = 'true' ] \
+      || [ "${deb822_extract_found_key}" = 'false' ]; then
+      return
+    fi
+  done
+
+  ## If we got this far, the stanza matches, and we can load the requested
+  ## fields into the output array.
+  for deb822_extract_desired_field \
+    in "${deb822_extract_desired_field_list[@]}"; do
+    deb822_extract_found_key='false'
+
+    for deb822_extract_stanza_idx in "${!deb822_extract_key_list[@]}"; do
+      deb822_extract_key="${deb822_extract_key_list[deb822_extract_stanza_idx]}"
+      if [ "${deb822_extract_desired_field}" = "${deb822_extract_key}" ]; then
+        deb822_extract_val="${deb822_extract_val_list[deb822_extract_stanza_idx]}"
+        deb822_extract_found_key='true'
+        deb822_extract_output_var+=( "${deb822_extract_val}" )
+        break
+      fi
+    done
+
+    if [ "${deb822_extract_found_key}" = 'false' ]; then
+      deb822_extract_output_var+=( '' )
+    fi
+  done
+}
