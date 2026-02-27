@@ -30,6 +30,7 @@
 ## The output variable should not be given a name that starts with
 ## 'deb822_extract'. The output variable must also be an array.
 
+## CODE DUPLICATION: in genmkfile
 deb822_extract() {
   local deb822_extract_input_file deb822_extract_output_var deb822_extract_desired_field \
     deb822_extract_desired_field_list deb822_extract_constraint_key_list \
@@ -156,6 +157,7 @@ deb822_extract() {
 
 ## This function should NOT be called directly, it is an implementation detail
 ## of deb822_extract.
+## CODE DUPLICATION: in genmkfile
 deb822_extract_one() {
   local deb822_extract_constraint_idx deb822_extract_regex_mismatch \
     deb822_extract_stanza_idx deb822_extract_found_key \
