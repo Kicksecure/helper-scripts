@@ -31,7 +31,7 @@
 ## 'deb822_extract'. The output variable must also be an array.
 
 deb822_extract() {
-  local deb822_extract_input_file deb822_extract_output_var \
+  local deb822_extract_input_file deb822_extract_output_var deb822_extract_desired_field \
     deb822_extract_desired_field_list deb822_extract_constraint_key_list \
     deb822_extract_constraint_regex_list deb822_extract_stanza_line \
     deb822_extract_key_list deb822_extract_key deb822_extract_val \
