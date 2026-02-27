@@ -38,6 +38,10 @@ deb822_extract() {
     deb822_extract_val_list deb822_extract_last_idx deb822_extract_constraint \
     deb822_extract_constraint_key deb822_extract_constraint_regex
 
+  if (( $# < 3 )); then
+    return 2
+  fi
+
   ## Process arguments
   deb822_extract_input_file="${1:-}"
   deb822_extract_output_var="${2:-}"
