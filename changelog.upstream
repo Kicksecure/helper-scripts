@@ -1,3 +1,34 @@
+commit f2d11f770feea83082e50f9ff84e453e666dc693
+Merge: d5d17f5 fec40ec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 27 05:13:25 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit d5d17f54e75e03a85473d040b0e5784ac364bb03
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 27 05:02:46 2026 -0500
+
+    import gpg_bash_lib_function_displaytime from gpg-bash-lib
+
+commit fec40ec1ccd4b24d30637bc367614e1f55ef8f1d
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Feb 25 00:14:38 2026 -0500
+
+    Add has_netvm tool
+
+commit 0f26d8fb741110161d16685713ddd33691208d61
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Feb 23 23:39:27 2026 -0500
+
+    Add library for extracting info from deb822 files
+
+commit 725a0b1b987409f38fcde8cb486a6c95736118f4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Feb 23 13:32:26 2026 +0000
+
+    bumped changelog version
+
 commit e3b315b6947e3344cf95c28f7eae7a700f8f5054
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Feb 23 05:44:39 2026 -0500
