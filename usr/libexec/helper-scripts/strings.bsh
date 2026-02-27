@@ -254,29 +254,51 @@ random_alpha_numeric() {
   printf '%s\n' ""
 }
 
-gpg_bash_lib_function_displaytime_helper() {
-   if [ "$1" = "1" ]; then
-      echo " "
-   fi
-}
-
 gpg_bash_lib_function_displaytime() {
-   ## Thanks to Stephane Gimenez!
-   ## http://unix.stackexchange.com/a/27014/49297
-   ## Modified by Patrick Schleizer.
-   local T D H M S X
-   T="$1"
-   D="$((T/60/60/24))"
-   H="$((T/60/60%24))"
-   M="$((T/60%60))"
-   S="$((T%60))"
-   X="0"
-   [[ "$D" -gt "0" ]] && printf "$(gpg_bash_lib_function_displaytime_helper "$X")%d days" "$D" && X="1" || true
-   [[ "$H" -gt "0" ]] && printf "$(gpg_bash_lib_function_displaytime_helper "$X")%d hours" "$H" && X="1" || true
-   [[ "$M" -gt "0" ]] && printf "$(gpg_bash_lib_function_displaytime_helper "$X")%d minutes" "$M" && X="1" || true
-   [[ "$S" -gt "0" ]] && printf "$(gpg_bash_lib_function_displaytime_helper "$X")%d seconds" "$S" && X="1" || true
-   #[[ "$D" -gt "0" || "$H" -gt "0" || "$M" -gt "0" || "$S" -gt "0" ]] && printf 'and '
-   true
+  ## Thanks to Stephane Gimenez!
+  ## http://unix.stackexchange.com/a/27014/49297
+  ## Modified by Patrick Schleizer.
+  local T Y D H M S sep
+  T="${1-0}"
+
+  Y=$((T/60/60/24/365))
+  D=$((T/60/60/24%365))
+  H=$((T/60/60%24))
+  M=$((T/60%60))
+  S=$((T%60))
+
+  sep=''
+
+  if (( Y > 0 )); then
+    printf '%s%d years' "$sep" "$Y"
+    sep=' '
+  fi
+
+  if (( D > 0 )); then
+    printf '%s%d days' "$sep" "$D"
+    sep=' '
+  fi
+
+  if (( H > 0 )); then
+    printf '%s%d hours' "$sep" "$H"
+    sep=' '
+  fi
+
+  if (( M > 0 )); then
+    printf '%s%d minutes' "$sep" "$M"
+    sep=' '
+  fi
+
+  if (( S > 0 )); then
+    printf '%s%d seconds' "$sep" "$S"
+    sep=' '
+  fi
+
+  if (( Y == 0 && D == 0 && H == 0 && M == 0 && S == 0 )); then
+    printf '0 seconds'
+  fi
+
+  printf '%s\n' ''
 }
 
 run_test() {
@@ -324,6 +346,8 @@ string_bsh_tests() {
   set -o nounset
   trap strings_bsh_error_trap ERR
 
+  shellcheck "$0"
+
   ## run_test <test_name> <function> <expected_exit_code> <var_name> <value...>
 
   run_test "alpha_numeric: rejects empty" check_is_alpha_numeric 1 test_value ""
@@ -352,6 +376,13 @@ string_bsh_tests() {
   run_test "one_line: rejects multi-line string" check_is_not_empty_and_only_one_line 1 test_value $'Hello\nWorld'
   run_test "one_line: accepts normal text" check_is_not_empty_and_only_one_line 0 test_value "Hello, World!"
   run_test "one_line: accepts text with surrounding spaces" check_is_not_empty_and_only_one_line 0 test_value "  Hello  "
+
+  run_test "time: 0" gpg_bash_lib_function_displaytime 0 test_value 0
+  run_test "time: 500" gpg_bash_lib_function_displaytime 0 test_value 500
+  run_test "time: 10000" gpg_bash_lib_function_displaytime 0 test_value 10000
+  run_test "time: 100000" gpg_bash_lib_function_displaytime 0 test_value 100000
+  run_test "time: 500000" gpg_bash_lib_function_displaytime 0 test_value 500000
+  run_test "time: 50000000" gpg_bash_lib_function_displaytime 0 test_value 50000000
 
   input_string=$'test1\ntest2'
   expected_result=$'test1<br />\ntest2'
