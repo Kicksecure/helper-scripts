@@ -39,8 +39,6 @@ deb822_extract() {
     deb822_extract_val_list deb822_extract_last_idx deb822_extract_constraint \
     deb822_extract_constraint_key deb822_extract_constraint_regex
 
-  local -a BASH_REMATCH
-
   if (( $# < 3 )); then
     return 2
   fi
@@ -51,9 +49,6 @@ deb822_extract() {
   IFS=',' read -r -a deb822_extract_desired_field_list <<< "${3:-}"
   shift 3
 
-  if ! [ -f "${deb822_extract_input_file}" ]; then
-    return 1
-  fi
   if ! test -f "${deb822_extract_input_file}"; then
     return 1
   fi
@@ -163,8 +158,6 @@ deb822_extract_one() {
     deb822_extract_stanza_idx deb822_extract_found_key \
     deb822_extract_desired_field
   ## This function also inherits the local variables from deb822_extract.
-
-  local -a BASH_REMATCH
 
   ## Ignore empty stanzas, this can happen if there's an extra trailing
   ## newline in the file or multiple newlines in a row.
