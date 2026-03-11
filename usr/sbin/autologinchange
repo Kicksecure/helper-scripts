@@ -34,15 +34,25 @@ get_config_section() {
 }
 
 remove_from_config_section() {
-  local file_name section remove_entity do_literal_remove filter_stage line \
-    lines output line_was_removed
+  local file_name section remove_entity remove_mode filter_stage line \
+    lines output line_was_removed remove_entity_key remove_entity_val
   file_name="$1"
   section="$2"
   remove_entity="$3"
-  do_literal_remove="$4"
+  remove_mode="$4"
   filter_stage='1'
-  line_was_removed=""
+  line_was_removed=''
+  if [ "${remove_mode}" = 'literal-with-spaces' ]; then
+    remove_entity_key="${remove_entity%%=*}"
+    remove_entity_val="${remove_entity#*=}"
+  fi
 
+  if [ "${remove_mode}" != 'literal' ] \
+    && [ "${remove_mode}" != 'regex' ] \
+    && [ "${remove_mode}" != 'literal-with-spaces' ]; then
+    printf '%s\n' "Invalid value '${remove_mode}' for 'remove_mode' argument!"
+    return 1
+  fi
   mapfile -t lines < "$file_name"
 
   output=()
@@ -53,15 +63,24 @@ remove_from_config_section() {
         filter_stage='2'
       fi
     elif [ "${filter_stage}" = '2' ]; then
-      if [ "${do_literal_remove}" = 'true' ]; then
+      if [ "${remove_mode}" = 'literal' ]; then
         ## 'remove_entity' is treated as a string literal here.
         if [[ "${line}" =~ ^"${remove_entity}"$ ]]; then
           line_was_removed="true"
           continue
         fi
-      else
+      elif [ "${remove_mode}" = 'regex' ]; then
         ## 'remove_entity' is treated as a regex here.
         if [[ "${line}" =~ ^${remove_entity}$ ]]; then
+          line_was_removed="true"
+          continue
+        fi
+      elif [ "${remove_mode}" = 'literal-with-spaces' ]; then
+        ## 'remove_entity' is treated as a key/value pair separated by an =
+        ## sign, both the key and value are treated literally. The key, equals
+        ## sign, and value may be surrounded by spaces.
+        if [[ "${line}" \
+          =~ ^[[:space:]]*"${remove_entity_key}"[[:space:]]*=[[:space:]]*"${remove_entity_val}"[[:space:]]*$ ]]; then
           line_was_removed="true"
           continue
         fi
@@ -117,36 +136,19 @@ user = \"${user}\"" | sponge -- '/etc/greetd/config.toml.d/40_autologin.conf'
 }
 
 disable_autologin() {
-  local user lightdm_config_file_list file_name file_contents pattern match_count
+  local user lightdm_config_file_list file_name file_contents
   user="$1"
-
-  ## TODO: All of these routines may misbehave if the spacing around the =
-  ## sign in the respective configuration lines is different than what the
-  ## script assumes, or if one of the lines has an otherwise unexpected
-  ## value.
 
   readarray -t lightdm_config_file_list < <(find /etc/lightdm)
   for file_name in "${lightdm_config_file_list[@]}"; do
     if ! [ -f "${file_name}" ]; then
       continue
     fi
-
-    pattern="^autologin-user=[[:space:]]*${user}$"
-    match_count=$(grep --extended-regexp --count -- "$pattern" "${file_name}") || true
-
-    sed -i -E "/$pattern/d" -- "${file_name}"
-
-    if [ "$match_count" -gt 0 ]; then
-      printf '%s\n' "INFO: Removed $match_count matching line(s) from file '${file_name}'." >&2
-    else
-      true "INFO: No matching lines found in file '${file_name}'."
-    fi
-
-    #sed -i "/^autologin-user=\s*${user}$/d" -- "${file_name}"
+    remove_from_config_section "${file_name}" 'Seat:*' "autologin-user=${user}" 'literal-with-spaces' || true
     true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
     file_contents="$(cat -- "${file_name}")"
     if [ -z "${file_contents}" ] \
-      || [ "${file_contents}" = '[Seat:*]' ]; then
+      || [[ "${file_contents}" =~ ^[[:space:]]*\[Seat:\*\][[:space:]]*$ ]]; then
       printf '%s\n' "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
       safe-rm --verbose -- "${file_name}"
     fi
@@ -156,11 +158,11 @@ disable_autologin() {
     if ! [ -f "${file_name}" ]; then
       continue
     fi
-    remove_from_config_section "${file_name}" 'Autologin' "User=${user}" 'true' || true
+    remove_from_config_section "${file_name}" 'Autologin' "User=${user}" 'literal-with-spaces' || true
     true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
     file_contents="$(cat -- "${file_name}")"
     if [ -z "${file_contents}" ] \
-      || [ "${file_contents}" = '[Autologin]' ]; then
+      || [[ "${file_contents}" =~ ^[[:space:]]*\[Autologin\][[:space:]]*$ ]]; then
       printf '%s\n' "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
       safe-rm --verbose -- "${file_name}"
     fi
@@ -170,13 +172,15 @@ disable_autologin() {
     if ! [ -f "${file_name}" ]; then
       continue
     fi
-    if remove_from_config_section "${file_name}" 'initial_session' "user = \"${user}\"" 'true'; then
-       remove_from_config_section "${file_name}" 'initial_session' "command = \".*\"" 'false' || true
+    if remove_from_config_section "${file_name}" 'initial_session' "user=\"${user}\"" 'literal-with-spaces'; then
+       ## remove_from_config_section anchors the start and end of the regex
+       ## for us.
+       remove_from_config_section "${file_name}" 'initial_session' "[[:space:]]*command[[:space:]]*=[[:space:]]*\".*\"[[:space:]]*" 'regex' || true
     fi
     true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
     file_contents="$(cat -- "${file_name}")"
     if [ -z "${file_contents}" ] \
-      || [ "${file_contents}" = '[initial_session]' ]; then
+      || [[ "${file_contents}" =~ ^[[:space:]]*\[initial_session\][[:space:]]*$ ]]; then
       printf '%s\n' "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
       safe-rm --verbose -- "${file_name}"
     fi
@@ -201,7 +205,6 @@ disable_sysmaint_autologin() {
       continue
     fi
     sed -i '/^sysmaint-autologin=/d' -- "${file_name}"
-    ## TODO: Report only actually removed instances similar to disable_autologin function.
     printf '%s\n' "INFO: Removed autologin configuration for account 'sysmaint' from file '${file_name}'." >&2
     file_contents="$(cat -- "${file_name}")"
     if [ -z "${file_contents}" ]; then
@@ -416,6 +419,7 @@ check_root() {
 create_dm_config_dirs() {
   mkdir --parents -- /etc/lightdm
   mkdir --parents -- /etc/sddm.conf.d
+  mkdir --parents -- /etc/greetd/config.toml.d
 }
 
 if [ -f '/usr/share/qubes/marker-vm' ]; then
@@ -473,10 +477,8 @@ fi
 
 ## Ensure that lightdm doesn't have a multi-seat configuration, we can't
 ## safely manage those
-## TODO: consider cases with leading spaces
-## TODO: ignore comments
 if [ -d /etc/lightdm ]; then
-  if grep --quiet --recursive --ignore-case -- '^\[Seat:[^*]' /etc/lightdm; then
+  if grep --quiet --recursive --ignore-case -- '^[[:space:]]*\[Seat:[^*]' /etc/lightdm; then
     printf '%s\n' "ERROR: Multi-seat lightdm configuration detected, cannot proceed!" >&2
     exit 1
   fi
@@ -485,9 +487,10 @@ fi
 autologin_users_lightdm=()
 if [ -d /etc/lightdm ]; then
   readarray -t autologin_users_lightdm < <(
-    grep --recursive --ignore-case -- '^autologin-user=' /etc/lightdm \
+    grep --recursive --ignore-case -- '^[[:space:]]*autologin-user[[:space:]]*=' /etc/lightdm \
       | filter_out_sysmaint_maybe \
-      | awk -F'=' '{ print $NF }' || true
+      | awk -F'=' '{ print $NF }' \
+      | sed 's/^\s\+//; s/\s\+$//;' || true
   ) || true
 fi
 true "INFO: Collected list of users with lightdm autologin enabled."
@@ -498,9 +501,10 @@ readarray -t autologin_users_sddm < <(
       continue
     fi
     get_config_section "${file_name}" 'Autologin'  \
-      | grep -- '^User=' \
+      | grep -- '^[[:space:]]*User[[:space:]]*=' \
       | filter_out_sysmaint_maybe \
-      | awk -F'=' '{ print $NF }' || true
+      | awk -F'=' '{ print $NF }' \
+      | sed 's/^\s\+//; s/\s\+$//;' || true
   done
 ) || true
 true "INFO: Collected list of users with sddm autologin enabled."
@@ -511,9 +515,9 @@ readarray -t autologin_users_greetd < <(
       continue
     fi
     get_config_section "${file_name}" 'initial_session' \
-      | grep -- '^user\s*=\s*"[^"]*"$' \
+      | grep -- '^[[:space:]]*user[[:space:]]*=[[:space:]]*"[^"]*"[[:space:]]*$' \
       | filter_out_sysmaint_maybe \
-      | sed 's/^.*"\([^"]*\)"$/\1/' || true
+      | sed 's/^.*"\([^"]*\)"[[:space:]]*$/\1/' || true
   done
 ) || true
 
