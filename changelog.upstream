@@ -1,3 +1,34 @@
+commit 048bd0accecebc38f224164d95f067e8a93f8b45
+Merge: e8d188b 0046446
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 14 06:21:39 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 00464461401d046f970bcb0438cb5e440515fa68
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Mar 11 00:33:36 2026 -0400
+
+    Make autologinchange more robust
+
+commit d97b0987478606651fd3ce6d60bb51ac5c2bae49
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Mar 10 21:45:18 2026 -0400
+
+    Fix autologinchange indentation
+
+commit e8d188be70d83dba557d82c8a54f0a9a688c7477
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 7 02:19:31 2026 -0500
+
+    readme
+
+commit dde25210c4bf1af509584564315147dd338fa165
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Mar 1 09:06:53 2026 +0000
+
+    bumped changelog version
+
 commit 3b11a7b63fc26917fb91bb8e203008d2e53affd9
 Merge: 3fe0a55 43ecd59
 Author: Patrick Schleizer <adrelanos@whonix.org>
