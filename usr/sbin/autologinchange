@@ -13,84 +13,72 @@ source /usr/libexec/helper-scripts/get_colors.sh
 # shellcheck source=../libexec/helper-scripts/accountctl.sh
 source /usr/libexec/helper-scripts/accountctl.sh
 
-get_config_section() {
-  local file_name section found_section line
+do_rebuild_greetd_config='false'
+
+get_all_config_section_contents() {
+  local file_name section in_section line
   file_name="$1"
   section="$2"
-  found_section='n'
+  in_section='false'
+
   while read -r -- line; do
-    if [ "${found_section}" = 'y' ]; then
-      if [[ "${line}" =~ ^\[.*\]$ ]]; then
-        break
-      fi
-      printf '%s\n' "${line}"
+    if [[ "${line}" =~ ^[[:space:]]*\["${section}"\][[:space:]]*$ ]]; then
+      in_section='true'
+      continue
+    elif [[ "${line}" =~ ^[[:space:]]*\[.*\][[:space:]]*$ ]]; then
+      in_section='false'
+      continue
     fi
-    if [ "${line}" = "[${section}]" ]; then
-      found_section='y'
+    if [ "${in_section}" = 'true' ]; then
+      printf '%s\n' "${line}"
     fi
   done < "${file_name}"
 
-  true "INFO: Extracted config section '$section' from file '$file_name'."
+  true "INFO: Extracted contents of all '$section' sections from file '$file_name'."
 }
 
 remove_from_config_section() {
-  local file_name section remove_entity remove_mode filter_stage line \
-    lines output line_was_removed remove_entity_key remove_entity_val
+  local file_name section remove_entity filter_stage line lines output \
+    line_was_removed remove_entity_key remove_entity_val
   file_name="$1"
   section="$2"
   remove_entity="$3"
-  remove_mode="$4"
   filter_stage='1'
   line_was_removed=''
-  if [ "${remove_mode}" = 'literal-with-spaces' ]; then
-    remove_entity_key="${remove_entity%%=*}"
-    remove_entity_val="${remove_entity#*=}"
-  fi
+  remove_entity_key="${remove_entity%%=*}"
+  remove_entity_val="${remove_entity#*=}"
 
-  if [ "${remove_mode}" != 'literal' ] \
-    && [ "${remove_mode}" != 'regex' ] \
-    && [ "${remove_mode}" != 'literal-with-spaces' ]; then
-    printf '%s\n' "Invalid value '${remove_mode}' for 'remove_mode' argument!"
-    return 1
-  fi
   mapfile -t lines < "$file_name"
 
   output=()
   for line in "${lines[@]}"; do
     if [ "${filter_stage}" = '1' ]; then
       output+=( "${line}" )
-      if [ "${line}" = "[${section}]" ]; then
+      if [[ "${line}" =~ ^[[:space:]]*\["${section}"\][[:space:]]*$ ]]; then
         filter_stage='2'
       fi
     elif [ "${filter_stage}" = '2' ]; then
-      if [ "${remove_mode}" = 'literal' ]; then
-        ## 'remove_entity' is treated as a string literal here.
-        if [[ "${line}" =~ ^"${remove_entity}"$ ]]; then
-          line_was_removed="true"
-          continue
+      ## 'remove_entity' is treated as a key/value pair separated by an =
+      ## sign, both the key and value are treated literally. The key, equals
+      ## sign, and value may be surrounded by spaces.
+      if [[ "${line}" \
+        =~ ^([[:space:]]*)"${remove_entity_key}"[[:space:]]*=[[:space:]]*"${remove_entity_val}"[[:space:]]*(#.*)?$ ]]; then
+        line_was_removed="true"
+        if [ -n "${BASH_REMATCH[2]}" ]; then
+          ## BASH_REMATCH[1] = leading whitespace
+          ## BASH_REMATCH[2] = comment
+          output+=( "${BASH_REMATCH[1]}${BASH_REMATCH[2]}" )
         fi
-      elif [ "${remove_mode}" = 'regex' ]; then
-        ## 'remove_entity' is treated as a regex here.
-        if [[ "${line}" =~ ^${remove_entity}$ ]]; then
-          line_was_removed="true"
-          continue
-        fi
-      elif [ "${remove_mode}" = 'literal-with-spaces' ]; then
-        ## 'remove_entity' is treated as a key/value pair separated by an =
-        ## sign, both the key and value are treated literally. The key, equals
-        ## sign, and value may be surrounded by spaces.
-        if [[ "${line}" \
-          =~ ^[[:space:]]*"${remove_entity_key}"[[:space:]]*=[[:space:]]*"${remove_entity_val}"[[:space:]]*$ ]]; then
-          line_was_removed="true"
-          continue
-        fi
+        continue
       fi
       output+=( "${line}" )
-      if [[ "${line}" =~ ^\[.*\]$ ]]; then
-        filter_stage='3'
+      if [[ "${line}" =~ ^[[:space:]]*\[.*\][[:space:]]*$ ]] \
+        && ! [[ "${line}" =~ ^[[:space:]]*\["${section}"\][[:space:]]*$ ]]; then
+        filter_stage='1'
       fi
     else
-      output+=( "${line}" )
+      printf '%s\n' "ERROR: Unreachable code hit in remove_from_config_section!" >&2
+      return 1
     fi
   done
 
@@ -100,6 +88,169 @@ remove_from_config_section() {
     printf '%s\n' "INFO: Removed lines matching '$remove_entity' from section '$section' of file '$file_name'." >&2
     return 0
   fi
+  return 1
+}
+
+neutralize_greetd_initial_session_section() {
+  local config_section_lines output line
+
+  config_section_lines=( "$@" )
+  output=()
+
+  for line in "${config_section_lines[@]}"; do
+    if [[ "${line}" =~ ^([[:space:]]*)command[[:space:]]*=[[:space:]]*\"[^\"]+\"[[:space:]]*(#.*)?$ ]]; then
+      if [ -n "${BASH_REMATCH[2]}" ]; then
+        ## BASH_REMATCH[1] = leading whitespace
+        ## BASH_REMATCH[2] = comment
+        output+=( "${BASH_REMATCH[1]}${BASH_REMATCH[2]}" )
+      fi
+    elif [[ "${line}" =~ ^[[:space:]]*# ]]; then
+      output+=( "${line}" )
+    else
+      ## greetd will crash if it encounters an 'initial_session' section with
+      ## no command keys, so we must comment out anything in the section that
+      ## isn't commented out.
+      output+=( "#${line}" )
+    fi
+  done
+
+  printf '%s\n' "${output[@]}"
+}
+
+remove_user_from_greetd_autologin() {
+  local file_name target_user lines output initial_session_buffer \
+    do_remove_section in_initial_session_section line_was_removed \
+    filter_out_command_keys
+
+  ## greetd has both "user" and "command" configuration keys in its
+  ## initial_session config sections (which are used to configure autologin).
+  ## We can't just go through and remove all command keys from all
+  ## initial_session sections, since that would break autologin for any other
+  ## user accounts with autologin enabled. We also can't delete config
+  ## sections that happen to include
+  ## "user=the_user_were_disabling_autologin_for" in them, since it's entirely
+  ## possible someone will have multiple user accounts configured in the same
+  ## section. The algorithm we use is therefore as follows:
+  ##
+  ## * If all user keys in an initial_session section match the user account
+  ##   we are disabling autologin for, we delete the entire section.
+  ## * If there are user keys present in the section that do not match the
+  ##   user account we are disabling autologin for, we delete only the
+  ##   matching user keys and leave the section otherwise unmodified.
+  ##   Importantly, we do not attempt to delete any command lines, since
+  ##   greetd's configuration file has no way of specifying which command is
+  ##   bound to which user.
+
+  file_name="$1"
+  target_user="$2"
+
+  mapfile -t lines < "$file_name"
+
+  output=()
+  initial_session_buffer=()
+  do_remove_section='true'
+  in_initial_session_section='false'
+  line_was_removed='false'
+  filter_out_command_keys='false'
+
+  for line in "${lines[@]}"; do
+    if [ "${in_initial_session_section}" = 'false' ]; then
+      if [[ "${line}" =~ ^[[:space:]]*\[initial_session\][[:space:]]*$ ]]; then
+        initial_session_buffer+=( "${line}" )
+        in_initial_session_section='true'
+        do_remove_section='true'
+        filter_out_command_keys='false'
+        continue
+      fi
+      output+=( "${line}" )
+    else
+      if [[ "${line}" =~ ^[[:space:]]*\[.*\][[:space:]]*$ ]]; then
+        if [ "${do_remove_section}" = 'false' ]; then
+          if [ "${filter_out_command_keys}" = 'true' ]; then
+            mapfile -t initial_session_buffer < <(
+              neutralize_greetd_initial_session_section \
+                "${initial_session_buffer[@]}"
+            )
+          fi
+          output+=( "${initial_session_buffer[@]}" )
+        fi
+        initial_session_buffer=()
+        if [[ "${line}" =~ ^[[:space:]]*\[initial_session\][[:space:]]*$ ]]; then
+          ## Prime state for next loop iteration
+          do_remove_section='true'
+          filter_out_command_keys='false'
+        else
+          ## Switch back to the out-of-section handling code, it will prime
+          ## the state later if needed
+          in_initial_session_section='false'
+
+          ## Append the header we just read
+          output+=( "${line}" )
+        fi
+        continue
+      fi
+
+      if [[ "${line}" =~ ^([[:space:]]*)user[[:space:]]*=[[:space:]]*\""${target_user}"\"[[:space:]]*(#.*)?$ ]]; then
+        line_was_removed='true'
+        if [ -n "${BASH_REMATCH[2]}" ]; then
+          ## BASH_REMATCH[1] = leading whitespace
+          ## BASH_REMATCH[2] = comment
+          initial_session_buffer+=( "${BASH_REMATCH[1]}${BASH_REMATCH[2]}" );
+          if [ "${do_remove_section}" = 'true' ]; then
+            ## We only set filter_out_command_keys if do_remove_config_section
+            ## isn't already toggled to false, so that we don't
+            ## unintentionally enable command key stripping in situations
+            ## where there are user keys that don't match the target user.
+            filter_out_command_keys='true'
+            do_remove_section='false'
+          fi
+        fi
+      elif [[ "${line}" =~ ^[[:space:]]*user[[:space:]]*= ]]; then
+        do_remove_section='false'
+        filter_out_command_keys='false'
+        initial_session_buffer+=( "${line}" )
+      elif [[ "${line}" =~ ^[[:space:]]*# ]]; then
+        if [ "${do_remove_section}" = 'true' ]; then
+          filter_out_command_keys='true'
+          do_remove_section='false'
+        fi
+        initial_session_buffer+=( "${line}" )
+      else
+        initial_session_buffer+=( "${line}" )
+      fi
+    fi
+  done
+
+  if (( ${#initial_session_buffer[@]} != 0 )) \
+    && [ "${do_remove_section}" = 'false' ]; then
+    if [ "${filter_out_command_keys}" = 'true' ]; then
+      mapfile -t initial_session_buffer < <(
+        neutralize_greetd_initial_session_section "${initial_session_buffer[@]}"
+      )
+    fi
+    output+=( "${initial_session_buffer[@]}" )
+  fi
+
+  if [ "${line_was_removed}" = 'true' ]; then
+    printf '%s\n' "${output[@]}" | sponge -- "${file_name}"
+    printf '%s\n' "INFO: Removed greetd autologin config for user '${target_user}' from file '${file_name}'." >&2
+    return 0
+  fi
+  return 1
+}
+
+check_file_for_meaningful_config() {
+  local file_name line
+
+  file_name="$1"
+
+  while read -r line; do
+    if ! [[ "${line}" =~ ^[[:space:]]*$ ]] \
+      && ! [[ "${line}" =~ ^[[:space:]]*\[.*\][[:space:]]*$ ]]; then
+      return 0
+    fi
+  done < "${file_name}"
+
   return 1
 }
 
@@ -129,26 +280,20 @@ command = \"/usr/libexec/desktop-config-dist/start-lxqt-session\"
 user = \"${user}\"" | sponge -- '/etc/greetd/config.toml.d/40_autologin.conf'
   printf '%s\n' "INFO: Wrote file '/etc/greetd/config.toml.d/40_autologin.conf' to enable autologin for account '$user'." >&2
   printf '%s\n' "$delimiter" >&2
-  cat -- '/etc/greetd/config.toml.d/40_autologin.conf'
+  cat -- '/etc/greetd/config.toml.d/40_autologin.conf' >&2
   printf '%s\n' "$delimiter" >&2
-  printf '%s\n' "INFO: Rebuilding greetd config."
-  build-config-file /etc/greetd/config.toml.d /etc/greetd/config.toml
+  do_rebuild_greetd_config='true'
 }
 
 disable_autologin() {
-  local user lightdm_config_file_list file_name file_contents
+  local user lightdm_config_file_list file_name
   user="$1"
 
-  readarray -t lightdm_config_file_list < <(find /etc/lightdm)
+  readarray -t lightdm_config_file_list < <(find /etc/lightdm -type f)
   for file_name in "${lightdm_config_file_list[@]}"; do
-    if ! [ -f "${file_name}" ]; then
-      continue
-    fi
-    remove_from_config_section "${file_name}" 'Seat:*' "autologin-user=${user}" 'literal-with-spaces' || true
-    true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
-    file_contents="$(cat -- "${file_name}")"
-    if [ -z "${file_contents}" ] \
-      || [[ "${file_contents}" =~ ^[[:space:]]*\[Seat:\*\][[:space:]]*$ ]]; then
+    remove_from_config_section "${file_name}" 'Seat:*' "autologin-user=${user}" || true
+    true "INFO: Processed autologin configuration removal for account '$user' from file '$file_name'."
+    if ! check_file_for_meaningful_config "${file_name}"; then
       printf '%s\n' "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
       safe-rm --verbose -- "${file_name}"
     fi
@@ -158,11 +303,9 @@ disable_autologin() {
     if ! [ -f "${file_name}" ]; then
       continue
     fi
-    remove_from_config_section "${file_name}" 'Autologin' "User=${user}" 'literal-with-spaces' || true
-    true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
-    file_contents="$(cat -- "${file_name}")"
-    if [ -z "${file_contents}" ] \
-      || [[ "${file_contents}" =~ ^[[:space:]]*\[Autologin\][[:space:]]*$ ]]; then
+    remove_from_config_section "${file_name}" 'Autologin' "User=${user}" || true
+    true "INFO: Processed autologin configuration removal for account '$user' from file '$file_name'."
+    if ! check_file_for_meaningful_config "${file_name}"; then
       printf '%s\n' "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
       safe-rm --verbose -- "${file_name}"
     fi
@@ -172,21 +315,14 @@ disable_autologin() {
     if ! [ -f "${file_name}" ]; then
       continue
     fi
-    if remove_from_config_section "${file_name}" 'initial_session' "user=\"${user}\"" 'literal-with-spaces'; then
-       ## remove_from_config_section anchors the start and end of the regex
-       ## for us.
-       remove_from_config_section "${file_name}" 'initial_session' "[[:space:]]*command[[:space:]]*=[[:space:]]*\".*\"[[:space:]]*" 'regex' || true
-    fi
-    true "INFO: Processed autologin configuration removal check for account '$user' from file '$file_name'."
-    file_contents="$(cat -- "${file_name}")"
-    if [ -z "${file_contents}" ] \
-      || [[ "${file_contents}" =~ ^[[:space:]]*\[initial_session\][[:space:]]*$ ]]; then
+    remove_user_from_greetd_autologin "${file_name}" "${user}" || true
+    true "INFO: Processed autologin configuration removal for account '$user' from file '$file_name'."
+    if ! check_file_for_meaningful_config "${file_name}"; then
       printf '%s\n' "INFO: File '$file_name' contains no meaningful configuration data, removing." >&2
       safe-rm --verbose -- "${file_name}"
     fi
   done
-  printf '%s\n' "INFO: Rebuilding greetd config."
-  build-config-file /etc/greetd/config.toml.d /etc/greetd/config.toml
+  do_rebuild_greetd_config='true'
 }
 
 enable_sysmaint_autologin() {
@@ -204,6 +340,9 @@ disable_sysmaint_autologin() {
     if ! [ -f "${file_name}" ]; then
       continue
     fi
+    ## user-sysmaint-split does not currently support trailing comments or
+    ## extra spaces in these config files, so we don't need to take them into
+    ## account.
     sed -i '/^sysmaint-autologin=/d' -- "${file_name}"
     printf '%s\n' "INFO: Removed autologin configuration for account 'sysmaint' from file '${file_name}'." >&2
     file_contents="$(cat -- "${file_name}")"
@@ -220,12 +359,12 @@ validate_username() {
   user="${1:-}"
   if [ -z "${user}" ]; then
     printf '%s\n' "ERROR: No username provided. Please specify a username." >&2
-    exit 1
+    return 1
   fi
 
   if ! id "${user}" &>/dev/null ; then
     printf '%s\n' "ERROR: Account '$user' does not exist. Please check the username and try again." >&2
-    exit 1
+    return 1
   fi
 
   found_user='n'
@@ -238,14 +377,15 @@ validate_username() {
 
   if [ "${found_user}" = 'n' ]; then
     printf '%s\n' "ERROR: Account '$user' is not a normal user account. Please check the username and try again." >&2
-    exit 1
+    return 1
   fi
 }
 
 filter_out_sysmaint_maybe() {
   ## This function expects to have data piped to in on standard input.
   if [ "${special_sysmaint_handling}" = 'yes' ]; then
-    grep --invert-match -- 'sysmaint'
+    grep --invert-match --extended-regexp -- \
+      '(^|[[:space:]]|"|=)[[:space:]]*sysmaint[[:space:]]*($|[[:space:]]|"|#)'
   else
     cat
   fi
@@ -261,9 +401,9 @@ check_autologin() {
   ##       'autologinchange -c "$user"' and relies on the exit code.
   # shellcheck disable=SC2076
   if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
-    exit 0
+    return 0
   else
-    exit 1
+    return 1
   fi
 }
 
@@ -280,16 +420,16 @@ cli_enable_autologin() {
     ## Account 'sysmaint' requires special handling.
     if [ "${sysmaint_autologin}" = 'yes' ]; then
       printf '%s\n' "INFO: Autologin already enabled for account 'sysmaint', exiting." >&2
-      exit 0
+      return 0
     fi
     enable_sysmaint_autologin
-    exit 0
+    return 0
   fi
 
   # shellcheck disable=SC2076
   if [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
     printf '%s\n' "INFO: Autologin already enabled for account '$user', exiting." >&2
-    exit 0
+    return 0
   fi
 
   enable_autologin "${user}"
@@ -308,16 +448,16 @@ cli_disable_autologin() {
     ## Account 'sysmaint' requires special handling.
     if [ "${sysmaint_autologin}" = 'no' ]; then
       printf '%s\n' "INFO: Autologin already disabled for account 'sysmaint', exiting." >&2
-      exit 0
+      return 0
     fi
     disable_sysmaint_autologin
-    exit 0
+    return 0
   fi
 
   # shellcheck disable=SC2076
   if ! [[ " ${autologin_users[*]} " =~ " ${user} " ]]; then
     printf '%s\n' "INFO: Autologin already disabled for account '$user', exiting." >&2
-    exit 0
+    return 0
   fi
 
   disable_autologin "${user}"
@@ -360,7 +500,7 @@ autologinchange() {
     else
       printf '%s\n' "CANCELLED disabling autologin for account '$user'." >&2
     fi
-    exit 0
+    return 0
   elif [ "${user}" = 'sysmaint' ] && [ "${special_sysmaint_handling}" = 'yes' ]; then
     if [ "${sysmaint_autologin}" = 'yes' ]; then
       printf '%s\n' "Account 'sysmaint' is currently configured to automatically log in." >&2
@@ -373,7 +513,7 @@ autologinchange() {
       else
         printf '%s\n' "CANCELLED disabling autologin for account 'sysmaint'." >&2
       fi
-      exit 0
+      return 0
     else
       printf '%s\n' "Account 'sysmaint' is currently NOT configured to automatically log in." >&2
       read -r -p "Would you like to enable autologin for sysmaint session? [Y/N] " -- enable_yn
@@ -388,7 +528,7 @@ autologinchange() {
       else
         printf '%s\n' "CANCELLED enabling autologin for account 'sysmaint'." >&2
       fi
-      exit 0
+      return 0
     fi
   else
     printf '%s\n' "Account '$user' is currently NOT configured to automatically log in." >&2
@@ -405,14 +545,14 @@ autologinchange() {
     else
       printf '%s\n' "CANCELLED enabling autologin for account '$user'." >&2
     fi
-    exit 0
+    return 0
   fi
 }
 
 check_root() {
   if [ "$(id -u)" != "0" ]; then
     printf '%s\n' "ERROR: This must be run as root (sudo)!" >&2
-    exit 1
+    return 1
   fi
 }
 
@@ -487,10 +627,13 @@ fi
 autologin_users_lightdm=()
 if [ -d /etc/lightdm ]; then
   readarray -t autologin_users_lightdm < <(
-    grep --recursive --ignore-case -- '^[[:space:]]*autologin-user[[:space:]]*=' /etc/lightdm \
-      | filter_out_sysmaint_maybe \
-      | awk -F'=' '{ print $NF }' \
-      | sed 's/^\s\+//; s/\s\+$//;' || true
+    readarray -t lightdm_file_list < <(find /etc/lightdm -type f)
+    for file_name in "${lightdm_file_list[@]}"; do
+      get_all_config_section_contents "${file_name}" 'Seat:*' \
+        | grep --extended-regexp -- '^[[:space:]]*autologin-user[[:space:]]*=[[:space:]]*[^ ]+[[:space:]]*(#.*)?$' \
+        | filter_out_sysmaint_maybe \
+        | sed -nE 's/^.*=[[:space:]]*([^ #]+).*$/\1/p' || true
+    done
   ) || true
 fi
 true "INFO: Collected list of users with lightdm autologin enabled."
@@ -500,11 +643,10 @@ readarray -t autologin_users_sddm < <(
     if ! [ -f "${file_name}" ]; then
       continue
     fi
-    get_config_section "${file_name}" 'Autologin'  \
-      | grep -- '^[[:space:]]*User[[:space:]]*=' \
+    get_all_config_section_contents "${file_name}" 'Autologin' \
+      | grep --extended-regexp -- '^[[:space:]]*User[[:space:]]*=[[:space:]]*[^ ]+[[:space:]]*(#.*)?$' \
       | filter_out_sysmaint_maybe \
-      | awk -F'=' '{ print $NF }' \
-      | sed 's/^\s\+//; s/\s\+$//;' || true
+      | sed -nE 's/^.*=[[:space:]]*([^ #]+).*$/\1/p' || true
   done
 ) || true
 true "INFO: Collected list of users with sddm autologin enabled."
@@ -514,10 +656,10 @@ readarray -t autologin_users_greetd < <(
     if ! [ -f "${file_name}" ]; then
       continue
     fi
-    get_config_section "${file_name}" 'initial_session' \
-      | grep -- '^[[:space:]]*user[[:space:]]*=[[:space:]]*"[^"]*"[[:space:]]*$' \
+    get_all_config_section_contents "${file_name}" 'initial_session' \
+      | grep --extended-regexp -- '^[[:space:]]*user[[:space:]]*=[[:space:]]*"[^"]+"[[:space:]]*(#.*)?$' \
       | filter_out_sysmaint_maybe \
-      | sed 's/^.*"\([^"]*\)"[[:space:]]*$/\1/' || true
+      | sed -nE 's/^.*"([^"]*)".*$/\1/p' || true
   done
 ) || true
 
@@ -537,3 +679,7 @@ fi
 readarray -t user_list <<< "$user_list_str"
 
 "${autologinchange_mode}" "$@"
+if [ "${do_rebuild_greetd_config}" = 'true' ]; then
+  printf '%s\n' "INFO: Rebuilding greetd config." >&2
+  build-config-file /etc/greetd/config.toml.d /etc/greetd/config.toml
+fi
