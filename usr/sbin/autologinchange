@@ -179,6 +179,7 @@ remove_user_from_greetd_autologin() {
           ## Prime state for next loop iteration
           do_remove_section='true'
           filter_out_command_keys='false'
+          initial_session_buffer+=( "${line}" )
         else
           ## Switch back to the out-of-section handling code, it will prime
           ## the state later if needed
