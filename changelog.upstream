@@ -1,3 +1,22 @@
+commit ab877fb2e189a91c2fb0c0fa450c5f224ad2cd0c
+Merge: 9645bdd ab8ee76
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Mar 27 04:21:38 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit ab8ee764ff3423541685a6f7def17e0331357342
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Mar 22 19:10:03 2026 -0400
+
+    Fix header loss bug in autologinchange
+
+commit 9645bdd2c7af79c9eb1194dd1194ec8d3ff55d0e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Mar 22 11:12:53 2026 +0000
+
+    bumped changelog version
+
 commit 9f22be51b0cb3c2e812ce1981e0ffa16831f4dcd
 Merge: b7c2520 474b632
 Author: Patrick Schleizer <adrelanos@whonix.org>
