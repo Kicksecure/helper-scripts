@@ -25,7 +25,7 @@ done
 stdin_file_read_utils=(stcat stcatn)
 stdin_implicit_read_utils=(sttee stsponge strip-markup unicode-show)
 stdin_utils=("${stdin_file_read_utils[@]}" "${stdin_implicit_read_utils[@]}")
-utils=(stprint stecho "${stdin_utils[@]}")
+utils=(stprint stecho sanitize-string "${stdin_utils[@]}")
 cd "${git_toplevel}/usr/bin"
 "${black[@]}" -- "${utils[@]}"
 "${pylint[@]}" -- "${utils[@]}"
