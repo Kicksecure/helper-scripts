@@ -374,7 +374,7 @@ FILENAME_PLACEHOLDER:1: Hello world![U+0009][U+0020]
 
         test_string: str = (
             " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
-            + "^_`abcdefghjiklmnopqrstuvwxyz{|}~\n"
+            + "^_`abcdefghijklmnopqrstuvwxyz{|}~\n"
         )
         self._test_stdin(
             main_func=unicode_show_main,
@@ -480,7 +480,7 @@ FILENAME_PLACEHOLDER:1: Hello world![U+0009][U+0020]
         self._test_stdin_pty(
             main_func=unicode_show_main,
             argv0=self.argv0,
-            stdout_string=expect_string_color,
+            stdout_string=expect_string_nocolor,
             exit_code=1,
             args=[],
             stdin_string=test_string,
