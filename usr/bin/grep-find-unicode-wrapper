@@ -16,7 +16,7 @@ check_grep_status() {
   elif [ "$1" = "1" ]; then
     true "$0: INFO: No match."
   else
-    printf '%s\n' "$0: ERROR: grep (syntax?) error! Exiting with code code '$1'." >&2
+    printf '%s\n' "$0: ERROR: grep (syntax?) error! Exiting with code '$1'." >&2
     exit "$1"
   fi
 }
