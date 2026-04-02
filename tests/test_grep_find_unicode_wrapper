@@ -25,6 +25,7 @@ skip_count=0
 
 source /usr/libexec/helper-scripts/get_colors.sh
 source /usr/libexec/helper-scripts/safe-rm-maybe.bsh
+source /usr/libexec/helper-scripts/has.sh
 
 cleanup() {
   if [ -n "$test_dir" ] && [ -d "$test_dir" ]; then
@@ -38,13 +39,14 @@ test_dir="$(mktemp --directory)"
 ## grep-find-unicode-wrapper is similar to grep.
 ## - Exit code 0: if found.
 ## - Non-zero exit code: if not found.
-command -v grep-find-unicode-wrapper >/dev/null
+has grep-find-unicode-wrapper
+has write-long-line-with-unicode
 
 expect_detected() {
   local description="$1"
   local file_name="$2"
 
-  if grep-find-unicode-wrapper "$file_name" >/dev/null 2>&1 ; then
+  if grep-find-unicode-wrapper "$file_name" &>/dev/null ; then
     printf "%s\n" "${green}PASS${nocolor}: Detected:     $description"
     pass_count=$(( pass_count + 1 ))
   else
@@ -57,7 +59,7 @@ expect_clean() {
   local description="$1"
   local file_name="$2"
 
-  if ! grep-find-unicode-wrapper "$file_name" >/dev/null 2>&1 ; then
+  if ! grep-find-unicode-wrapper "$file_name" &>/dev/null ; then
     printf "%s\n" "${green}PASS${nocolor}: Clean:        $description"
     pass_count=$(( pass_count + 1 ))
   else
@@ -70,7 +72,7 @@ write_file() {
   local name="$1"
   local content="$2"
   local file_name="$test_dir/$name"
-  printf '%s' "$content" | tee -- "$file_name" >/dev/null
+  printf '%s' "$content" | tee -- "$file_name" &>/dev/null
   printf '%s' "$file_name"
 }
 
@@ -78,7 +80,7 @@ write_file_binary() {
   local name="$1"
   shift
   local file_name="$test_dir/$name"
-  printf "$@" | tee -- "$file_name" >/dev/null
+  printf "$@" | tee -- "$file_name" &>/dev/null
   printf '%s' "$file_name"
 }
 
@@ -121,7 +123,7 @@ old_check3_pattern=$'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u20
 check3_false_positive_test() {
   local description="$1"
   local file_name="$2"
-  if LC_ALL=C grep --files-with-matches --line-number --binary-files=text "$old_check3_pattern" "$file_name" >/dev/null 2>&1; then
+  if LC_ALL=C grep --files-with-matches --line-number --binary-files=text "$old_check3_pattern" "$file_name" &>/dev/null; then
     if [ "$check3_locale_ok" = "true" ]; then
       ## UTF-8 locale: old pattern should work, so this is a real failure.
       printf '%s\n' "${red}FAIL${nocolor}: Old check 3 false positive: $description" >&2
@@ -427,20 +429,23 @@ f="$(write_file_binary "hidden_in_comment.txt" '# This is a normal comment\xE2\x
 expect_detected "Zero-width space hidden in comment" "$f"
 
 ## LTR mark (E2 80 8E) hidden in a string literal.
-f="$(write_file_binary "hidden_in_string.txt" 'var x = "hello\xE2\x80\x8Eworld";')"
+f="$(write_file_binary "hidden_in_string.txt" 'x = "hello\xE2\x80\x8Eworld"')"
 expect_detected "LTR mark hidden in string literal" "$f"
 
 ## Trojan Source BiDi attack pattern.
-f="$(write_file_binary "trojan_source_example.txt" 'access_level = "user\xE2\x80\xAA\xE2\x81\xA6\xE2\x81\xA9\xE2\x81\xA6admin\xE2\x81\xA9\xE2\x80\xAC"')"
+## Embeds BiDi overrides around the word "test" to demonstrate detection.
+f="$(write_file_binary "trojan_source_example.txt" 'access_level = "user\xE2\x80\xAA\xE2\x81\xA6\xE2\x81\xA9\xE2\x81\xA6test\xE2\x81\xA9\xE2\x80\xAC"')"
 expect_detected "Trojan Source BiDi attack pattern" "$f"
 
-## Backspace (\x08) overwrite attack.
-f="$(write_file_binary "backspace_overwrite.txt" 'user\x08\x08\x08\x08root')"
-expect_detected "Backspace overwrite (displays 'root' over 'user')" "$f"
+## Backspace (\x08) overwrite: text followed by backspaces then replacement.
+## Would display "BADX" overwriting "GOOD" on a terminal.
+f="$(write_file_binary "backspace_overwrite.txt" 'GOOD\x08\x08\x08\x08BADX')"
+expect_detected "Backspace overwrite (GOOD overwritten by BADX)" "$f"
 
-## Carriage return (\x0D) overwrite attack.
-f="$(write_file_binary "cr_overwrite.txt" 'safe command\x0Drm -rf /')"
-expect_detected "CR overwrite (hides malicious command)" "$f"
+## Carriage return (\x0D) overwrite: second text replaces first on display.
+## Would display "ERROR: You should not see this" on a terminal.
+f="$(write_file_binary "cr_overwrite.txt" 'This line looks safe\x0DERROR: You should not see this')"
+expect_detected "CR overwrite (hides text behind carriage return)" "$f"
 
 ## ===================================================================
 ## Section 10: Mixed content edge cases
@@ -461,10 +466,7 @@ f="$(write_file_binary "leading_null.txt" '\x00normal text')"
 expect_detected "NULL byte at start of file" "$f"
 
 ## Very long line with suspicious char in the middle (ZWSP = E2 80 8B).
-python3 -c "
-import sys
-sys.stdout.buffer.write(b'a' * 10000 + b'\xe2\x80\x8b' + b'b' * 10000)
-" | tee -- "$test_dir/long_line.txt" >/dev/null
+write-long-line-with-unicode "$test_dir/long_line.txt"
 expect_detected "Suspicious char buried in 20000-char line" "$test_dir/long_line.txt"
 
 ## ===================================================================
