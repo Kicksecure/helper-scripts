@@ -52,7 +52,21 @@ check_grep_status "$?"
 ## Not using 'grep's '--perl-regexp' option for three.
 ## Because not mentioned in above links and can lead to the following error message:
 # grep: PCRE2 does not support \F, \L, \l, \N{name}, \U, or \u
-three="$(LC_ALL=C grep "${grep_args[@]}" $'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]' "$@")"
+## Locale bug: bash $'\uXXXX' is expanded at parse time using the caller's
+## locale, NOT the LC_ALL=C set on the grep command. In non-UTF-8 locales
+## (LANG=C, LANG= empty), the \u sequences are passed through literally,
+## creating a bracket expression of ASCII chars [0-9A-Fu\] that causes false
+## positives on almost any file containing digits or hex characters.
+## BiDi characters would still be caught by checks one and two (non-ASCII
+## byte detection), so this is a false positive issue, not a bypass.
+#three="$(LC_ALL=C grep "${grep_args[@]}" $'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]' "$@")"
+## Fixed: use \x byte sequences which work regardless of locale.
+## U+061C -> \xD8\x9C          U+202A -> \xE2\x80\xAA  U+202E -> \xE2\x80\xAE
+## U+200E -> \xE2\x80\x8E     U+202B -> \xE2\x80\xAB  U+2066 -> \xE2\x81\xA6
+## U+200F -> \xE2\x80\x8F     U+202C -> \xE2\x80\xAC  U+2067 -> \xE2\x81\xA7
+##                              U+202D -> \xE2\x80\xAD  U+2068 -> \xE2\x81\xA8
+##                                                       U+2069 -> \xE2\x81\xA9
+three="$(LC_ALL=C grep "${grep_args[@]}" $'[\xD8\x9C\xE2\x80\x8E\x8F\xAA\xAB\xAC\xAD\xAE\x81\xA6\xA7\xA8\xA9]' "$@")"
 check_grep_status "$?"
 
 ## ASCII control characters.
