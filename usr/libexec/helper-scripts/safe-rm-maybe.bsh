@@ -1,0 +1,15 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Provides rm-safe-maybe function.
+## Uses safe-rm if installed, otherwise falls back to rm.
+
+rm-safe-maybe() {
+  if command -v safe-rm >/dev/null 2>&1 ; then
+    safe-rm "$@"
+  else
+    rm "$@"
+  fi
+}

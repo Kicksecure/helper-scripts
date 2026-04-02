@@ -5,9 +5,9 @@
 
 ## Test script for grep-find-unicode-wrapper
 ## Tests for Unicode bypass vulnerabilities by checking that various
-## suspicious characters are properly detected by the four grep checks.
+## suspicious characters are properly detected.
 ##
-## Bug found: Check 3 uses bash $'\uXXXX' expansion which requires a
+## Bug found: Check 3 used bash $'\uXXXX' expansion which requires a
 ## UTF-8 locale at parse time. In non-UTF-8 locales (LANG=C or LANG=),
 ## the \u sequences are passed through literally, creating a character
 ## class of [0-9A-Fu\] that causes massive false positives.
@@ -23,108 +23,45 @@ pass_count=0
 fail_count=0
 skip_count=0
 
+source /usr/libexec/helper-scripts/get_colors.sh
+source /usr/libexec/helper-scripts/safe-rm-maybe.bsh
+
 cleanup() {
   if [ -n "$test_dir" ] && [ -d "$test_dir" ]; then
-    rm -rf -- "$test_dir"
+    rm-safe-maybe --recursive --force -- "$test_dir"
   fi
 }
 trap cleanup EXIT
 
-test_dir="$(mktemp -d)"
+test_dir="$(mktemp --directory)"
 
-script_dir="$(cd -- "$(dirname -- "$0")" && pwd)"
-git_toplevel="$(cd -- "$script_dir" && git rev-parse --show-toplevel)"
-
-if test -f /usr/libexec/helper-scripts/get_colors.sh ; then
-  source /usr/libexec/helper-scripts/get_colors.sh
-elif test -f "${git_toplevel}/usr/libexec/helper-scripts/get_colors.sh" ; then
-  source "${git_toplevel}/usr/libexec/helper-scripts/get_colors.sh"
-else
-  printf '%s\n' "$0: ERROR: get_colors.sh not found!" >&2
-  exit 1
-fi
-
-## Replicate the four grep checks from grep-find-unicode-wrapper.
-## This allows testing even without stecho installed.
-grep_args=(
-  --files-with-matches
-  --line-number
-  --binary-files=text
-)
-
-## Build the check 3 pattern using raw UTF-8 byte sequences (\x)
-## instead of \u escapes, so this test works regardless of locale.
-##
-## U+061C -> 0xD8 0x9C
-## U+200E -> 0xE2 0x80 0x8E
-## U+200F -> 0xE2 0x80 0x8F
-## U+202A -> 0xE2 0x80 0xAA
-## U+202B -> 0xE2 0x80 0xAB
-## U+202C -> 0xE2 0x80 0xAC
-## U+202D -> 0xE2 0x80 0xAD
-## U+202E -> 0xE2 0x80 0xAE
-## U+2066 -> 0xE2 0x81 0xA6
-## U+2067 -> 0xE2 0x81 0xA7
-## U+2068 -> 0xE2 0x81 0xA8
-## U+2069 -> 0xE2 0x81 0xA9
-##
-## Note: check 3 in the wrapper does NOT use --perl-regexp, so we use
-## grep's basic bracket expression which with LC_ALL=C matches individual
-## bytes. This means the bracket expression matches ANY of the individual
-## bytes, not specific multi-byte sequences. This is overly broad but
-## ensures detection.
-bidi_pattern=$'[\xD8\x9C\xE2\x80\x8E\x8F\xAA\xAB\xAC\xAD\xAE\x81\xA6\xA7\xA8\xA9]'
-
-run_checks() {
-  local file="$1"
-  local found=0
-
-  ## Check 1: Non-ASCII bytes (hex range).
-  if LC_ALL=C grep "${grep_args[@]}" --perl-regexp '[^\x00-\x7F]' "$file" >/dev/null 2>&1; then
-    found=1
-  fi
-
-  ## Check 2: Non-ASCII (POSIX class).
-  if LC_ALL=C grep "${grep_args[@]}" --perl-regexp "[^[:ascii:]]" "$file" >/dev/null 2>&1; then
-    found=1
-  fi
-
-  ## Check 3: BiDi / Trojan Source characters.
-  ## Using raw byte pattern (see bidi_pattern above).
-  if LC_ALL=C grep "${grep_args[@]}" "$bidi_pattern" "$file" >/dev/null 2>&1; then
-    found=1
-  fi
-
-  ## Check 4: ASCII control characters.
-  if LC_ALL=C grep "${grep_args[@]}" --perl-regexp '[\x00-\x08\x0B\x0C\x0D\x0E-\x1F\x7F]' "$file" >/dev/null 2>&1; then
-    found=1
-  fi
-
-  return $(( ! found ))
-}
+## grep-find-unicode-wrapper is similar to grep.
+## - Exit code 0: if found.
+## - Non-zero exit code: if not found.
+command -v grep-find-unicode-wrapper >/dev/null
 
 expect_detected() {
   local description="$1"
-  local file="$2"
+  local file_name="$2"
 
-  if run_checks "$file"; then
-    printf "${green}PASS${nocolor}: Detected:     %s\n" "$description"
+  if grep-find-unicode-wrapper "$file_name" >/dev/null 2>&1 ; then
+    printf "%s\n" "${green}PASS${nocolor}: Detected:     $description"
     pass_count=$(( pass_count + 1 ))
   else
-    printf "${red}FAIL${nocolor}: NOT detected: %s\n" "$description" >&2
+    printf "%s\n" "${red}FAIL${nocolor}: NOT detected: $description" >&2
     fail_count=$(( fail_count + 1 ))
   fi
 }
 
 expect_clean() {
   local description="$1"
-  local file="$2"
+  local file_name="$2"
 
-  if ! run_checks "$file"; then
-    printf "${green}PASS${nocolor}: Clean:        %s\n" "$description"
+  if ! grep-find-unicode-wrapper "$file_name" >/dev/null 2>&1 ; then
+    printf "%s\n" "${green}PASS${nocolor}: Clean:        $description"
     pass_count=$(( pass_count + 1 ))
   else
-    printf "${red}FAIL${nocolor}: False positive: %s\n" "$description" >&2
+    printf "%s\n" "${red}FAIL${nocolor}: False positive: $description" >&2
     fail_count=$(( fail_count + 1 ))
   fi
 }
@@ -132,17 +69,17 @@ expect_clean() {
 write_file() {
   local name="$1"
   local content="$2"
-  local file="$test_dir/$name"
-  printf '%s' "$content" > "$file"
-  printf '%s' "$file"
+  local file_name="$test_dir/$name"
+  printf '%s' "$content" | tee -- "$file_name" >/dev/null
+  printf '%s' "$file_name"
 }
 
 write_file_binary() {
   local name="$1"
   shift
-  local file="$test_dir/$name"
-  printf "$@" > "$file"
-  printf '%s' "$file"
+  local file_name="$test_dir/$name"
+  printf "$@" | tee -- "$file_name" >/dev/null
+  printf '%s' "$file_name"
 }
 
 printf '%s\n' "===== grep-find-unicode-wrapper bypass tests ====="
@@ -151,23 +88,23 @@ printf '%s\n' ""
 ## ===================================================================
 ## Section 0: Check 3 locale bug validation
 ## ===================================================================
-printf '%s\n' "--- Check 3 locale bug ($'\u' expansion) ---"
+printf '%s\n' "--- Check 3 locale bug (\$'\\u' expansion) ---"
 
 ## Verify whether $'\uXXXX' expands to UTF-8 in the current locale.
-## If it doesn't, check 3 in the wrapper is broken.
+## If it doesn't, check 3 in the wrapper would be broken with the old pattern.
 check3_locale_ok="false"
-check3_test_byte="$(printf '%s' $'\u061C' | od -A n -t x1 | tr -d ' \n')"
+check3_test_byte="$(printf '%s' $'\u061C' | od --address-radix=n --format=x1 | tr --delete ' \n')"
 if [ "$check3_test_byte" = "d89c" ]; then
   check3_locale_ok="true"
-  printf "${green}PASS${nocolor}: \$'\\u061C' expands to UTF-8 bytes (d8 9c) - check 3 works in this locale\n"
+  printf '%s\n' "${green}PASS${nocolor}: \$'\\u061C' expands to UTF-8 bytes (d8 9c) - check 3 works in this locale"
   pass_count=$(( pass_count + 1 ))
 else
-  printf "${yellow}WARN${nocolor}: \$'\\u061C' expands to literal '\\u061C' (got: %s) - check 3 in wrapper is broken in this locale!\n" "$check3_test_byte"
-  printf "       Current locale: LANG='${LANG:-}' LC_ALL='${LC_ALL:-}'\n"
-  printf "       The wrapper's check 3 pattern becomes a character class of\n"
-  printf "       literal chars [0-9A-Fu\\\\] causing false positives on most files.\n"
-  printf "       BiDi chars are still caught by checks 1+2 (non-ASCII byte detection).\n"
-  printf "       Fix: use \\\\x byte sequences instead of \\\\u escapes in the wrapper.\n"
+  printf '%s\n' "${yellow}WARN${nocolor}: \$'\\u061C' expands to literal '\\u061C' (got: $check3_test_byte) - check 3 would be broken with old pattern!"
+  printf '%s\n' "       Current locale: LANG='${LANG:-}' LC_ALL='${LC_ALL:-}'"
+  printf '%s\n' "       The old \$'\\u...' pattern becomes a character class of"
+  printf '%s\n' "       literal chars [0-9A-Fu\\] causing false positives on most files."
+  printf '%s\n' "       BiDi chars are still caught by checks 1+2 (non-ASCII byte detection)."
+  printf '%s\n' "       Fix: use \\x byte sequences instead of \\u escapes in the wrapper."
   skip_count=$(( skip_count + 1 ))
 fi
 
@@ -183,19 +120,19 @@ old_check3_pattern=$'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u20
 
 check3_false_positive_test() {
   local description="$1"
-  local file="$2"
-  if LC_ALL=C grep --files-with-matches --line-number --binary-files=text "$old_check3_pattern" "$file" >/dev/null 2>&1; then
+  local file_name="$2"
+  if LC_ALL=C grep --files-with-matches --line-number --binary-files=text "$old_check3_pattern" "$file_name" >/dev/null 2>&1; then
     if [ "$check3_locale_ok" = "true" ]; then
       ## UTF-8 locale: old pattern should work, so this is a real failure.
-      printf "${red}FAIL${nocolor}: Old check 3 false positive: %s\n" "$description" >&2
+      printf '%s\n' "${red}FAIL${nocolor}: Old check 3 false positive: $description" >&2
       fail_count=$(( fail_count + 1 ))
     else
       ## Non-UTF-8 locale: false positive from old pattern is expected.
-      printf "${yellow}WARN${nocolor}: Old check 3 false positive (expected, locale bug): %s\n" "$description"
+      printf '%s\n' "${yellow}WARN${nocolor}: Old check 3 false positive (expected, locale bug): $description"
       skip_count=$(( skip_count + 1 ))
     fi
   else
-    printf "${green}PASS${nocolor}: Old check 3 clean:      %s\n" "$description"
+    printf '%s\n' "${green}PASS${nocolor}: Old check 3 clean:      $description"
     pass_count=$(( pass_count + 1 ))
   fi
 }
@@ -527,7 +464,7 @@ expect_detected "NULL byte at start of file" "$f"
 python3 -c "
 import sys
 sys.stdout.buffer.write(b'a' * 10000 + b'\xe2\x80\x8b' + b'b' * 10000)
-" > "$test_dir/long_line.txt"
+" | tee -- "$test_dir/long_line.txt" >/dev/null
 expect_detected "Suspicious char buried in 20000-char line" "$test_dir/long_line.txt"
 
 ## ===================================================================
@@ -535,12 +472,12 @@ expect_detected "Suspicious char buried in 20000-char line" "$test_dir/long_line
 ## ===================================================================
 printf '%s\n' ""
 printf '%s\n' "===== Results ====="
-printf "Passed: %d | Failed: %d | Skipped: %d\n" "$pass_count" "$fail_count" "$skip_count"
+printf '%s\n' "Passed: $pass_count | Failed: $fail_count | Skipped: $skip_count"
 
 if [ "$fail_count" -gt 0 ]; then
-  printf "${red}%s${nocolor}\n" "SOME TESTS FAILED - potential Unicode bypass found!"
+  printf '%s\n' "${red}SOME TESTS FAILED - potential Unicode bypass found!${nocolor}"
   exit 1
 fi
 
-printf "${green}%s${nocolor}\n" "All tests passed - no bypass detected."
+printf '%s\n' "${green}All tests passed - no bypass detected.${nocolor}"
 exit 0
