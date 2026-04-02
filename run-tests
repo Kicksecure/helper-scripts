@@ -62,3 +62,5 @@ fi
 
 cd "${git_toplevel}"
 ./unicode-testscript
+
+./tests/test_grep_find_unicode_wrapper
