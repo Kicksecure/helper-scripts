@@ -294,6 +294,7 @@ cli_disable_autologin() {
          exit 0
        fi
        disable_sysmaint_autologin
+       warn_on_unusable_password 'sysmaint'
        exit 0
    fi
 
@@ -304,13 +305,21 @@ cli_disable_autologin() {
    fi
 
    disable_autologin "${user}"
+   warn_on_unusable_password "${user}"
 }
 
-warn_on_empty_user_password() {
-   if [ -z "$(get_clean_pass "$1")" ]; then
-      printf '%s\n' "${red}WARNING:${nocolor} Account '$1' has no password set." >&2
-      printf '%s\n' "Users can log into this account knowing only the username." >&2
-      printf '%s\n' "You can use the 'pwchange' utility to change this." >&2
+warn_on_unusable_password() {
+   local user
+   user="$1"
+   if is_pass_locked "${user}" || is_pass_disabled "${user}"; then
+      printf '%s\n' "${red}WARNING:${nocolor} Account '${user}' has a locked or disabled password." >&2
+      printf '%s\n' "You will NOT be able to log in manually to this account." >&2
+      printf '%s\n' "You can use the 'pwchange' utility to set a password." >&2
+      printf '%s\n' "See https://www.kicksecure.com/wiki/Login for more information." >&2
+   elif [ -z "$(get_clean_pass "${user}")" ]; then
+      printf '%s\n' "${red}WARNING:${nocolor} Account '${user}' has no password set." >&2
+      printf '%s\n' "Anyone can log into this account knowing only the username." >&2
+      printf '%s\n' "You can use the 'pwchange' utility to set a password." >&2
       printf '%s\n' "See https://www.kicksecure.com/wiki/Login for more information." >&2
    fi
 }
@@ -339,7 +348,7 @@ autologinchange() {
       if [ "${disable_yn,,}" = 'y' ]; then
          disable_autologin "${user}"
          printf '%s\n' "SUCCESS: Autologin for account '$user' disabled." >&2
-         warn_on_empty_user_password "$user"
+         warn_on_unusable_password "$user"
       else
          printf '%s\n' "CANCELLED disabling autologin for account '$user'." >&2
       fi
@@ -352,7 +361,7 @@ autologinchange() {
          if [ "${disable_yn,,}" = 'y' ]; then
             disable_sysmaint_autologin
             printf '%s\n' "SUCCESS: Autologin for account 'sysmaint' disabled." >&2
-            warn_on_empty_user_password 'sysmaint'
+            warn_on_unusable_password 'sysmaint'
          else
             printf '%s\n' "CANCELLED disabling autologin for account 'sysmaint'." >&2
          fi
