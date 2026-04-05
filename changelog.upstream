@@ -1,3 +1,22 @@
+commit a76d8d3dcabac786c7a0b524144fe943690d243f
+Merge: 543b45c ae4eb79
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 5 06:13:12 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit ae4eb79a2c0a2527cda05b3797b915df74926826
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Apr 3 17:09:59 2026 -0400
+
+    Integrate Claude code change to warn about unusable passwords when disabling autologin
+
+commit 543b45cb91f3b69afcc8a355f3dd779b1553e3c3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Mar 27 08:56:32 2026 +0000
+
+    bumped changelog version
+
 commit ab877fb2e189a91c2fb0c0fa450c5f224ad2cd0c
 Merge: 9645bdd ab8ee76
 Author: Patrick Schleizer <adrelanos@whonix.org>
