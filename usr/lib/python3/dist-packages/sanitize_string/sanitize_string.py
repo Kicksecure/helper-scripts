@@ -74,7 +74,9 @@ def main() -> int:
     ## Read untrusted_string from stdin if needed
     if untrusted_string is None:
         if sys.stdin is not None:
-            sys.stdin.reconfigure(errors="ignore")  # type: ignore
+            sys.stdin.reconfigure(  # type: ignore
+                encoding="utf-8", errors="replace", newline="\n"
+            )
             untrusted_string = sys.stdin.read()
         else:
             ## No way to get an untrusted string, print nothing and
@@ -82,6 +84,9 @@ def main() -> int:
             return 0
 
     ## Sanitize and print
+    sys.stdout.reconfigure(  # type: ignore
+        encoding="ascii", errors="replace", newline="\n"
+    )
     assert untrusted_string is not None
     sanitized_string: str = sanitize_string(untrusted_string)
     if max_string_length is not None:
