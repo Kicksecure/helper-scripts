@@ -58,23 +58,23 @@ process_file() {
   fi
 
   if cat -- "$file_name" | unicode-show >/dev/null ; then
-    ## unicode-show exit code non-zero.
+    ## unicode-show exit code 0.
     printf "%s\n" "$0: ERROR: Failed to find unicode using 'unicode-show' (stdin check) in file '$file_name'." >&2
     exit 1
   fi
-  ## unicode-show exit code 0.
+  ## unicode-show exit code non-zero.
 
   ## 'stcatn' should sanitize. Therefore 'unicode-show' should not find any unicode and exit 0.
   ## Check if there is a non-zero exit code in this pipe, because if so, that's a bug.
   if ! stcatn "$file_name" | unicode-show >/dev/null ; then
-    ## unicode-show exit code 0.
+    ## unicode-show exit code non-zero.
     printf "%s\n" "$0: ERROR: Failed to sanitize string using 'stcatn' in file '$file_name'." >&2
     exit 1
   fi
-  ## unicode-show non-zero exit code.
+  ## unicode-show exit code 0.
 
   if ! cat -- "$file_name" | sanitize-string nolimit >/dev/null ; then
-    ## unicode-show exit code 0.
+    ## sanitize-string exit code non-zero.
     printf "%s\n" "$0: ERROR: Failed to sanitize string using 'sanitize-string' (stdin check) in file '$file_name'." >&2
     exit 1
   fi
@@ -83,7 +83,7 @@ process_file() {
   file_content="$(cat -- "$file_name")"
 
   if ! sanitize-string nolimit "$file_content" >/dev/null ; then
-    ## unicode-show exit code 0.
+    ## sanitize-string exit code non-zero.
     printf "%s\n" "$0: ERROR: Failed to sanitize string using 'sanitize-string' (command check) in file '$file_name'." >&2
     exit 1
   fi
@@ -97,6 +97,7 @@ $0: ERROR: Folder '$HOME/trojan-source' missing. To get it:
 
 cd ~
 git clone git@github.com:nickboucher/trojan-source.git" >&2
+  exit 1
 fi
 
 ## Creates files:
