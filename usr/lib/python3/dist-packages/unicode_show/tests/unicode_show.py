@@ -476,16 +476,6 @@ FILENAME_PLACEHOLDER:1: Hello world![U+0009][U+0020]
             stdin_string=test_string,
         )
 
-        os.environ["NO_COLOR"] = "0"
-        self._test_stdin_pty(
-            main_func=unicode_show_main,
-            argv0=self.argv0,
-            stdout_string=expect_string_color,
-            exit_code=1,
-            args=[],
-            stdin_string=test_string,
-        )
-
     def test_unicode_in_filename(self) -> None:
         """
         Tests if Unicode characters in filenames are properly sanitized.
