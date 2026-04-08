@@ -3,28 +3,18 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Code duplication. Copied from
-## helper-scripts/usr/libexec/helper-scripts/check_runtime.bsh.
-##
-## Because check_runtime.bsh cannot be sourced here (this will be run when
+## check_runtime.bsh cannot be sourced here (this will be run when
 ## derivative-maker is used, and the build host may not have helper-scripts
 ## installed).
-was_executed() {
-  local caller_bash_source_zero="${1}"
-  if [[ "${caller_bash_source_zero}" == "${0}" ]] \
-    || [[ "${caller_bash_source_zero}" == "$(command -v "${0}")" ]]; then
-    return 0
-  fi
-  return 1
-}
-should_run_unit_tests() {
-  local caller_bash_source_zero="${1}"
-  if was_executed "${caller_bash_source_zero}" \
-    && ! [ "${SKIP_UNIT_TESTS-}" = 'true' ]; then
-    return 0
-  fi
-  return 1
-}
+## Literal code duplication is bad.
+## Confuses shellcheck for dist-installer-cli-standalone.
+if test -f /usr/libexec/helper-scripts/check_runtime.bsh; then
+  ## Use 'source_encoded' to avoid
+  ## /usr/share/usability-misc/build-dist-installer-cli
+  ## from in-lining the source code.
+  source_encoded=source
+  "$source_encoded" /usr/libexec/helper-scripts/check_runtime.bsh
+fi
 
 br_add() {
   local in out
