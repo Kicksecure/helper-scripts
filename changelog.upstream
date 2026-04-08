@@ -1,3 +1,52 @@
+commit 54b74cdbbfb35d32adf139a33996844ca8555ea1
+Merge: df92172 47c6252
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 8 09:54:43 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 47c6252a7fbea91eb668142cd3ba610b82678ed3
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 7 23:01:41 2026 -0400
+
+    Improve stdin/stdout encoding configuration in sanitize_string.py (from Claude Code)
+
+commit cd1c52e440f59149a0f1fe657f2f35964c58e6a9
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 7 22:40:58 2026 -0400
+
+    typo
+
+commit 7177e87deb03ac316951a286993d9ce9f8b2bacf
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 7 22:27:15 2026 -0400
+
+    Fix incorrect comments and add missing exit code in unicode-testscript (from Claude Code)
+
+commit 8c21076b2690f6b535c8e78913887fa5cf6308bd
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 7 22:15:23 2026 -0400
+
+    Add sanitize-string to test linting utilities (from Claude Code)
+
+commit d0e253b51d3355dff842c1777169df6f13fb2a2c
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 7 22:11:21 2026 -0400
+
+    typo
+
+commit 258bd960e2e2fef23995df1715c2348db7d78c63
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 7 22:03:00 2026 -0400
+
+    Fix NO_COLOR spec compliance in unicode_show (inspired by Claude Code)
+
+commit df92172593c986bb75768232b8bb2ec35491bdd8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 5 10:27:48 2026 +0000
+
+    bumped changelog version
+
 commit a76d8d3dcabac786c7a0b524144fe943690d243f
 Merge: 543b45c ae4eb79
 Author: Patrick Schleizer <adrelanos@whonix.org>
