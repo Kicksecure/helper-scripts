@@ -398,8 +398,11 @@ strings_bsh_error_trap() {
 
 ## Useful in case this script is copied verbatim into another script such as
 ## in package 'usability-misc' file 'dist-installer-cli-standalone'.
-if should_run_unit_tests "${BASH_SOURCE[0]}"; then
-  string_bsh_tests
+## Another option would be to move the unit testing out of this script.
+if declare -F should_run_unit_tests >/dev/null; then
+  if should_run_unit_tests "${BASH_SOURCE[0]}"; then
+    string_bsh_tests
+  fi
 fi
 
 #trim_collapse_split " aaa  bbb ccc ddd "
