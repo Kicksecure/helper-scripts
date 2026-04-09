@@ -35,7 +35,7 @@ is_addr_port(){
   if [ "${port}" -gt 0 ] && [ "${port}" -le 65535 ]; then
     true "is_addr_port test: Valid port: '${port}'"
   else
-    die 2 "${underline}is_addr_port test:${nounderline} Invalid port '${port}', not within range: 0-65535."
+    die 2 "${underline}is_addr_port test:${nounderline} Invalid port '${port}', not within range: 1-65535."
   fi
 
   for quad in $(printf '%s\n' "${addr}" | tr "." " "); do
