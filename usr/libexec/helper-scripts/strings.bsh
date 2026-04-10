@@ -163,8 +163,8 @@ validate_safe_filename() {
     reason="Too long (>255 chars)!"
   else
     ## Allow: letters/digits (locale-aware), underscore, dash, dot, space,
-    ## plus, comma, equals, @, parentheses, braces, square brackets
-    re='^[][:alnum:]_.:@+=,(){}\[ -]+$'
+    ## plus, comma, equals, @, parentheses, percent, braces, square brackets
+    re='^[][:alnum:]_.:@+=,(){}%\[ -]+$'
     if [[ "$value" =~ $re ]]; then
       return 0
     fi

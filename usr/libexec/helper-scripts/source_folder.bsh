@@ -59,7 +59,9 @@ source_config_read_stat() {
   local -n out_group="$3"
   local -n out_perms="$4"
 
-  stat_output="$(stat --format '%U %G %a' -- "$stat_path" 2>/dev/null)" || return 1
+  ## Quote 'stat' man page:
+  ## > Due to shell aliases and built-in stat functions, using an unadorned stat interactively or in a script may get you different functionality than that described here. Invoke it via env (i.e., env stat …) to avoid interference from the shell.
+  stat_output="$(env stat -L --format '%U %G %a' -- "$stat_path" 2>/dev/null)" || return 1
   # shellcheck disable=SC2034
   read -r out_user out_group out_perms <<< "$stat_output" || return 1
 
