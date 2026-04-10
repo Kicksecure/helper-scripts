@@ -3,6 +3,14 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## Scripts that source this file are expected to set at minimum:
+##   set -o errexit
+## Modern scripts should use:
+##   set -o errexit
+##   set -o errtrace
+##   set -o pipefail
+##   set -o nounset
+
 ## check_runtime.bsh cannot be sourced here (this will be run when
 ## derivative-maker is used, and the build host may not have helper-scripts
 ## installed).
@@ -16,6 +24,10 @@ if test -f /usr/libexec/helper-scripts/check_runtime.bsh; then
   "$source_encoded" /usr/libexec/helper-scripts/check_runtime.bsh
 fi
 
+## NOTE: br_add and br_add_to_file are not HTML sanitization functions.
+## They only insert '<br />' tags at newlines.
+## For HTML sanitization, use strip-markup or sanitize-string from this
+## repository instead.
 br_add() {
   local in out
 
@@ -171,7 +183,7 @@ $reason" >&2
 }
 
 check_is_not_empty_and_only_one_line() {
-  local varname value number_of_lines
+  local varname value number_of_lines trimmed_value lines
 
   if [ -z "$1" ]; then
     printf '%s\n' "$0: ERROR: No variable name provided to check_is_not_empty_and_only_one_line." >&2
@@ -238,8 +250,15 @@ is_whole_number() {
 }
 
 ## NOTE: Duplicated in package 'uwt' file 'curl.anondist'.
+## Input is trusted. The caller is expected to pass a valid whole number.
+## /dev/random is used intentionally instead of /dev/urandom.
+## reason: https://www.kicksecure.com/wiki/Dev/Entropy
 random_alpha_numeric() {
   local n="${1:-43}"
+  if ! is_whole_number "$n"; then
+    printf '%s\n' "$0: ERROR: random_alpha_numeric: non-numeric byte count: '$n'" >&2
+    return 1
+  fi
   LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="$n" || true
   printf '%s\n' ""
 }
