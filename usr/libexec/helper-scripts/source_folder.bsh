@@ -16,12 +16,25 @@
 ## - This function is not a parser for untrusted data.
 ## - For per-user configuration directories, the invoking user's primary group is
 ##   assumed to be a trusted private group containing only that user.
+## - Symlinked configuration directories and symlinked configuration files are
+##   allowed by this security model.
+## - Ownership, group, and permission checks apply to the resolved target as
+##   reported by `stat`.
+## - The caller is trusted to pass the intended configuration directories.
+## - Supported-directory checks are based on the pathname provided by the caller.
+##   They are not intended to be canonical containment checks after resolving all
+##   symlinks.
 ## - "Trusted" in this context means:
 ##   * the directory hierarchy is only writable by the trusted owner or an
 ##     equivalently trusted authority such as root;
 ##   * ownership and permissions are administered as intended;
 ##   * the filesystem and mount context are trusted to enforce Unix ownership and
 ##     permission semantics correctly.
+## - Parent directories along the provided path are checked as defense in depth.
+##   For per-user paths, directories above `$HOME` are expected to be
+##   administered by root, while `$HOME` and directories below it are expected to
+##   be administered by the invoking user and that user's trusted private primary
+##   group.
 ## - This function performs pathname-based checks before sourcing files.
 ##   A time-of-check/time-of-use race condition remains possible in principle.
 ## - Within this security model, that limitation is accepted because exploiting
@@ -46,7 +59,8 @@
 ## - The ownership / permission checks are defense-in-depth and help catch
 ##   packaging or administration mistakes.
 ## - They do not change the fundamental trust requirement: sourced files are
-##   executable shell code.
+##   executable shell code
+## - Non-existing configuration folders are allowed.
 
 source_config_error() {
   printf '%s\n' "$0: ERROR: $1" >&2
@@ -60,7 +74,7 @@ source_config_read_stat() {
   local -n out_perms="$4"
 
   ## Quote 'stat' man page:
-  ## > Due to shell aliases and built-in stat functions, using an unadorned stat interactively or in a script may get you different functionality than that described here. Invoke it via env (i.e., env stat …) to avoid interference from the shell.
+  ## > Due to shell aliases and built-in stat functions, using an unadorned stat interactively or in a script may get you different functionality than that described here. Invoke it via env (i.e., env stat ...) to avoid interference from the shell.
   stat_output="$(env LC_ALL=C stat -L --format '%U %G %a' -- "$stat_path" 2>/dev/null)" || return 1
   # shellcheck disable=SC2034
   read -r out_user out_group out_perms <<< "$stat_output" || return 1
@@ -68,14 +82,131 @@ source_config_read_stat() {
   return 0
 }
 
+source_config_get_expected_owner_group() {
+  local path_to_check="$1"
+  local config_kind="$2"
+  local -n out_user="$3"
+  local -n out_group="$4"
+
+  case "$config_kind" in
+    system)
+      out_user='root'
+      out_group='root'
+      ;;
+    user)
+      case "$path_to_check" in
+        "$HOME"|"$HOME"/*)
+          out_user="$invoking_user"
+          out_group="$invoking_group"
+          ;;
+        *)
+          out_user='root'
+          out_group='root'
+          ;;
+      esac
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+
+  return 0
+}
+
+source_config_check_directory() {
+  local directory_path="$1"
+  local expected_user="$2"
+  local expected_group="$3"
+  local actual_user actual_group actual_perms
+
+  if [ ! -d "$directory_path" ]; then
+    true "Config directory '$directory_path' does not exist or is not a directory."
+    return 0
+  fi
+
+  if ! source_config_read_stat "$directory_path" actual_user actual_group actual_perms; then
+    source_config_error "Could not stat config directory '$directory_path'."
+    return 1
+  fi
+
+  if [ "$actual_user" != "$expected_user" ]; then
+    source_config_error "Config directory '$directory_path' has unexpected owner '$actual_user'."
+    return 1
+  fi
+
+  if [ "$actual_group" != "$expected_group" ]; then
+    source_config_error "Config directory '$directory_path' has unexpected group '$actual_group'."
+    return 1
+  fi
+
+  case "$actual_perms" in
+    *2|*3|*6|*7)
+      source_config_error "Config directory '$directory_path' is world-writable."
+      return 1
+      ;;
+  esac
+
+  return 0
+}
+
+source_config_check_directory_hierarchy() {
+  local target_directory="$1"
+  local config_kind="$2"
+  local current_path parent_path expected_user expected_group
+  local path_index
+  local -a path_chain
+
+  current_path="$target_directory"
+
+  while :; do
+    path_chain+=("$current_path")
+
+    if [ "$current_path" = '/' ]; then
+      break
+    fi
+
+    parent_path="${current_path%/*}"
+
+    if [ -z "$parent_path" ]; then
+      parent_path='/'
+    fi
+
+    current_path="$parent_path"
+  done
+
+  for (( path_index=${#path_chain[@]} - 1; path_index >= 0; path_index-- )); do
+    current_path="${path_chain[$path_index]}"
+
+    if ! source_config_get_expected_owner_group \
+      "$current_path" \
+      "$config_kind" \
+      expected_user \
+      expected_group
+    then
+      source_config_error "Internal error while determining expected ownership for '$current_path'."
+      return 1
+    fi
+
+    if ! source_config_check_directory \
+      "$current_path" \
+      "$expected_user" \
+      "$expected_group"
+    then
+      return 1
+    fi
+  done
+
+  return 0
+}
+
 source_config() {
   local folder_item file_name
-  local dir_perms dir_user dir_group
   local file_perms file_user file_group
   local nullglob_was_set=0
   local trusted_user trusted_group
   local invoking_user invoking_group
   local stat_output
+  local config_kind
   ## Dynamic scoping.
   local rc=0
 
@@ -86,14 +217,27 @@ source_config() {
   shopt -s nullglob
 
   for folder_item in "$@"; do
+    while [ "$folder_item" != '/' ] && [ "${folder_item%/}" != "$folder_item" ]; do
+      folder_item="${folder_item%/}"
+    done
+
+    case "$folder_item" in
+      */./*|*/../*|*/.|*/..)
+        source_config_error "Config directory '$folder_item' must not contain '.' or '..' path components."
+        break
+        ;;
+    esac
+
     case "$folder_item" in
       /etc/*|/usr/local/etc/*)
         trusted_user='root'
         trusted_group='root'
+        config_kind='system'
         ;;
       "$HOME"/*)
         trusted_user="$invoking_user"
         trusted_group="$invoking_group"
+        config_kind='user'
         ;;
       *)
         source_config_error "Unsupported config directory '$folder_item'."
@@ -101,34 +245,16 @@ source_config() {
         ;;
     esac
 
-    if [ ! -d "$folder_item" ]; then
-      source_config_error "Config directory '$folder_item' does not exist or is not a directory."
+    if ! source_config_check_directory_hierarchy "$folder_item" "$config_kind"; then
       break
     fi
-
-    if ! source_config_read_stat "$folder_item" dir_user dir_group dir_perms; then
-      source_config_error "Could not stat config directory '$folder_item'."
-      break
-    fi
-
-    if [ "$dir_user" != "$trusted_user" ]; then
-      source_config_error "Config directory '$folder_item' has unexpected owner '$dir_user'."
-      break
-    fi
-
-    if [ "$dir_group" != "$trusted_group" ]; then
-      source_config_error "Config directory '$folder_item' has unexpected group '$dir_group'."
-      break
-    fi
-
-    case "$dir_perms" in
-      *2|*3|*6|*7)
-        source_config_error "Config directory '$folder_item' is world-writable."
-        break
-        ;;
-    esac
 
     for file_name in "$folder_item"/*.conf; do
+      if [ ! -f "$file_name" ]; then
+        source_config_error "Configuration entry '$file_name' is not a regular file."
+        break 2
+      fi
+
       if ! source_config_read_stat "$file_name" file_user file_group file_perms; then
         source_config_error "Could not stat '$file_name'."
         break 2
@@ -170,3 +296,6 @@ source_config() {
 
   return "$rc"
 }
+
+## TODO
+source_config /etc/systemcheck.d /usr/local/etc/systemcheck.d
