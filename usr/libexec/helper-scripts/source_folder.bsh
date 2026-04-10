@@ -1,0 +1,170 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## How to call, example:
+## source_config /etc/systemcheck.d /usr/local/etc/systemcheck.d
+
+## source_config sources trusted Bash configuration fragments (*.conf).
+##
+## Security model:
+## - This function is intentionally designed to execute shell code from the
+##   configuration files by using Bash `source`.
+## - Therefore, it MUST only be used with trusted configuration directories on a
+##   trusted filesystem.
+## - This function is not a parser for untrusted data.
+## - For per-user configuration directories, the invoking user's primary group is
+##   assumed to be a trusted private group containing only that user.
+## - "Trusted" in this context means:
+##   * the directory hierarchy is only writable by the trusted owner or an
+##     equivalently trusted authority such as root;
+##   * ownership and permissions are administered as intended;
+##   * the filesystem and mount context are trusted to enforce Unix ownership and
+##     permission semantics correctly.
+## - This function performs pathname-based checks before sourcing files.
+##   A time-of-check/time-of-use race condition remains possible in principle.
+## - Within this security model, that limitation is accepted because exploiting
+##   it would require write access to the trusted configuration directory or file
+##   path, which would already violate the trust assumptions and imply a system
+##   or account compromise.
+##
+## Expected ownership / permissions:
+##
+## 1) System configuration directories, such as /etc/... or /usr/local/etc/...
+##    - directories and files should be owned by user root and group root
+##    - files must not be writable by "others"
+##    - group-writable files are acceptable only when the file group is root
+##
+## 2) Per-user configuration directories, such as ~/...
+##    - directories and files should be owned by the invoking user
+##    - files must not be writable by "others"
+##    - group-writable files are acceptable only when the file group is a
+##      trusted private group of that same user
+##
+## Notes:
+## - The ownership / permission checks are defense-in-depth and help catch
+##   packaging or administration mistakes.
+## - They do not change the fundamental trust requirement: sourced files are
+##   executable shell code.
+
+source_config_error() {
+  printf '%s\n' "$0: ERROR: $1" >&2
+  rc=1
+}
+
+source_config_read_stat() {
+  local stat_path="$1"
+  local -n out_user="$2"
+  local -n out_group="$3"
+  local -n out_perms="$4"
+
+  stat_output="$(stat --format '%U %G %a' -- "$stat_path" 2>/dev/null)" || return 1
+  # shellcheck disable=SC2034
+  read -r out_user out_group out_perms <<< "$stat_output" || return 1
+
+  return 0
+}
+
+source_config() {
+  local folder_item file_name
+  local dir_perms dir_user dir_group
+  local file_perms file_user file_group
+  local nullglob_was_set=0
+  local trusted_user trusted_group
+  local invoking_user invoking_group
+  local stat_output
+  ## Dynamic scoping.
+  local rc=0
+
+  invoking_user="$(id --user --name)"
+  invoking_group="$(id --group --name)"
+
+  shopt -q nullglob && nullglob_was_set=1
+  shopt -s nullglob
+
+  for folder_item in "$@"; do
+    case "$folder_item" in
+      /etc/*|/usr/local/etc/*)
+        trusted_user='root'
+        trusted_group='root'
+        ;;
+      "$HOME"/*)
+        trusted_user="$invoking_user"
+        trusted_group="$invoking_group"
+        ;;
+      *)
+        source_config_error "Unsupported config directory '$folder_item'."
+        break
+        ;;
+    esac
+
+    if [ ! -d "$folder_item" ]; then
+      source_config_error "Config directory '$folder_item' does not exist or is not a directory."
+      break
+    fi
+
+    if ! source_config_read_stat "$folder_item" dir_user dir_group dir_perms; then
+      source_config_error "Could not stat config directory '$folder_item'."
+      break
+    fi
+
+    if [ "$dir_user" != "$trusted_user" ]; then
+      source_config_error "Config directory '$folder_item' has unexpected owner '$dir_user'."
+      break
+    fi
+
+    if [ "$dir_group" != "$trusted_group" ]; then
+      source_config_error "Config directory '$folder_item' has unexpected group '$dir_group'."
+      break
+    fi
+
+    case "$dir_perms" in
+      *2|*3|*6|*7)
+        source_config_error "Config directory '$folder_item' is world-writable."
+        break
+        ;;
+    esac
+
+    for file_name in "$folder_item"/*.conf; do
+      if ! source_config_read_stat "$file_name" file_user file_group file_perms; then
+        source_config_error "Could not stat '$file_name'."
+        break 2
+      fi
+
+      if [ "$file_user" != "$trusted_user" ]; then
+        source_config_error "Configuration file '$file_name' has unexpected owner '$file_user'."
+        break 2
+      fi
+
+      if [ "$file_group" != "$trusted_group" ]; then
+        source_config_error "Configuration file '$file_name' has unexpected group '$file_group'."
+        break 2
+      fi
+
+      case "$file_perms" in
+        *2|*3|*6|*7)
+          source_config_error "Configuration file '$file_name' is world-writable."
+          break 2
+          ;;
+      esac
+
+      if ! bash -n -- "$file_name"; then
+        source_config_error "Syntax check failed: '$file_name'."
+        break 2
+      fi
+
+      # shellcheck disable=SC1090
+      if ! source "$file_name"; then
+        source_config_error "Failed to source '$file_name'."
+        break 2
+      fi
+    done
+  done
+
+  if [ "$nullglob_was_set" -eq 0 ]; then
+    shopt -u nullglob
+  fi
+
+  return "$rc"
+}
