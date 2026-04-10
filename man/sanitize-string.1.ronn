@@ -1,0 +1,82 @@
+sanitize-string(1) -- Strip markup and control characters from a string
+========================================================================
+
+<!--
+# Copyright (C) 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+
+`sanitize-string [--help] max_length [string]`
+
+## DESCRIPTION
+
+`sanitize-string` combines the functionality of `strip-markup`(1) and
+`stdisplay`(1) to fully sanitize an untrusted string by removing both
+HTML markup tags and dangerous terminal control characters (such as ANSI
+escape sequences). The result can be safely displayed in a terminal or
+used in non-HTML text contexts.
+
+If a string is provided as the second positional argument, it is used
+as the input. Otherwise, the string is read from standard input.
+
+The `max_length` argument specifies the maximum number of characters to
+output. Set it to `nolimit` to allow arbitrarily long strings. When a
+limit is set, the output is truncated to that many characters.
+
+### Sanitization order
+
+Sanitization is performed in three steps:
+
+1. Strip ANSI escape sequences and control characters (via `stdisplay`).
+2. Strip HTML markup tags (via `strip-markup`).
+3. Strip ANSI escape sequences and control characters again, in case
+   the markup stripping step decoded HTML entities into escape
+   characters.
+
+This ordering ensures that neither markup nor escape sequences can be
+used to smuggle the other past the sanitizer.
+
+## RETURN VALUES
+
+* `0` Successfully sanitized and printed the result.
+* `1` Usage error (missing or invalid arguments).
+
+## EXAMPLES
+
+Sanitize a string with no length limit:
+
+<code>
+sanitize-string nolimit '&lt;b&gt;Hello&lt;/b&gt;'
+</code>
+
+Output: `Hello`
+
+Sanitize and truncate to 10 characters:
+
+<code>
+sanitize-string 10 'This is a long untrusted string.'
+</code>
+
+Output: `This is a `
+
+Sanitize from standard input:
+
+<code>
+echo '&lt;script&gt;alert(1)&lt;/script&gt;' | sanitize-string nolimit
+</code>
+
+Use `--` to separate options from positional arguments:
+
+<code>
+sanitize-string -- nolimit '--help'
+</code>
+
+## SEE ALSO
+
+strip-markup(1), stdisplay(1)
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).
