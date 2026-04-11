@@ -41,6 +41,18 @@
 ##   it would require write access to the trusted configuration directory or file
 ##   path, which would already violate the trust assumptions and imply a system
 ##   or account compromise.
+## - Core utilities and environment used to reach them are part of the trust
+##   boundary. In particular, `id`, `env`, `stat`, `bash`, and the environment
+##   variables `PATH` and `HOME` are trusted. If an attacker could control these
+##   in a relevant way, the system or account would already be considered
+##   compromised under this security model.
+## - This implementation intentionally relies on Bash dynamic scoping in helper
+##   functions:
+##   * `source_config_error` sets the caller's local `rc`;
+##   * `source_config_get_expected_owner_group` reads the caller's local
+##     `invoking_user` and `invoking_group`.
+##   This is intentional and part of the implementation contract of these helper
+##   functions. They are not designed as fully self-contained pure functions.
 ##
 ## Expected ownership / permissions:
 ##
@@ -59,11 +71,13 @@
 ## - The ownership / permission checks are defense-in-depth and help catch
 ##   packaging or administration mistakes.
 ## - They do not change the fundamental trust requirement: sourced files are
-##   executable shell code
+##   executable shell code.
 ## - Non-existing configuration folders are allowed.
+## - Existing paths that are not directories are rejected.
 
 source_config_error() {
   printf '%s\n' "$0: ERROR: $1" >&2
+  ## Relies on Bash dynamic scoping to update source_config()'s local rc.
   rc=1
 }
 
@@ -72,11 +86,14 @@ source_config_read_stat() {
   local -n out_user="$2"
   local -n out_group="$3"
   local -n out_perms="$4"
+  local stat_output
 
   ## Quote 'stat' man page:
-  ## > Due to shell aliases and built-in stat functions, using an unadorned stat interactively or in a script may get you different functionality than that described here. Invoke it via env (i.e., env stat ...) to avoid interference from the shell.
+  ## > Due to shell aliases and built-in stat functions, using an unadorned stat
+  ## > interactively or in a script may get you different functionality than
+  ## > that described here. Invoke it via env (i.e., env stat ...) to avoid
+  ## > interference from the shell.
   stat_output="$(env LC_ALL=C stat -L --format '%U %G %a' -- "$stat_path" 2>/dev/null)" || return 1
-  # shellcheck disable=SC2034
   read -r out_user out_group out_perms <<< "$stat_output" || return 1
 
   return 0
@@ -96,6 +113,7 @@ source_config_get_expected_owner_group() {
     user)
       case "$path_to_check" in
         "$HOME"|"$HOME"/*)
+          ## Relies on Bash dynamic scoping to read source_config()'s locals.
           out_user="$invoking_user"
           out_group="$invoking_group"
           ;;
@@ -119,9 +137,13 @@ source_config_check_directory() {
   local expected_group="$3"
   local actual_user actual_group actual_perms
 
-  if [ ! -d "$directory_path" ]; then
-    true "Config directory '$directory_path' does not exist or is not a directory."
+  if [ ! -e "$directory_path" ]; then
     return 0
+  fi
+
+  if [ ! -d "$directory_path" ]; then
+    source_config_error "Config path '$directory_path' exists but is not a directory."
+    return 1
   fi
 
   if ! source_config_read_stat "$directory_path" actual_user actual_group actual_perms; then
@@ -205,9 +227,8 @@ source_config() {
   local nullglob_was_set=0
   local trusted_user trusted_group
   local invoking_user invoking_group
-  local stat_output
   local config_kind
-  ## Dynamic scoping.
+  ## Dynamic scoping: source_config_error() updates this local variable.
   local rc=0
 
   invoking_user="$(id --user --name)"
