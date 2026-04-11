@@ -1,3 +1,117 @@
+commit 45fc6dd48476ccaeb4f1d0a08921b466bf7c950b
+Merge: 025da60 4e0193f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 06:35:28 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/audit-helper-scripts-security-nGGkn'
+
+commit 4e0193f0b814b57e46655270ddc24446aee5285b
+Author: Claude <noreply@anthropic.com>
+Date:   Sat Apr 11 10:30:23 2026 +0000
+
+    source_config: revert to space-delimited stat, document delimiter tradeoffs
+    
+    NUL-delimited parsing required process substitution which discards
+    stat's exit status.  Since spaces in usernames are equally impractical
+    as other candidate delimiters (newline, colon), keep the simpler
+    space-delimited approach with proper exit-status handling and document
+    the alternatives considered.
+    
+    https://claude.ai/code/session_01PzQizFukc2xgQMLJmZNWM7
+
+commit d80197dccef8ab27ec19c084181d64c33cb98efa
+Author: Claude <noreply@anthropic.com>
+Date:   Sat Apr 11 10:19:18 2026 +0000
+
+    source_config: use NUL-delimited stat output to handle spaces in names
+    
+    The previous space-delimited parsing of stat output would mis-split
+    fields if a username or group name contained spaces (e.g. "Domain
+    Users").  Switch to NUL-delimited output with readarray -d '' to parse
+    each field unambiguously.
+    
+    Uses --printf instead of --format to suppress the trailing newline that
+    GNU stat appends with --format.  Requires bash 4.4+ for readarray -d
+    (the script already requires 4.3+ for namerefs).
+    
+    https://claude.ai/code/session_01PzQizFukc2xgQMLJmZNWM7
+
+commit 0ac93c2d83847dfbe649761e64a3e30cd2aad5eb
+Author: Claude <noreply@anthropic.com>
+Date:   Sat Apr 11 10:13:27 2026 +0000
+
+    source_config: reject group-writable directories
+    
+    Directories have stricter writability requirements than files because
+    write permission on a directory allows creating, deleting, and renaming
+    entries.  A group-writable config directory could allow group members to
+    remove or replace legitimate config files (DoS), even though the
+    file-level ownership check prevents sourcing attacker-owned files.
+    
+    Check the second-to-last octal digit (group permission) for the write
+    bit using the pattern *[2367]?, and report the mode in error messages
+    for both group-writable and world-writable rejections.
+    
+    https://claude.ai/code/session_01PzQizFukc2xgQMLJmZNWM7
+
+commit 18f901e3e4365ac10b2863bf499a9aed3ce864de
+Author: Claude <noreply@anthropic.com>
+Date:   Sat Apr 11 10:05:50 2026 +0000
+
+    source_config: prefix internal locals with _ to avoid nameref collisions
+    
+    Use the leading underscore convention for all local variables in
+    functions that use namerefs (source_config_read_stat,
+    source_config_resolve_path, source_config_get_expected_owner_group).
+    This prevents circular reference bugs if a caller passes a variable
+    name that would otherwise collide with an internal local.
+    
+    https://claude.ai/code/session_017p3uYYzFmLbmQuHNhRRF7B
+
+commit 93a6c704a3d0a1829087884f1cf22ed9127d9149
+Author: Claude <noreply@anthropic.com>
+Date:   Sat Apr 11 10:04:11 2026 +0000
+
+    source_config: use explicit return 1 for early id failures
+    
+    The source_config_error call already sets rc=1 via dynamic scoping,
+    so return "$rc" works but is needlessly indirect. Use return 1 for
+    clarity since we are returning immediately after the error.
+    
+    https://claude.ai/code/session_017p3uYYzFmLbmQuHNhRRF7B
+
+commit b7994ffa787829eace08705c2bb03d3cae8f9c0e
+Author: Claude <noreply@anthropic.com>
+Date:   Sat Apr 11 10:02:02 2026 +0000
+
+    source_config: relax allowed system paths, check HOME only for user dirs
+    
+    Accept /run/* and /usr/* as system config directories (e.g.
+    /usr/lib/systemcheck.d). Move the HOME validation inside the
+    "$HOME"/* case branch so unset/empty HOME is only an error when
+    a per-user directory is actually requested.
+    
+    https://claude.ai/code/session_017p3uYYzFmLbmQuHNhRRF7B
+
+commit 23f6b2cc79d89505fa6a7424f46712528022d5d1
+Author: Claude <noreply@anthropic.com>
+Date:   Sat Apr 11 09:52:32 2026 +0000
+
+    source_config: validate HOME and handle id failure
+    
+    Guard against empty/unset HOME which would cause the case pattern
+    "$HOME"/* to degrade to /* and silently accept any absolute path as a
+    per-user config directory. Also fail early if id --user/--group cannot
+    determine the invoking user or group.
+    
+    https://claude.ai/code/session_017p3uYYzFmLbmQuHNhRRF7B
+
+commit 025da601ca4541dd0ec71376901147e16d783503
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 08:32:13 2026 +0000
+
+    bumped changelog version
+
 commit c8193c7b47ce450e47b8963aa668626bd42e7406
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Apr 11 03:31:49 2026 -0400
