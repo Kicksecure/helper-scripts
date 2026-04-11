@@ -76,13 +76,15 @@
 ##
 ## Expected ownership / permissions:
 ##
-## 1) System configuration directories, such as /etc/... or /usr/local/etc/...
+## 1) System configuration directories, such as /etc/..., /run/..., or /usr/...
 ##    - directories and files should be owned by user root and group root
+##    - directories must not be group-writable or world-writable
 ##    - files must not be writable by "others"
 ##    - group-writable files are acceptable only when the file group is root
 ##
 ## 2) Per-user configuration directories, such as ~/...
 ##    - directories and files should be owned by the invoking user
+##    - directories must not be group-writable or world-writable
 ##    - files must not be writable by "others"
 ##    - group-writable files are acceptable only when the file group matches the
 ##      invoking process's current effective group
@@ -106,55 +108,65 @@ source_config_error() {
 }
 
 source_config_read_stat() {
-  local stat_path="$1"
-  local -n out_user="$2"
-  local -n out_group="$3"
-  local -n out_perms="$4"
-  local stat_output
+  local _path="$1"
+  local -n _out_user="$2"
+  local -n _out_group="$3"
+  local -n _out_perms="$4"
+  local _output
 
   ## Quote 'stat' man page:
   ## > Due to shell aliases and built-in stat functions, using an unadorned stat
   ## > interactively or in a script may get you different functionality than
   ## > that described here. Invoke it via env (i.e., env stat ...) to avoid
   ## > interference from the shell.
-  stat_output="$(env LC_ALL=C stat -L --format '%U %G %a' -- "$stat_path" 2>/dev/null)" || return 1
-  read -r out_user out_group out_perms <<< "$stat_output" || return 1
+  ##
+  ## Space-delimited parsing assumes user/group names contain no spaces.
+  ## POSIX and useradd prohibit this in practice.  Alternative delimiters
+  ## were considered but each has its own drawback:
+  ##   NUL:     cannot be stored in bash variables, requiring process
+  ##            substitution which discards the stat exit status.
+  ##   newline: same practical-impossibility tier as space.
+  ##   colon:   prohibited by /etc/passwd format, but not a kernel guarantee.
+  ## The current approach is fail-closed: a space in a name would cause the
+  ## ownership comparison to fail, not to silently accept a wrong owner.
+  _output="$(env LC_ALL=C stat -L --format '%U %G %a' -- "$_path" 2>/dev/null)" || return 1
+  read -r _out_user _out_group _out_perms <<< "$_output" || return 1
 
   return 0
 }
 
 source_config_resolve_path() {
-  local input_path="$1"
-  local -n out_resolved_path="$2"
-  local resolved_path
+  local _path="$1"
+  local -n _out_resolved="$2"
+  local _resolved
 
-  resolved_path="$(env readlink -f -- "$input_path" 2>/dev/null)" || return 1
-  out_resolved_path="$resolved_path"
+  _resolved="$(env readlink -f -- "$_path" 2>/dev/null)" || return 1
+  _out_resolved="$_resolved"
 
   return 0
 }
 
 source_config_get_expected_owner_group() {
-  local path_to_check="$1"
-  local config_kind="$2"
-  local -n out_user="$3"
-  local -n out_group="$4"
+  local _path="$1"
+  local _kind="$2"
+  local -n _out_user="$3"
+  local -n _out_group="$4"
 
-  case "$config_kind" in
+  case "$_kind" in
     system)
-      out_user='root'
-      out_group='root'
+      _out_user='root'
+      _out_group='root'
       ;;
     user)
-      case "$path_to_check" in
+      case "$_path" in
         "$HOME"|"$HOME"/*)
           ## Relies on Bash dynamic scoping to read source_config()'s locals.
-          out_user="$invoking_user"
-          out_group="$invoking_group"
+          _out_user="$invoking_user"
+          _out_group="$invoking_group"
           ;;
         *)
-          out_user='root'
-          out_group='root'
+          _out_user='root'
+          _out_group='root'
           ;;
       esac
       ;;
@@ -199,8 +211,12 @@ source_config_check_directory() {
   fi
 
   case "$actual_perms" in
+    *[2367]?)
+      source_config_error "Config directory '$directory_path' is group-writable (mode $actual_perms)."
+      return 1
+      ;;
     *2|*3|*6|*7)
-      source_config_error "Config directory '$directory_path' is world-writable."
+      source_config_error "Config directory '$directory_path' is world-writable (mode $actual_perms)."
       return 1
       ;;
   esac
@@ -314,8 +330,14 @@ source_config() {
   ## Dynamic scoping: source_config_error() updates this local variable.
   local rc=0
 
-  invoking_user="$(id --user --name)"
-  invoking_group="$(id --group --name)"
+  invoking_user="$(id --user --name)" || {
+    source_config_error "Could not determine invoking user."
+    return 1
+  }
+  invoking_group="$(id --group --name)" || {
+    source_config_error "Could not determine invoking group."
+    return 1
+  }
 
   shopt -q nullglob && nullglob_was_set=1
   shopt -s nullglob
@@ -333,12 +355,20 @@ source_config() {
     esac
 
     case "$folder_item" in
-      /etc/*|/usr/local/etc/*)
+      /etc/*|/run/*|/usr/*)
         trusted_user='root'
         trusted_group='root'
         config_kind='system'
         ;;
       "$HOME"/*)
+        case "$HOME" in
+          /*)
+            ;;
+          *)
+            source_config_error "HOME is not set to an absolute path."
+            break
+            ;;
+        esac
         trusted_user="$invoking_user"
         trusted_group="$invoking_group"
         config_kind='user'
