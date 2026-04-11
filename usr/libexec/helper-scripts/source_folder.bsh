@@ -138,6 +138,7 @@ source_config_check_directory() {
   local actual_user actual_group actual_perms
 
   if [ ! -e "$directory_path" ]; then
+    true "$0: Config path '$directory_path' does not exist, skipping."
     return 0
   fi
 
