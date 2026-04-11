@@ -1,3 +1,80 @@
+commit c8193c7b47ce450e47b8963aa668626bd42e7406
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 03:31:49 2026 -0400
+
+    comments
+
+commit 63035d3a28433704b526026f1200cec120d606d1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 01:59:39 2026 -0400
+
+    improve
+
+commit 99eaa8967e6b0eca6c1444d2daa391b6cfbbb017
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 01:40:21 2026 -0400
+
+    output
+
+commit c287d46e1facb831be6422f1aa564e5de1c297f4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 01:39:02 2026 -0400
+
+    improve
+
+commit e014152fa25d7380adc10221fa5c3234de311063
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 10 15:17:58 2026 -0400
+
+    improve
+
+commit bd514cfc3434626a69d3b8a799dd6d82a80411b0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 10 15:11:14 2026 -0400
+
+    fix
+
+commit 0cf51ff86a1effc9aaa8b927db69228bf681465c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 10 15:07:46 2026 -0400
+
+    allow `%` in `validate_safe_filename` since it is safe
+
+commit 4c5351819796cad91f71d25de138bc8da0a361a2
+Merge: 1f39607 97e827e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 10 14:56:56 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/audit-strings-security-5OfGw'
+
+commit 97e827ef51bb4082e7ae9a7289abd440d0b76655
+Author: Claude <noreply@anthropic.com>
+Date:   Fri Apr 10 18:42:38 2026 +0000
+
+    fix: security hardening and documentation for strings.bsh
+    
+    Fix command injection via eval in run_test() by replacing with printf -v.
+    Fix non-local variables (trimmed_value, lines) leaking from
+    check_is_not_empty_and_only_one_line().
+    Add is_whole_number validation to random_alpha_numeric().
+    Document: br_add is not HTML sanitization (use strip-markup/sanitize-string),
+    /dev/random is intentional (kicksecure entropy policy), and sourcing scripts
+    must set errexit.
+    
+    https://claude.ai/code/session_01UhL4rn3tUTBrnMHeyh3WJc
+
+commit 1f3960758c2cff6fb9ba5261eb8df5438392530a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 10 14:46:20 2026 -0400
+
+    add usr/libexec/helper-scripts/source_folder.bsh
+
+commit 54400da7195c766bbbd68757c8f0d6abb8b7a068
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 9 11:56:21 2026 +0000
+
+    bumped changelog version
+
 commit 04279d91616398245636a1d96c55c6c19d64f4bf
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 9 05:45:32 2026 -0400
