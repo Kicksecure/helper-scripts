@@ -76,7 +76,7 @@
 ##
 ## Expected ownership / permissions:
 ##
-## 1) System configuration directories, such as /etc/... or /usr/local/etc/...
+## 1) System configuration directories, such as /etc/..., /run/..., or /usr/...
 ##    - directories and files should be owned by user root and group root
 ##    - files must not be writable by "others"
 ##    - group-writable files are acceptable only when the file group is root
@@ -323,15 +323,6 @@ source_config() {
     return "$rc"
   }
 
-  case "$HOME" in
-    /*)
-      ;;
-    *)
-      source_config_error "HOME is not set to an absolute path."
-      return "$rc"
-      ;;
-  esac
-
   shopt -q nullglob && nullglob_was_set=1
   shopt -s nullglob
 
@@ -348,12 +339,20 @@ source_config() {
     esac
 
     case "$folder_item" in
-      /etc/*|/usr/local/etc/*)
+      /etc/*|/run/*|/usr/*)
         trusted_user='root'
         trusted_group='root'
         config_kind='system'
         ;;
       "$HOME"/*)
+        case "$HOME" in
+          /*)
+            ;;
+          *)
+            source_config_error "HOME is not set to an absolute path."
+            break
+            ;;
+        esac
         trusted_user="$invoking_user"
         trusted_group="$invoking_group"
         config_kind='user'
