@@ -112,15 +112,21 @@ source_config_read_stat() {
   local -n _out_user="$2"
   local -n _out_group="$3"
   local -n _out_perms="$4"
-  local _output
+  local -a _fields
 
   ## Quote 'stat' man page:
   ## > Due to shell aliases and built-in stat functions, using an unadorned stat
   ## > interactively or in a script may get you different functionality than
   ## > that described here. Invoke it via env (i.e., env stat ...) to avoid
   ## > interference from the shell.
-  _output="$(env LC_ALL=C stat -L --format '%U %G %a' -- "$_path" 2>/dev/null)" || return 1
-  read -r _out_user _out_group _out_perms <<< "$_output" || return 1
+  ## NUL-delimited output avoids mis-parsing user/group names that contain spaces.
+  ## --printf (not --format) is used to suppress the trailing newline.
+  readarray -t -d '' _fields \
+    < <(env LC_ALL=C stat -L --printf $'%U\0%G\0%a\0' -- "$_path" 2>/dev/null) || return 1
+  [ "${#_fields[@]}" -eq 3 ] || return 1
+  _out_user="${_fields[0]}"
+  _out_group="${_fields[1]}"
+  _out_perms="${_fields[2]}"
 
   return 0
 }
