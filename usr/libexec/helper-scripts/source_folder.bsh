@@ -20,17 +20,23 @@
 ##   allowed by this security model.
 ## - Ownership, group, and permission checks apply to the resolved target as
 ##   reported by `stat`.
-## - The caller is trusted to pass the intended configuration directories.
+## - Parent directories along the provided path are checked as defense in depth.
+## - For symlinked configuration directories, the resolved target directory
+##   hierarchy is also checked as defense in depth.
+## - For symlinked configuration files, the resolved target file's parent
+##   directory hierarchy is also checked as defense in depth.
 ## - Supported-directory checks are based on the pathname provided by the caller.
-##   They are not intended to be canonical containment checks after resolving all
-##   symlinks.
+##   Additional checks on resolved symlink targets are defense in depth. They are
+##   not intended to be canonical supported-directory containment checks after
+##   resolving all symlinks.
+## - The caller is trusted to pass the intended configuration directories.
 ## - "Trusted" in this context means:
 ##   * the directory hierarchy is only writable by the trusted owner or an
 ##     equivalently trusted authority such as root;
 ##   * ownership and permissions are administered as intended;
 ##   * the filesystem and mount context are trusted to enforce Unix ownership and
 ##     permission semantics correctly.
-## - Parent directories along the provided path are checked as defense in depth.
+## - Parent directories are checked as defense in depth.
 ##   For per-user paths, directories above `$HOME` are expected to be
 ##   administered by root, while `$HOME` and directories below it are expected to
 ##   be administered by the invoking user and that user's trusted private primary
@@ -41,11 +47,15 @@
 ##   it would require write access to the trusted configuration directory or file
 ##   path, which would already violate the trust assumptions and imply a system
 ##   or account compromise.
+## - ACLs and other non-mode permission mechanisms are intentionally not
+##   considered. This function checks classic Unix ownership and mode bits only.
+##   Users deploying such mechanisms are expected to understand and administer
+##   them appropriately within this trust model.
 ## - Core utilities and environment used to reach them are part of the trust
-##   boundary. In particular, `id`, `env`, `stat`, `bash`, and the environment
-##   variables `PATH` and `HOME` are trusted. If an attacker could control these
-##   in a relevant way, the system or account would already be considered
-##   compromised under this security model.
+##   boundary. In particular, `id`, `env`, `stat`, `readlink`, `bash`, and the
+##   environment variables `PATH` and `HOME` are trusted. If an attacker could
+##   control these in a relevant way, the system or account would already be
+##   considered compromised under this security model.
 ## - This implementation intentionally relies on Bash dynamic scoping in helper
 ##   functions:
 ##   * `source_config_error` sets the caller's local `rc`;
@@ -72,6 +82,10 @@
 ##   packaging or administration mistakes.
 ## - They do not change the fundamental trust requirement: sourced files are
 ##   executable shell code.
+## - `bash -n` is used as a simple syntax check before `source`.
+##   It is not a security boundary.
+## - The `true "..."` pattern is intentionally used for optional debug text under
+##   xtrace (`set -x`).
 ## - Non-existing configuration folders are allowed.
 ## - Existing paths that are not directories are rejected.
 
@@ -95,6 +109,17 @@ source_config_read_stat() {
   ## > interference from the shell.
   stat_output="$(env LC_ALL=C stat -L --format '%U %G %a' -- "$stat_path" 2>/dev/null)" || return 1
   read -r out_user out_group out_perms <<< "$stat_output" || return 1
+
+  return 0
+}
+
+source_config_resolve_path() {
+  local input_path="$1"
+  local -n out_resolved_path="$2"
+  local resolved_path
+
+  resolved_path="$(env readlink -f -- "$input_path" 2>/dev/null)" || return 1
+  out_resolved_path="$resolved_path"
 
   return 0
 }
@@ -138,6 +163,7 @@ source_config_check_directory() {
   local actual_user actual_group actual_perms
 
   if [ ! -e "$directory_path" ]; then
+    ## Intentionally written this way so the message is visible under xtrace.
     true "$0: Config path '$directory_path' does not exist, skipping."
     return 0
   fi
@@ -172,14 +198,14 @@ source_config_check_directory() {
   return 0
 }
 
-source_config_check_directory_hierarchy() {
-  local target_directory="$1"
+source_config_check_path_chain() {
+  local target_path="$1"
   local config_kind="$2"
   local current_path parent_path expected_user expected_group
   local path_index
   local -a path_chain
 
-  current_path="$target_directory"
+  current_path="$target_path"
 
   while :; do
     path_chain+=("$current_path")
@@ -218,6 +244,52 @@ source_config_check_directory_hierarchy() {
       return 1
     fi
   done
+
+  return 0
+}
+
+source_config_check_directory_hierarchy() {
+  local target_directory="$1"
+  local config_kind="$2"
+  local resolved_directory
+
+  if ! source_config_check_path_chain "$target_directory" "$config_kind"; then
+    return 1
+  fi
+
+  if ! source_config_resolve_path "$target_directory" resolved_directory; then
+    source_config_error "Could not resolve config directory '$target_directory'."
+    return 1
+  fi
+
+  if [ "$resolved_directory" != "$target_directory" ]; then
+    if ! source_config_check_path_chain "$resolved_directory" "$config_kind"; then
+      return 1
+    fi
+  fi
+
+  return 0
+}
+
+source_config_check_resolved_file_parent_hierarchy() {
+  local file_path="$1"
+  local config_kind="$2"
+  local resolved_file resolved_parent
+
+  if ! source_config_resolve_path "$file_path" resolved_file; then
+    source_config_error "Could not resolve configuration file '$file_path'."
+    return 1
+  fi
+
+  resolved_parent="${resolved_file%/*}"
+
+  if [ -z "$resolved_parent" ]; then
+    resolved_parent='/'
+  fi
+
+  if ! source_config_check_path_chain "$resolved_parent" "$config_kind"; then
+    return 1
+  fi
 
   return 0
 }
@@ -277,6 +349,10 @@ source_config() {
         break 2
       fi
 
+      if ! source_config_check_resolved_file_parent_hierarchy "$file_name" "$config_kind"; then
+        break 2
+      fi
+
       if ! source_config_read_stat "$file_name" file_user file_group file_perms; then
         source_config_error "Could not stat '$file_name'."
         break 2
@@ -299,6 +375,7 @@ source_config() {
           ;;
       esac
 
+      ## Simple syntax check.
       if ! bash -n -- "$file_name"; then
         source_config_error "Syntax check failed: '$file_name'."
         break 2
