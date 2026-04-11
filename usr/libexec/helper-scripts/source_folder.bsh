@@ -78,11 +78,13 @@
 ##
 ## 1) System configuration directories, such as /etc/..., /run/..., or /usr/...
 ##    - directories and files should be owned by user root and group root
+##    - directories must not be group-writable or world-writable
 ##    - files must not be writable by "others"
 ##    - group-writable files are acceptable only when the file group is root
 ##
 ## 2) Per-user configuration directories, such as ~/...
 ##    - directories and files should be owned by the invoking user
+##    - directories must not be group-writable or world-writable
 ##    - files must not be writable by "others"
 ##    - group-writable files are acceptable only when the file group matches the
 ##      invoking process's current effective group
@@ -199,8 +201,12 @@ source_config_check_directory() {
   fi
 
   case "$actual_perms" in
+    *[2367]?)
+      source_config_error "Config directory '$directory_path' is group-writable (mode $actual_perms)."
+      return 1
+      ;;
     *2|*3|*6|*7)
-      source_config_error "Config directory '$directory_path' is world-writable."
+      source_config_error "Config directory '$directory_path' is world-writable (mode $actual_perms)."
       return 1
       ;;
   esac
