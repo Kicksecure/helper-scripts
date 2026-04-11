@@ -314,8 +314,23 @@ source_config() {
   ## Dynamic scoping: source_config_error() updates this local variable.
   local rc=0
 
-  invoking_user="$(id --user --name)"
-  invoking_group="$(id --group --name)"
+  invoking_user="$(id --user --name)" || {
+    source_config_error "Could not determine invoking user."
+    return "$rc"
+  }
+  invoking_group="$(id --group --name)" || {
+    source_config_error "Could not determine invoking group."
+    return "$rc"
+  }
+
+  case "$HOME" in
+    /*)
+      ;;
+    *)
+      source_config_error "HOME is not set to an absolute path."
+      return "$rc"
+      ;;
+  esac
 
   shopt -q nullglob && nullglob_was_set=1
   shopt -s nullglob
