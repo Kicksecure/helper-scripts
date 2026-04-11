@@ -112,21 +112,25 @@ source_config_read_stat() {
   local -n _out_user="$2"
   local -n _out_group="$3"
   local -n _out_perms="$4"
-  local -a _fields
+  local _output
 
   ## Quote 'stat' man page:
   ## > Due to shell aliases and built-in stat functions, using an unadorned stat
   ## > interactively or in a script may get you different functionality than
   ## > that described here. Invoke it via env (i.e., env stat ...) to avoid
   ## > interference from the shell.
-  ## NUL-delimited output avoids mis-parsing user/group names that contain spaces.
-  ## --printf (not --format) is used to suppress the trailing newline.
-  readarray -t -d '' _fields \
-    < <(env LC_ALL=C stat -L --printf $'%U\0%G\0%a\0' -- "$_path" 2>/dev/null) || return 1
-  [ "${#_fields[@]}" -eq 3 ] || return 1
-  _out_user="${_fields[0]}"
-  _out_group="${_fields[1]}"
-  _out_perms="${_fields[2]}"
+  ##
+  ## Space-delimited parsing assumes user/group names contain no spaces.
+  ## POSIX and useradd prohibit this in practice.  Alternative delimiters
+  ## were considered but each has its own drawback:
+  ##   NUL:     cannot be stored in bash variables, requiring process
+  ##            substitution which discards the stat exit status.
+  ##   newline: same practical-impossibility tier as space.
+  ##   colon:   prohibited by /etc/passwd format, but not a kernel guarantee.
+  ## The current approach is fail-closed: a space in a name would cause the
+  ## ownership comparison to fail, not to silently accept a wrong owner.
+  _output="$(env LC_ALL=C stat -L --format '%U %G %a' -- "$_path" 2>/dev/null)" || return 1
+  read -r _out_user _out_group _out_perms <<< "$_output" || return 1
 
   return 0
 }
