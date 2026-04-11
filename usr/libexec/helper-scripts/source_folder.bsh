@@ -316,11 +316,11 @@ source_config() {
 
   invoking_user="$(id --user --name)" || {
     source_config_error "Could not determine invoking user."
-    return "$rc"
+    return 1
   }
   invoking_group="$(id --group --name)" || {
     source_config_error "Could not determine invoking group."
-    return "$rc"
+    return 1
   }
 
   shopt -q nullglob && nullglob_was_set=1
