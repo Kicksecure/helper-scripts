@@ -14,8 +14,11 @@
 ## - Therefore, it MUST only be used with trusted configuration directories on a
 ##   trusted filesystem.
 ## - This function is not a parser for untrusted data.
-## - For per-user configuration directories, the invoking user's primary group is
-##   assumed to be a trusted private group containing only that user.
+## - For per-user configuration directories, the invoking process's current
+##   effective group is assumed to be trusted for that configuration context.
+##   In the common case, this is expected to be the user's private group, but
+##   this function intentionally follows the current effective group as reported
+##   by `id --group --name`.
 ## - Symlinked configuration directories and symlinked configuration files are
 ##   allowed by this security model.
 ## - Ownership, group, and permission checks apply to the resolved target as
@@ -29,6 +32,12 @@
 ##   Additional checks on resolved symlink targets are defense in depth. They are
 ##   not intended to be canonical supported-directory containment checks after
 ##   resolving all symlinks.
+## - For per-user configuration paths, expected ownership for resolved symlink
+##   targets is still derived from the resolved pathname being checked.
+##   Therefore, if a per-user configuration symlink resolves to a path outside
+##   the literal `$HOME` pathname prefix, the resolved target hierarchy is
+##   expected to be owned by `root:root` and may be rejected even if it is
+##   user-owned. This stricter behavior is accepted as defense in depth.
 ## - The caller is trusted to pass the intended configuration directories.
 ## - "Trusted" in this context means:
 ##   * the directory hierarchy is only writable by the trusted owner or an
@@ -38,9 +47,9 @@
 ##     permission semantics correctly.
 ## - Parent directories are checked as defense in depth.
 ##   For per-user paths, directories above `$HOME` are expected to be
-##   administered by root, while `$HOME` and directories below it are expected to
-##   be administered by the invoking user and that user's trusted private primary
-##   group.
+##   administered by root, while `$HOME` and directories below it are expected
+##   to be administered by the invoking user and the invoking process's current
+##   effective group.
 ## - This function performs pathname-based checks before sourcing files.
 ##   A time-of-check/time-of-use race condition remains possible in principle.
 ## - Within this security model, that limitation is accepted because exploiting
@@ -60,7 +69,8 @@
 ##   functions:
 ##   * `source_config_error` sets the caller's local `rc`;
 ##   * `source_config_get_expected_owner_group` reads the caller's local
-##     `invoking_user` and `invoking_group`.
+##     `invoking_user` and `invoking_group` values, where `invoking_group`
+##     reflects the current effective group selected by this implementation.
 ##   This is intentional and part of the implementation contract of these helper
 ##   functions. They are not designed as fully self-contained pure functions.
 ##
@@ -74,8 +84,8 @@
 ## 2) Per-user configuration directories, such as ~/...
 ##    - directories and files should be owned by the invoking user
 ##    - files must not be writable by "others"
-##    - group-writable files are acceptable only when the file group is a
-##      trusted private group of that same user
+##    - group-writable files are acceptable only when the file group matches the
+##      invoking process's current effective group
 ##
 ## Notes:
 ## - The ownership / permission checks are defense-in-depth and help catch
