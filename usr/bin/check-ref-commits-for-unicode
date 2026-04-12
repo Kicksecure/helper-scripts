@@ -11,6 +11,8 @@ set -o pipefail
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
 source /usr/libexec/helper-scripts/log_run_die.sh
 
+log_level=info
+
 check_ref_commits_for_unicode() {
   local target_ref commit_list commit commit_diff unicode_report \
     unicode_show_exit_code found_malicious_unicode
@@ -61,14 +63,14 @@ check_ref_commits_for_unicode() {
       printf '%s\n' "${unicode_report:-'No stdout or stderr from unicode-show!'}"
       found_malicious_unicode='true'
     else
-      log notice "No potentially malicious unicode detected in commit '${commit}'."
+      log info "No unicode detected in commit '${commit}'."
     fi
   done
 
   if [ "${found_malicious_unicode}" = 'true' ]; then
     die 1 'Potentially malicious unicode detected!'
   fi
-  log notice 'No potentially malicious unicode detected.'
+  log notice 'No unicode detected.'
 }
 
 check_ref_commits_for_unicode "$@"
