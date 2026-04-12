@@ -1,0 +1,78 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
+run_plugin_command() {
+  local plugin_cmd plugin_args plugin_exit_code
+
+  plugin_cmd="$1"
+  shift
+  plugin_args=( "$@" )
+  plugin_exit_code='0'
+
+  if (( ${#plugin_args[@]} == 0 )); then
+    ## captured_stdin inherited from text_safety_scan function.
+    "${plugin_cmd}" < "${captured_stdin_file}" || plugin_exit_code="$?"
+  else
+    "${plugin_cmd}" "${plugin_args[@]}" || plugin_exit_code="$?"
+  fi
+
+  ## exit_code inherited from text_safety_scan function.
+  if (( plugin_exit_code > exit_code )); then
+    exit_code="${plugin_exit_code}"
+  fi
+}
+
+cleanup() {
+  trap - ERR EXIT INT TERM HUP QUIT
+  ## captured_stdin_file is inherited from text_safety_scan function.
+  safe-rm -f -- "${captured_stdin_file}"
+}
+
+text_safety_scan() {
+  local file_list captured_stdin_file file exit_code plugin_list plugin
+
+  file_list=( "$@" )
+  exit_code='0'
+  plugin_list=( 'unicode-show' 'modeline-show' )
+
+  if (( ${#file_list[@]} == 0 )); then
+    if ! [ -e '/proc/self/fd/0' ]; then
+      die 1 'stdin is not open!'
+    fi
+    ## Using a temp file rather than capturing to a variable because Bash will
+    ## strip trailing newlines from captured text, potentially distorting the
+    ## results of the check.
+    if ! captured_stdin_file="$(mktemp)"; then
+      die 1 'Could not create temporary file for capturing stdin!'
+    fi
+    trap 'cleanup' ERR EXIT INT TERM HUP QUIT
+
+    cat > "${captured_stdin_file}"
+
+    for plugin in "${plugin_list[@]}"; do
+      run_plugin_command "${plugin}"
+    done
+
+    cleanup
+  else
+    for file in "${file_list[@]}"; do
+      for plugin in "${plugin_list[@]}"; do
+        run_plugin_command "${plugin}" "${file}"
+      done
+    done
+  fi
+
+  exit "${exit_code}"
+}
+
+text_safety_scan "$@"

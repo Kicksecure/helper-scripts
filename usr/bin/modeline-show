@@ -1,0 +1,95 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
+modeline_show() {
+  local file_list grep_regex grep_command grep_exit_code grep_output file \
+    modeline_found error_hit
+
+  file_list=( "$@" )
+
+  ## The regex below should match the following modeline formats used by Vim
+  ## and Emacs:
+  ## (Ignore underscores, they are used to prevent false-positive detection by
+  ## this script and dm-check-unicode.)
+  ##
+  ## - vi_: ...
+  ## - vim_: ...
+  ## - Vim_: ...
+  ## - ex_: ... (requires a leading space)
+  ## - vim900_: ...
+  ## - vim<900_: ...
+  ## - vim=900_: ...
+  ## - vim>900_: ...
+  ## - _-*- ... _-*-
+  ## - Local _Variables:
+  ##
+  ## Regex is split to avoid false-positive self detection.
+  ##
+  ## Code duplication. Copied in
+  ## developer-meta-files/usr/bin/dm-check-unicode.
+  grep_regex='\(\(vi\|[Vv]im\([<=>]\?[0-9]\+\)\?\|[[:space:]]ex\):\|\([[:space:]]\|^\)-\*-\|Local'
+  grep_regex+=' Variables:\)'
+
+  grep_command=(
+    grep
+    --line-number
+    --binary-files=without-match
+    "${grep_regex}"
+  )
+  modeline_found='false'
+  error_hit='false'
+
+  if (( ${#file_list[@]} == 0 )); then
+    if ! [ -e '/proc/self/fd/0' ]; then
+      die 1 'stdin is not open!'
+    fi
+    grep_exit_code='0'
+    grep_output="$("${grep_command[@]}" 2>&1)" || grep_exit_code="$?"
+    if (( grep_exit_code > 1 )); then
+      log error "Error reading stdin: ${grep_output}"
+      error_hit='true'
+    elif [ -n "${grep_output}" ]; then
+      log warn 'Vim or Emacs modeline found in stdin! Details:'
+      printf '%s\n' "${grep_output}"
+      modeline_found='true'
+    fi
+  else
+    for file in "${file_list[@]}"; do
+      grep_exit_code='0'
+      grep_output="$("${grep_command[@]}" -- "${file}" 2>&1)" || grep_exit_code="$?"
+      if (( grep_exit_code > 1 )); then
+        log error "Error reading file '${file}': ${grep_output}"
+        error_hit='true'
+      elif [ -n "${grep_output}" ]; then
+        log warn "Vim or Emacs modeline found in file '${file}'! Details:"
+        printf '%s\n' "${grep_output}"
+        modeline_found='true'
+      fi
+    done
+  fi
+
+  if [ "${error_hit}" = 'true' ]; then
+    log error 'Errors encountered.'
+    exit 2
+  elif [ "${modeline_found}" = 'true' ]; then
+    log warn 'Modelines found.'
+    exit 1
+  fi
+
+  ## Do not print a message on success, to keep the UI similar to
+  ## unicode-show.
+  #log notice 'No modelines found.'
+  exit 0
+}
+
+modeline_show "$@"
