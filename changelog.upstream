@@ -1,3 +1,46 @@
+commit 563f69dbdd24e9a17d15be22a073735c97c2b7e8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 12 09:48:56 2026 -0400
+
+    fix
+
+commit f7c3b00984722c1959bbbe7272f2e31ecaaafbeb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 12 03:13:12 2026 -0400
+
+    improve error handling
+
+commit 4747aaddb8d92c5e2a5e6cacbcb84585fb1b1856
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 12 02:55:21 2026 -0400
+
+    output
+
+commit 1ad3781cf8c92e634b92dee9fb9ec9bb027fe160
+Merge: 98d7ff0 ea67ad8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 12 02:40:28 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit ea67ad836126117f649700ae510176f2c4f56ad1
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Apr 12 01:36:23 2026 -0400
+
+    Add shellcheck comment
+
+commit f685430853f7b1c7969c46f130259dc0bb4e188b
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Apr 12 01:28:39 2026 -0400
+
+    Add check-ref-commits-for-unicode script
+
+commit 98d7ff06e06cf6dcde1267a55699c3a83ee13c5d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 13:30:23 2026 +0000
+
+    bumped changelog version
+
 commit 45fc6dd48476ccaeb4f1d0a08921b466bf7c950b
 Merge: 025da60 4e0193f
 Author: Patrick Schleizer <adrelanos@whonix.org>
