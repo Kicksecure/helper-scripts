@@ -1,0 +1,74 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source /usr/libexec/helper-scripts/log_run_die.sh
+
+check_ref_commits_for_unicode() {
+  local target_ref commit_list commit commit_diff unicode_report \
+    unicode_show_exit_code found_malicious_unicode
+
+  target_ref="${1:-}"
+  if [ -z "${target_ref}" ]; then
+    die 1 'No target ref specified!'
+  fi
+
+  if ! [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = 'true' ]; then
+    die 1 'Current working directory is not inside a Git working tree!'
+  fi
+
+  if ! git rev-parse --verify "${target_ref}" >/dev/null 2>/dev/null; then
+    die 1 'Target ref does not exist!'
+  fi
+
+  readarray -t commit_list < <(git log --format=%H "HEAD..${target_ref}")
+  if [ -z "${commit_list[0]:-}" ]; then
+    die 1 'No new commits in target ref!'
+  fi
+
+  found_malicious_unicode='false'
+  for commit in "${commit_list[@]}"; do
+    ## --no-ext-diff prevents use of external diff drivers.
+    ##
+    ## --unified=0 prevents false positives from unicode-show resulting from
+    ## unmodified empty lines showing up in the diff as one (or in the case of
+    ## merge commits sometimes two) spaces.
+    ##
+    ## --no-textconv prevents text conversion filters from running.
+    ##
+    ## The commit message is intentionally included since it could contain
+    ## malicious unicode too.
+    commit_diff="$(git show \
+      --no-ext-diff \
+      --unified=0 \
+      --no-textconv \
+      --format=$'Author: %an\nAuthor email: %ae\nCommitter: %cn\nCommitter email: %ce\n%B' \
+      "${commit}")"
+    unicode_show_exit_code='0'
+    unicode_report="$(unicode-show <<< "${commit_diff}" 2>&1)" \
+      || unicode_show_exit_code="$?"
+
+    if [ -n "${unicode_report}" ] \
+      || [ "${unicode_show_exit_code}" != '0' ]; then
+      log warn "Potentially malicious unicode detected in commit '${commit}'! Details:"
+      printf '%s\n' "${unicode_report:-'No stdout or stderr from unicode-show!'}"
+      found_malicious_unicode='true'
+    else
+      log notice "No potentially malicious unicode detected in commit '${commit}'."
+    fi
+  done
+
+  if [ "${found_malicious_unicode}" = 'true' ]; then
+    die 1 'Potentially malicious unicode detected!'
+  fi
+  log notice 'No potentially malicious unicode detected.'
+}
+
+check_ref_commits_for_unicode "$@"
