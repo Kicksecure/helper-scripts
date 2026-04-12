@@ -172,7 +172,7 @@ get_distro() {
       ;;
   esac
 
-  if test "${oracle_repo:-}" = "1" && test "${kali_derivative_detected:-}"; then
+  if test "${oracle_repo:-}" = "1" && test "${kali_derivative_detected:-}" = "1"; then
     die 1 "Distribution Extended Check: Oracle repository does not work with Kali."
   fi
 
