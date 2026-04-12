@@ -435,6 +435,3 @@ source_config() {
 
   return "$rc"
 }
-
-## TODO
-source_config /etc/systemcheck.d /usr/local/etc/systemcheck.d
