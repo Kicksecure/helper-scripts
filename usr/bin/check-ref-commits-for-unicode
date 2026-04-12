@@ -14,8 +14,8 @@ source /usr/libexec/helper-scripts/log_run_die.sh
 log_level=info
 
 check_ref_commits_for_unicode() {
-  local target_ref commit_list commit commit_diff unicode_report \
-    unicode_show_exit_code found_malicious_unicode
+  local target_ref git_log_cmd git_log_output commit_list commit commit_diff \
+  unicode_report unicode_show_exit_code found_malicious_unicode
 
   target_ref="${1:-}"
   if [ -z "${target_ref}" ]; then
@@ -30,9 +30,20 @@ check_ref_commits_for_unicode() {
     die 1 'Target ref does not exist!'
   fi
 
-  readarray -t commit_list < <(git log --format=%H "HEAD..${target_ref}")
-  if [ -z "${commit_list[0]:-}" ]; then
+  git_log_cmd=( git log --format=%H "HEAD..${target_ref}" )
+
+  if ! git_log_output="$( "${git_log_cmd[@]}" )"; then
+    die 1 "git_log_cmd failed! git_log_cmd: ${git_log_cmd[*]}"
+  fi
+
+  if [ "$git_log_output" = "" ]; then
     die 1 'No new commits in target ref!'
+  fi
+
+  readarray -t commit_list <<< "$git_log_output"
+
+  if [ -z "${commit_list[0]:-}" ]; then
+    die 1 'commit_list array size is 0!'
   fi
 
   found_malicious_unicode='false'
