@@ -1,0 +1,76 @@
+strip-markup(1) -- Strip HTML markup tags from a string
+========================================================
+
+<!--
+# Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+
+`strip-markup [--help] [--] [string]`
+
+## DESCRIPTION
+
+`strip-markup` strips HTML markup tags from an untrusted string,
+returning only the text content. It is intended to ensure that a string
+will not be interpreted as HTML markup in isolation.
+
+If a string is provided as an argument, it is used as the input.
+Otherwise, the string is read from standard input.
+
+HTML character references (such as `&amp;`, `&lt;`, `&#60;`) are
+decoded to their corresponding characters.
+
+### Double-strip protection
+
+`strip-markup` performs two consecutive strip passes over the input. If
+the second pass further transforms the text, this indicates that the
+first pass revealed new markup that was hidden inside nested tags (for
+example, `<<b>b>Bold<</b>/b>`). In this case, the tool treats the
+input as malicious and replaces all `<`, `>`, and `&` characters in the
+first-pass result with underscores (`_`), so that the neutered text is
+visible to the user as a warning.
+
+### Scope
+
+`strip-markup` ensures that its output does not contain HTML tags. It
+does **not** escape the output for safe embedding in HTML attributes or
+other HTML contexts. If the output will be inserted into HTML, the
+caller is responsible for applying appropriate context-specific
+escaping.
+
+## RETURN VALUES
+
+* `0` Successfully stripped markup and printed the result.
+* `1` Usage error.
+
+## EXAMPLES
+
+Strip tags from a string argument:
+
+<code>
+strip-markup '&lt;p&gt;Hello &lt;b&gt;world&lt;/b&gt;.&lt;/p&gt;'
+</code>
+
+Output: `Hello world.`
+
+Strip tags from standard input:
+
+<code>
+echo '&lt;p&gt;Hello&lt;/p&gt;' | strip-markup
+</code>
+
+Use `--` to separate options from positional arguments:
+
+<code>
+strip-markup -- '--help'
+</code>
+
+## SEE ALSO
+
+sanitize-string(1), stdisplay(1)
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).

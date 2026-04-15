@@ -1,0 +1,54 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
+.TH "SANITIZE\-STRING" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
+.SH "NAME"
+\fBsanitize\-string\fR \- Strip markup and control characters from a string
+.SH "SYNOPSIS"
+\fBsanitize\-string [\-\-help] [\-\-] max_length [string]\fR
+.SH "DESCRIPTION"
+\fBsanitize\-string\fR combines the functionality of \fBstrip\-markup\fR(1) and \fBstdisplay\fR(1) to fully sanitize an untrusted string by removing both HTML markup tags and dangerous terminal control characters (such as ANSI escape sequences)\. The result can be safely displayed in a terminal or used as the contents of HTML tags (but is not safe to place in HTML attributes)\.
+.P
+If a string is provided as the second positional argument, it is used as the input\. Otherwise, the string is read from standard input\.
+.P
+The \fBmax_length\fR argument specifies the maximum number of characters to output\. Set it to \fBnolimit\fR to allow arbitrarily long strings\. When a limit is set, the output is truncated to that many characters\.
+.SS "Sanitization order"
+Sanitization is performed in three steps:
+.IP "1." 4
+Strip ANSI escape sequences and control characters (via \fBstdisplay\fR)\.
+.IP "2." 4
+Strip HTML markup tags (via \fBstrip\-markup\fR)\.
+.IP "3." 4
+Strip ANSI escape sequences and control characters again, in case the markup stripping step decoded HTML entities into escape characters\.
+.IP "" 0
+.P
+This ordering ensures that neither markup nor escape sequences can be used to smuggle the other past the sanitizer\.
+.SH "RETURN VALUES"
+.IP "\(bu" 4
+\fB0\fR Successfully sanitized and printed the result\.
+.IP "\(bu" 4
+\fB1\fR Usage error (missing or invalid arguments)\.
+.IP "" 0
+.SH "EXAMPLES"
+Sanitize a string with no length limit:
+.P
+\fBsanitize\-string nolimit '<b>Hello</b>'\fR
+.P
+Output: \fBHello\fR
+.P
+Sanitize and truncate to 10 characters:
+.P
+\fBsanitize\-string 10 'This is a long untrusted string\.'\fR
+.P
+Output: \fBThis is a\fR
+.P
+Sanitize from standard input:
+.P
+\fBecho '<script>alert(1)</script>' | sanitize\-string nolimit\fR
+.P
+Use \fB\-\-\fR to separate options from positional arguments:
+.P
+\fBsanitize\-string \-\- nolimit '\-\-help'\fR
+.SH "SEE ALSO"
+strip\-markup(1), stdisplay(1)
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.

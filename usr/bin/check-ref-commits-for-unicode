@@ -43,7 +43,7 @@ check_ref_commits_for_unicode() {
   readarray -t commit_list <<< "$git_log_output"
 
   if [ -z "${commit_list[0]:-}" ]; then
-    die 1 'commit_list array size is 0!'
+    die 1 'commit_list array first element is empty or missing!'
   fi
 
   found_malicious_unicode='false'
