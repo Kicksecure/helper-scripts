@@ -38,7 +38,7 @@ cleanup() {
 }
 
 text_safety_scan() {
-  local file_list captured_stdin_file file_name plugin_list plugin
+  local file_list captured_stdin_file file_name plugin_list plugin_item
 
   file_list=( "$@" )
   plugin_list=( 'unicode-show' 'modeline-show' )
@@ -57,8 +57,8 @@ text_safety_scan() {
 
     cat | sponge -- "${captured_stdin_file}"
 
-    for plugin in "${plugin_list[@]}"; do
-      run_plugin_command "${plugin}"
+    for plugin_item in "${plugin_list[@]}"; do
+      run_plugin_command "${plugin_item}"
     done
 
     cleanup
@@ -67,8 +67,8 @@ text_safety_scan() {
       if ! test -r "$file_name"; then
         die 1 "File '$file_name' does not exist or is not readable!"
       fi
-      for plugin in "${plugin_list[@]}"; do
-        run_plugin_command "${plugin}" "${file_name}"
+      for plugin_item in "${plugin_list[@]}"; do
+        run_plugin_command "${plugin_item}" "${file_name}"
       done
     done
   fi
