@@ -50,7 +50,7 @@ modeline_show() {
   error_hit='false'
 
   if (( ${#file_list[@]} == 0 )); then
-    if ! [ -e '/proc/self/fd/0' ]; then
+    if [[ -t 0 ]]; then
       die 1 'stdin is not open!'
     fi
     grep_exit_code='0'
