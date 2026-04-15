@@ -27,26 +27,29 @@ run_plugin_command() {
   fi
 
   ## exit_code inherited from text_safety_scan function.
-  if (( plugin_exit_code > exit_code )); then
+  if [ "$plugin_exit_code" -gt "${exit_code-0}" ]; then
     exit_code="${plugin_exit_code}"
+    return "$exit_code"
   fi
 }
 
 cleanup() {
+  local _exit_code="${1:-$?}"
   trap - ERR EXIT INT TERM HUP QUIT
   ## captured_stdin_file is inherited from text_safety_scan function.
+  ## captured_stdin_file is set prior setting up the 'trap'.
   safe-rm -f -- "${captured_stdin_file}"
+  exit "${_exit_code}"
 }
 
 text_safety_scan() {
-  local file_list captured_stdin_file file exit_code plugin_list plugin
+  local file_list captured_stdin_file file plugin_list plugin
 
   file_list=( "$@" )
-  exit_code='0'
   plugin_list=( 'unicode-show' 'modeline-show' )
 
   if (( ${#file_list[@]} == 0 )); then
-    if ! [ -e '/proc/self/fd/0' ]; then
+    if [[ -t 0 ]]; then
       die 1 'stdin is not open!'
     fi
     ## Using a temp file rather than capturing to a variable because Bash will
@@ -57,7 +60,7 @@ text_safety_scan() {
     fi
     trap 'cleanup' ERR EXIT INT TERM HUP QUIT
 
-    cat > "${captured_stdin_file}"
+    cat | sponge -- "${captured_stdin_file}"
 
     for plugin in "${plugin_list[@]}"; do
       run_plugin_command "${plugin}"
@@ -71,8 +74,6 @@ text_safety_scan() {
       done
     done
   fi
-
-  exit "${exit_code}"
 }
 
 text_safety_scan "$@"
