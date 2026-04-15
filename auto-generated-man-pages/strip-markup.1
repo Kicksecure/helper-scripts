@@ -1,0 +1,41 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
+.TH "STRIP\-MARKUP" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
+.SH "NAME"
+\fBstrip\-markup\fR \- Strip HTML markup tags from a string
+.SH "SYNOPSIS"
+\fBstrip\-markup [\-\-help] [\-\-] [string]\fR
+.SH "DESCRIPTION"
+\fBstrip\-markup\fR strips HTML markup tags from an untrusted string, returning only the text content\. It is intended to ensure that a string will not be interpreted as HTML markup in isolation\.
+.P
+If a string is provided as an argument, it is used as the input\. Otherwise, the string is read from standard input\.
+.P
+HTML character references (such as \fB&amp;\fR, \fB&lt;\fR, \fB&#60;\fR) are decoded to their corresponding characters\.
+.SS "Double\-strip protection"
+\fBstrip\-markup\fR performs two consecutive strip passes over the input\. If the second pass further transforms the text, this indicates that the first pass revealed new markup that was hidden inside nested tags (for example, \fB<<b>b>Bold<</b>/b>\fR)\. In this case, the tool treats the input as malicious and replaces all \fB<\fR, \fB>\fR, and \fB&\fR characters in the first\-pass result with underscores (\fB_\fR), so that the neutered text is visible to the user as a warning\.
+.SS "Scope"
+\fBstrip\-markup\fR ensures that its output does not contain HTML tags\. It does \fBnot\fR escape the output for safe embedding in HTML attributes or other HTML contexts\. If the output will be inserted into HTML, the caller is responsible for applying appropriate context\-specific escaping\.
+.SH "RETURN VALUES"
+.IP "\(bu" 4
+\fB0\fR Successfully stripped markup and printed the result\.
+.IP "\(bu" 4
+\fB1\fR Usage error\.
+.IP "" 0
+.SH "EXAMPLES"
+Strip tags from a string argument:
+.P
+\fBstrip\-markup '<p>Hello <b>world</b>\.</p>'\fR
+.P
+Output: \fBHello world\.\fR
+.P
+Strip tags from standard input:
+.P
+\fBecho '<p>Hello</p>' | strip\-markup\fR
+.P
+Use \fB\-\-\fR to separate options from positional arguments:
+.P
+\fBstrip\-markup \-\- '\-\-help'\fR
+.SH "SEE ALSO"
+sanitize\-string(1), stdisplay(1)
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
