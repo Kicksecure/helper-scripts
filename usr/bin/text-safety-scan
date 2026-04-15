@@ -31,13 +31,13 @@ run_plugin_command() {
   fi
 
   log info "${plugin_cmd} OK"
+  unset plugin_cmd
 }
 
 cleanup() {
   local _exit_code="${1:-$?}"
   trap - EXIT
-  ## captured_stdin_file is inherited from text_safety_scan function.
-  ## captured_stdin_file is set prior setting up the 'trap'.
+  trap - ERR
   if [ -n "${captured_stdin_file-}" ]; then
     safe-rm --force --verbose -- "${captured_stdin_file}"
   fi
@@ -56,12 +56,13 @@ error_handler() {
   exit "${_exit_code}"
 }
 
-trap 'cleanup' EXIT
+trap "cleanup" EXIT
 
 trap "error_handler" ERR
 
 text_safety_scan() {
-  local file_list captured_stdin_file file_name plugin_list plugin_item
+  declare -g captured_stdin_file
+  local file_list file_name plugin_list plugin_item
 
   file_list=( "$@" )
   plugin_list=( 'unicode-show' 'modeline-show' )
@@ -84,9 +85,7 @@ text_safety_scan() {
     done
   else
     for file_name in "${file_list[@]}"; do
-      if ! test -r "$file_name"; then
-        die 1 "File '$file_name' does not exist or is not readable!"
-      fi
+      ## Leave handling if it is a readable file versus a folder to plugins.
       for plugin_item in "${plugin_list[@]}"; do
         run_plugin_command "${plugin_item}" "${file_name}"
       done
