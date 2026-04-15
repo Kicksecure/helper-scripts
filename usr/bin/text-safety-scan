@@ -33,7 +33,9 @@ cleanup() {
   trap - EXIT
   ## captured_stdin_file is inherited from text_safety_scan function.
   ## captured_stdin_file is set prior setting up the 'trap'.
-  safe-rm -f -- "${captured_stdin_file}"
+  if [ -n "${captured_stdin_file-}" ]; then
+    safe-rm -f -- "${captured_stdin_file}"
+  fi
   exit "${_exit_code}"
 }
 
