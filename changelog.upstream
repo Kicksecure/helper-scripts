@@ -1,3 +1,109 @@
+commit 33661344c2639d95167db79f9bc0e8ad82e4e936
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 15 07:32:49 2026 -0400
+
+    fix
+
+commit 3cd1010a312a86f395cd51355c67f3bbbf981938
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 15 07:31:32 2026 -0400
+
+    fix
+
+commit 31a86b429e0d2631a63ee3eff817b6ad7e182068
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 15 07:07:18 2026 -0400
+
+    improve
+
+commit da78b96db76d8a16e564d8924432062b0a70c56c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 15 06:56:19 2026 -0400
+
+    fix
+
+commit aca061653a035c7c66406583531953731b2efb99
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 15 06:51:52 2026 -0400
+
+    refactoring
+
+commit 260bce860cad0ffe48cba66602ab295fb53b2e53
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 15 06:50:18 2026 -0400
+
+    fix
+
+commit 09604ac158fae27f4dd98ff6b370303b0d8a0cb8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 15 06:40:53 2026 -0400
+
+    fix
+
+commit ea94f217f5389b67fe02e1d25f88d71f1a6a8a5a
+Merge: c9a0110 f47e7ff
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 15 06:21:57 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit f47e7ff3af8ee294c09c197fe678850cada17413
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 14 23:58:22 2026 -0400
+
+    manpages
+
+commit 3bf480117be2468c050ced1b5dfc34ce6d3fce15
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 14 23:56:43 2026 -0400
+
+    Modified and squashed commit of the following:
+
+    commit 7ad0557e5109f341f190cdb990e12cbb45f84179
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 12:00:59 2026 +0000
+
+        Add man pages for strip-markup and sanitize-string
+
+        https://claude.ai/code/session_01Wjn2KfitiA5iTADcLLfdbR
+
+commit 817badb7e8adc1537d5cab6f386dc340ff2936b4
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Apr 12 19:34:58 2026 -0400
+
+    Squashed commit of the following:
+
+    commit 860da2ba1595554240f3cc0406b8fb7049b830c1
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 13:31:20 2026 +0000
+
+        fix: kali_derivative_detected test and port range error message
+
+        - get_os.sh: use `= "1"` for kali_derivative_detected check for
+          consistency with other _detected variable checks in the codebase
+        - ip_syntax.sh: correct error message from "0-65535" to "1-65535"
+          since port 0 is rejected by the `-gt 0` check
+
+        https://claude.ai/code/session_01CokgibdWMKM8hSYezDskTH
+
+commit 971008fca138a71c54e793687331de8d5149b908
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Apr 12 12:29:34 2026 -0400
+
+    Add text-safety-scan and modeline-show scripts
+
+commit 8810483c7af489cb0fdeb4a02b4d921fa3dca1f1
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Apr 12 10:35:48 2026 -0400
+
+    output
+
+commit c9a0110725d81b5efde4890043d590b0b586245b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 12 14:02:35 2026 +0000
+
+    bumped changelog version
+
 commit 563f69dbdd24e9a17d15be22a073735c97c2b7e8
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Apr 12 09:48:56 2026 -0400
@@ -53,13 +159,13 @@ Author: Claude <noreply@anthropic.com>
 Date:   Sat Apr 11 10:30:23 2026 +0000
 
     source_config: revert to space-delimited stat, document delimiter tradeoffs
-    
+
     NUL-delimited parsing required process substitution which discards
     stat's exit status.  Since spaces in usernames are equally impractical
     as other candidate delimiters (newline, colon), keep the simpler
     space-delimited approach with proper exit-status handling and document
     the alternatives considered.
-    
+
     https://claude.ai/code/session_01PzQizFukc2xgQMLJmZNWM7
 
 commit d80197dccef8ab27ec19c084181d64c33cb98efa
@@ -67,16 +173,16 @@ Author: Claude <noreply@anthropic.com>
 Date:   Sat Apr 11 10:19:18 2026 +0000
 
     source_config: use NUL-delimited stat output to handle spaces in names
-    
+
     The previous space-delimited parsing of stat output would mis-split
     fields if a username or group name contained spaces (e.g. "Domain
     Users").  Switch to NUL-delimited output with readarray -d '' to parse
     each field unambiguously.
-    
+
     Uses --printf instead of --format to suppress the trailing newline that
     GNU stat appends with --format.  Requires bash 4.4+ for readarray -d
     (the script already requires 4.3+ for namerefs).
-    
+
     https://claude.ai/code/session_01PzQizFukc2xgQMLJmZNWM7
 
 commit 0ac93c2d83847dfbe649761e64a3e30cd2aad5eb
@@ -84,17 +190,17 @@ Author: Claude <noreply@anthropic.com>
 Date:   Sat Apr 11 10:13:27 2026 +0000
 
     source_config: reject group-writable directories
-    
+
     Directories have stricter writability requirements than files because
     write permission on a directory allows creating, deleting, and renaming
     entries.  A group-writable config directory could allow group members to
     remove or replace legitimate config files (DoS), even though the
     file-level ownership check prevents sourcing attacker-owned files.
-    
+
     Check the second-to-last octal digit (group permission) for the write
     bit using the pattern *[2367]?, and report the mode in error messages
     for both group-writable and world-writable rejections.
-    
+
     https://claude.ai/code/session_01PzQizFukc2xgQMLJmZNWM7
 
 commit 18f901e3e4365ac10b2863bf499a9aed3ce864de
@@ -102,13 +208,13 @@ Author: Claude <noreply@anthropic.com>
 Date:   Sat Apr 11 10:05:50 2026 +0000
 
     source_config: prefix internal locals with _ to avoid nameref collisions
-    
+
     Use the leading underscore convention for all local variables in
     functions that use namerefs (source_config_read_stat,
     source_config_resolve_path, source_config_get_expected_owner_group).
     This prevents circular reference bugs if a caller passes a variable
     name that would otherwise collide with an internal local.
-    
+
     https://claude.ai/code/session_017p3uYYzFmLbmQuHNhRRF7B
 
 commit 93a6c704a3d0a1829087884f1cf22ed9127d9149
@@ -116,11 +222,11 @@ Author: Claude <noreply@anthropic.com>
 Date:   Sat Apr 11 10:04:11 2026 +0000
 
     source_config: use explicit return 1 for early id failures
-    
+
     The source_config_error call already sets rc=1 via dynamic scoping,
     so return "$rc" works but is needlessly indirect. Use return 1 for
     clarity since we are returning immediately after the error.
-    
+
     https://claude.ai/code/session_017p3uYYzFmLbmQuHNhRRF7B
 
 commit b7994ffa787829eace08705c2bb03d3cae8f9c0e
@@ -128,12 +234,12 @@ Author: Claude <noreply@anthropic.com>
 Date:   Sat Apr 11 10:02:02 2026 +0000
 
     source_config: relax allowed system paths, check HOME only for user dirs
-    
+
     Accept /run/* and /usr/* as system config directories (e.g.
     /usr/lib/systemcheck.d). Move the HOME validation inside the
     "$HOME"/* case branch so unset/empty HOME is only an error when
     a per-user directory is actually requested.
-    
+
     https://claude.ai/code/session_017p3uYYzFmLbmQuHNhRRF7B
 
 commit 23f6b2cc79d89505fa6a7424f46712528022d5d1
@@ -141,12 +247,12 @@ Author: Claude <noreply@anthropic.com>
 Date:   Sat Apr 11 09:52:32 2026 +0000
 
     source_config: validate HOME and handle id failure
-    
+
     Guard against empty/unset HOME which would cause the case pattern
     "$HOME"/* to degrade to /* and silently accept any absolute path as a
     per-user config directory. Also fail early if id --user/--group cannot
     determine the invoking user or group.
-    
+
     https://claude.ai/code/session_017p3uYYzFmLbmQuHNhRRF7B
 
 commit 025da601ca4541dd0ec71376901147e16d783503
@@ -209,7 +315,7 @@ Author: Claude <noreply@anthropic.com>
 Date:   Fri Apr 10 18:42:38 2026 +0000
 
     fix: security hardening and documentation for strings.bsh
-    
+
     Fix command injection via eval in run_test() by replacing with printf -v.
     Fix non-local variables (trimmed_value, lines) leaking from
     check_is_not_empty_and_only_one_line().
@@ -217,7 +323,7 @@ Date:   Fri Apr 10 18:42:38 2026 +0000
     Document: br_add is not HTML sanitization (use strip-markup/sanitize-string),
     /dev/random is intentional (kicksecure entropy policy), and sourcing scripts
     must set errexit.
-    
+
     https://claude.ai/code/session_01UhL4rn3tUTBrnMHeyh3WJc
 
 commit 1f3960758c2cff6fb9ba5261eb8df5438392530a
@@ -4060,7 +4166,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 31 10:25:05 2025 -0400
 
     Revert "Move apparmor-info, apparmor-watch to security-misc"
-    
+
     This reverts commit b1040c613752c2d0df3bb6b29f22a3da0346a399.
 
 commit df81180537b38c486c7ca0219ba0fbf6f055e0cd
@@ -4233,7 +4339,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Oct 27 06:19:02 2025 -0400
 
     code simplification: use `ischroot`
-    
+
     deleted: `/usr/libexec/helper-scripts/in-chroot.sh`
 
 commit 7d490a8a964f732d48fc1e0c6524624ba78333d8
@@ -4495,7 +4601,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 24 00:55:37 2025 -0400
 
     set-system-keymap: filter spurious error messages:
-    
+
     ```
     cat: '/sys/bus/usb/devices/*:*/bInterfaceClass': No such file or directory
     cat: '/sys/bus/usb/devices/*:*/bInterfaceSubClass': No such file or directory
@@ -4549,7 +4655,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Oct 23 02:27:45 2025 -0400
 
     add set-keymap-test-plan
-    
+
     thanks to @ArrayBolt3
 
 commit bfa7e84c2a1231d8c5d72c0bdc67e92103fa82bb
@@ -4706,7 +4812,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 19 18:15:33 2025 -0400
 
     Revert "lockfile.sh: custom error message version"
-    
+
     This reverts commit e09cb422750489e6a8f2ec57504b22075e3d52bc.
 
 commit e09cb422750489e6a8f2ec57504b22075e3d52bc
@@ -5089,11 +5195,11 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Oct 9 12:11:25 2025 -0400
 
     add `env-sorted`
-    
+
     (`env -0 | sort -z | tr '\0' '\n'`)
-    
+
     Thanks to Iguananaut!
-    
+
     https://stackoverflow.com/questions/60756020/print-environment-variables-sorted-by-name-including-variables-with-newlines
 
 commit 6c1562ef44bcc6ff1f35db0ed9b6990064856083
@@ -5219,7 +5325,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Sep 23 10:29:20 2025 -0400
 
     origins-parser: fix
-    
+
     cover status where `/etc/dpkg/origins/kicksecure` and `/etc/dpkg/origins/whonix` are no longer a symlink to `/etc/dpkg/origins/default`
 
 commit b7b8627a45b658d8066b2bbe72d361ed900a2822
@@ -5266,7 +5372,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Sep 13 05:04:58 2025 -0400
 
     Merge pull request #10 from DanWin/ipv6
-    
+
     Add GATEWAY_IP6 variable
 
 commit 046951cf32b7916326eaef0e5f4dc433695c8974
@@ -5967,10 +6073,10 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 11 16:15:41 2025 -0400
 
     unicode:
-    
+
     avoid warning message:
     `grep: PCRE2 does not support \F, \L, \l, \N{name}, \U, or \u`
-    
+
     by no longer using `--perl-regexp` for grep number three
 
 commit 0b716e4216868c7baa40cf18ef7cc6f73fd9ac40
@@ -6091,7 +6197,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jun 5 06:03:42 2025 -0400
 
     Merge pull request #27 from ben-grande/st-test
-    
+
     Handle closed standard input gracefully
 
 commit 58bc03d48e4ccddf6b5c0df0d0565e1c13657e5f
@@ -6111,7 +6217,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Tue Jun 3 14:10:02 2025 +0200
 
     Handle closed standard input gracefully
-    
+
     For: https://github.com/Kicksecure/helper-scripts/issues/26
 
 commit e878cc6b1e1fbe3aebdd4a5163de3a7b9d56aa6b
@@ -6293,7 +6399,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed May 21 07:21:11 2025 -0400
 
     test that `wc` is functional
-    
+
     https://github.com/Kicksecure/security-misc/pull/305#issuecomment-2892378246
 
 commit 8c7fb9884398f638570d5c7afb92cd95cc446b37
@@ -6509,7 +6615,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Mon May 5 13:01:59 2025 +0200
 
     Test every safe terminal tool
-    
+
     - Check output when no argument is provided;
     - Check if stdin is ignored by default;
     - Check if stdin is ignored if file is provided;
@@ -6874,7 +6980,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Apr 16 12:29:38 2025 -0400
 
     Merge pull request #23 from ben-grande/stcatn
-    
+
     Deprecated stcatv and add stcatn
 
 commit 0f0fc67b554d426a41df2ceb5b8c7c1daccf579b
@@ -6882,19 +6988,19 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Wed Apr 16 13:21:04 2025 +0200
 
     Deprecated stcatv and add stcatn
-    
+
     Deprecate stcatv:
-    
+
     - The 'M-' and '^' notation were not covering all unicode codepoints,
       issue is present in cat from coreutils also.
-    
+
     Add stcatn:
-    
+
     - Printing data without ending with a newline can lead to problems on
       the terminal and also how the file is read by another problem later.
       Add a newline at the end of each file that does not have one.
     - Trailing whitespace is trimmed from each line.
-    
+
     Fixes: https://github.com/Kicksecure/helper-scripts/issues/22
     Fixes: https://github.com/Kicksecure/helper-scripts/issues/21
     Fixes: https://github.com/Kicksecure/helper-scripts/issues/20
@@ -6946,7 +7052,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Apr 15 15:57:27 2025 -0400
 
     Revert "fix"
-    
+
     This reverts commit 9c179a48d755f4b01dd909af052143ee3a40ac21.
 
 commit 9c179a48d755f4b01dd909af052143ee3a40ac21
@@ -7089,7 +7195,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Apr 11 20:21:01 2025 -0400
 
     Merge pull request #19 from ben-grande/stdisplay
-    
+
     Add stcatv
 
 commit a78be7c1b136add74e324c1ba77bb80fe7fa43a4
@@ -7104,7 +7210,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Fri Apr 11 21:22:39 2025 +0200
 
     Add stcatv
-    
+
     Fixes: https://github.com/Kicksecure/helper-scripts/issues/17
 
 commit f13a236a6c22c064499329a7b51c9e1dd7a36b65
@@ -7246,11 +7352,11 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Apr 2 14:03:45 2025 -0400
 
     improve unicode detection tooling
-    
+
     * added `unicode-show`
     * improved `grep-find-unicode-wrapper`
     * added `/usr/libexec/helper-scripts/write-suspicious-unicode`
-    
+
     https://forums.whonix.org/t/detecting-malicious-unicode-in-source-code-and-pull-requests/13754
 
 commit 6d350e3bd7bfa5b0650d4fdd550ed9e3c645999b
@@ -7411,7 +7517,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Mar 27 06:35:32 2025 -0400
 
     Merge pull request #14 from ben-grande/stprint
-    
+
     Add safe terminal printing program
 
 commit 238249e9abe32c0c66be39e5106f3e28c531feb5
@@ -7622,11 +7728,11 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Mar 17 04:59:17 2025 -0400
 
     fix for real: avoid expected error message in case a Tor consensus has not been downloaded yet:
-    
+
     > ERROR: Variable 'vstart' is empty or contains only whitespace/newlines.
-    
+
     Thanks to @marmarek for the bug report!
-    
+
     https://forums.whonix.org/t/systemcheck-fails-for-unclear-reason/21424/14
 
 commit c1312072ef1c17808232ba0e74cd2fccf9e64697
@@ -7652,7 +7758,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Mar 17 03:26:10 2025 -0400
 
     `append-once` fix: ignore output by `str_match`
-    
+
     (could notify about found versus not found and thereby add unwanted console output)
 
 commit 37424a0cc73857fb3248ceba9264b182eef28d9f
@@ -7891,11 +7997,11 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Mar 14 04:23:27 2025 -0400
 
     avoid expected error message in case a Tor consensus has not been downloaded yet:
-    
+
     > ERROR: Variable 'vstart' is empty or contains only whitespace/newlines.
-    
+
     Thanks to @marmarek for the bug report!
-    
+
     https://forums.whonix.org/t/systemcheck-fails-for-unclear-reason/21424/14
 
 commit c1a8d64983a0a67fdd0f4d8c3eb49dcd332dd31c
@@ -8006,7 +8112,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Mar 5 06:56:54 2025 -0500
 
     fix check_is_not_empty_and_only_one_line
-    
+
     Thanks to @ArrayBolt3 for the bug report!
 
 commit 4dce5cecb52b5e8cb5f70eaf762038d0c94ceb98
@@ -8020,13 +8126,13 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Thu Feb 13 16:24:44 2025 +0100
 
     Remove extra_colors option
-    
+
     Exclude SGR is much more reliable now. SGR bit modes 16 and 24 bit were
     difficult to generate the regex, but as it became simpler, separating
     them from 4-bit SGR does not make sense. Although it was an optional
     parameter, it now makes the code easier to read with less options per
     function.
-    
+
     Also change the word color to SGR when appropriate, as it can show
     graphics that are not colors such as italic, underline, blink, bold etc.
 
@@ -8185,7 +8291,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Thu Jan 23 16:49:59 2025 +0100
 
     Add safe terminal printing program
-    
+
     Prints only ASCII and ANSI escape sequences configured in an allow list.
 
 commit c2cbf79718d12d1c2d3e01efe450d748332198e7
@@ -8299,7 +8405,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 30 11:25:54 2025 -0500
 
     Merge pull request #15 from ben-grande/echo-to-printf
-    
+
     Use printf instead of echo
 
 commit d5f14be527b4d79200259e2f36edfc51133faf27
@@ -8308,7 +8414,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 30 11:21:21 2025 -0500
 
     Merge pull request #16 from ben-grande/pass-state
-    
+
     Use long options for account management
 
 commit e9d2584a99d765c6191912ea9598f4f3c02816e4
@@ -8354,7 +8460,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jan 29 07:07:22 2025 -0500
 
     Merge pull request #13 from ben-grande/pass-state
-    
+
     Add library to manage account state
 
 commit f012e1a29e5e1f47a73ff24c109621b6467abbef
@@ -8368,7 +8474,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Fri Jan 24 21:43:54 2025 +0100
 
     Use printf instead of echo
-    
+
     For: https://github.com/Kicksecure/usability-misc/pull/14
 
 commit 854a7191432fbe2ab9c211122b2d96e69cd1e148
@@ -8376,7 +8482,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Mon Jan 13 17:06:41 2025 +0100
 
     Add utility and library to manage accounts
-    
+
     Query account state, check password state and query any entry from
     supported databases.
 
@@ -8446,9 +8552,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 17 08:52:46 2025 -0500
 
     `dummy-dependency`: avoid APT warning
-    
+
     > N: Download is performed unsandboxed as root as file '/tmp/user/0/tmp.8O7ET4e1Bx/dummy-user-sysmaint-split_99_all.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
-    
+
     store dummy-dependency created `.deb`s in folder `/var/lib/dummy-dependency` instead,
     so these are readable by user `_apt`.
 
@@ -8542,7 +8648,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Jan 6 07:36:08 2025 -0500
 
     initial import from
-    
+
     https://github.com/Kicksecure/security-misc/pull/293
 
 commit 2a5aa2d5aac7ff6493d863b90231b3aa992ad837
@@ -8612,7 +8718,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Dec 19 04:42:39 2024 -0500
 
     fix apt-get-update for non-English locale
-    
+
     https://forums.kicksecure.com/t/systemcheck-reports-warning-debian-package-update-check-result-apt-get-reports-that-packages-can-be-updated-but-system-is-already-fully-upgraded/785
 
 commit 207b0adaf94401d5d9d32b697c37c70439c38588
@@ -9087,7 +9193,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Nov 1 11:14:54 2024 -0400
 
     Merge pull request #11 from ArrayBolt3/arraybolt3/append-once-fix
-    
+
     Make append-once work even with multi-line strings
 
 commit 76f9585deca024886e787ec54d9f0b8515bf29d0
@@ -9133,7 +9239,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Aug 6 07:12:00 2024 -0400
 
     Merge pull request #9 from ben-grande/safe-log
-    
+
     Safely print logs
 
 commit c335250827042d5428f8244918c392917a0f23fa
@@ -9141,7 +9247,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Tue Aug 6 11:32:41 2024 +0200
 
     Safely print logs
-    
+
     Although the format specified '%' was being escaped be strict on
     expanding only what we can control such as the log type and color while
     the script name and message can be untrusted and printed as a string.
@@ -9163,7 +9269,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jul 28 14:05:12 2024 -0400
 
     append-once /path/to/file 'line to append'
-    
+
     API change
 
 commit 8bea23b8d42a91e26309aa5ef2a4cc7dacae88b0
@@ -9185,7 +9291,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jul 26 11:19:23 2024 -0400
 
     Merge pull request #8 from ben-grande/log-trace
-    
+
     Do not be verbose on the log helper
 
 commit cee99de055061202ea07c1f08d8365bf94bff608
@@ -9199,7 +9305,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jul 26 10:27:07 2024 -0400
 
     add /usr/libexec/helper-scripts/safe_echo.sh
-    
+
     https://github.com/anordal/shellharden/blob/master/how_to_do_things_safely_in_bash.md#echo--printf
 
 commit 961a2539276092aa43725ce66eaad53573e64aa0
@@ -9285,7 +9391,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jun 9 08:48:05 2024 -0400
 
     `grep-find-unicode-wrapper`: move distribution specific exclusions to `dm-check-unicode`
-    
+
     these were:
     --exclude=changelog.upstream
     --exclude-dir=.git
@@ -9471,7 +9577,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Feb 2 07:10:32 2024 -0500
 
     Added Directory Check to str_replace Script
-    
+
     - Implemented a validation step to check if the specified file is actually a directory.
     - The script now exits with an appropriate error message if the user mistakenly provides a directory path instead of a file.
     - Ensured that the file operations are only performed on valid files, enhancing the script's robustness and error handling.
@@ -9481,7 +9587,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Feb 2 07:08:31 2024 -0500
 
     Fixed Uninitialized Value Bug in str_replace Script
-    
+
     - Resolved an issue where $contents remained uninitialized when no input was provided via STDIN.
     - Added a check to ensure $contents is defined before proceeding with the search and replace operation.
     - The script now outputs an error message and exits gracefully if no input data is received, preventing the uninitialized value error.
@@ -9552,7 +9658,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Dec 22 06:44:27 2023 -0500
 
     add calculate-swap-size
-    
+
     https://forums.whonix.org/t/swap-swap-file-whonix-gateway-freezing-during-apt-get-dist-upgrade-encrypted-swap-file-creator/8317
 
 commit 6f92b797797bc54357259aa56354d09b06317416
@@ -9566,9 +9672,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Dec 15 15:47:32 2023 -0500
 
     tor_enabled_check: assume Tor is enabled by default
-    
+
     actually check it was disabled in Tor config
-    
+
     unify behavior on on all platforms
 
 commit 28e5cd342ca6664fb337068dd35f7269042e2447
@@ -9582,7 +9688,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 30 11:38:35 2023 -0500
 
     allow tor_enabled_check to be executed
-    
+
     and output true / false depending on Tor status
 
 commit b6be7eb1a4e9eb4f7d5ab0111be23dfc3e5bbc34
@@ -9626,7 +9732,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Nov 24 23:25:55 2023 -0500
 
     fix initialization of bytes variable
-    
+
     in case no file was created by curl and curl already exited
 
 commit 5b874100884516fd3df0ed6298fcbb8cc95d1000
@@ -9670,7 +9776,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Nov 11 20:15:17 2023 -0500
 
     deprecate TMPDIR feature of curl-prgrs
-    
+
     to avoid conflicts with libpam-tmpdir
 
 commit 9016204991b710a23c9b8e74b7775a4f424a07b2
@@ -9798,7 +9904,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 5 20:33:18 2023 -0500
 
     add `lsmod-deterministic`
-    
+
     part of https://github.com/Kicksecure/security-misc/issues/159
 
 commit 0ee6d40b06df723d26313e96f64d9b7c8b437aea
@@ -10208,7 +10314,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jun 23 10:06:06 2023 +0000
 
     lightdm
-    
+
     https://forums.whonix.org/t/display-manager-lightdm-gdm3-sddm-or-no-display-manager-startx/12457
 
 commit 023adeee7ae90333e569bf9d44b569be6e66b2fd
@@ -10402,7 +10508,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 16 07:43:47 2022 -0400
 
     support hushlogin - less output in terminal emulator
-    
+
     https://forums.whonix.org/t/support-hushlogin-less-output-in-terminal-emulator/15827
 
 commit f40806f92697d54ac3af1f6782bc833136d36710
@@ -10428,7 +10534,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 16 07:26:33 2022 -0400
 
     /usr/libexec/helper-scripts/bashrc-terminal-emulator: fix "return: can only `return' from a function or sourced script"
-    
+
     when executed
 
 commit d54ff4136e39e81538e3291e80ace0ac56590137
@@ -10540,9 +10646,9 @@ Date:   Sat Jul 2 16:09:32 2022 -0400
     remove /etc/apparmor.d/usr.sbin.anondate-get / /etc/apparmor.d/usr.sbin.anondate-set
     since not ready
     and causing an error message
-    
+
     https://forums.whonix.org/t/whonix-apparmor-profiles-development-discussion/108/731
-    
+
     Thanks to @0x1f for the bug report!
 
 commit e7d9daa4aecf8a96c4264b276067fce3007e3a1c
@@ -10556,7 +10662,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 29 02:22:40 2022 -0400
 
     `grep-find-unicode-wrapper` - new helper-script to detect invisible potentially malicious unicode
-    
+
     https://forums.whonix.org/t/detecting-malicious-unicode-in-source-code-and-pull-requests/13754
 
 commit 414f127a16cb4f6221197ea63412c8a2469b89de
@@ -10576,9 +10682,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 1 17:16:15 2022 -0400
 
     fix `/usr/libexec/helper-scripts/repair-torrc` for non-Whonix
-    
+
     Thanks to @TNT_BOM_BOM for the bug report!
-    
+
     https://forums.whonix.org/t/tor-controller-gui-tor-control-panel/5444/90
 
 commit 7536f8317a9619447e5de574e8c6661c2c8c1029
@@ -10754,7 +10860,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 18 11:47:18 2021 -0500
 
     `onion-time-pre-script`: Do not use `anondate-set` on Whonix-Workstation.
-    
+
     Since sdwdate can establish onion connections irrespective of Whonix-Workstation system clock,
     as long as Whonix-Gateway Tor is functional.
 
@@ -10829,9 +10935,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 14 10:02:00 2021 -0500
 
     `/usr/libexec/helper-scripts/terminal-wrapper`: add support for adding window title
-    
+
     for `xfce4-terminal` emulator
-    
+
     through `terminal_emulator_window_title` environment variable
 
 commit 01b1aced4588d2b7d34a95cc152483d2f110270a
@@ -11139,7 +11245,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Nov 14 04:09:38 2021 -0500
 
     more descriptive file name
-    
+
     `/run/sdwdate/request_tor_restart` -> `/run/sdwdate/request_anondate-set`
 
 commit ecd159c8751828ba2e0a97e1c27d0f0e04efafc3
@@ -11735,7 +11841,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Sep 8 17:14:54 2021 -0400
 
     terminal-wrapper: xfce4-terminal --hold
-    
+
     supported since Debian bullseye
 
 commit 771537aa31a719a3c5a75ee948a0b6f9f2d99aee
@@ -11803,7 +11909,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Aug 16 15:40:09 2021 -0400
 
     etc/apparmor.d/abstractions/tor-circuit-established-check: deny /etc/ssl/openssl.cnf r,
-    
+
     Not needed. Works without.
 
 commit ab054267d927fcb8866de4346ca09e2ff795f909
@@ -11817,9 +11923,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Aug 10 14:58:08 2021 -0400
 
     implement `/usr/libexec/helper-scripts/first-boot-skel` `force`
-    
+
     to ease Default Home Folder Configuration Files Reset
-    
+
     https://www.whonix.org/wiki/Desktop#Default_Home_Folder_Configuration_Files_Reset
 
 commit 2e868e95343d1d5dc4eee0115030a16857bef6a5
@@ -11870,7 +11976,7 @@ Date:   Tue Aug 3 11:10:33 2021 -0400
 
     move usr/lib/helper-scripts/ to usr/libexec/helper-scripts
     move usr/lib/curl-scripts to usr/libexec/helper-scripts
-    
+
     as per lintian FHS
 
 commit bc2687650c77098b03258c7fa84122aa1bab5b1b
@@ -11902,7 +12008,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jun 4 05:53:44 2021 -0400
 
     add initramfs-debug-enable debugging tool
-    
+
     which enables xtrace (set -x)
 
 commit 941bbd9ce401e3258c1c2fdda28423e17880f0b0
@@ -11924,7 +12030,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun May 30 14:09:14 2021 -0400
 
     Merge pull request #6 from madaidan/cat
-    
+
     Remove unnecessary cat calls
 
 commit fa66630cbb81e99cbfe34326bd14558cc26b8e97
@@ -11950,7 +12056,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 24 04:43:15 2021 -0400
 
     Disable running `anondate-get` as diagnostic utility
-    
+
     since it can currently not be run due to no new privs apparmor issues with
     sdwdate apparmor profile. This AppArmor bug is likely fixed in Debian bullseye.
 
@@ -12007,11 +12113,11 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Apr 19 02:25:46 2021 -0400
 
     `apt-key-install`: utility to install APT signing key to system
-    
+
     Input file can be either, gpg keys in either ASCII-armored or binary format.
-    
+
     due to `apt-key` deprecation by Debian
-    
+
     https://forums.whonix.org/t/apt-key-deprecation-apt-2-2-changes/11240/1
 
 commit 5ffcd6d28454195889c8dd208a35a5d405524430
@@ -12019,11 +12125,11 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Apr 18 13:41:35 2021 -0400
 
     `gpg-dearmor`: wrapper to convert gpg ASCII-armored format binary format
-    
+
     due to `apt-key` deprecation by Debian
-    
+
     since only gpg binary format is understood by Debian's APT
-    
+
     https://forums.whonix.org/t/apt-key-deprecation-apt-2-2-changes/11240
 
 commit f6cdfd97768c3649f0bc88f3ab4c1723d65062d4
@@ -12247,7 +12353,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jan 23 04:04:55 2021 -0500
 
     give up on anondate-set for now
-    
+
     https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
 
 commit ddf33a7e00c4cc070ed33b5fa4e6c83b3a0b6025
@@ -12376,9 +12482,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Jan 14 09:37:11 2021 -0500
 
     prevent bash `<<<` to prevent creation of temporary file to simplify creation of apparmor profiles
-    
+
     Use of `<<<` results in use of temporary files by bash.
-    
+
     https://unix.stackexchange.com/questions/429285/cannot-create-temp-file-for-here-document-permission-denied
 
 commit 5c0ab73b829d1ab65b49c240e9d58fadcedf5a00
@@ -12788,7 +12894,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Jan 4 04:39:29 2021 -0500
 
     cannot use ulimit -v yet
-    
+
     https://superuser.com/questions/472587/why-does-limiting-my-virtual-memory-to-512mb-with-ulimit-v-crash-the-jvm
 
 commit 8ee99ea3f2d0d59a4b53244834b0b571c9b5d7e2
@@ -12808,7 +12914,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jan 3 07:09:48 2021 -0500
 
     add support for environment variable `maxmem`
-    
+
     refactoring
 
 commit 4ec5fa63248e1f4c340bd6d5ec4ae42d4ca9c721
@@ -12930,7 +13036,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Dec 28 04:37:57 2020 -0500
 
     add `limit-low` - constrained system resources program starter wrapper
-    
+
     https://forums.whonix.org/t/constrained-system-resources-program-starter-wrapper/10914
 
 commit 67b226805002a33f88f7be13aac871e6a82bf2af
@@ -12944,7 +13050,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Dec 26 04:15:44 2020 -0500
 
     also show apparmor `DENIED` messages
-    
+
     https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/42
 
 commit 05b6f771e9cd7c84b3514091ac730783a51066f9
@@ -12958,11 +13064,11 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Dec 20 07:47:32 2020 -0500
 
     make sure `/etc/ld.so.preload` exists
-    
+
     `ld-system-preload-disable` fails if `/etc/ld.so.preload` does not exists.
-    
+
     > bwrap: Can't create file at /etc/ld.so.preload: Permission denied
-    
+
     Therefore ensure that at least and empty `/etc/ld.so.preload` exists.
 
 commit 484dbbd43c82d06ce0bc81512b8c535774346d0d
@@ -12970,7 +13076,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Dec 20 02:35:11 2020 -0500
 
     apparmor-info: exit non-zero if there are DENIED messages
-    
+
     https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/30
 
 commit 83191248a9038781c0b56df5aeaf5e94ce5b2a45
@@ -12978,7 +13084,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Dec 20 02:20:30 2020 -0500
 
     do not hardcode sudo
-    
+
     https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/29
 
 commit a13d07795c5dbbabc530fb48fc121640b7b28899
@@ -13012,7 +13118,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Dec 20 06:57:25 2020 +0000
 
     Merge pull request #5 from madaidan/apparmor-info
-    
+
     Create apparmor-info
 
 commit 6acce208880f87f273d8a9784b98f32ac87ef385
@@ -13062,9 +13168,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Oct 11 12:31:04 2020 -0400
 
     add ld-system-preload-disable
-    
+
     http://forums.whonix.org/t/hardened-malloc-hardened-memory-allocator/7474/116
-    
+
     Thanks to @madaidan for the suggestion!
 
 commit a64bb8cac489f028f2a8474d29d5a0b68d41e6f6
@@ -13326,7 +13432,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Feb 13 06:17:32 2020 -0500
 
     first-boot-skel: fix /etc/skel/.bashrc to /home/user/.bashrc handling
-    
+
     if home folder is completely empty
 
 commit 0847f69b60928e0b20a856d97778be6fa4d68e17
@@ -13352,7 +13458,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Jan 8 12:37:53 2020 -0500
 
     fix output
-    
+
     Thanks to disrupt_the_flow for the bug report!
 
 commit ffceddd34dd9f691d45fa7dc4259947302b44aae
@@ -13432,7 +13538,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Jul 31 10:57:10 2019 -0400
 
     pre.bsh enable output by default
-    
+
     can be disabled using: disable_echo=true
 
 commit 99353e9700cb73615f104892257201549c6b24fc
@@ -13512,9 +13618,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jul 13 18:13:19 2019 +0000
 
     support also being imported by non-maintainer scripts
-    
+
     parse config folders such as:
-    
+
     /etc/panic-on-oops_pre.d/*.conf
     /usr/local/etc/panic-on-oops_pre.d/*.conf
 
@@ -13559,11 +13665,11 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Jul 8 19:11:04 2019 +0000
 
     package str_replace - literal search and replace
-    
+
     /usr/bin/str_replace
-    
+
     origin is https://github.com/Samer-Al-iraqi/Linux-str_replace
-    
+
     Copyright: Copyright (c) 2016 Samer-Al-iraqi
     License: MIT
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -13607,7 +13713,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Jun 10 17:39:25 2019 +0000
 
     avoid "clock is fast" false positives
-    
+
     When using an old Tor consensus which might be the case when no Tor
     circuit has been established yet, there is no point to check Tor
     consensus time as it might be outdated leading to concluding that the
@@ -13750,7 +13856,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Apr 6 10:19:36 2019 +0000
 
     increase priority of xfce4-terminal
-    
+
     https://forums.whonix.org/t/replacing-kdesudo-with-gksudo/6315/7
 
 commit 3cd9e0501f79b9f889e7753baeae833b88a6f91c
@@ -13806,18 +13912,18 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Mar 1 14:31:49 2019 +0000
 
     add improved legal protections clauses
-    
+
     The license for software created by Whonix is the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version with additional terms applicable per GNU GPL version 3 section 7.
-    
+
     The additional terms are based on the Doom 3 license which is Debian refers to as `GPL-3+-with-id-software-additional-terms`, which is Debian DFSG [1] (The Debian Free Software Guidelines) approved and which is therefore suitable for Debian `main`. Whonix made applied minimal changes to it:
-    
+
     * Rewrite `The Doom 3 BFG Edition GPL Source Code` to the more common `this program` which is used throughout the GPL.
     * Added a "trump clause" [2], in other words, any conflicts or disputes between the additional terms and the GPLv3 shall be resolved in favor of the GPLv3 by adding `Notwithstanding any other provision of this License` (as mentioned in GPL FAQ [3]) at the beginning of the additional terms.
-    
+
     [1] https://www.debian.org/social_contract#guidelines
     [2] https://www.fsf.org/news/canonical-updated-licensing-terms
     [3] https://www.gnu.org/licenses/gpl-faq.html#v3Notwithstanding
-    
+
     For more considerations, see also:
     https://www.whonix.org/wiki/Dev/Licensing
 
@@ -13904,7 +14010,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Nov 1 02:54:29 2018 -0400
 
     fix
-    
+
     https://github.com/Whonix/anon-shared-helper-scripts/pull/4
 
 commit c98487511c030213a9df60833c3e7177b4c711c4
@@ -13920,7 +14026,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Nov 1 02:51:56 2018 -0400
 
     Merge pull request #4 from Algernon-01/master
-    
+
     Fixes for Xfce.
 
 commit 9c08b61f08dcb9c6501d5da44e438c036823faec
@@ -14092,7 +14198,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 17:59:29 2017 +0000
 
     also load firewall in Qubes TemplateVM
-    
+
     https://forums.whonix.org/t/preventing-qubes-whonix-4-updates-through-clearnet-ensuring-torified-updates
 
 commit 0d9ff3d74eebbc38f1b1f986f1ab6bfd43b61786
@@ -14160,7 +14266,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Feb 25 03:31:34 2017 +0000
 
     add build timestamp and expiration date based time sanity check
-    
+
     https://phabricator.whonix.org/T151
 
 commit 20277497bd84c7fb0dd553f89e45e1761dc1e959
@@ -14174,7 +14280,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Feb 25 00:48:36 2017 +0000
 
     implement Tor consensus check in te_pe_tb_check for sdwdate
-    
+
     https://phabricator.whonix.org/T56
 
 commit 2195ddf28b27a40ba9e4621a86cbea3cc5537cc2
@@ -14203,9 +14309,9 @@ Date:   Thu Feb 23 01:42:57 2017 +0000
     - TOR_BOOTSTRAP_TIME_START
     - TOR_BOOTSTRAP_TIME_NOW
     - TOR_BOOTSTRAP_TIME_PASSED
-    
+
     since these can be confused by sdwdate clock jumps
-    
+
     and no longer required by whonixcheck or otherwise
 
 commit c54299c34de69a33a88e389440e23db3f4964021
@@ -14213,7 +14319,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Feb 21 22:17:33 2017 +0000
 
     use systemctl --no-pager to prevent blocking due to systemctl interactivity
-    
+
     https://phabricator.whonix.org/T637
 
 commit e73c4de65062cd31bb409ecf907e5e99ba2da1b0
@@ -14245,7 +14351,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Feb 10 15:47:49 2017 +0000
 
     remove faketime from Build-Depends:
-    
+
     since no longer used for reproducible builds
 
 commit e07aa0cbc31b9fb7a77bba1f552af5b59330520c
@@ -14265,7 +14371,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Feb 6 02:00:42 2017 +0000
 
     te_pe_tb_check: fix output
-    
+
     Not being able to connect to Tor's ControlPort does not mean there is an issue,
     could just be that Tor has not been started yet.
 
@@ -14304,9 +14410,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jan 15 08:29:33 2017 +0100
 
     add lintian override
-    
+
     anon-shared-helper-scripts source: dep5-copyright-license-name-not-unique
-    
+
     https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=779676
 
 commit 8dfb15922daa9d037b675e8031d8851fdc5925c7
@@ -14344,7 +14450,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 14 20:22:30 2016 +0000
 
     port anon-shared-helper-scripts to using Tor authentication cookie usage
-    
+
     https://phabricator.whonix.org/T578
 
 commit af092565cb2c14802e3a387c4c725336454c10a7
@@ -14364,9 +14470,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 7 20:31:22 2016 +0000
 
     code simplification
-    
+
     remove gateway_control_authenticate from settings_echo
-    
+
     https://phabricator.whonix.org/T573
 
 commit 0d71516e033eda1208ac40780eed4145b7543b14
@@ -14374,9 +14480,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 7 20:22:38 2016 +0000
 
     code simplification
-    
+
     due to improved control filter proxy we can now simplify and always authenticate
-    
+
     https://phabricator.whonix.org/T573
 
 commit 1cb1d33a758798eda6e39686c4ca9802fd665242
@@ -14384,7 +14490,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 7 20:19:26 2016 +0000
 
     gateway_control_port="9051"
-    
+
     https://phabricator.whonix.org/T573
 
 commit b83b16e214be5ae170affac5a4b393486c700e02
@@ -14398,7 +14504,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Sep 23 03:56:02 2016 +0000
 
     cleanup
-    
+
     no longer required to differentiate vs authenticate / not authenticate
 
 commit c03caf6115549bdf2e24b71c934940bc1785ca21
@@ -14418,7 +14524,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Aug 30 21:19:47 2016 +0000
 
     firewall-restarter: removed sudo
-    
+
     not required since it runs as root
 
 commit 8a117273850006d10e1dce1c24a31d2bb0f273d2
@@ -14426,7 +14532,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Aug 30 21:11:44 2016 +0000
 
     sudo --non-interactive
-    
+
     https://phabricator.whonix.org/T549
 
 commit b87c0d11516d787d2ed20419edba1b9825d5bf0f
@@ -14494,10 +14600,10 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Aug 24 20:32:08 2016 +0000
 
     added firewall restarter
-    
+
     that restarts whonix-firewall when /var/run/sdwdate/first_success status file
     was created
-    
+
     https://phabricator.whonix.org/T533
 
 commit f600e8485de1862053fe4bb25f2fe79be0e4870f
@@ -14535,10 +14641,10 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu May 12 17:04:07 2016 +0200
 
     fixed gateway ip/port detection
-    
+
     no longer setting variable TOR_CONTROL_HOST to avoid conflicting with the
     variable used by Tor Browser - use GATEWAY_IP instead
-    
+
     renamed variables to avoid conflicts:
     - TOR_CONTROL_AUTHENTICATE -> gateway_control_authenticate
     - TOR_CONTROL_PORT -> gateway_control_port
