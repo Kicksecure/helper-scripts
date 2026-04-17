@@ -68,8 +68,8 @@ text_safety_scan() {
   plugin_list=( 'unicode-show' 'modeline-show' )
 
   if (( ${#file_list[@]} == 0 )); then
-    if [[ -t 0 ]]; then
-      die 1 'No input files and stdin is a terminal.'
+    if ! [ -e '/proc/self/fd/0' ]; then
+      die 1 'stdin is not open!'
     fi
     ## Using a temp file rather than capturing to a variable because Bash will
     ## strip trailing newlines from captured text, potentially distorting the

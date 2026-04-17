@@ -75,11 +75,18 @@ def describe_char(c: str) -> str:
     semantically_allowed: bool = c in SAFE_ASCII_SEMANTIC
 
     ## Purposeful redundancy for extra safety in character display.
+    ## Use ascii() rather than repr() because repr() in Python 3 only
+    ## escapes non-printable characters: printable non-ASCII characters
+    ## (letters, homoglyphs, combining marks, CJK, emoji, symbols, ...)
+    ## are passed through literally by repr(), which would let a
+    ## suspicious character slip into the terminal output of a tool whose
+    ## whole purpose is to safely display such characters. ascii() always
+    ## returns an ASCII-only escaped representation.
     display: str
     if codepoint_allowed and semantically_allowed and not c.isspace():
         display = c
     else:
-        display = repr(c)
+        display = ascii(c)
 
     desc: str = f"{display} (U+{code:04X}, {name}, {cat})"
     return colorize(desc, CYAN)

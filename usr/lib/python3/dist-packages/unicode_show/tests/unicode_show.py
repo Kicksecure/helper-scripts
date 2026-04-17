@@ -308,6 +308,68 @@ FILENAME_PLACEHOLDER:1: pre[{test_case[2]}]post
                 file_contents=input_str,
             )
 
+    def test_printable_non_ascii_chars_are_escaped(self) -> None:
+        """
+        Tests that suspicious printable non-ASCII characters (letters,
+        homoglyphs, combining marks, CJK, emoji, symbols) are escaped in
+        the description line rather than passed through literally. Python's
+        repr() does NOT escape printable non-ASCII characters, so using it
+        would allow such characters to slip into the terminal output of a
+        tool whose whole purpose is to safely show them.
+        """
+
+        test_cases: list[tuple[str, str, str, str, str]] = [
+            (
+                "\u00e9",
+                "'\\xe9'",
+                "U+00E9",
+                "LATIN SMALL LETTER E WITH ACUTE",
+                "Ll",
+            ),
+            ("\u0430", "'\\u0430'", "U+0430", "CYRILLIC SMALL LETTER A", "Ll"),
+            ("\u0301", "'\\u0301'", "U+0301", "COMBINING ACUTE ACCENT", "Mn"),
+            (
+                "\u6f22",
+                "'\\u6f22'",
+                "U+6F22",
+                "CJK UNIFIED IDEOGRAPH-6F22",
+                "Lo",
+            ),
+            ("\U0001f600", "'\\U0001f600'", "U+1F600", "GRINNING FACE", "So"),
+            ("\u20ac", "'\\u20ac'", "U+20AC", "EURO SIGN", "Sc"),
+        ]
+        for test_case in test_cases:
+            input_str: str = f"pre{test_case[0]}post\n"
+            expect_str: str = f"""\
+FILENAME_PLACEHOLDER:1: pre[{test_case[2]}]post
+   -> {test_case[1]} ({test_case[2]}, {test_case[3]}, {test_case[4]})
+"""
+            ## Verify the escaped form contains only ASCII so suspicious
+            ## characters never make it into the terminal output.
+            self.assertTrue(
+                expect_str.isascii(),
+                f"expected output is not ASCII-only: {expect_str!r}",
+            )
+            self._test_stdin(
+                main_func=unicode_show_main,
+                argv0=self.argv0,
+                stdout_string=expect_str.replace(
+                    "FILENAME_PLACEHOLDER", "<stdin>"
+                ),
+                stderr_string="",
+                args=[],
+                exit_code=1,
+                stdin_string=input_str,
+            )
+            self._test_file(
+                main_func=unicode_show_main,
+                argv0=self.argv0,
+                stdout_string=expect_str,
+                stderr_string="",
+                exit_code=1,
+                file_contents=input_str,
+            )
+
     def test_trailing_whitespace(self) -> None:
         """
         Tests the detection of trailing whitespace characters (tabs, newlines,
