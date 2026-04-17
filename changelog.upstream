@@ -1,3 +1,53 @@
+commit 8c35bd56fb373ff35855b33e0db901615993f321
+Merge: 85164e7 6190798
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 17 03:00:44 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 85164e7793f80d0ae95c8bb19d8b1a878a9792c8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 16 12:25:57 2026 +0000
+
+    bumped changelog version
+
+commit 6190798cf8547a9594c03ee0708eb0082ce95837
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Apr 15 21:23:42 2026 -0400
+
+    Modified and squashed commit of the following:
+
+    commit 944476b82c58679ece3a615deaf7ab396120d7ab
+    Author: Claude <noreply@anthropic.com>
+    Date:   Wed Apr 15 11:25:41 2026 +0000
+
+        unicode_show: escape all non-ASCII in describe_char output
+
+        describe_char used repr(c) to render suspicious characters in the
+        description line. In Python 3, repr() only escapes characters that are
+        not printable, so printable non-ASCII characters - letters (including
+        Cyrillic/Greek/etc. homoglyphs), CJK, emoji, symbols, and combining
+        marks - are passed through literally. This lets a suspicious character
+        slip into unicode-show's own terminal output, defeating the tool's core
+        purpose: a combining acute accent merges with the adjacent quote, a
+        Cyrillic 'a' still reads as Latin 'a', etc.
+
+        Use ascii(), which always returns an ASCII-only escaped representation,
+        and add a regression test covering letters, homoglyphs, combining marks,
+        CJK, emoji, and currency symbols.
+
+commit 44e5b94fd60537613dfec024fb65a3b699e29a02
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Apr 15 20:00:49 2026 -0400
+
+    Unbreak is-stdin-open detection in modeline-show and text-safety-scan
+
+    The original code was meant to ensure that if either script was launched
+    with the stdin fd closed, the scripts would exit normally rather than
+    hanging forever. The changed code switched this to detecting if the file
+    descriptor was a terminal, which was not what the code was intended to
+    check.
+
 commit 33661344c2639d95167db79f9bc0e8ad82e4e936
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Apr 15 07:32:49 2026 -0400
