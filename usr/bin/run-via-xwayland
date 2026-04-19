@@ -1,0 +1,15 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+QT_QPA_PLATFORM=xcb
+export QT_QPA_PLATFORM
+GDK_BACKEND=x11
+export GDK_BACKEND
+"$@"
