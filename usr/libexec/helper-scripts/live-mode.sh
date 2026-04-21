@@ -7,6 +7,8 @@ true "$0: START"
 
 # shellcheck source=./check_runtime.bsh
 source /usr/libexec/helper-scripts/check_runtime.bsh
+# shellcheck source=./strings.bsh
+source /usr/libexec/helper-scripts/strings.bsh
 
 if was_executed "${BASH_SOURCE[0]}"; then
   live_mode_sourced='false'
@@ -188,6 +190,7 @@ if [ "${live_mode_sourced}" = 'false' ]; then
   ## Print out in format suitable for 'eval' and 'grep'.
   for var_name in "${var_list[@]}"; do
     ## Single quotes. Do not change without reflecting this change by users of this script.
+    check_variable_name "${var_name}" || exit 1
     printf "%s='%s'\n" "$var_name" "${!var_name}"
   done
 fi
