@@ -310,6 +310,11 @@ gpg_bash_lib_function_displaytime() {
   printf '%s\n' ''
 }
 
+check_variable_name() {
+  ## Ensures a string is a valid Bash variable name.
+  [[ "$1" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]
+}
+
 run_test() {
   local test_id function_name expected_exit_code var_name
   local -a input_parts
