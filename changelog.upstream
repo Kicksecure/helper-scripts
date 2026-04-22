@@ -1,3 +1,58 @@
+commit ada41048d7484b05763fd263dc7ccd1a9ae5993d
+Merge: 69e4451 b3ef844
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 22 06:32:54 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit b3ef8443d0e3f88ab5f6e98eab29a3547c194482
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Apr 20 22:25:14 2026 -0400
+
+    Harden against command injection
+
+commit 3a6694c98ebbab75b1579bf3e23a765695f9f9d8
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Apr 20 20:40:33 2026 -0400
+
+    Add check_variable_name helper to strings.bsh
+
+commit 52888cb3b188e488ed7ce05aad8fd2dc049130ed
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Apr 19 12:08:23 2026 -0400
+
+    Add run-via-xwayland helper
+
+commit 2a6e6c44fc60c4179b4d6143cd5a8d90f31d4f27
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Apr 17 15:58:06 2026 -0400
+
+    Squashed commit of the following:
+
+    commit 2d146013698eae3ccdb2fed45a8a149bba65117f
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 16 11:31:32 2026 +0000
+
+        fix: eliminate quadratic regex backtracking in SGR pattern, add AGENTS.md
+
+        Restructure the SGR regex from `(;*(sgr)?(;+sgr)*)?;*m` to
+        `;*(sgr(;+sgr)*;*)?m` so semicolons can only be consumed in one
+        place, preventing the engine from trying O(n^2) partitions on
+        pathological input (e.g. many semicolons with no `m` terminator).
+
+        Benchmark: 1600 semicolons 0.395s -> 0.0006s.
+
+        Add AGENTS.md with stdisplay security audit documenting verified
+        non-issues from unicode bypass analysis.
+
+        https://claude.ai/code/session_01QhhwK5uJq7Rv2ekDCt5aZ9
+
+commit 69e4451210ddd188803bc355d9c402faba9421f3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 17 07:27:52 2026 +0000
+
+    bumped changelog version
+
 commit 8c35bd56fb373ff35855b33e0db901615993f321
 Merge: 85164e7 6190798
 Author: Patrick Schleizer <adrelanos@whonix.org>
