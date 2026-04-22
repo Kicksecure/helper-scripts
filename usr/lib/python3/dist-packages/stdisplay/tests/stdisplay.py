@@ -17,7 +17,6 @@ from stdisplay.stdisplay import (
     stdisplay,
 )
 
-
 ## This is split into a global so it can be used by sanitize_string.py's tests.
 simple_escape_cases: list[tuple[str, str]] = [
     ("\a", "_"),

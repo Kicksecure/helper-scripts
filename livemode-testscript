@@ -9,6 +9,9 @@ set -o nounset
 set -o pipefail
 set -o errtrace
 
+# shellcheck source=./usr/libexec/helper-scripts/strings.bsh
+source /usr/libexec/helper-scripts/strings.bsh
+
 command -v safe-rm >/dev/null
 
 ###################################
@@ -364,6 +367,7 @@ run_live_mode_assert() {
     )
     for var_name in "${var_list[@]}"; do
       ## Single quotes. Do not change without reflecting this change by users of this script.
+      check_variable_name "${var_name}" || return 1
       printf "%s='%s'\n" "$var_name" "${!var_name}"
     done
   )"

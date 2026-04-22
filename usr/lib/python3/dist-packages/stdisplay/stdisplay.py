@@ -229,7 +229,7 @@ def get_sgr_pattern(
     sgr_combo = rf"({sgr_combo})"
     if exclude_sgr:
         sgr_combo = exclude_pattern(sgr_combo, exclude_sgr)
-    sgr_re = rf"(;*({sgr_combo})?(;+{sgr_combo})*)?;*m"
+    sgr_re = rf";*({sgr_combo}(;+{sgr_combo})*;*)?m"
     return str(sgr_re)
 
 

@@ -5,6 +5,7 @@
 ## See the file COPYING for copying conditions.
 
 """Safely print stdin to stdout and file."""
+
 from sys import argv, stdin, stdout
 from typing import TextIO
 from stdisplay.stdisplay import stdisplay
