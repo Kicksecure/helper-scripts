@@ -14,7 +14,32 @@ get_os(){
   ## Source: pfetch: https://github.com/dylanaraps/pfetch/blob/master/pfetch
   os="$(uname -s)"
   kernel="$(uname -r)"
-  arch="$(uname -m)"
+  ## Prefer 'dpkg --print-architecture' over 'uname -m' so that detection
+  ## stays correct when running inside a foreign-architecture chroot under
+  ## qemu-user-static (e.g. an amd64 chroot on an arm64 host for building
+  ## VirtualBox VMs targeting Mac M1/M2). 'uname -m' in that case still
+  ## reports the host kernel's architecture ('aarch64'), while
+  ## 'dpkg --print-architecture' correctly reports 'amd64'.
+  ## Map Debian architecture names to the uname-style names that downstream
+  ## checks expect.
+  arch=""
+  if has dpkg; then
+    case "$(dpkg --print-architecture)" in
+      amd64) arch="x86_64" ;;
+      i386)  arch="i686" ;;
+      arm64) arch="aarch64" ;;
+      armhf) arch="armv7l" ;;
+      armel) arch="armv6l" ;;
+      ppc64el) arch="ppc64le" ;;
+      riscv64) arch="riscv64" ;;
+      s390x) arch="s390x" ;;
+      "") arch="" ;;
+      *) arch="" ;;
+    esac
+  fi
+  if [ -z "${arch}" ]; then
+    arch="$(uname -m)"
+  fi
 
   distro=""
   distro_version=""
