@@ -5,12 +5,7 @@
 
 source /usr/libexec/helper-scripts/get_colors.sh
 source /usr/libexec/helper-scripts/log_run_die.sh
-
-## Check if variable is integer
-is_integer(){
-  printf %d "${1}" >/dev/null 2>&1 || return 1
-}
-
+source /usr/libexec/helper-scripts/strings.bsh
 
 ## Checks if the target is valid.
 ## Address range from 0.0.0.0 to 255.255.255.255. Port ranges from 0 to 65535

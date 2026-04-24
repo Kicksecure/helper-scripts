@@ -4,6 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 source /usr/libexec/helper-scripts/get_colors.sh
+source /usr/libexec/helper-scripts/strings.bsh
 
 if ! command -v stecho &>/dev/null ; then
   ## Fallback to 'printf' in case 'stecho' is unavailable.
@@ -199,6 +200,9 @@ log_run() {
 ## Variable to define outside: start_time
 # shellcheck disable=SC2154
 get_elapsed_time() {
+  if ! is_integer "${start_time}"; then
+    start_time=0
+  fi
   printf '%s\n' "$(($(date +%s) - start_time))"
 }
 

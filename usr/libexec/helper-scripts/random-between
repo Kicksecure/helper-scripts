@@ -1,0 +1,53 @@
+#!/usr/bin/python3 -su
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+import sys
+import secrets
+from typing import NoReturn
+
+def print_usage() -> None:
+    """
+    Print usage information.
+    """
+
+    print("Usage: random-between <lower_bound> <upper_bound>", file=sys.stderr)
+
+def main() -> NoReturn:
+    """
+    Gets a securely generated bounded random number and prints its decimal
+    representation to stdout. Both bounds are inclusive.
+    """
+
+    if len(sys.argv) != 3:
+        print_usage()
+        sys.exit(1)
+
+    try:
+        lower_bound: int = int(sys.argv[1])
+    except Exception:
+        print("ERROR: Lower bound is not an integer!", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        upper_bound: int = int(sys.argv[2])
+    except Exception:
+        print("ERROR: Upper bound is not an integer!", file=sys.stderr)
+        sys.exit(1)
+
+    if lower_bound > upper_bound:
+        print(
+            "ERROR: Lower bound must be less than or equal to upper bound!",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    ## secrets.randbelow() excludes the upper bound, so we need to add 1 to
+    ## get a number that is between the upper and lower bound inclusive.
+    secret_bound: int = (upper_bound - lower_bound) + 1
+    secret_val: int = secrets.randbelow(secret_bound)
+    print(secret_val + lower_bound)
+
+if __name__ == "__main__":
+    main()
