@@ -41,6 +41,8 @@
 
 set -e
 
+source /usr/libexec/helper-scripts/strings.bsh
+
 ionice_class=2
 ionice_classdata=5
 niceness=10
@@ -53,7 +55,7 @@ if [[ "$@" = "" ]]; then
    exit 1
 fi
 
-if [ "$maxmem" = "" ]; then
+if ! is_whole_number "$maxmem"; then
    ## Meaningless in Qubes since Qubes dynamically assigns RAM as needed.
    mem_available="$(cat /proc/meminfo | grep MemAvailable | cut -d ":" -f 2)"
    mem_available="$(echo "$mem_available" | str_replace "kB" "")"
