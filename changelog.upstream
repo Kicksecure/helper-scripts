@@ -1,3 +1,34 @@
+commit ba530f67d277a5704757a1183e81a054f5d92aa0
+Merge: 35bbba8 f272130
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 24 06:08:23 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/vbox-mac-m1-support-QJrIL'
+
+commit f272130f4e360ead5b7a6a1478542637104388dd
+Author: Claude <noreply@anthropic.com>
+Date:   Thu Apr 23 19:27:53 2026 +0000
+
+    get_os.sh: detect arch via dpkg --print-architecture with uname -m fallback
+
+    'uname -m' reports the host kernel's architecture even inside a
+    foreign-architecture chroot under qemu-user-static (e.g. an amd64 chroot
+    on an arm64 host returns 'aarch64'). 'dpkg --print-architecture' correctly
+    returns the chroot's Debian architecture ('amd64'). This enables
+    'dist-installer-cli' to install VirtualBox inside an amd64 chroot on an
+    arm64 host when cross-building arm64 VirtualBox OVAs (Mac M1/M2).
+
+    Maps Debian arch names to uname-style names so existing downstream
+    checks (arch == "x86_64") keep working.
+
+    https://claude.ai/code/session_01E1HCwZkSuVL4JqyfAote3i
+
+commit 35bbba8e5620c09cbd5d274d1ed1125f3364b118
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 22 13:15:25 2026 +0000
+
+    bumped changelog version
+
 commit ada41048d7484b05763fd263dc7ccd1a9ae5993d
 Merge: 69e4451 b3ef844
 Author: Patrick Schleizer <adrelanos@whonix.org>
