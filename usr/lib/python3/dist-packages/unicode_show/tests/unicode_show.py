@@ -319,10 +319,22 @@ FILENAME_PLACEHOLDER:1: pre[{test_case[2]}]post
         """
 
         test_cases: list[tuple[str, str, str, str, str]] = [
-            ("é", "'\\xe9'", "U+00E9", "LATIN SMALL LETTER E WITH ACUTE", "Ll"),
+            (
+                "\u00e9",
+                "'\\xe9'",
+                "U+00E9",
+                "LATIN SMALL LETTER E WITH ACUTE",
+                "Ll",
+            ),
             ("\u0430", "'\\u0430'", "U+0430", "CYRILLIC SMALL LETTER A", "Ll"),
             ("\u0301", "'\\u0301'", "U+0301", "COMBINING ACUTE ACCENT", "Mn"),
-            ("漢", "'\\u6f22'", "U+6F22", "CJK UNIFIED IDEOGRAPH-6F22", "Lo"),
+            (
+                "\u6f22",
+                "'\\u6f22'",
+                "U+6F22",
+                "CJK UNIFIED IDEOGRAPH-6F22",
+                "Lo",
+            ),
             ("\U0001f600", "'\\U0001f600'", "U+1F600", "GRINNING FACE", "So"),
             ("\u20ac", "'\\u20ac'", "U+20AC", "EURO SIGN", "Sc"),
         ]
