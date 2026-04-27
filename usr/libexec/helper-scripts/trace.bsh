@@ -1,0 +1,105 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Diagnostic backtrace helpers for error handlers. Both functions
+## write their result to stdout (newline-separated) so the caller can
+## capture into a local variable:
+##
+##   local trace
+##   trace="$(function_trace)"
+##   printf 'shell stack:\n%s\n' "$trace"
+##
+##   local ptrace
+##   ptrace="$(process_backtrace)"
+##   printf 'process stack:\n%s\n' "$ptrace"
+##
+## To use these in other scripts:
+##   source /usr/libexec/helper-scripts/trace.bsh
+
+## Walks the bash call stack via the 'caller' builtin and prints
+## "<source-file> (line number: <line>)" for each frame, deepest call
+## first. Returns no output if there are no frames (e.g. called from
+## an interactive shell).
+##
+## 'caller' reports the stack of the function that invoked us, so
+## moving this definition into a sourced lib does NOT change what gets
+## reported - the frames are still the caller's, not this lib's.
+function_trace() {
+   local -
+   set +x
+   local frame temp one two result
+   result=""
+   frame=0
+   while caller >/dev/null 2>&1 "$frame"; do
+      temp="$(caller "$frame")" || true
+      read -r one two _ <<< "$temp"
+      if [ -z "$result" ]; then
+         result="$two (line number: $one)"
+      else
+         result="$result
+$two (line number: $one)"
+      fi
+      frame=$(( frame + 1 ))
+   done
+   ## tac flips deepest-frame-first into outermost-first, matching the
+   ## order most readers expect from a "trace" report.
+   printf '%s\n' "$result" | tac
+}
+
+## Walks /proc/<pid>/{cmdline,status} from $$ up to PID 1 and prints a
+## numbered list of the cmdlines along the way. Useful when a script
+## fails inside nested invocations (cron -> wrapper -> tool -> child)
+## and the user needs to see which parent kicked it off.
+##
+## Original implementation by Gian Paolo Ghilardi, GPL-2.0-only:
+## http://stackoverflow.com/a/1438241/2605155
+## Modifications by Patrick Schleizer.
+process_backtrace() {
+   local -
+   set +x
+   local trace cp cmdline pp loop_counter who_ami ps_p_output
+   loop_counter=0
+   who_ami="$(whoami)" || true
+   trace=""
+   cp="$$"   ## PID of the script itself
+   while true ; do
+      loop_counter=$(( loop_counter + 1 ))
+      if [ "$loop_counter" -ge 20 ]; then
+         printf '%s\n' "process_backtrace ERROR: who_ami: $who_ami | loop counter >= 20, aborting" >&2
+         break
+      fi
+      if [ -z "${cp:-}" ]; then
+         printf '%s\n' "process_backtrace ERROR: who_ami: $who_ami | empty pid" >&2
+         break
+      fi
+      if [ "$cp" = "1" ]; then
+         ## reached init [PID 1] -> end of trace
+         trace="$trace : init\n"
+         break
+      fi
+      ## Reset per-iteration state so a missing /proc/<cp>/{cmdline,status}
+      ## (e.g. a parent that died mid-trace) does not carry the previous
+      ## iteration's values into this one and mis-attribute the cmdline
+      ## to the wrong PID.
+      cmdline=""
+      pp=""
+      if test -f "/proc/$cp/cmdline" ; then
+         cmdline="$(tr '\000' ' ' < "/proc/$cp/cmdline")" || true
+      else
+         ps_p_output="$(ps --no-headers -p "$cp")" || true
+         printf '%s\n' "process_backtrace ERROR: /proc/$cp/cmdline missing | ps: $ps_p_output" >&2
+      fi
+      if test -f "/proc/$cp/status" ; then
+         pp="$(grep -- PPid "/proc/$cp/status" | awk '{ print $2; }')" || true
+      else
+         ps_p_output="$(ps --no-headers -p "$cp")" || true
+         printf '%s\n' "process_backtrace ERROR: /proc/$cp/status missing | ps: $ps_p_output" >&2
+      fi
+      trace="$trace : $cmdline\n"
+      cp="$pp"
+   done
+   ## tac to print init-first; grep --line-number renumbers from 1.
+   printf '%b' "$trace" | tac | grep --line-number -- ":" || true
+}
