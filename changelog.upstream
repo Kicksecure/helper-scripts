@@ -1,3 +1,65 @@
+commit 0812d4c363c7f09fa98da6a56e37caf54888fde5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 27 11:16:05 2026 -0400
+
+    fix
+
+commit b38e4f46ca91042997420f565f51096e49c8be99
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 27 11:10:18 2026 -0400
+
+    chmod +x
+
+commit 5376a7184fe514af05bf128c4be18b0168135bda
+Merge: 331e556 83e439b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 27 11:08:00 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/configure-repo-access-hZI4X'
+
+commit 83e439bc4c69bc3fee2965235c24d9a136282cd8
+Author: Claude <noreply@anthropic.com>
+Date:   Mon Apr 27 14:49:49 2026 +0000
+
+    add xtrace.bsh, benchmark.bsh, trace.bsh shared helpers
+
+    Three small generic shell helper libraries used by
+    derivative-maker/help-steps/pre, which currently inlines them.
+    Migrating them here lets other tools reuse them and shrinks pre
+    significantly. All three are sourceable via:
+      source /usr/libexec/helper-scripts/<lib>.bsh
+
+    xtrace.bsh: xtrace_off / xtrace_restore / output_cmd_set
+      Suspend/restore set -x around blocks that must not be echoed
+      (secret handling, noisy output). Saved-state global is
+      helper_xtrace_prev_state (project-neutral name; renamed from
+      derivative-maker's dist_build_xtrace_prev_state).
+
+    benchmark.bsh: benchmark_format / benchmark_since
+      Format integer seconds as 0s / 42s / 3m42s / 1h03m42s, and a
+      convenience that takes a $SECONDS snapshot and reports the
+      elapsed.
+
+    trace.bsh: function_trace / process_backtrace
+      Diagnostic backtrace helpers for error handlers. Renamed from
+      function_trace_function / process_backtrace_function and
+      switched from writing to globals (function_trace_result /
+      process_backtrace_result) to printing the result on stdout, so
+      callers capture into a local: trace=\"\$(function_trace)\".
+      Both diagnostic helpers belong together; one source line gets
+      both.
+
+    Smoke-tested locally: function_trace correctly walks the caller's
+    stack even though the definition lives in a sourced lib (caller
+    reports the invoker's frames, not the lib's). benchmark_format
+    handles 0, 42, 245, 3725 -> 0s, 42s, 4m05s, 1h02m05s.
+
+commit 331e556427b0e9fbc88a2c45d15e40386dd38fc1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 25 09:24:14 2026 +0000
+
+    bumped changelog version
+
 commit a8009196c6e84805f8cc205dc72b029e7da5b1c1
 Merge: bd611e5 2d82d12
 Author: Patrick Schleizer <adrelanos@whonix.org>
