@@ -1,0 +1,53 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Suspend/restore bash xtrace (set -x) around blocks that must not be
+## echoed to logs - secret handling, noisy third-party output, etc.
+## Single-level globals; nested xtrace_off/xtrace_restore calls are not
+## supported. For function-scoped silencing, prefer 'local -; set +x'
+## inside the function (see benchmark.bsh / trace.bsh for examples).
+##
+## Usage:
+##   xtrace_off
+##   export SECRET="..."           # not traced
+##   xtrace_restore                # xtrace is back to whatever it was
+##
+## To use this in other scripts:
+##   source /usr/libexec/helper-scripts/xtrace.bsh
+
+xtrace_off() {
+   if test -o xtrace; then
+      helper_xtrace_prev_state=on
+   else
+      helper_xtrace_prev_state=off
+   fi
+   set +x
+}
+
+xtrace_restore() {
+   ## Read and unset the saved state BEFORE the 'set -x' below so the
+   ## 'unset' does not itself print a trace line after xtrace is
+   ## re-enabled.
+   local _should_restore="${helper_xtrace_prev_state:-off}"
+   unset helper_xtrace_prev_state
+   if [ "$_should_restore" = "on" ]; then
+      set -x
+   fi
+}
+
+## Picks 'true' (no-op) when xtrace is on, 'echo' when xtrace is off.
+## Lets a script print user-visible status lines without doubling them
+## up with xtrace traces of those same printf calls when -x is on.
+##
+## Usage:
+##   output_cmd_set
+##   $output_cmd "INFO: starting build"
+output_cmd_set() {
+   if [ -o xtrace ]; then
+      output_cmd="true"
+   else
+      output_cmd="echo"
+   fi
+}

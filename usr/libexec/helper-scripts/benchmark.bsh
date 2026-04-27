@@ -1,0 +1,38 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Format integer seconds as a compact duration: '0s', '42s', '3m42s',
+## '1h03m42s'. 'local -; set +x' suspends xtrace for the function body
+## so the bookkeeping arithmetic does not clutter traces; 'local -'
+## restores the caller's xtrace state on return.
+##
+## Usage:
+##   source /usr/libexec/helper-scripts/benchmark.bsh
+##   benchmark_format 245           # -> "4m05s"
+
+benchmark_format() {
+   local -
+   set +x
+   local s=${1:-0}
+   if (( s >= 3600 )); then
+      printf '%dh%02dm%02ds' "$((s/3600))" "$(((s%3600)/60))" "$((s%60))"
+   elif (( s >= 60 )); then
+      printf '%dm%02ds' "$((s/60))" "$((s%60))"
+   else
+      printf '%ds' "$s"
+   fi
+}
+
+## Return elapsed time since the given $SECONDS snapshot, formatted.
+##
+## Usage:
+##   local start=$SECONDS
+##   do_work
+##   printf 'took %s\n' "$(benchmark_since "$start")"
+benchmark_since() {
+   local -
+   set +x
+   benchmark_format "$(( SECONDS - ${1:-0} ))"
+}
