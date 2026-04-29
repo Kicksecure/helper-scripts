@@ -51,14 +51,20 @@ cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/.."
 mkdir -p -- cov-analysis
 
 ## Tarball
-curl --silent --show-error --fail \
+curl \
+  --silent \
+  --show-error \
+  --fail \
   --form "token=${COVERITY_TOKEN}" \
   --form "project=${COVERITY_PROJECT}" \
   --output cov-analysis-linux64.tgz \
   https://scan.coverity.com/download/linux64
 
 ## md5 reference value (Coverity's only published digest as of 2026-04)
-curl --silent --show-error --fail \
+curl \
+  --silent \
+  --show-error \
+  --fail \
   --form "token=${COVERITY_TOKEN}" \
   --form "project=${COVERITY_PROJECT}" \
   --form 'md5=1' \
