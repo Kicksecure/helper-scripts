@@ -1,0 +1,102 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
+text\-safety\-scan\-file(1) \-\- Run all configured text\-safety plugins across files or stdin ========================================================================================
+.SH "SYNOPSIS"
+\fBtext\-safety\-scan\-file\fR [\fB\-\-help\fR] [\fB\-\-\fR] [\fIPATH\fR\|\.\|\.\|\.]
+.P
+\fBtext\-safety\-scan\-file\fR < \fIinput\fR
+.SH "DESCRIPTION"
+Runs every configured text\-safety plugin (currently \fBunicode\-show\fR(1) and \fBmodeline\-show\fR(1)) against each path argument or against stdin\. All plugins run for every input even if an earlier plugin reports a finding, so a single invocation gives a complete picture\.
+.P
+This tool intentionally does NOT do directory recursion, MIME classification, VCS pruning, or symlink filtering\. For directory trees, compose with \fBfind\fR(1):
+.IP "" 4
+.nf
+find /path \-type f \-print0 | xargs \-0 \-r text\-safety\-scan\-file \-\-
+.fi
+.IP "" 0
+.P
+or use \fBtext\-safety\-scan\-find\fR(1), a thin wrapper around the same idiom\.
+.SH "OPTIONS"
+.IP "\(bu" 4
+\fB\-h\fR, \fB\-\-help\fR Show usage and exit 0\.
+.IP "\(bu" 4
+\fB\-\-\fR End of options\. Remaining arguments are paths\. Required if a path begins with \fB\-\fR\. Plugins handle leading\-dash paths natively (\fBunicode\-show\fR iterates \fBargv\fR then \fBopen()\fR; \fBmodeline\-show\fR forwards via \fBgrep \-\-\fR)\.
+.IP "" 0
+.SH "EXIT CODES"
+.IP "\(bu" 4
+\fB0\fR All plugins clean for all inputs\.
+.IP "\(bu" 4
+\fB1\fR At least one plugin reported a finding (e\.g\. a Unicode hit or a Vim/Emacs modeline)\.
+.IP "\(bu" 4
+\fB2\fR Hard error\. Reasons include: an input does not exist, an input is a directory (use \fBtext\-safety\-scan\-find\fR(1) instead), a plugin is not installed, stdin capture failed, etc\.
+.IP "" 0
+.SH "EXAMPLES"
+Scan a single file:
+.IP "" 4
+.nf
+text\-safety\-scan\-file \./changelog
+.fi
+.IP "" 0
+.P
+Scan multiple files explicitly:
+.IP "" 4
+.nf
+text\-safety\-scan\-file \./README \./CHANGELOG \./LICENSE
+.fi
+.IP "" 0
+.P
+Scan stdin:
+.IP "" 4
+.nf
+cat \./suspicious\.txt | text\-safety\-scan\-file
+curl \-fsSL https://example\.invalid/script\.sh | text\-safety\-scan\-file
+.fi
+.IP "" 0
+.P
+Scan a file whose name begins with a hyphen:
+.IP "" 4
+.nf
+text\-safety\-scan\-file \-\- \-\-weird\-name
+.fi
+.IP "" 0
+.P
+Scan a tree, using find for the recursion (this is what \fBtext\-safety\-scan\-find\fR(1) does internally):
+.IP "" 4
+.nf
+find /repo \-type f \-print0 | xargs \-0 \-r text\-safety\-scan\-file \-\-
+.fi
+.IP "" 0
+.P
+Scan a tree but skip the \fB\.git\fR directory and \fB*\.png\fR images:
+.IP "" 4
+.nf
+find /repo \-not \-path '*/\.git/*' \-not \-name '*\.png' \-type f \-print0 \e
+  | xargs \-0 \-r text\-safety\-scan\-file \-\-
+.fi
+.IP "" 0
+.SH "SECURITY MODEL"
+\fBtext\-safety\-scan\-file\fR is for AUDITING content, not for hardening against an attacker who can race the scanner\. Specifically:
+.IP "\(bu" 4
+The scan\-then\-read sequence has an inherent TOCTOU window: between the caller's \fBfind\fR listing a file and a plugin opening it, the file can be replaced\.
+.IP "\(bu" 4
+Symlink arguments are followed (\fBopen()\fR follows links by default)\. The user explicitly passed the path; we defer to that\.
+.IP "\(bu" 4
+Hostile filenames (newlines, ANSI escapes, strings like \fB::error::FORGED\fR) are routed through \fBprintf %q\fR before logging, so they cannot forge log lines or CI annotations\. Logs of hostile paths read as bash \fB$'\|\.\|\.\|\.'\fR literals\.
+.IP "" 0
+.P
+The intended deployment is: the caller extracts an archive (or checks out a tree) into a directory the attacker cannot write to during the scan, then runs \fBtext\-safety\-scan\-file\fR(1)\.
+.SH "DEPENDENCIES"
+Linux / GNU userland; no portability shims:
+.IP "\(bu" 4
+bash 4+
+.IP "\(bu" 4
+moreutils \fBsponge\fR (atomic stdin capture)
+.IP "\(bu" 4
+\fBsafe\-rm\fR, \fBunicode\-show\fR, \fBmodeline\-show\fR from helper\-scripts\.
+.IP "" 0
+.P
+A \fBpreflight\fR step at startup verifies these are on PATH and exits with rc 2 if any are missing, so failures are surfaced once at the top instead of N times per file\.
+.SH "SEE ALSO"
+text\-safety\-scan\-find(1), unicode\-show(1), modeline\-show(1), grep\-find\-unicode\-wrapper(1), find(1), xargs(1)
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.
