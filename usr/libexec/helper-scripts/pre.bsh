@@ -84,7 +84,7 @@
 ## bash script fragment
 
 # shellcheck source=./check_runtime.bsh
-source /usr/libexec/helper-scripts/check_runtime.bsh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/check_runtime.bsh"
 
 if was_executed "${BASH_SOURCE[0]}"; then
   pre_bsh_sourced='false'
@@ -100,9 +100,9 @@ if [ "${pre_bsh_sourced}" = 'false' ]; then
   set -o pipefail
 fi
 
-if test -r /usr/libexec/helper-scripts/get_colors.sh; then
+if test -r "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh"; then
   # shellcheck source=./get_colors.sh
-  source /usr/libexec/helper-scripts/get_colors.sh || true "$0: ERROR: Failed to source /usr/libexec/helper-scripts/get_colors.sh"
+  source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh" || true "$0: ERROR: Failed to source /usr/libexec/helper-scripts/get_colors.sh"
 fi
 
 source_config_folder() {

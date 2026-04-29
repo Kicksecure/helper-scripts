@@ -5,9 +5,9 @@
 
 ## TODO: how to handle installer specific code?
 
-source /usr/libexec/helper-scripts/has.sh
-source /usr/libexec/helper-scripts/log_run_die.sh
-source /usr/libexec/helper-scripts/ip_syntax.sh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.sh"
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/log_run_die.sh"
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/ip_syntax.sh"
 
 ## Get host os and other necessary information.
 get_os(){

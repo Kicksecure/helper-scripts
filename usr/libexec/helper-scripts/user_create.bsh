@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 # shellcheck source=./accountctl.sh
-source /usr/libexec/helper-scripts/accountctl.sh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/accountctl.sh"
 
 USER_CREATE_USERNAME=""
 USER_CREATE_GROUP_ADD_LIST=()

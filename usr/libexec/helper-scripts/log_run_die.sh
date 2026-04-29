@@ -3,8 +3,8 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-source /usr/libexec/helper-scripts/get_colors.sh
-source /usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh"
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/strings.bsh"
 
 if ! command -v stecho &>/dev/null ; then
   ## Fallback to 'printf' in case 'stecho' is unavailable.

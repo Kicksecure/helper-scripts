@@ -16,12 +16,12 @@
 ## installed).
 ## Literal code duplication is bad.
 ## Confuses shellcheck for dist-installer-cli-standalone.
-if test -f /usr/libexec/helper-scripts/check_runtime.bsh; then
+if test -f "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/check_runtime.bsh"; then
   ## Use 'source_encoded' to avoid
   ## /usr/share/usability-misc/build-dist-installer-cli
   ## from in-lining the source code.
   source_encoded=source
-  "$source_encoded" /usr/libexec/helper-scripts/check_runtime.bsh
+  "$source_encoded" "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/check_runtime.bsh"
 fi
 
 ## NOTE: br_add and br_add_to_file are not HTML sanitization functions.
