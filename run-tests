@@ -1,11 +1,22 @@
 #!/bin/bash
+
+## Copyright (C) 2025 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 set -eux
 git_toplevel="$(git rev-parse --show-toplevel)"
 pyrc="${git_toplevel}/pyproject.toml"
 pythonpath="${git_toplevel}/usr/lib/python3/dist-packages"
+ci_tests_dir="${git_toplevel}/ci/tests"
 export PYTHONPATH="${pythonpath}${PYTHONPATH+":${PYTHONPATH}"}"
 
 pytest=(python3 -m pytest -o 'python_files=tests/*.py')
+## Separate pytest config for ci/tests/<pkg>/, which uses standard
+## test_*.py discovery rather than tests/*.py. Run via
+## --import-mode=importlib so a test file named e.g. test_stdisplay.py
+## couldn't shadow the real stdisplay package on PYTHONPATH (defensive
+## - currently only test_property.py lives there).
+pytest_ci_tests=(python3 -m pytest --import-mode=importlib)
 black=(black --config="${pyrc}" --color --diff --check)
 pylint=(pylint --rcfile="${pyrc}")
 mypy=(mypy --config-file="${pyrc}")
@@ -19,7 +30,7 @@ py_lib_to_test_list=(
 )
 
 for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
-  cd "${pythonpath}/${py_lib_to_test}/"
+  cd -- "${pythonpath}/${py_lib_to_test}/"
   # Ideally, these variables should be ignored by the tests...
   NO_COLOR="" COLORTERM="" TERM="xterm-direct" "${pytest[@]}" "${@}"
   "${black[@]}" .
@@ -28,15 +39,36 @@ for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
   "${mypy[@]}" .
 done
 
+## Tests added under ci/tests/<pkg>/ are CI-only and not shipped in
+## the .deb (debian/helper-scripts.install ships 'usr/*'). Currently
+## only the Hypothesis property tests live here. Each test file
+## imports from its package via PYTHONPATH set above; no cross-test
+## imports, so no conftest gymnastics required.
+##
+## We deliberately skip pylint/mypy on ci/tests/ - test code value-vs-cost
+## for strict typing is low, and cross-package linting from this layout
+## requires extra sys.path / mypy_path plumbing that isn't worth the
+## maintenance cost. black --check still runs so style stays consistent.
+for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
+  test_path="${ci_tests_dir}/${py_lib_to_test}"
+  if [ -d "${test_path}" ]; then
+    cd -- "${test_path}"
+    NO_COLOR="" COLORTERM="" TERM="xterm-direct" \
+      "${pytest_ci_tests[@]}" "${@}"
+    "${black[@]}" .
+  fi
+done
+
 stdin_file_read_utils=(stcat stcatn)
 stdin_implicit_read_utils=(sttee stsponge strip-markup unicode-show)
 stdin_utils=("${stdin_file_read_utils[@]}" "${stdin_implicit_read_utils[@]}")
 utils=(stprint stecho sanitize-string "${stdin_utils[@]}")
-cd "${git_toplevel}/usr/bin"
+cd -- "${git_toplevel}/usr/bin"
 "${black[@]}" -- "${utils[@]}"
 "${pylint[@]}" -- "${utils[@]}"
-for file in "${utils[@]}"; do
-  "${mypy[@]}" -- "${file}"
+## 'file_name' (not 'file') so we don't shadow the 'file' command.
+for file_name in "${utils[@]}"; do
+  "${mypy[@]}" -- "${file_name}"
 done
 
 for util in "${stdin_file_read_utils[@]}"; do
@@ -60,5 +92,5 @@ git clone git@github.com:nickboucher/trojan-source.git" >&2
   exit 1
 fi
 
-cd "${git_toplevel}"
+cd -- "${git_toplevel}"
 ./unicode-testscript

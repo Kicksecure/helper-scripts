@@ -1,4 +1,8 @@
+# Copyright (C) 2025 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+
 __pycache__/
 .mypy_cache/
+.hypothesis/
 debian/helper-scripts-tests/
 debian/helper-scripts/

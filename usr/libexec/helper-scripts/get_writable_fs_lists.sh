@@ -74,7 +74,7 @@ while read -r line; do
       elif [ "${is_physical_device}" = 'true' ] \
         && [ -f "${sysfs_prefix}/sys/class/block/${src_device}/removable" ] \
         && [ "$(
-          cat "${sysfs_prefix}/sys/class/block/${src_device}/removable"
+          cat -- "${sysfs_prefix}/sys/class/block/${src_device}/removable"
         )" = '0' ]; then
         danger_writable_fs_list+=( "${mount_point}" )
       else

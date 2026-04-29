@@ -1,0 +1,125 @@
+<!-- Authored by Claude (Anthropic). -->
+text-safety-scan-file(1) -- Run all configured text-safety plugins across files or stdin
+========================================================================================
+
+<!--
+# Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+
+`text-safety-scan-file` [`--help`] [`--`] [*PATH*...]
+
+`text-safety-scan-file` < *input*
+
+## DESCRIPTION
+
+Runs every configured text-safety plugin (currently
+`unicode-show`(1) and `modeline-show`(1)) against each path argument
+or against stdin. All plugins run for every input even if an earlier
+plugin reports a finding, so a single invocation gives a complete
+picture.
+
+This tool intentionally does NOT do directory recursion, MIME
+classification, VCS pruning, or symlink filtering. For directory
+trees, compose with `find`(1):
+
+    find /path -type f -print0 | xargs -0 -r text-safety-scan-file --
+
+or use `text-safety-scan-find`(1), a thin wrapper around the same
+idiom.
+
+## OPTIONS
+
+* `-h`, `--help`
+  Show usage and exit 0.
+
+* `--`
+  End of options. Remaining arguments are paths. Required if a path
+  begins with `-`. Plugins handle leading-dash paths natively
+  (`unicode-show` iterates `argv` then `open()`; `modeline-show`
+  forwards via `grep --`).
+
+## EXIT CODES
+
+* `0`
+  All plugins clean for all inputs.
+
+* `1`
+  At least one plugin reported a finding (e.g. a Unicode hit or a
+  Vim/Emacs modeline).
+
+* `2`
+  Hard error. Reasons include: an input does not exist, an input is
+  a directory (use `text-safety-scan-find`(1) instead), a plugin is
+  not installed, stdin capture failed, etc.
+
+## EXAMPLES
+
+Scan a single file:
+
+    text-safety-scan-file ./changelog
+
+Scan multiple files explicitly:
+
+    text-safety-scan-file ./README ./CHANGELOG ./LICENSE
+
+Scan stdin:
+
+    cat ./suspicious.txt | text-safety-scan-file
+    curl -fsSL https://example.invalid/script.sh | text-safety-scan-file
+
+Scan a file whose name begins with a hyphen:
+
+    text-safety-scan-file -- --weird-name
+
+Scan a tree, using find for the recursion (this is what
+`text-safety-scan-find`(1) does internally):
+
+    find /repo -type f -print0 | xargs -0 -r text-safety-scan-file --
+
+Scan a tree but skip the `.git` directory and `*.png` images:
+
+    find /repo -not -path '*/.git/*' -not -name '*.png' -type f -print0 \
+      | xargs -0 -r text-safety-scan-file --
+
+## SECURITY MODEL
+
+`text-safety-scan-file` is for AUDITING content, not for hardening
+against an attacker who can race the scanner. Specifically:
+
+* The scan-then-read sequence has an inherent TOCTOU window: between
+  the caller's `find` listing a file and a plugin opening it, the
+  file can be replaced.
+* Symlink arguments are followed (`open()` follows links by default).
+  The user explicitly passed the path; we defer to that.
+* Hostile filenames (newlines, ANSI escapes, strings like
+  `::error::FORGED`) are routed through `printf %q` before logging,
+  so they cannot forge log lines or CI annotations. Logs of hostile
+  paths read as bash `$'...'` literals.
+
+The intended deployment is: the caller extracts an archive (or
+checks out a tree) into a directory the attacker cannot write to
+during the scan, then runs `text-safety-scan-file`(1).
+
+## DEPENDENCIES
+
+Linux / GNU userland; no portability shims:
+
+* bash 4+
+* moreutils `sponge` (atomic stdin capture)
+* `safe-rm`, `unicode-show`, `modeline-show` from helper-scripts.
+
+A `preflight` step at startup verifies these are on PATH and exits
+with rc 2 if any are missing, so failures are surfaced once at the
+top instead of N times per file.
+
+## SEE ALSO
+
+text-safety-scan-find(1), unicode-show(1), modeline-show(1),
+grep-find-unicode-wrapper(1), find(1), xargs(1)
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).

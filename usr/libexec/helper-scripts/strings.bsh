@@ -238,6 +238,35 @@ trim_collapse_split() {
   printf '%s\n' "$formatted_list"
 }
 
+## Render an arbitrary string in a shell-readable, log-injection-safe
+## form. Wraps bash's 'printf %q' under LC_ALL=C so the output is
+## guaranteed pure-ASCII printable regardless of caller locale:
+##
+##   - Bytes > 0x7E (incl. valid UTF-8 multibyte sequences such as
+##     U+202E RIGHT-TO-LEFT OVERRIDE) are octal-escaped (\NNN).
+##   - Control bytes (NUL, ESC, BEL, DEL, ...) are escaped via
+##     bash $'...' literals.
+##   - Newlines are rendered as literal '\n', not real LF.
+##
+## LC_ALL=C is REQUIRED. Without it, printf %q under a UTF-8 locale
+## (the default on Debian / Ubuntu / GitHub Actions runners) passes
+## valid UTF-8 multibyte sequences through unchanged because it
+## considers them "printable" - which would let trojan codepoints
+## like U+202E survive the quote and forge log lines, terminal
+## escapes, or fake CI annotations like '::error::'.
+##
+## Use this whenever logging an untrusted-origin string (filename,
+## archive entry, network input, etc.) so a malicious value cannot
+## inject content into the log stream or the terminal renderer.
+##
+## Example:
+##   log error "target does not exist: $(string_quote_safe "$path")"
+##
+## Tested by ./unicode-testscript on the trojan-source corpus.
+string_quote_safe() {
+  LC_ALL=C printf '%q' "$1"
+}
+
 ## success: whole numbers such as 1 2 3 456 etc. (purely numeric only) (isnum)
 ## fail:
 ## 5.5

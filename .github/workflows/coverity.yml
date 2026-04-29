@@ -1,0 +1,113 @@
+---
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Authored by Claude (Anthropic).
+## Coverity Scan static analysis for Python in this repository.
+##
+## Coverity Scan (https://scan.coverity.com) is the cloud OSS-tier of
+## the commercial Coverity static analyzer. It complements CodeQL with
+## a different rule set (notably stronger on taint flow / unsafe
+## deserialization for Python).
+##
+## Setup required outside this file (one-time, repository owner):
+##   1. Register the project at https://scan.coverity.com (the project
+##      already exists per the maintainer).
+##   2. Add repository secrets (Settings > Secrets and variables >
+##      Actions > Repository secrets):
+##         COVERITY_SCAN_TOKEN   - the project token from the project
+##                                  page on scan.coverity.com.
+##         COVERITY_SCAN_EMAIL   - the email address registered on the
+##                                  project (Coverity sends scan
+##                                  results / notifications here).
+##   3. Add a repository variable (Settings > Secrets and variables >
+##      Actions > Repository variables) for the Coverity project name
+##      as it appears in the scan.coverity.com URL:
+##         COVERITY_PROJECT      - e.g. 'Whonix-helper-scripts'.
+##      If the variable is not set, the workflow falls back to the
+##      GitHub repository name (github.repository, with '/' replaced
+##      by '-'), which may or may not match - hence a variable is
+##      preferable.
+##
+## Triggers:
+##   - Weekly cron - submission has a daily build limit; weekly avoids
+##     blowing the quota.
+##   - workflow_dispatch - manual trigger for ad-hoc rescans.
+##   - Not on every PR / push: Coverity Scan rate-limits submissions
+##     and the value-per-PR is low.
+##
+## Trust footprint expansion:
+## - The 'cov-analysis' tarball is downloaded from scan.coverity.com
+##   itself (Black Duck / Synopsys). This is the required trust root
+##   for using their service; there is no Debian-packaged equivalent.
+## - No third-party GitHub Action is used; the curl+tar+cov-build flow
+##   is written inline so it's auditable.
+
+name: Coverity
+
+on:
+  schedule:
+    ## Sunday 06:00 UTC. Offset from other scheduled workflows so
+    ## cron contention is unlikely.
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  coverity:
+    name: Coverity Scan (Python)
+    runs-on: ubuntu-latest
+
+    ## Forks won't have the secrets set; skip on forks rather than have
+    ## the run fail with a missing-secret error halfway through.
+    if: github.repository == 'assisted-by-ai/helper-scripts' || github.event_name == 'workflow_dispatch'
+
+    timeout-minutes: 30
+
+    env:
+      COVERITY_PROJECT: ${{ vars.COVERITY_PROJECT || 'helper-scripts' }}
+      ## Pass token / email via env so the secret is not directly
+      ## interpolated into a 'run:' shell string. Each step uses
+      ## $COVERITY_TOKEN / $COVERITY_EMAIL via the env, never via
+      ## ${{ secrets.* }} directly in a script.
+      COVERITY_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+      COVERITY_EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
+
+    steps:
+      - name: Checkout repository
+        ## https://github.com/actions/checkout/releases/tag/v6.0.2
+        ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Sanity check secrets
+        run: bash ci/coverity-check-secrets.sh
+
+      - name: Download Coverity Build Tool
+        run: |
+          cov_bin_dir="$(bash ci/coverity-download.sh | tail -n 1)"
+          printf '%s\n' "$cov_bin_dir" >> "$GITHUB_PATH"
+
+      - name: Run Coverity build (Python source capture)
+        run: bash ci/coverity-build.sh
+
+      - name: Submit to Coverity Scan
+        run: bash ci/coverity-submit.sh
+
+      - name: Upload cov-int artifact (always)
+        if: always()
+        ## https://github.com/actions/upload-artifact/releases/tag/v7.0.1
+        ## > 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: cov-int
+          path: cov-int.tgz
+          if-no-files-found: ignore
+          retention-days: 7
