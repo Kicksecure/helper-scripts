@@ -103,18 +103,6 @@ The intended deployment is: the caller extracts an archive (or
 checks out a tree) into a directory the attacker cannot write to
 during the scan, then runs `text-safety-scan-file`(1).
 
-## DEPENDENCIES
-
-Linux / GNU userland; no portability shims:
-
-* bash 4+
-* moreutils `sponge` (atomic stdin capture)
-* `safe-rm`, `unicode-show`, `modeline-show` from helper-scripts.
-
-A `preflight` step at startup verifies these are on PATH and exits
-with rc 2 if any are missing, so failures are surfaced once at the
-top instead of N times per file.
-
 ## SEE ALSO
 
 text-safety-scan-find(1), unicode-show(1), modeline-show(1),
