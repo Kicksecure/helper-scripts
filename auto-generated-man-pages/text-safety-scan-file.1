@@ -1,6 +1,9 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1
-text\-safety\-scan\-file(1) \-\- Run all configured text\-safety plugins across files or stdin ========================================================================================
+.TH "TEXT\-SAFETY\-SCAN\-FILE" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
+
+.SH "NAME"
+\fBtext\-safety\-scan\-file\fR \- Run all configured text\-safety plugins across files or stdin
 .SH "SYNOPSIS"
 \fBtext\-safety\-scan\-file\fR [\fB\-\-help\fR] [\fB\-\-\fR] [\fIPATH\fR\|\.\|\.\|\.]
 .P
@@ -85,17 +88,6 @@ Hostile filenames (newlines, ANSI escapes, strings like \fB::error::FORGED\fR) a
 .IP "" 0
 .P
 The intended deployment is: the caller extracts an archive (or checks out a tree) into a directory the attacker cannot write to during the scan, then runs \fBtext\-safety\-scan\-file\fR(1)\.
-.SH "DEPENDENCIES"
-Linux / GNU userland; no portability shims:
-.IP "\(bu" 4
-bash 4+
-.IP "\(bu" 4
-moreutils \fBsponge\fR (atomic stdin capture)
-.IP "\(bu" 4
-\fBsafe\-rm\fR, \fBunicode\-show\fR, \fBmodeline\-show\fR from helper\-scripts\.
-.IP "" 0
-.P
-A \fBpreflight\fR step at startup verifies these are on PATH and exits with rc 2 if any are missing, so failures are surfaced once at the top instead of N times per file\.
 .SH "SEE ALSO"
 text\-safety\-scan\-find(1), unicode\-show(1), modeline\-show(1), grep\-find\-unicode\-wrapper(1), find(1), xargs(1)
 .SH "AUTHOR"
