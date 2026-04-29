@@ -1,10 +1,13 @@
-<!-- Authored by Claude (Anthropic). -->
 grep-find-unicode-wrapper(1) -- Find suspicious Unicode characters using grep semantics
 ========================================================================================
 
 <!--
 # Copyright (C) 2022 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 # See the file COPYING for copying conditions.
+-->
+
+<!--
+# Authored by Claude (Anthropic).
 -->
 
 ## SYNOPSIS
