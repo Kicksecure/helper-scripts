@@ -18,7 +18,7 @@ source /usr/libexec/helper-scripts/strings.bsh
 benchmark_format() {
    local -
    set +x
-   is_whole_number "${1}"
+   is_whole_number "${1:-0}"
    local s=${1:-0}
    if (( s >= 3600 )); then
       printf '%dh%02dm%02ds' "$((s/3600))" "$(((s%3600)/60))" "$((s%60))"
@@ -38,6 +38,6 @@ benchmark_format() {
 benchmark_since() {
    local -
    set +x
-   is_whole_number "${1}"
+   is_whole_number "${1:-0}"
    benchmark_format "$(( SECONDS - ${1:-0} ))"
 }
