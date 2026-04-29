@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 # shellcheck source=./check_runtime.bsh
-source /usr/libexec/helper-scripts/check_runtime.bsh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/check_runtime.bsh"
 
 if should_run_unit_tests "${BASH_SOURCE[0]}"; then
   progress_bar_should_run_unit_tests='true'

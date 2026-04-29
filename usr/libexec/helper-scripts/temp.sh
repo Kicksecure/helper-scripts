@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 # shellcheck source=./check_runtime.bsh
-source /usr/libexec/helper-scripts/check_runtime.bsh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/check_runtime.bsh"
 
 check_tempdir() {
   local id_of_user tmpdir_expected temp_file

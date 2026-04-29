@@ -11,10 +11,10 @@
 ## This script acts as a "main program", not as a library.
 
 # shellcheck source=./log_run_die.sh
-source /usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/log_run_die.sh"
 
 # shellcheck source=./has.sh
-source /usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.sh"
 
 set -o errexit
 set -o nounset
