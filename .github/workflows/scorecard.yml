@@ -1,0 +1,87 @@
+---
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Authored by Claude (Anthropic).
+## OpenSSF Scorecard - weekly posture audit.
+##
+## Runs the OpenSSF Scorecard tool (https://github.com/ossf/scorecard)
+## against this repository and publishes results as a SARIF file to
+## GitHub's code-scanning Security tab.
+##
+## Trust footprint: OpenSSF (Linux Foundation). Same trust scope as
+## github/codeql-action, which we already use.
+##
+## See derivative-maker/.github/workflows/scorecard.yml for the full
+## annotated copy with per-check rationale; this is the
+## helper-scripts equivalent.
+
+name: Scorecard
+
+on:
+  branch_protection_rule:
+  schedule:
+    ## Sunday 04:30 UTC - offset from derivative-maker scorecard
+    ## (04:00) so the two repos don't contend for the same cron
+    ## slot.
+    - cron: '30 4 * * 0'
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
+
+    timeout-minutes: 10
+
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+      ## Intentionally NOT 'id-token: write' - see scorecard
+      ## publish_results comment below.
+
+    steps:
+      - name: Checkout repository
+        ## https://github.com/actions/checkout/releases/tag/v6.0.2
+        ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Run analysis
+        ## https://github.com/ossf/scorecard-action/releases/tag/v2.4.3
+        ## > 4eaacf0543bb3f2c246792bd56e8cdeffafb205a
+        uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a  # v2.4.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          ## Keep off the public OpenSSF transparency log. Flip to
+          ## true (and add 'id-token: write' above) to opt in.
+          publish_results: false
+
+      - name: Upload SARIF artifact
+        ## https://github.com/actions/upload-artifact/releases/tag/v7.0.1
+        ## > 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: scorecard-sarif
+          path: results.sarif
+          retention-days: 14
+
+      - name: Upload to GitHub code scanning
+        ## https://github.com/github/codeql-action/releases/tag/v4.35.2
+        ## > 95e58e9a2cdfd71adc6e0353d5c52f41a045d225
+        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225  # v4.35.2
+        with:
+          sarif_file: results.sarif

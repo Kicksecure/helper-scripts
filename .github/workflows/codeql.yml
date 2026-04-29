@@ -1,0 +1,81 @@
+---
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Authored by Claude (Anthropic).
+## CodeQL static analysis for the Python packages in this repository.
+##
+## Scope:
+##   usr/lib/python3/dist-packages/{config_builder,guimessages,
+##                                   query_sock_pid,sanitize_string,
+##                                   stdisplay,strict_config_parser,
+##                                   strip_markup,term_colors,
+##                                   unicode_show}/
+##
+## Bash is NOT scanned: CodeQL has no bash extractor. Bash is covered by
+## shellcheck (in lint.yml).
+##
+## Findings are uploaded to GitHub's code scanning UI under the repo's
+## Security tab and surface as PR annotations.
+
+name: CodeQL
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    ## Weekly re-run picks up new CodeQL queries even when the repo
+    ## has not changed.
+    - cron: '17 4 * * 0'
+
+## Workflow-level least-privilege default. The 'analyze' job below
+## upgrades to the additional scope it needs (security-events: write).
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (Python)
+    runs-on: ubuntu-latest
+
+    ## Fork-PR guard: do not run on PRs originating from a different
+    ## repository (forks). Maintainer review required first.
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
+
+    timeout-minutes: 20
+
+    permissions:
+      ## Required so the CodeQL action can upload SARIF results.
+      security-events: write
+      ## Read access to private packages if any were referenced by the
+      ## CodeQL build step. Keep at 'read'.
+      packages: read
+
+    steps:
+      - name: Checkout repository
+        ## https://github.com/actions/checkout/releases/tag/v6.0.2
+        ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        ## https://github.com/github/codeql-action/releases/tag/v4.35.2
+        ## > 95e58e9a2cdfd71adc6e0353d5c52f41a045d225
+        uses: github/codeql-action/init@95e58e9a2cdfd71adc6e0353d5c52f41a045d225  # v4.35.2
+        with:
+          languages: python
+          queries: security-and-quality
+
+      - name: Perform CodeQL Analysis
+        ## https://github.com/github/codeql-action/releases/tag/v4.35.2
+        ## > 95e58e9a2cdfd71adc6e0353d5c52f41a045d225
+        uses: github/codeql-action/analyze@95e58e9a2cdfd71adc6e0353d5c52f41a045d225  # v4.35.2
+        with:
+          category: "/language:python"

@@ -1,0 +1,84 @@
+<!-- Authored by Claude (Anthropic). -->
+text-safety-scan-find(1) -- Run text-safety-scan-file across every file under a directory tree
+==============================================================================================
+
+<!--
+# Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+## SYNOPSIS
+
+`text-safety-scan-find` *PATH* [*find-expression*...]
+
+`text-safety-scan-find` `--help`
+
+## DESCRIPTION
+
+Thin wrapper around `find`(1) that hands every regular file under
+the given starting point(s) to `text-safety-scan-file`(1). The user
+controls recursion / pruning / symlink / size / binary policy by
+passing standard `find`(1) expressions; this script does not invent
+a DSL.
+
+The exact pipeline is:
+
+    find "$@" -type f -print0 | xargs -0 -r text-safety-scan-file --
+
+Anything before the trailing `-type f -print0` is passed verbatim
+to find. See `find`(1) for expression syntax.
+
+## EXAMPLES
+
+Scan every file under `/repo`:
+
+    text-safety-scan-find /repo
+
+Skip the `.git` directory:
+
+    text-safety-scan-find /repo -not -path '*/.git/*'
+
+Skip image files:
+
+    text-safety-scan-find /repo -not -name '*.png' -not -name '*.jpg'
+
+Follow symlinks (default is to NOT follow):
+
+    text-safety-scan-find -L /repo
+
+Limit to small files only:
+
+    text-safety-scan-find /repo -size -1M
+
+Combine prunes with size filter:
+
+    text-safety-scan-find /repo -not -path '*/.git/*' -size -1M
+
+## EXIT CODES
+
+* `0` All scanned files are clean.
+* non-zero An error occurred or a finding was reported. The exact
+  exit code is whatever the `find`(1) / `xargs`(1) /
+  `text-safety-scan-file`(1) pipeline produced; this wrapper does
+  not translate it. Notably, `xargs` collapses any child exit code
+  in `1..125` to its own `123`, so the per-finding-vs-hard-error
+  distinction the file tool makes is lost here. For maintainers who
+  need that fidelity, run `text-safety-scan-file`(1) on individual
+  files.
+
+## NOTES
+
+* Paths starting with `-` are not handled here; they would confuse
+  `find`(1)'s argument parser. If you need to scan such a path,
+  prepend `./` to the path or use `text-safety-scan-file`(1)
+  directly with `--`.
+* This wrapper is deliberately five lines of bash. Read the source
+  if you want to know exactly what it does.
+
+## SEE ALSO
+
+text-safety-scan-file(1), find(1), xargs(1)
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).

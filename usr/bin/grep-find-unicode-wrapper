@@ -30,6 +30,19 @@ command -v sort >/dev/null
 ## options such as for example '--recursive'. It remains the responsibility of
 ## the user to use end-of-options.
 
+## TODO: stdin support is broken. With "$@" empty, grep reads from stdin -
+## but the four grep invocations below run sequentially, so only the FIRST
+## one consumes the piped bytes; the remaining three see EOF and silently
+## report "no match", which can produce a false negative (notably for the
+## RHSB-2021-007 trojan codepoint check at the third grep and the ASCII
+## control / NUL check at the fourth). For now callers must pass a path;
+## if they have stdin they must stage it via mktemp themselves (see
+## unicode-testscript). Fix would be to slurp stdin into a tempfile here
+## when "$#" -eq 0 && [ ! -t 0 ], then 'set -- "$tmpfile"'. A bash
+## variable will not work because variables silently drop NUL bytes and
+## the fourth grep is specifically scanning for NULs. Pipes are not
+## seekable so we cannot rewind between greps either.
+
 ## --binary-files=text - required to find backspace and null character
 grep_args=(
   --files-with-matches

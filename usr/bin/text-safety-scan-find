@@ -1,0 +1,55 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Authored by Claude (Anthropic).
+
+## See text-safety-scan-find(1) for the full description, options,
+## examples, and the find(1) expression syntax this wrapper accepts.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+usage() {
+  printf '%s\n' \
+    'Usage: text-safety-scan-find PATH [find-expression...]' \
+    '' \
+    'Thin wrapper that feeds every regular file under the given' \
+    'starting point(s) to text-safety-scan-file(1). User-injected' \
+    'find(1) expressions control recursion / pruning / symlink /' \
+    'size / type policy.' \
+    '' \
+    'Examples:' \
+    '  text-safety-scan-find /repo' \
+    "  text-safety-scan-find /repo -not -path '*/.git/*'" \
+    "  text-safety-scan-find /repo -not -name '*.png'" \
+    '  text-safety-scan-find -L /repo            # follow symlinks' \
+    '  text-safety-scan-find /repo -size -1M' \
+    '' \
+    'Internally:' \
+    '  find "$@" -type f -print0 | xargs -0 -r text-safety-scan-file --' \
+    '' \
+    'Exit codes (forwarded from the find/xargs/text-safety-scan-file' \
+    'pipeline; xargs collapses any child rc 1..125 to its own 123):' \
+    '  0         clean' \
+    '  non-zero  error or finding' \
+    '' \
+    'See man text-safety-scan-find for the full doc.'
+}
+
+case "${1:-}" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  '')
+    usage >&2
+    exit 2
+    ;;
+esac
+
+find "$@" -type f -print0 \
+  | xargs -0 -r text-safety-scan-file --
