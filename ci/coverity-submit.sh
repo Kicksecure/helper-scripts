@@ -31,7 +31,10 @@ cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/.."
 
 tar -czf cov-int.tgz -- cov-int
 
-curl --silent --show-error --fail \
+curl \
+  --silent \
+  --show-error \
+  --fail \
   --form "token=${COVERITY_TOKEN}" \
   --form "email=${COVERITY_EMAIL}" \
   --form "file=@cov-int.tgz" \
@@ -39,7 +42,7 @@ curl --silent --show-error --fail \
   --form "description=GHA run ${GITHUB_RUN_NUMBER:-unknown} on ${GITHUB_REF_NAME:-unknown}" \
   "https://scan.coverity.com/builds?project=${COVERITY_PROJECT}"
 
-printf '\n'
+printf '%s\n'
 printf '%s\n' "Submission accepted by scan.coverity.com."
 printf '%s\n' "Results will appear at:"
-printf '  %s\n' "https://scan.coverity.com/projects/${COVERITY_PROJECT}"
+printf '%s\n' "  https://scan.coverity.com/projects/${COVERITY_PROJECT}"
