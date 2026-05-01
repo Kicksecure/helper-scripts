@@ -9,10 +9,10 @@ set -o errtrace
 set -o pipefail
 
 # shellcheck source=../libexec/helper-scripts/check_runtime.bsh
-source /usr/libexec/helper-scripts/check_runtime.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
-source /usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
 if was_sourced "${BASH_SOURCE[0]}"; then
   printf '%s\n' "ERROR: Do not source this script ('${BASH_SOURCE[0]}')!"

@@ -6,6 +6,6 @@
 set -e
 set -o pipefail
 
-source /usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
 lsmod_deterministic

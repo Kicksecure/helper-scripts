@@ -18,7 +18,7 @@
 ##   printf 'process stack:\n%s\n' "$ptrace"
 ##
 ## To use these in other scripts:
-##   source /usr/libexec/helper-scripts/trace.bsh
+##   source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/trace.bsh
 
 ## Walks the bash call stack via the 'caller' builtin and prints
 ## "<source-file> (line number: <line>)" for each frame, deepest call

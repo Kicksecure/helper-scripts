@@ -41,7 +41,7 @@
 
 set -e
 
-source /usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 ionice_class=3
 ionice_classdata=""

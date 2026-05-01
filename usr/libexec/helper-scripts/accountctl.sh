@@ -17,9 +17,9 @@
 ## not modify an already encrypted or plain text password and to be able to
 ## provide symbols.
 
-source /usr/libexec/helper-scripts/has.sh
-source /usr/libexec/helper-scripts/as_root.sh
-source /usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/as_root.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
 
 ## ----------------------- ##

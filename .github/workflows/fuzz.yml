@@ -1,0 +1,72 @@
+---
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Authored by Claude (Anthropic).
+## Atheris coverage-guided fuzzing for the Python packages. Runs each
+## harness in fuzz/fuzz_*.py for a bounded budget; findings are
+## uploaded as artifacts. Local: 'python3 fuzz/fuzz_stdisplay.py
+## -max_total_time=60'. atheris (Google) is installed via pip; same
+## trust shape as Coverity Scan's cov-analysis tarball.
+
+name: Fuzz
+
+on:
+  schedule:
+    ## Sunday 05:00 UTC. Offset from CodeQL (Sun 04:17),
+    ## Scorecard (Sun 04:30), Coverity (Sun 06:00) so cron
+    ## contention is unlikely.
+    - cron: '0 5 * * 0'
+  workflow_dispatch:
+    inputs:
+      max_total_time:
+        description: 'Per-harness fuzz time budget in seconds'
+        required: false
+        default: '60'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fuzz:
+    name: Atheris fuzz
+    runs-on: ubuntu-latest
+
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
+
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        ## https://github.com/actions/checkout/releases/tag/v6.0.2
+        ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies
+        run: bash ci/fuzz-install.sh
+
+      - name: Run fuzz harnesses
+        env:
+          MAX_TOTAL_TIME: ${{ github.event.inputs.max_total_time || '60' }}
+        run: bash ci/fuzz-run.sh
+
+      - name: Upload findings (if any)
+        if: always()
+        ## https://github.com/actions/upload-artifact/releases/tag/v7.0.1
+        ## > 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: fuzz-artifacts
+          path: |
+            crash-*
+            leak-*
+            timeout-*
+            fuzz/*.log
+          if-no-files-found: ignore
+          retention-days: 14

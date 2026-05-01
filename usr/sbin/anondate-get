@@ -127,7 +127,7 @@ minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
 anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
 
-source /usr/libexec/helper-scripts/tor_bootstrap_check.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_bootstrap_check.bsh
 check_tor_bootstrap_helper
 
 if [ "$tor_bootstrap_percent" = "100" ]; then

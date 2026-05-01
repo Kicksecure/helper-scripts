@@ -9,6 +9,6 @@ set -o errtrace
 set -o pipefail
 
 # shellcheck source=../libexec/helper-scripts/package_installed_check.sh
-source /usr/libexec/helper-scripts/package_installed_check.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/package_installed_check.sh
 
 pkg_installed "${1}"

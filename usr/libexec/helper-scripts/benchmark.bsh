@@ -11,12 +11,16 @@
 ## restores the caller's xtrace state on return.
 ##
 ## Usage:
-##   source /usr/libexec/helper-scripts/benchmark.bsh
+##   source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/benchmark.bsh
 ##   benchmark_format 245           # -> "4m05s"
+
+# shellcheck source=./usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 benchmark_format() {
    local -
    set +x
+   is_whole_number "${1:-0}"
    local s=${1:-0}
    if (( s >= 3600 )); then
       printf '%dh%02dm%02ds' "$((s/3600))" "$(((s%3600)/60))" "$((s%60))"
@@ -36,5 +40,6 @@ benchmark_format() {
 benchmark_since() {
    local -
    set +x
+   is_whole_number "${1:-0}"
    benchmark_format "$(( SECONDS - ${1:-0} ))"
 }

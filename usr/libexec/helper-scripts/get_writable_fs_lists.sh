@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 # shellcheck source=./check_runtime.bsh
-source /usr/libexec/helper-scripts/check_runtime.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 
 if was_executed "${BASH_SOURCE[0]}"; then
   set -o errexit
@@ -74,7 +74,7 @@ while read -r line; do
       elif [ "${is_physical_device}" = 'true' ] \
         && [ -f "${sysfs_prefix}/sys/class/block/${src_device}/removable" ] \
         && [ "$(
-          cat "${sysfs_prefix}/sys/class/block/${src_device}/removable"
+          cat -- "${sysfs_prefix}/sys/class/block/${src_device}/removable"
         )" = '0' ]; then
         danger_writable_fs_list+=( "${mount_point}" )
       else

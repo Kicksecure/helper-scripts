@@ -9,7 +9,7 @@ set -o errtrace
 set -o pipefail
 
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
-source /usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
 modeline_show() {
   local file_list grep_regex grep_command grep_exit_code grep_output file \

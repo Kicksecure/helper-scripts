@@ -17,7 +17,7 @@
 ##   xtrace_restore                # xtrace is back to whatever it was
 ##
 ## To use this in other scripts:
-##   source /usr/libexec/helper-scripts/xtrace.bsh
+##   source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/xtrace.bsh
 
 xtrace_off() {
    if test -o xtrace; then

@@ -1,0 +1,258 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Authored by Claude (Anthropic).
+
+## See text-safety-scan-file(1) for the full description, options,
+## examples, and security model.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
+# shellcheck source=../libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
+
+log_level=info
+
+PLUGIN_LIST=( 'unicode-show' 'modeline-show' )
+
+declare -i plugins_run=0
+declare -i plugins_findings=0
+declare -i plugins_errors=0
+declare -i hard_errors=0
+declare -i files_scanned=0
+declare -i files_with_findings=0
+declare -i files_with_errors=0
+declare -i overall_exit=0
+
+captured_stdin_file=""
+declare -a remaining_args=()
+
+usage() {
+  cat <<'EOF'
+Usage: text-safety-scan-file [PATH...]
+       text-safety-scan-file < input
+
+Scan one or more files (or stdin) using all configured plugins.
+All plugins run for every input even if an earlier plugin reports
+a finding.
+
+Options:
+  -h, --help     Show this help and exit.
+  --             End of options; remaining arguments are paths.
+                 Paths whose first byte is '-' are supported via
+                 this marker, e.g.
+                     text-safety-scan-file -- --weird-name
+
+Exit codes:
+  0  clean
+  1  at least one finding
+  2  at least one hard error (unreadable file, plugin not found,
+                              target is a directory, etc.)
+
+For directory recursion / pruning / symlink policy, compose with
+find(1):
+
+  find PATH -type f -print0 | xargs -0 -r text-safety-scan-file --
+
+or use text-safety-scan-find, which is a thin wrapper that does
+exactly that.
+EOF
+}
+
+## Log-injection-safe path quoting: string_quote_safe() comes from
+## the strings.bsh sourced above. See its docstring for why
+## LC_ALL=C is essential and how the threat model maps to its
+## use sites here (run_plugins_for_target target_label, hard_error
+## paths in main()).
+
+cleanup() {
+  local _exit_code="${1:-$?}"
+  trap - EXIT ERR
+  if [ -n "${captured_stdin_file}" ]; then
+    safe-rm --force -- "${captured_stdin_file}" || true
+  fi
+  if [ "${_exit_code}" = "0" ]; then
+    log notice "OK (${files_scanned} file(s), ${plugins_run} plugin run(s))"
+  else
+    log error "FAIL (${plugins_findings} finding(s), ${plugins_errors} plugin error(s), ${hard_errors} hard error(s); ${files_with_findings} of ${files_scanned} scanned file(s) flagged, ${files_with_errors} file(s) with error(s))"
+  fi
+  exit "${_exit_code}"
+}
+
+## Diagnostic ERR trap. Fires on unguarded non-zero exits (typo
+## like 'loxal var=foo', missing source, vanished binary). Logs
+## line + rc + command then returns; errexit terminates the script
+## and the EXIT trap (cleanup) prints the summary.
+##
+## $LINENO / $BASH_COMMAND captured at trap-fire time via the trap
+## string; reading them inside the function would yield on_err's
+## own line.
+on_err() {
+  local rc="$1" line="$2" cmd="$3"
+  printf '::error::%s: line %d: command failed (rc=%d): %s\n' \
+    "${BASH_SOURCE[0]##*/}" "${line}" "${rc}" "${cmd}" >&2
+}
+trap 'on_err "$?" "$LINENO" "$BASH_COMMAND"' ERR
+trap 'cleanup' EXIT
+
+## Bump 'overall_exit' to the highest severity seen so far.
+##   2 (error)   wins over   1 (finding)   wins over   0 (clean).
+bump_exit() {
+  local new="$1"
+  if [ "${new}" -gt "${overall_exit}" ]; then
+    overall_exit="${new}"
+  fi
+}
+
+## Hard-error helper: log + bump counter + bump overall_exit.
+hard_error() {
+  log error "$*"
+  hard_errors=$(( hard_errors + 1 ))
+  bump_exit 2
+}
+
+## Preflight required external tools once at startup. A missing
+## plugin would otherwise emit one error per file.
+preflight() {
+  local cmd
+  for cmd in safe-rm sponge "${PLUGIN_LIST[@]}"; do
+    if ! command -v "${cmd}" >/dev/null 2>&1; then
+      hard_error "required command not found on PATH: ${cmd}"
+    fi
+  done
+  if [ "${overall_exit}" -ge 2 ]; then
+    exit "${overall_exit}"
+  fi
+}
+
+## Run every plugin in PLUGIN_LIST against a single target.
+##
+## $1 - 'file' or 'stdin' (mode keyword)
+## $2 - file path (when $1 = file); ignored otherwise
+##
+## Plugins (unicode-show, modeline-show) do not parse flags of
+## their own:
+##   unicode-show  iterates argv and calls open(file_name)
+##   modeline-show forwards via grep -- "${file_name}"
+## A file_name starting with '-' therefore passes through both
+## layers safely.
+run_plugins_for_target() {
+  local mode="$1"
+  ## 'file_name' (not 'file') so we don't shadow the 'file' command.
+  local file_name="${2:-}"
+  local plugin plugin_exit target_label
+  local target_findings=0 target_errors=0
+
+  if [ "${mode}" = "stdin" ]; then
+    target_label="stdin"
+  else
+    target_label="$(string_quote_safe "${file_name}")"
+  fi
+
+  files_scanned=$(( files_scanned + 1 ))
+
+  for plugin in "${PLUGIN_LIST[@]}"; do
+    plugins_run=$(( plugins_run + 1 ))
+    plugin_exit=0
+    if [ "${mode}" = "stdin" ]; then
+      "${plugin}" < "${captured_stdin_file}" || plugin_exit=$?
+    else
+      "${plugin}" "${file_name}" || plugin_exit=$?
+    fi
+
+    case "${plugin_exit}" in
+      0)
+        log info "${plugin}: ${target_label} OK"
+        ;;
+      1)
+        plugins_findings=$(( plugins_findings + 1 ))
+        target_findings=$(( target_findings + 1 ))
+        log warn "${plugin}: ${target_label} finding (exit 1)"
+        bump_exit 1
+        ;;
+      *)
+        plugins_errors=$(( plugins_errors + 1 ))
+        target_errors=$(( target_errors + 1 ))
+        log error "${plugin}: ${target_label} error (exit ${plugin_exit})"
+        bump_exit 2
+        ;;
+    esac
+  done
+
+  if [ "${target_findings}" -gt 0 ]; then
+    files_with_findings=$(( files_with_findings + 1 ))
+  fi
+  if [ "${target_errors}" -gt 0 ]; then
+    files_with_errors=$(( files_with_errors + 1 ))
+  fi
+}
+
+parse_options() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      -h|--help)
+        usage
+        trap - EXIT
+        exit 0
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        usage >&2
+        die 2 "unknown option: '$1'"
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+  remaining_args=( "$@" )
+}
+
+main() {
+  preflight
+  parse_options "$@"
+  set -- "${remaining_args[@]}"
+
+  if [ "$#" -eq 0 ]; then
+    if ! [ -e '/proc/self/fd/0' ]; then
+      die 2 'stdin is not open!'
+    fi
+    if [ -t 0 ]; then
+      usage >&2
+      die 2 'no paths given and stdin is a terminal; pipe input or pass paths'
+    fi
+    captured_stdin_file="$(mktemp)" || die 2 'mktemp failed for stdin capture!'
+    if ! cat | sponge -- "${captured_stdin_file}"; then
+      die 2 'failed to capture stdin'
+    fi
+    run_plugins_for_target stdin
+  else
+    local target
+    for target in "$@"; do
+      if [ ! -e "${target}" ]; then
+        hard_error "target does not exist: $(string_quote_safe "${target}")"
+        continue
+      fi
+      if [ -d "${target}" ]; then
+        hard_error "target is a directory; use text-safety-scan-find or 'find ... -print0 | xargs -0 text-safety-scan-file --': $(string_quote_safe "${target}")"
+        continue
+      fi
+      run_plugins_for_target file "${target}"
+    done
+  fi
+}
+
+main "$@"
+
+## Propagate the aggregated exit code through the EXIT trap.
+exit "${overall_exit}"

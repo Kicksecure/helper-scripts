@@ -1,0 +1,79 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
+.TH "TEXT\-SAFETY\-SCAN\-FIND" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
+
+.SH "NAME"
+\fBtext\-safety\-scan\-find\fR \- Run text\-safety\-scan\-file across every file under a directory tree
+.SH "SYNOPSIS"
+\fBtext\-safety\-scan\-find\fR \fIPATH\fR [\fIfind\-expression\fR\|\.\|\.\|\.]
+.P
+\fBtext\-safety\-scan\-find\fR \fB\-\-help\fR
+.SH "DESCRIPTION"
+Thin wrapper around \fBfind\fR(1) that hands every regular file under the given starting point(s) to \fBtext\-safety\-scan\-file\fR(1)\. The user controls recursion / pruning / symlink / size / binary policy by passing standard \fBfind\fR(1) expressions; this script does not invent a DSL\.
+.P
+The exact pipeline is:
+.IP "" 4
+.nf
+find "$@" \-type f \-print0 | xargs \-0 \-r text\-safety\-scan\-file \-\-
+.fi
+.IP "" 0
+.P
+Anything before the trailing \fB\-type f \-print0\fR is passed verbatim to find\. See \fBfind\fR(1) for expression syntax\.
+.SH "EXAMPLES"
+Scan every file under \fB/repo\fR:
+.IP "" 4
+.nf
+text\-safety\-scan\-find /repo
+.fi
+.IP "" 0
+.P
+Skip the \fB\.git\fR directory:
+.IP "" 4
+.nf
+text\-safety\-scan\-find /repo \-not \-path '*/\.git/*'
+.fi
+.IP "" 0
+.P
+Skip image files:
+.IP "" 4
+.nf
+text\-safety\-scan\-find /repo \-not \-name '*\.png' \-not \-name '*\.jpg'
+.fi
+.IP "" 0
+.P
+Follow symlinks (default is to NOT follow):
+.IP "" 4
+.nf
+text\-safety\-scan\-find \-L /repo
+.fi
+.IP "" 0
+.P
+Limit to small files only:
+.IP "" 4
+.nf
+text\-safety\-scan\-find /repo \-size \-1M
+.fi
+.IP "" 0
+.P
+Combine prunes with size filter:
+.IP "" 4
+.nf
+text\-safety\-scan\-find /repo \-not \-path '*/\.git/*' \-size \-1M
+.fi
+.IP "" 0
+.SH "EXIT CODES"
+.IP "\(bu" 4
+\fB0\fR All scanned files are clean\.
+.IP "\(bu" 4
+non\-zero An error occurred or a finding was reported\. The exact exit code is whatever the \fBfind\fR(1) / \fBxargs\fR(1) / \fBtext\-safety\-scan\-file\fR(1) pipeline produced; this wrapper does not translate it\. Notably, \fBxargs\fR collapses any child exit code in \fB1\.\.125\fR to its own \fB123\fR, so the per\-finding\-vs\-hard\-error distinction the file tool makes is lost here\. For maintainers who need that fidelity, run \fBtext\-safety\-scan\-file\fR(1) on individual files\.
+.IP "" 0
+.SH "NOTES"
+.IP "\(bu" 4
+Paths starting with \fB\-\fR are not handled here; they would confuse \fBfind\fR(1)'s argument parser\. If you need to scan such a path, prepend \fB\./\fR to the path or use \fBtext\-safety\-scan\-file\fR(1) directly with \fB\-\-\fR\.
+.IP "\(bu" 4
+This wrapper is deliberately five lines of bash\. Read the source if you want to know exactly what it does\.
+.IP "" 0
+.SH "SEE ALSO"
+text\-safety\-scan\-file(1), find(1), xargs(1)
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.

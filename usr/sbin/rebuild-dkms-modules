@@ -11,13 +11,13 @@ set -o pipefail
 export LC_ALL='C'
 
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
-source /usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
 # shellcheck source=../libexec/helper-scripts/as_root.sh
-source /usr/libexec/helper-scripts/as_root.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/as_root.sh
 
 # shellcheck source=../libexec/helper-scripts/has.sh
-source /usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
 rebuild_dkms_modules() {
   local dkms_mod_status_item dkms_mod_name dkms_mod_kernel dkms_mod_status \

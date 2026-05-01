@@ -11,10 +11,10 @@
 ## This script acts as a "main program", not as a library.
 
 # shellcheck source=./log_run_die.sh
-source /usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
 # shellcheck source=./has.sh
-source /usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
 set -o errexit
 set -o nounset
@@ -1095,7 +1095,7 @@ Type 'exit' to quit without changing keyboard layout settings.
         log question "${FUNCNAME[0]}: Enter the keyboard layout to view variants for:"
         read -r -- variant_key_str
         variant_key_str="$(tr -d ' ' <<< "${variant_key_str,,}")"
-        if grep -q ',' <<< "${variant_key_str}" ; then
+        if grep -q -- ',' <<< "${variant_key_str}" ; then
           log error "${FUNCNAME[0]}: Only one layout may be specified to view the variants of!"
           continue
         fi

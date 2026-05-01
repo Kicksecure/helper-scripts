@@ -1,59 +1,129 @@
 ---
+## Copyright (C) 2025 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Authored by Claude (Anthropic).
 name: Lint scripts
 on:
   push:
     paths:
+      ## Python packages exercised by ./run-tests.
       - usr/lib/python3/dist-packages/stdisplay/**
       - usr/lib/python3/dist-packages/sanitize_string/**
       - usr/lib/python3/dist-packages/strip_markup/**
       - usr/lib/python3/dist-packages/unicode_show/**
+      - usr/lib/python3/dist-packages/strict_config_parser/**
+      ## CI-only Hypothesis property tests.
+      - ci/tests/**
+      ## CI plumbing the lint workflow invokes.
+      - ci/lint-*.sh
+      ## Lint config (pylint / mypy / black / pytest).
+      - pyproject.toml
+      ## Workflow itself.
       - .github/workflows/lint.yml
+      ## Test driver script.
       - run-tests
+      ## Debian package build inputs (control = deps, rules = build,
+      ## *.install = what ships in the .deb).
+      - debian/control
+      - debian/rules
+      - debian/helper-scripts.install
+      - debian/helper-scripts.maintscript
+      - debian/helper-scripts.postinst
+      ## CLI utilities tested by the bottom of run-tests.
+      - usr/bin/stcat
+      - usr/bin/stcatn
+      - usr/bin/stecho
+      - usr/bin/stprint
+      - usr/bin/stsponge
+      - usr/bin/sttee
+      - usr/bin/strip-markup
+      - usr/bin/unicode-show
+      - usr/bin/sanitize-string
+      - unicode-testscript
   pull_request:
     paths:
       - usr/lib/python3/dist-packages/stdisplay/**
       - usr/lib/python3/dist-packages/sanitize_string/**
       - usr/lib/python3/dist-packages/strip_markup/**
       - usr/lib/python3/dist-packages/unicode_show/**
+      - usr/lib/python3/dist-packages/strict_config_parser/**
+      - ci/tests/**
+      - ci/lint-*.sh
+      - pyproject.toml
       - .github/workflows/lint.yml
       - run-tests
+      - debian/control
+      - debian/rules
+      - debian/helper-scripts.install
+      - debian/helper-scripts.maintscript
+      - debian/helper-scripts.postinst
+      - usr/bin/stcat
+      - usr/bin/stcatn
+      - usr/bin/stecho
+      - usr/bin/stprint
+      - usr/bin/stsponge
+      - usr/bin/sttee
+      - usr/bin/strip-markup
+      - usr/bin/unicode-show
+      - usr/bin/sanitize-string
+      - unicode-testscript
+
+## Least privilege.
+permissions:
+  contents: read
 
 jobs:
   lint:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
 
+    ## Fork-PR guard. Forked PRs need maintainer review before they
+    ## consume CI time / could exfiltrate the (limited) GITHUB_TOKEN.
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
+
     strategy:
       fail-fast: false
       matrix:
         include:
-          - image: debian:stable
-          - image: debian:testing
-          - image: debian:unstable
-          ## Disabled because ubuntu:latest is currently 24.04, which uses a
-          ## version of Python that does not support the `newline` argument of
-          ## Path.read_text()
-          # - image: ubuntu:latest
-          - image: ubuntu:rolling
+          ## Trust root for the four images below: Docker Official
+          ## Images program. Each image's hub.docker.com page lists
+          ## the publisher attestation ('Maintained by: the Debian
+          ## Project' / 'Maintained by: Canonical Ltd.') and links
+          ## to the build sources:
+          ##   https://hub.docker.com/_/debian
+          ##   https://hub.docker.com/_/ubuntu
+          ## Digests below were resolved from the registry manifest
+          ## API at pin time (verification step, not trust source).
+          - image: debian:stable@sha256:e969bc4a6af81e66bf2ee7e79cecb24885929111d5eddb97dd80bed3b90a5e93
+          - image: debian:testing@sha256:e0c4680937ec5c89f44b977ebd8bff697e6d0d5157b46f6d6592d46fa08dbaf3
+          - image: debian:unstable@sha256:d124ce29f8bbe23f6d17598a61d0b61d888d4863ecb6aa1049eecebc6f825f6c
+          ## ubuntu:latest is currently 24.04, which uses a Python version
+          ## that does not support the `newline` argument of Path.read_text()
+          # - image: ubuntu:latest@sha256:...
+          - image: ubuntu:rolling@sha256:4a9232cc47bf99defcc8860ef6222c99773330367fcecbf21ba2edb0b810a31e
 
     container:
       image: ${{ matrix.image }}
 
     steps:
+      - name: Install git for actions/checkout
+        ## Minimal container images do not ship git but actions/checkout
+        ## needs it to populate '.git/'. Inline because checkout has not
+        ## yet run and ci/ scripts are not on disk yet.
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends git ca-certificates
+      ## https://github.com/actions/checkout/releases/tag/v6.0.2
+      ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
       - name: Install linters
-        run: |
-          apt-get update --error-on=any
-          apt-get dist-upgrade -y
-          apt-get install -y git python3-pytest pylint mypy black ncurses-term \
-            build-essential debhelper dh-python dh-apparmor
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - uses: actions/checkout@v5
-      - name: Test build
-        run: |
-          dpkg-buildpackage -b -i -us -uc
-          apt-get install -y ../helper-scripts*.deb
-      - name: Run linters
-        run: |
-          set -o xtrace
-          git clone https://github.com/nickboucher/trojan-source ~/trojan-source
-          ./run-tests
+        run: bash ci/lint-install.sh
+      - name: Build helper-scripts deb
+        run: bash ci/lint-build.sh
+      - name: Clone trojan-source corpus
+        run: bash ci/lint-clone-trojan-source.sh
+      - name: Run tests
+        run: bash ci/lint-tests.sh

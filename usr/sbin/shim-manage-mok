@@ -11,16 +11,16 @@ set -o pipefail
 export LC_ALL='C'
 
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
-source /usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
 # shellcheck source=../libexec/helper-scripts/as_root.sh
-source /usr/libexec/helper-scripts/as_root.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/as_root.sh
 
 # shellcheck source=../libexec/helper-scripts/has.sh
-source /usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
 # shellcheck source=../sbin/shim-signed-mok-setup
-source /usr/sbin/shim-signed-mok-setup
+source "${HELPER_SCRIPTS_PATH:-}"/usr/sbin/shim-signed-mok-setup
 
 usage() {
   log notice "Usage: $0 (--enroll|--reset) [-n|--non-interactive]"

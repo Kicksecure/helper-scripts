@@ -1,0 +1,116 @@
+grep-find-unicode-wrapper(1) -- Find suspicious Unicode characters using grep semantics
+========================================================================================
+
+<!--
+# Copyright (C) 2022 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+# See the file COPYING for copying conditions.
+-->
+
+<!--
+# Authored by Claude (Anthropic).
+-->
+
+## SYNOPSIS
+
+`grep-find-unicode-wrapper` [*GREP_OPTIONS*...] [*PATH*...]
+
+## DESCRIPTION
+
+`grep-find-unicode-wrapper` is a thin wrapper around `grep`(1) that
+runs four pre-configured passes against the supplied input, looking
+for suspicious Unicode characters: non-ASCII bytes, Right-to-Left
+Override and related bidirectional control characters, and ASCII
+control characters. Matching paths (with line numbers) are printed
+on standard output.
+
+It exists to apply a fixed set of vetted regex patterns - the same
+set referenced by the Unicode Trojan and "Trojan Source" advisories -
+across whatever files the user names, while still letting the user
+inject their own `grep` flags such as `--recursive`.
+
+This tool is **pipeline-friendly**, not user-friendly. End users who
+just want to know whether a file or directory contains anything
+unsafe should use `text-safety-scan-file`(1) instead.
+
+### Detection set
+
+Each invocation runs four `grep` passes (results are merged and
+de-duplicated):
+
+1. Non-ASCII bytes via `[^\x00-\x7F]` (Perl regex).
+2. Non-ASCII characters via `[^[:ascii:]]` (Perl regex).
+3. The bidirectional / formatting control characters listed in
+   the Trojan Source advisory:
+   `U+061C`, `U+200E`, `U+200F`, `U+202A`-`U+202E`, `U+2066`-`U+2069`.
+4. ASCII control characters
+   (`U+0000`-`U+0008`, `U+000B`-`U+000C`, `U+000E`-`U+001F`, `U+007F`).
+
+`--binary-files=text` is set so that NUL and backspace bytes are
+matched even in files `grep` would otherwise classify as binary.
+
+### Forwarding user flags
+
+Anything passed on the command line is forwarded to `grep` after the
+internal options are applied. Common additions:
+
+* `--recursive` (or `-r`) to descend into directories.
+* `-l` / `-L` selectors are not useful here; the wrapper already
+  uses `--files-with-matches`.
+
+### End-of-options ('--')
+
+This wrapper does **not** insert `--` between its own arguments and
+the user's. That is by design: users may need to pass `--` themselves
+as part of their `grep` invocation. It remains the responsibility of
+the caller to supply `--` when separating options from filenames.
+
+## RETURN VALUES
+
+These intentionally mirror `grep`(1):
+
+* `0` Matches were found. Matching paths are printed.
+* `1` No matches were found. Nothing is printed.
+* `2` `grep` reported a syntax or I/O error. The wrapper exits with
+  the same code.
+
+This is the right contract for use in pipelines and shell scripts
+(`if grep-find-unicode-wrapper -r src/; then ...`), but it is the
+opposite of what most other safety tools return (clean = 0). If you
+want "non-zero means unsafe was found", use `text-safety-scan-file`(1).
+
+## EXAMPLES
+
+Scan a single file:
+
+<code>
+grep-find-unicode-wrapper file.txt
+</code>
+
+Scan a directory recursively:
+
+<code>
+grep-find-unicode-wrapper --recursive src/
+</code>
+
+Use in a shell condition (note the inverted sense):
+
+<code>
+if grep-find-unicode-wrapper --recursive src/; then
+    printf '%s\n' 'Suspicious characters found.' >&2
+    exit 1
+fi
+</code>
+
+## SEE ALSO
+
+text-safety-scan-file(1), unicode-show(1), grep(1)
+
+Background:
+
+* `https://www.kicksecure.com/wiki/Unicode#grep-find-unicode-wrapper`
+* `https://access.redhat.com/security/vulnerabilities/RHSB-2021-007`
+* `https://lintian.debian.org/tags/unicode-trojan`
+
+## AUTHOR
+
+This man page has been written by Patrick Schleizer (adrelanos@whonix.org).

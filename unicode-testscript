@@ -10,16 +10,17 @@ set -o pipefail
 set -o errtrace
 
 if [ "$(id -u)" = 0 ] && [ -z "${GITHUB_WORKSPACE:-}" ]; then
-    printf "%s\n" "$0: ERROR: No need to run as root!" >&2
+    printf '%s\n' "$0: ERROR: No need to run as root!" >&2
     exit 1
 fi
 
 ## XXX: Unrelated unit test. Non-ideal location but OK.
-source /usr/libexec/helper-scripts/use_sudo.sh
-source /usr/libexec/helper-scripts/use_pkexec.sh
-source /usr/libexec/helper-scripts/boot-session-detection.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/use_sudo.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/use_pkexec.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/boot-session-detection.bsh
 
-source /usr/libexec/helper-scripts/wc-test.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/wc-test.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 folder_list="Assembly  Bash  C  C#  C++  Go  Java  JavaScript  Python  RegEx  Rust  Solidity"
 
@@ -29,7 +30,7 @@ process_file() {
   local file_name file_content
   file_name="$1"
   test -r "$file_name"
-  base_name="$(basename "$file_name")"
+  base_name="$(basename -- "$file_name")"
 
   if [ "$base_name" = "README.md" ] || \
     [ "$base_name" = "omnisharp.json" ] || \
@@ -39,13 +40,13 @@ process_file() {
   fi
 
   total_file_counter=$(( total_file_counter + 1))
-  printf "%s\n" "$file_name" >/dev/null
+  printf '%s\n' "$file_name" >/dev/null
 
   ## grep-find-unicode-wrapper is similar like grep.
   ## - Exit code 0: if found.
   ## - Non-zero exit code: if not found.
   if ! grep-find-unicode-wrapper "$file_name" >/dev/null ; then
-    printf "%s\n" "$0: ERROR: Failed to find unicode using 'grep-find-unicode-wrapper' in file '$file_name'." >&2
+    printf '%s\n' "$0: ERROR: Failed to find unicode using 'grep-find-unicode-wrapper' in file '$file_name'." >&2
     exit 1
   fi
 
@@ -53,13 +54,13 @@ process_file() {
   ## So if unicode-show was to exit 0, then it would have failed to find unicode.
   if unicode-show "$file_name" >/dev/null ; then
     ## unicode-show exit code 0.
-    printf "%s\n" "$0: ERROR: Failed to find unicode using 'unicode-show' (file check) in file '$file_name'." >&2
+    printf '%s\n' "$0: ERROR: Failed to find unicode using 'unicode-show' (file check) in file '$file_name'." >&2
     exit 1
   fi
 
   if cat -- "$file_name" | unicode-show >/dev/null ; then
     ## unicode-show exit code 0.
-    printf "%s\n" "$0: ERROR: Failed to find unicode using 'unicode-show' (stdin check) in file '$file_name'." >&2
+    printf '%s\n' "$0: ERROR: Failed to find unicode using 'unicode-show' (stdin check) in file '$file_name'." >&2
     exit 1
   fi
   ## unicode-show exit code non-zero.
@@ -68,14 +69,14 @@ process_file() {
   ## Check if there is a non-zero exit code in this pipe, because if so, that's a bug.
   if ! stcatn "$file_name" | unicode-show >/dev/null ; then
     ## unicode-show exit code non-zero.
-    printf "%s\n" "$0: ERROR: Failed to sanitize string using 'stcatn' in file '$file_name'." >&2
+    printf '%s\n' "$0: ERROR: Failed to sanitize string using 'stcatn' in file '$file_name'." >&2
     exit 1
   fi
   ## unicode-show exit code 0.
 
   if ! cat -- "$file_name" | sanitize-string nolimit >/dev/null ; then
     ## sanitize-string exit code non-zero.
-    printf "%s\n" "$0: ERROR: Failed to sanitize string using 'sanitize-string' (stdin check) in file '$file_name'." >&2
+    printf '%s\n' "$0: ERROR: Failed to sanitize string using 'sanitize-string' (stdin check) in file '$file_name'." >&2
     exit 1
   fi
 
@@ -84,7 +85,37 @@ process_file() {
 
   if ! sanitize-string nolimit "$file_content" >/dev/null ; then
     ## sanitize-string exit code non-zero.
-    printf "%s\n" "$0: ERROR: Failed to sanitize string using 'sanitize-string' (command check) in file '$file_name'." >&2
+    printf '%s\n' "$0: ERROR: Failed to sanitize string using 'sanitize-string' (command check) in file '$file_name'." >&2
+    exit 1
+  fi
+
+  ## string_quote_safe (strings.bsh) wraps 'LC_ALL=C printf %q' to
+  ## render its argument as a pure-ASCII printable bash literal,
+  ## neutralizing trojan unicode. text-safety-scan-file relies on
+  ## this for log-injection-safe path quoting; verify it holds for
+  ## the same trojan corpus that exercises the other tools.
+  ##
+  ## Use grep-find-unicode-wrapper (the same tool already used at
+  ## the top of process_file()) to verify the property. It is
+  ## path-based, so stage the output via mktemp.
+  printf_q_tmpfile="$(mktemp)"
+  string_quote_safe "$file_content" > "$printf_q_tmpfile"
+  ## grep-find-unicode-wrapper does not consume '--' itself (it is a
+  ## thin wrapper around grep that forwards "$@"); pass '--' so grep
+  ## treats the path as a positional argument even if it starts with
+  ## '-'. mktemp paths begin with '/' so this is defensive, but
+  ## documents intent for any future test using a user-controlled path.
+  if grep-find-unicode-wrapper -- "$printf_q_tmpfile" >/dev/null ; then
+    safe-rm --force -- "$printf_q_tmpfile"
+    printf '%s\n' "$0: ERROR: 'LC_ALL=C printf %%q' did not neutralize trojan unicode in file '$file_name'." >&2
+    exit 1
+  fi
+  safe-rm --force -- "$printf_q_tmpfile"
+
+  ## text-safety-scan-file orchestrates unicode-show + modeline-show.
+  ## All fixtures here are known-trojan, so it must exit non-zero.
+  if text-safety-scan-file -- "$file_name" </dev/null >/dev/null 2>&1 ; then
+    printf '%s\n' "$0: ERROR: 'text-safety-scan-file' did not flag trojan in file '$file_name'." >&2
     exit 1
   fi
 
@@ -92,7 +123,7 @@ process_file() {
 }
 
 if ! test -d "$HOME/trojan-source" ; then
-  printf "%s\n" "
+  printf '%s\n' "
 $0: ERROR: Folder '$HOME/trojan-source' missing. To get it:
 
 cd ~
@@ -127,18 +158,18 @@ while IFS= read -r -d '' file_name; do
   process_file "$file_name"
 done < <(find "$HOME/suspicious-unicode-tests-temp-folder/suspicious-ascii-test" -maxdepth 1 -type f -not -iwholename '*.git*' -print0 )
 
-if [ ! "$(printf "%s" "test" | stcatn | wc -l)" = "1" ]; then
-  printf "%s\n" "$0: ERROR: 1" >&2
+if [ ! "$(printf '%s' "test" | stcatn | wc -l)" = "1" ]; then
+  printf '%s\n' "$0: ERROR: 1" >&2
   exit 1
 fi
 
-if [ ! "$(printf "%s\n" "test" | stcatn | wc -l)" = "1" ]; then
-  printf "%s\n" "$0: ERROR: 2" >&2
+if [ ! "$(printf '%s\n' "test" | stcatn | wc -l)" = "1" ]; then
+  printf '%s\n' "$0: ERROR: 2" >&2
   exit 1
 fi
 
-if [ ! "$(printf "%s\n\n" "test" | stcatn | wc -l)" = "2" ]; then
-  printf "%s\n" "$0: ERROR: 3" >&2
+if [ ! "$(printf '%s\n\n' "test" | stcatn | wc -l)" = "2" ]; then
+  printf '%s\n' "$0: ERROR: 3" >&2
   exit 1
 fi
 
@@ -146,13 +177,24 @@ mkdir --parents -- "$HOME/suspicious-unicode-tests-temp-folder/suspicious-whites
 printf "\n \n " | sponge -- "$HOME/suspicious-unicode-tests-temp-folder/suspicious-whitespace-test/1.txt"
 
 if ! stcatn "$HOME/suspicious-unicode-tests-temp-folder/suspicious-whitespace-test/1.txt" | unicode-show ; then
-  printf "%s\n" "$0: ERROR: 4" >&2
+  printf '%s\n' "$0: ERROR: 4" >&2
   exit 1
 fi
 
 if [ ! "$(stcatn "$HOME/suspicious-unicode-tests-temp-folder/suspicious-whitespace-test/1.txt" | wc -l)" = "3" ]; then
-  printf "%s\n" "$0: ERROR: 5" >&2
+  printf '%s\n' "$0: ERROR: 5" >&2
   exit 1
 fi
 
-printf "%s\n" "$0: INFO: OK"
+## text-safety-scan-find smoke. text-safety-scan-file is exercised
+## per-file inside process_file(); this one assertion covers the
+## find/xargs wrapper itself.
+trojan_dir="$HOME/suspicious-unicode-tests-temp-folder/suspicious-unicode-test"
+rc=0
+text-safety-scan-find "$trojan_dir" >/dev/null 2>&1 || rc=$?
+if [ "$rc" -eq 0 ]; then
+  printf '%s\n' "$0: ERROR: text-safety-scan-find on trojan dir exited 0, expected non-zero" >&2
+  exit 1
+fi
+
+printf '%s\n' "$0: INFO: OK"

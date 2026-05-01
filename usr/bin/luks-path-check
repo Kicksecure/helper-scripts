@@ -10,7 +10,7 @@ set -o pipefail
 set -o errtrace
 set -o nounset
 
-source /usr/libexec/helper-scripts/wc-test.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/wc-test.sh
 
 exit_function() {
   exit "$1"

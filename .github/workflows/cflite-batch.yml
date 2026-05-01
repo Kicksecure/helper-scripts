@@ -1,0 +1,76 @@
+---
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Authored by Claude (Anthropic).
+## ClusterFuzzLite - scheduled batch fuzzing (longer budget).
+##
+## Daily run with a longer per-fuzzer budget than the PR-time job.
+## Findings persist via the configured storage backend (default:
+## the workflow's GitHub Actions cache).
+##
+## Reference: https://google.github.io/clusterfuzzlite/running-clusterfuzzlite/github-actions/
+
+name: ClusterFuzzLite Batch
+
+on:
+  ## Manual-only until the ClusterFuzzLite build setup is verified
+  ## green at least once. Once that lands, re-enable the daily
+  ## schedule below.
+  workflow_dispatch:
+    inputs:
+      fuzz_seconds:
+        description: 'Per-fuzzer time budget in seconds'
+        required: false
+        default: '600'
+  ## schedule:
+  ##   - cron: '30 3 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  batch:
+    name: ClusterFuzzLite batch fuzz
+    runs-on: ubuntu-latest
+
+    if: github.repository == 'assisted-by-ai/helper-scripts' || github.event_name == 'workflow_dispatch'
+
+    timeout-minutes: 60
+
+    permissions:
+      security-events: write
+      ## ClusterFuzzLite stores corpora / crashes via actions/cache,
+      ## which needs neither contents:write nor actions:write -
+      ## just contents:read covers cache reads.
+
+    steps:
+      - name: Checkout repository
+        ## https://github.com/actions/checkout/releases/tag/v6.0.2
+        ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Build fuzzers
+        ## https://github.com/google/clusterfuzzlite/tree/v1
+        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1 (HEAD of v1; no release tag)
+        uses: google/clusterfuzzlite/actions/build_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
+        with:
+          language: python
+          sanitizer: address
+
+      - name: Run fuzzers (batch)
+        ## https://github.com/google/clusterfuzzlite/tree/v1
+        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1
+        uses: google/clusterfuzzlite/actions/run_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fuzz-seconds: ${{ github.event.inputs.fuzz_seconds || '600' }}
+          mode: 'batch'
+          sanitizer: address
+          output-sarif: true

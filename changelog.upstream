@@ -1,3 +1,326 @@
+commit 7bd284ae2e52fd157488e3cba4a3ba53ebdf32d8
+Merge: 98341a6 0539bdd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 07:15:00 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/configure-repo-access-hZI4X'
+
+commit 0539bdd351b8c58d4e1f58f59d026154de983747
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 1 11:10:17 2026 +0000
+
+    trace.bsh: process_backtrace: stop at PPid=0; flatten newlines in cmdline
+
+    Two fixes to process_backtrace, surfaced by an automated-builder CI
+    run on derivative-maker:
+
+      * Stop walking the parent chain when /proc/<pid>/status reports
+        PPid=0. The previous loop only broke on PID=1 (init) or empty.
+        A PPid of 0 occurs for kernel threads or for processes whose
+        parent has been reaped; the next iteration would try to read
+        /proc/0/cmdline and /proc/0/status, both of which do not exist,
+        and the function emitted three confusing ERROR lines per call:
+
+          process_backtrace ERROR: /proc/0/cmdline missing | ps:
+          process_backtrace ERROR: /proc/0/status missing | ps:
+          process_backtrace ERROR: who_ami: builder | empty pid
+
+        Now treats PPid=0 (or any non-numeric cp) as end-of-trace and
+        returns cleanly.
+
+      * Flatten CR/LF along with NUL when reading /proc/<pid>/cmdline.
+        NUL is the argv separator and was already mapped to space; an
+        embedded \\n or \\r inside an argv element (a "bash -c
+        '<multi-line script>'" invocation, or our own claude-code
+        long --append-system-prompt argument) confused the trailing
+        "tac | grep --line-number" so frame numbering got mis-attributed
+        across the embedded newlines. Now mapped to space alongside NUL.
+
+    Smoke-tested locally via "bash -c 'source trace.bsh; process_backtrace'":
+      - clean numbered output 1..N
+      - last frame is "1: : init"
+      - no /proc/0/* errors
+      - multi-line argv flattened correctly into a single frame line.
+
+    AI-Assisted
+
+commit 98341a6ef264f6da441a82560b41e6f7846a76d7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 09:50:11 2026 +0000
+
+    bumped changelog version
+
+commit f117de649ce11c609fcb46fe524752f17b4a838d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:49:14 2026 -0400
+
+    fix
+
+commit 96a2d0fb652d3d5b15a94acf55ac1a36cc66fcd7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:48:07 2026 -0400
+
+    fix
+
+commit 8e5289aa45a6b7f3ec325e966412ba6dcc80aed4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:11:15 2026 -0400
+
+    fix
+
+commit 4f8981644f5f9939aa27c52cd1539c1ab2541cac
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:05:11 2026 -0400
+
+    printf
+
+commit c02d697a392ff572e81d195378605a0c50eb9f23
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:04:09 2026 -0400
+
+    fix
+
+commit b09f130d29344785db01f5eadd8c8eefdf4a31db
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:02:08 2026 -0400
+
+    fix
+
+commit cea1e67c4fc41797ad52ab22479dfcbb196c44b1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:01:04 2026 -0400
+
+    HELPER_SCRIPTS_PATH
+
+commit 37f4c37ed8d2030ae4a7e7d238a883aed22df3ce
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 12:55:11 2026 +0000
+
+    bumped changelog version
+
+commit 2caf6f7bc0866109cb2c08e04ccb4a350353ca4f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 08:43:30 2026 -0400
+
+    CI
+
+commit d906bfa7a148a0fc06bf55e25bd14dbaff10cd38
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 08:38:06 2026 -0400
+
+    CI
+
+commit d8ce795418b6c8d4d7799318caf613b00a9505d0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 08:17:52 2026 -0400
+
+    genmkfile manpages
+
+commit 86ff580dba4c579188a45aca48702a09a930ef5d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 08:17:22 2026 -0400
+
+    man
+
+commit 43b65564bf14578af14a7701713b46c95edd4b63
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 08:15:52 2026 -0400
+
+    cleanup
+
+commit c652ed60abf46df50662bd033c3d9d172a089951
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 08:14:11 2026 -0400
+
+    genmkfile manpages
+
+commit d7d25359dfd0368bf6dc9b4feadb074c05ffcd58
+Merge: 6f52daf dcdd16a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 08:11:05 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/add-end-of-options-support-uB6We'
+
+commit 6f52dafd0da6d0d2628547b8e0d0fa0a5b2b151f
+Merge: c264991 e8138ab
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 07:58:32 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/run-automated-builder-3J5R6'
+
+commit e8138ab90c517ca706918863978c7d16aab32b2f
+Author: Claude <noreply@anthropic.com>
+Date:   Wed Apr 29 11:50:42 2026 +0000
+
+    support HELPER_SCRIPTS_PATH override for source resolution
+
+    Allow callers (e.g. derivative-maker) to source helper-scripts from a
+    non-installed location by setting HELPER_SCRIPTS_PATH as a path prefix.
+    When unset, the variable expands to empty and resolves to the original
+    absolute /usr/libexec/helper-scripts path.
+
+    https://claude.ai/code/session_01WELorUvrfG3BBBgGa4TqLQ
+
+commit dcdd16a2c387c618843f97034af2268400998cfd
+Author: Claude <noreply@anthropic.com>
+Date:   Wed Apr 29 11:45:53 2026 +0000
+
+    text-safety-scan family + CI hardening + end-of-options support
+
+    Adds two new helper-scripts CLIs, ronn man pages for them,
+    the unicode-testscript regression that exercises them, and a
+    substantial CI hardening pass.
+
+    text-safety-scan-file (usr/bin/text-safety-scan-file)
+      Per-file / stdin orchestrator that runs every configured
+      text-safety plugin (currently unicode-show and modeline-show)
+      against each input. All plugins run for every input even if
+      an earlier plugin reports a finding. Three-valued exit code:
+      0 clean, 1 finding, 2 hard error. Preflight verifies required
+      binaries on PATH at startup, ERR trap reports unguarded
+      non-zero exits with line number and command. Log-injection-safe
+      path quoting via string_quote_safe (added to strings.bsh) so
+      hostile filenames cannot forge log lines or CI annotations.
+
+    text-safety-scan-find (usr/bin/text-safety-scan-find)
+      Thin find(1) wrapper that hands every regular file under the
+      given path to text-safety-scan-file. Pipeline is one line of
+      bash; the man page documents the resulting forwarded exit
+      code (xargs collapses any child rc 1..125 to its own 123).
+
+    unicode-testscript
+      Now sources strings.bsh and exercises text-safety-scan-file
+      inside the per-file process_file() loop, plus a single
+      text-safety-scan-find smoke against the trojan corpus.
+      string_quote_safe regression via grep-find-unicode-wrapper
+      on a mktemp-staged copy.
+
+    grep-find-unicode-wrapper
+      TODO comment documenting that the four sequential grep
+      invocations make stdin a footgun (only the first sees the
+      bytes), and the fix shape (slurp stdin into a tempfile when
+      no path arg is given).
+
+    Man pages (man/*.ronn)
+      text-safety-scan-file(1), text-safety-scan-find(1),
+      grep-find-unicode-wrapper(1).
+
+    End-of-options support
+      Added '--' before user-controlled paths in
+      helper-scripts/get_writable_fs_lists.sh (cat) and
+      helper-scripts/set-keyboard-layout.sh (grep -q).
+
+    CI hardening (.github/workflows/, .clusterfuzzlite/, ci/)
+      - Lint workflow split into lint-build.sh + lint-tests.sh for
+        clearer failure attribution. Inline workflow bash extracted
+        to ci/ scripts. Lint path filters narrowed.
+      - dependabot.yml added.
+      - CodeQL Python static analysis workflow added.
+      - Coverity Scan workflow added (sha256-pinned download).
+      - Three-layer fuzz testing: Hypothesis property tests under
+        ci/tests/ (CI-only, not shipped in the .deb), Atheris, and
+        ClusterFuzzLite. ClusterFuzzLite is workflow_dispatch-only
+        until the first green run.
+      - OpenSSF Scorecard workflow added.
+      - All third-party actions pinned to commit SHAs (checkout
+        v5->v6.0.2, codeql-action v3->v4.35.2, SARIF uploader, etc.).
+      - gcr.io OSS-Fuzz image and Dockerfile FROM pinned to digests.
+      - Provenance citations point to the publisher's authoritative
+        GitHub repo / docs (google/oss-fuzz, hub.docker.com publisher
+        attestation, google/atheris) rather than the artifact
+        registry's own manifest endpoint.
+
+    Standard copyright header added to every new file.
+
+    https://claude.ai/code/session_01BAQS9pE9zQYieV6Uys9Reo
+
+commit c264991a53aa6b29ff5f4801efdf9f6f8f2c70c7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 09:01:59 2026 +0000
+
+    bumped changelog version
+
+commit 0de92ca05c5a396fea9234e2261adf8c3818c493
+Merge: 50e44f4 fb2d4e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 04:41:56 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit fb2d4e15e21747a4b33e4ab8bce8b98d951ad991
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 28 23:31:35 2026 -0400
+
+    fix
+
+commit 50e44f4546f23b416a83433e7c248efa406ca0d6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 27 15:33:41 2026 +0000
+
+    bumped changelog version
+
+commit 0812d4c363c7f09fa98da6a56e37caf54888fde5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 27 11:16:05 2026 -0400
+
+    fix
+
+commit b38e4f46ca91042997420f565f51096e49c8be99
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 27 11:10:18 2026 -0400
+
+    chmod +x
+
+commit 5376a7184fe514af05bf128c4be18b0168135bda
+Merge: 331e556 83e439b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 27 11:08:00 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/configure-repo-access-hZI4X'
+
+commit 83e439bc4c69bc3fee2965235c24d9a136282cd8
+Author: Claude <noreply@anthropic.com>
+Date:   Mon Apr 27 14:49:49 2026 +0000
+
+    add xtrace.bsh, benchmark.bsh, trace.bsh shared helpers
+
+    Three small generic shell helper libraries used by
+    derivative-maker/help-steps/pre, which currently inlines them.
+    Migrating them here lets other tools reuse them and shrinks pre
+    significantly. All three are sourceable via:
+      source /usr/libexec/helper-scripts/<lib>.bsh
+
+    xtrace.bsh: xtrace_off / xtrace_restore / output_cmd_set
+      Suspend/restore set -x around blocks that must not be echoed
+      (secret handling, noisy output). Saved-state global is
+      helper_xtrace_prev_state (project-neutral name; renamed from
+      derivative-maker's dist_build_xtrace_prev_state).
+
+    benchmark.bsh: benchmark_format / benchmark_since
+      Format integer seconds as 0s / 42s / 3m42s / 1h03m42s, and a
+      convenience that takes a $SECONDS snapshot and reports the
+      elapsed.
+
+    trace.bsh: function_trace / process_backtrace
+      Diagnostic backtrace helpers for error handlers. Renamed from
+      function_trace_function / process_backtrace_function and
+      switched from writing to globals (function_trace_result /
+      process_backtrace_result) to printing the result on stdout, so
+      callers capture into a local: trace=\"\$(function_trace)\".
+      Both diagnostic helpers belong together; one source line gets
+      both.
+
+    Smoke-tested locally: function_trace correctly walks the caller's
+    stack even though the definition lives in a sourced lib (caller
+    reports the invoker's frames, not the lib's). benchmark_format
+    handles 0, 42, 245, 3725 -> 0s, 42s, 4m05s, 1h02m05s.
+
+commit 331e556427b0e9fbc88a2c45d15e40386dd38fc1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 25 09:24:14 2026 +0000
+
+    bumped changelog version
+
 commit a8009196c6e84805f8cc205dc72b029e7da5b1c1
 Merge: bd611e5 2d82d12
 Author: Patrick Schleizer <adrelanos@whonix.org>
