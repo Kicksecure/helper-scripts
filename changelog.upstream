@@ -1,3 +1,51 @@
+commit f117de649ce11c609fcb46fe524752f17b4a838d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:49:14 2026 -0400
+
+    fix
+
+commit 96a2d0fb652d3d5b15a94acf55ac1a36cc66fcd7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:48:07 2026 -0400
+
+    fix
+
+commit 8e5289aa45a6b7f3ec325e966412ba6dcc80aed4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:11:15 2026 -0400
+
+    fix
+
+commit 4f8981644f5f9939aa27c52cd1539c1ab2541cac
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:05:11 2026 -0400
+
+    printf
+
+commit c02d697a392ff572e81d195378605a0c50eb9f23
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:04:09 2026 -0400
+
+    fix
+
+commit b09f130d29344785db01f5eadd8c8eefdf4a31db
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:02:08 2026 -0400
+
+    fix
+
+commit cea1e67c4fc41797ad52ab22479dfcbb196c44b1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 05:01:04 2026 -0400
+
+    HELPER_SCRIPTS_PATH
+
+commit 37f4c37ed8d2030ae4a7e7d238a883aed22df3ce
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 29 12:55:11 2026 +0000
+
+    bumped changelog version
+
 commit 2caf6f7bc0866109cb2c08e04ccb4a350353ca4f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Apr 29 08:43:30 2026 -0400
