@@ -53,7 +53,7 @@ set -o pipefail
 set -o errtrace
 
 ## provides: draw_progress_bar
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/progress-bar"
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/progress-bar
 
 ## provides: is_whole_number
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
