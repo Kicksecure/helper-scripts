@@ -13,5 +13,7 @@ Detailed guidance for AI agents working on this codebase.
 
 ## Reference
 
+- Bash style guide (org-wide; hosted canonically in developer-meta-files):
+  https://github.com/Kicksecure/developer-meta-files/blob/master/agents/bash-style-guide.md
 - [stdisplay](agents/stdisplay-security.md)
 - [Fuzzing](agents/fuzzing.md) - Hypothesis property tests, Atheris harnesses, ClusterFuzzLite

@@ -2,27 +2,40 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Authored by Claude (Anthropic).
-## Atheris coverage-guided fuzzing for the Python packages. Runs each
-## harness in fuzz/fuzz_*.py for a bounded budget; findings are
-## uploaded as artifacts. Local: 'python3 fuzz/fuzz_stdisplay.py
-## -max_total_time=60'. atheris (Google) is installed via pip; same
-## trust shape as Coverity Scan's cov-analysis tarball.
+## AI-Assisted
+
+## Coverage-guided fuzzing for the Python packages, driven by
+## ClusterFuzzLite. Atheris is the engine under the hood; the OSS-Fuzz
+## base-builder + compile_python_fuzzer pipeline wraps each
+## fuzz/fuzz_*.py harness into a libFuzzer-style runnable.
+##
+## Two jobs in one workflow, gated by event:
+##   - pr:    short per-fuzzer budget on PRs touching python/fuzz/.clusterfuzzlite.
+##   - batch: longer per-fuzzer budget on schedule + workflow_dispatch.
+##
+## Reference: https://google.github.io/clusterfuzzlite/running-clusterfuzzlite/github-actions/
 
 name: Fuzz
 
 on:
-  schedule:
-    ## Sunday 05:00 UTC. Offset from CodeQL (Sun 04:17),
-    ## Scorecard (Sun 04:30), Coverity (Sun 06:00) so cron
-    ## contention is unlikely.
-    - cron: '0 5 * * 0'
+  ## Manual-only until the ClusterFuzzLite build setup is verified
+  ## green at least once. Once that lands, uncomment the pull_request
+  ## and schedule blocks.
   workflow_dispatch:
     inputs:
-      max_total_time:
-        description: 'Per-harness fuzz time budget in seconds'
+      fuzz_seconds:
+        description: 'Per-fuzzer time budget in seconds (batch job)'
         required: false
-        default: '60'
+        default: '600'
+  ## pull_request:
+  ##   branches: [master]
+  ##   paths:
+  ##     - 'usr/lib/python3/dist-packages/**/*.py'
+  ##     - 'fuzz/**'
+  ##     - '.clusterfuzzlite/**'
+  ##     - '.github/workflows/fuzz.yml'
+  ## schedule:
+  ##   - cron: '30 3 * * *'
 
 permissions:
   contents: read
@@ -32,14 +45,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  fuzz:
-    name: Atheris fuzz
+  pr:
+    name: ClusterFuzzLite PR fuzz
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-
-    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
-
     timeout-minutes: 30
-
+    permissions:
+      ## Required to upload findings as PR annotations.
+      security-events: write
     steps:
       - name: Checkout repository
         ## https://github.com/actions/checkout/releases/tag/v6.0.2
@@ -48,25 +61,59 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install dependencies
-        run: bash ci/fuzz-install.sh
-
-      - name: Run fuzz harnesses
-        env:
-          MAX_TOTAL_TIME: ${{ github.event.inputs.max_total_time || '60' }}
-        run: bash ci/fuzz-run.sh
-
-      - name: Upload findings (if any)
-        if: always()
-        ## https://github.com/actions/upload-artifact/releases/tag/v7.0.1
-        ## > 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+      - name: Build fuzzers
+        ## https://github.com/google/clusterfuzzlite/tree/v1
+        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1 (HEAD of v1; no release tag)
+        uses: google/clusterfuzzlite/actions/build_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
         with:
-          name: fuzz-artifacts
-          path: |
-            crash-*
-            leak-*
-            timeout-*
-            fuzz/*.log
-          if-no-files-found: ignore
-          retention-days: 14
+          language: python
+          sanitizer: address
+
+      - name: Run fuzzers (code-change)
+        ## https://github.com/google/clusterfuzzlite/tree/v1
+        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1
+        uses: google/clusterfuzzlite/actions/run_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ## Per-fuzzer time budget. Total ~ N_fuzzers x this.
+          fuzz-seconds: 60
+          mode: 'code-change'
+          sanitizer: address
+          output-sarif: true
+
+  batch:
+    name: ClusterFuzzLite batch fuzz
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      security-events: write
+      ## ClusterFuzzLite stores corpora / crashes via actions/cache,
+      ## which needs neither contents:write nor actions:write -
+      ## contents:read covers cache reads.
+    steps:
+      - name: Checkout repository
+        ## https://github.com/actions/checkout/releases/tag/v6.0.2
+        ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Build fuzzers
+        ## https://github.com/google/clusterfuzzlite/tree/v1
+        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1 (HEAD of v1; no release tag)
+        uses: google/clusterfuzzlite/actions/build_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
+        with:
+          language: python
+          sanitizer: address
+
+      - name: Run fuzzers (batch)
+        ## https://github.com/google/clusterfuzzlite/tree/v1
+        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1
+        uses: google/clusterfuzzlite/actions/run_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fuzz-seconds: ${{ github.event.inputs.fuzz_seconds || '600' }}
+          mode: 'batch'
+          sanitizer: address
+          output-sarif: true

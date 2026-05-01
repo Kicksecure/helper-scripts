@@ -1,11 +1,11 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Authored by Claude (Anthropic).
+## AI-Assisted
 
 # Fuzzing
 
-Three layers, in increasing depth:
+Two layers, in increasing depth:
 
 ## 1. Hypothesis property tests
 
@@ -33,50 +33,39 @@ with three properties: `test_never_raises`, `test_idempotent` (if
 applicable), and one domain-specific invariant. Add the package to
 the `py_lib_to_test_list` in `run-tests`.
 
-## 2. Atheris harnesses
+## 2. ClusterFuzzLite (Atheris under the hood)
 
-Live in `fuzz/fuzz_<pkg>.py`. Coverage-guided fuzzing.
+Coverage-guided fuzzing of Python harnesses, orchestrated by
+ClusterFuzzLite. Atheris is the engine; ClusterFuzzLite handles the
+build (OSS-Fuzz base-builder + `compile_python_fuzzer`), corpus
+persistence (via `actions/cache`), crash dedup, SARIF, and PR
+annotations.
 
-Local run (single harness, time-bounded):
+Harnesses live in `fuzz/fuzz_<pkg>.py`. Configuration:
+`.clusterfuzzlite/{Dockerfile,build.sh,project.yaml}`.
+
+Workflow: `.github/workflows/fuzz.yml` with two jobs in one file:
+- `pr` - short fuzz on every PR that touches the Python packages
+  or harnesses. Findings appear as PR annotations.
+- `batch` - longer-budget batch fuzz on schedule + workflow_dispatch.
+  Crashes / corpora persist via `actions/cache`.
+
+Local run against a single harness (no docker, no ClusterFuzzLite -
+direct Atheris invocation, useful for iterating on a new harness):
 ```
 python3 fuzz/fuzz_stdisplay.py -max_total_time=60
 ```
+(Requires `pip install atheris` plus the package's runtime deps;
+the workflow does this in the OSS-Fuzz base-builder image.)
 
-Local run (all harnesses, the way CI does it):
-```
-PYTHON3=python3.13 MAX_TOTAL_TIME=60 bash ci/fuzz-run.sh
-```
-(`PYTHON3=` only needed if your system `python3` is older than 3.12.)
-
-CI: `.github/workflows/fuzz.yml` runs all harnesses on the weekly
-cron and on `workflow_dispatch`. Atheris is installed via
-`ci/fuzz-install.sh`.
-
-When adding a new package, add a `fuzz/fuzz_<pkg>.py` next to the
-existing harnesses; the CI workflow picks it up automatically.
-
-## 3. ClusterFuzzLite
-
-Continuous fuzzing using OSS-Fuzz infrastructure executed locally
-in our GitHub Actions runners.
-
-Configuration: `.clusterfuzzlite/{Dockerfile,build.sh,project.yaml}`.
-Workflows:
-- `.github/workflows/cflite-pr.yml` - short fuzz on every PR that
-  touches the Python packages or harnesses. Findings appear as
-  PR annotations.
-- `.github/workflows/cflite-batch.yml` - daily batch fuzz with a
-  longer per-fuzzer budget. Crashes / corpora persist via
-  `actions/cache`.
-
-Adding a harness: same as for Atheris. The build script
-(`.clusterfuzzlite/build.sh`) loops `compile_python_fuzzer` over
-every `fuzz/fuzz_*.py`.
+Adding a harness: drop a new `fuzz/fuzz_<pkg>.py` next to the
+existing harnesses. `.clusterfuzzlite/build.sh` loops
+`compile_python_fuzzer` over every `fuzz/fuzz_*.py`, so it's
+picked up automatically.
 
 ## Trust footprint
 
 - Hypothesis: Debian apt (`python3-hypothesis`).
-- Atheris: Google, PyPI (not in Debian).
-- ClusterFuzzLite: Google + OSS-Fuzz. Per-pin provenance is in the
-  workflow YAML (`.github/workflows/cflite-*.yml`,
-  `.clusterfuzzlite/Dockerfile`), not duplicated here.
+- ClusterFuzzLite + Atheris + OSS-Fuzz base-builder: Google. Per-pin
+  provenance is in `.github/workflows/fuzz.yml` and
+  `.clusterfuzzlite/Dockerfile`, not duplicated here.
