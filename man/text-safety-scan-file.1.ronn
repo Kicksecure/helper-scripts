@@ -7,7 +7,7 @@ text-safety-scan-file(1) -- Run all configured text-safety plugins across files 
 -->
 
 <!--
-# Authored by Claude (Anthropic).
+# AI-Assisted
 -->
 
 ## SYNOPSIS

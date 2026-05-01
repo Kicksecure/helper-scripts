@@ -3,7 +3,7 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Authored by Claude (Anthropic).
+## AI-Assisted
 
 ## Submit cov-int output to Coverity Scan.
 ##

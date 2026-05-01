@@ -7,7 +7,7 @@ text-safety-scan-find(1) -- Run text-safety-scan-file across every file under a 
 -->
 
 <!--
-# Authored by Claude (Anthropic).
+# AI-Assisted
 -->
 
 ## SYNOPSIS

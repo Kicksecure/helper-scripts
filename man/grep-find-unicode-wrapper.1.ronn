@@ -7,7 +7,7 @@ grep-find-unicode-wrapper(1) -- Find suspicious Unicode characters using grep se
 -->
 
 <!--
-# Authored by Claude (Anthropic).
+# AI-Assisted
 -->
 
 ## SYNOPSIS

@@ -3,7 +3,7 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Authored by Claude (Anthropic).
+## AI-Assisted
 
 ## Verify Coverity Scan secrets are present before the workflow
 ## attempts to use them. Fails fast with a clear ::error::

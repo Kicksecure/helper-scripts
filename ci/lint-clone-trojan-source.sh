@@ -3,7 +3,7 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Authored by Claude (Anthropic).
+## AI-Assisted
 
 ## Clone the nickboucher/trojan-source corpus into ~/trojan-source.
 ## helper-scripts' ./run-tests scans against this corpus.
