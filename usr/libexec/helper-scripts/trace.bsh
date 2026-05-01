@@ -79,6 +79,13 @@ process_backtrace() {
          trace="$trace : init\n"
          break
       fi
+      if [ "$cp" = "0" ] || ! [[ "$cp" =~ ^[0-9]+$ ]]; then
+         ## PPid=0 is what /proc/<pid>/status reports for kernel
+         ## threads or for processes whose parent has been reaped;
+         ## treat it as "end of trace" rather than try to read
+         ## /proc/0/* (which does not exist).
+         break
+      fi
       ## Reset per-iteration state so a missing /proc/<cp>/{cmdline,status}
       ## (e.g. a parent that died mid-trace) does not carry the previous
       ## iteration's values into this one and mis-attribute the cmdline
@@ -86,7 +93,13 @@ process_backtrace() {
       cmdline=""
       pp=""
       if test -f "/proc/$cp/cmdline" ; then
-         cmdline="$(tr '\000' ' ' < "/proc/$cp/cmdline")" || true
+         ## NUL is the argv separator on /proc/<pid>/cmdline; flatten
+         ## to spaces. CR/LF can appear inside an argv element when a
+         ## script was invoked with a multi-line "bash -c '<script>'"
+         ## or similar; flatten those too so the trailing
+         ## "tac | grep --line-number" does not mis-number this entry
+         ## across embedded newlines.
+         cmdline="$(tr '\000\n\r' '   ' < "/proc/$cp/cmdline")" || true
       else
          ps_p_output="$(ps --no-headers -p "$cp")" || true
          printf '%s\n' "process_backtrace ERROR: /proc/$cp/cmdline missing | ps: $ps_p_output" >&2
