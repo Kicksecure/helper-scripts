@@ -1,3 +1,55 @@
+commit 7bd284ae2e52fd157488e3cba4a3ba53ebdf32d8
+Merge: 98341a6 0539bdd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 07:15:00 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/configure-repo-access-hZI4X'
+
+commit 0539bdd351b8c58d4e1f58f59d026154de983747
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 1 11:10:17 2026 +0000
+
+    trace.bsh: process_backtrace: stop at PPid=0; flatten newlines in cmdline
+
+    Two fixes to process_backtrace, surfaced by an automated-builder CI
+    run on derivative-maker:
+
+      * Stop walking the parent chain when /proc/<pid>/status reports
+        PPid=0. The previous loop only broke on PID=1 (init) or empty.
+        A PPid of 0 occurs for kernel threads or for processes whose
+        parent has been reaped; the next iteration would try to read
+        /proc/0/cmdline and /proc/0/status, both of which do not exist,
+        and the function emitted three confusing ERROR lines per call:
+
+          process_backtrace ERROR: /proc/0/cmdline missing | ps:
+          process_backtrace ERROR: /proc/0/status missing | ps:
+          process_backtrace ERROR: who_ami: builder | empty pid
+
+        Now treats PPid=0 (or any non-numeric cp) as end-of-trace and
+        returns cleanly.
+
+      * Flatten CR/LF along with NUL when reading /proc/<pid>/cmdline.
+        NUL is the argv separator and was already mapped to space; an
+        embedded \\n or \\r inside an argv element (a "bash -c
+        '<multi-line script>'" invocation, or our own claude-code
+        long --append-system-prompt argument) confused the trailing
+        "tac | grep --line-number" so frame numbering got mis-attributed
+        across the embedded newlines. Now mapped to space alongside NUL.
+
+    Smoke-tested locally via "bash -c 'source trace.bsh; process_backtrace'":
+      - clean numbered output 1..N
+      - last frame is "1: : init"
+      - no /proc/0/* errors
+      - multi-line argv flattened correctly into a single frame line.
+
+    AI-Assisted
+
+commit 98341a6ef264f6da441a82560b41e6f7846a76d7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 09:50:11 2026 +0000
+
+    bumped changelog version
+
 commit f117de649ce11c609fcb46fe524752f17b4a838d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri May 1 05:49:14 2026 -0400
