@@ -3,6 +3,8 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## AI-Assisted
+
 ## Suspend/restore bash xtrace (set -x) around blocks that must not be
 ## echoed to logs - secret handling, noisy third-party output, etc.
 ## Single-level globals; nested xtrace_off/xtrace_restore calls are not
