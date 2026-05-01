@@ -12,7 +12,7 @@
 ##
 ## To use it in other scripts, use something like this:
 # if [ -f /usr/libexec/helper-scripts/pre.bsh ]; then
-#    source /usr/libexec/helper-scripts/pre.bsh
+#    source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/pre.bsh
 # fi
 #
 ## Assumptions / supported usage:
@@ -100,9 +100,9 @@ if [ "${pre_bsh_sourced}" = 'false' ]; then
   set -o pipefail
 fi
 
-if test -r "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh"; then
+if test -r "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh; then
   # shellcheck source=./get_colors.sh
-  source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh" || true "$0: ERROR: Failed to source /usr/libexec/helper-scripts/get_colors.sh"
+  source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh" || true "$0: ERROR: Failed to source ${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh"
 fi
 
 source_config_folder() {

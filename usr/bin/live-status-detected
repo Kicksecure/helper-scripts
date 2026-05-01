@@ -8,7 +8,7 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-source /usr/libexec/helper-scripts/live-mode.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/live-mode.sh
 
 printf '%s\n' "$live_status_detected"
 

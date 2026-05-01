@@ -6,7 +6,7 @@
 
 set -euo pipefail -o errtrace
 
-source /usr/libexec/helper-scripts/accountctl.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/accountctl.sh
 
 usage(){
   printf '%s\n' "Usage: ${0##*/} [USER|GROUP] CMD [ARGS]

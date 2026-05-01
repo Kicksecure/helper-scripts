@@ -15,12 +15,12 @@ if [ "$(id -u)" = 0 ] && [ -z "${GITHUB_WORKSPACE:-}" ]; then
 fi
 
 ## XXX: Unrelated unit test. Non-ideal location but OK.
-source /usr/libexec/helper-scripts/use_sudo.sh
-source /usr/libexec/helper-scripts/use_pkexec.sh
-source /usr/libexec/helper-scripts/boot-session-detection.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/use_sudo.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/use_pkexec.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/boot-session-detection.bsh
 
-source /usr/libexec/helper-scripts/wc-test.sh
-source /usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/wc-test.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 folder_list="Assembly  Bash  C  C#  C++  Go  Java  JavaScript  Python  RegEx  Rust  Solidity"
 

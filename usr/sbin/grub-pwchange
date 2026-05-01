@@ -9,9 +9,9 @@ set -o errtrace
 set -o pipefail
 
 # shellcheck source=../libexec/helper-scripts/get_colors.sh
-source /usr/libexec/helper-scripts/get_colors.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh
 # shellcheck source=../libexec/helper-scripts/get_password.sh
-source /usr/libexec/helper-scripts/get_password.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_password.sh
 
 run_update_grub() {
    printf "%s\n" "$0: INFO: Running 'update-grub'..." >&2

@@ -13,7 +13,7 @@
 set -e
 set -o pipefail
 
-source /usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 output_init() {
    rm -f "${anondate_state_folder}/anondate-set-current-message.txt"

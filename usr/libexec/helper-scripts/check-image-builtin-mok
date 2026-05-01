@@ -16,11 +16,11 @@
 ##    them.
 
 # shellcheck source=../../sbin/shim-signed-mok-setup
-source /usr/sbin/shim-signed-mok-setup
+source "${HELPER_SCRIPTS_PATH:-}"/usr/sbin/shim-signed-mok-setup
 # shellcheck source=./has.sh
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.sh"
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 # shellcheck source=./secure_boot_enabled_check.bsh
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/secure_boot_enabled_check.bsh"
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/secure_boot_enabled_check.bsh
 
 check_image_builtin_mok() {
   ## Where to put the do_once file? helper-scripts is intended for

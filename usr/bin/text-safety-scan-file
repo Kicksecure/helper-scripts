@@ -14,9 +14,9 @@ set -o errtrace
 set -o pipefail
 
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
-source /usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 # shellcheck source=../libexec/helper-scripts/strings.bsh
-source /usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 log_level=info
 

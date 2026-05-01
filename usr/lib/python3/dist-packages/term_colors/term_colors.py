@@ -30,7 +30,7 @@ class TermColors:
                 "/usr/bin/bash",
                 "-c",
                 """\
-source /usr/libexec/helper-scripts/get_colors.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh
 get_colors
 printf '%s\n' "nocolor=${nocolor}
 reset=${reset}

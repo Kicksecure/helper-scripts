@@ -9,6 +9,6 @@ set -o errtrace
 set -o pipefail
 
 # shellcheck source=../libexec/helper-scripts/secure_boot_enabled_check.bsh
-source /usr/libexec/helper-scripts/secure_boot_enabled_check.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/secure_boot_enabled_check.bsh
 
 check_secure_boot_enabled

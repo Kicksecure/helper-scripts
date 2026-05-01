@@ -10,7 +10,7 @@ set -o pipefail
 set -o errtrace
 
 # shellcheck source=./usr/libexec/helper-scripts/strings.bsh
-source /usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 command -v safe-rm >/dev/null
 

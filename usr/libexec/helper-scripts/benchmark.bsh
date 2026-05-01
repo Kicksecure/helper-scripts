@@ -9,11 +9,11 @@
 ## restores the caller's xtrace state on return.
 ##
 ## Usage:
-##   source /usr/libexec/helper-scripts/benchmark.bsh
+##   source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/benchmark.bsh
 ##   benchmark_format 245           # -> "4m05s"
 
 # shellcheck source=./usr/libexec/helper-scripts/strings.bsh
-source /usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 benchmark_format() {
    local -

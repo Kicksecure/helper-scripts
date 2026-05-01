@@ -34,6 +34,6 @@ fi
 scriptname=$(basename -- "$0")
 function_name="$(printf '%s\n' "$scriptname" | str_replace "-" "_")"
 
-source /usr/libexec/helper-scripts/set-keyboard-layout.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/set-keyboard-layout.sh
 
 true "$0: END"
