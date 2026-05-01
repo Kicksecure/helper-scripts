@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 # shellcheck source=./check_runtime.bsh
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/check_runtime.bsh"
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 
 if was_executed "${BASH_SOURCE[0]}"; then
   set -o errexit

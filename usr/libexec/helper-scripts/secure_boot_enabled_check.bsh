@@ -4,7 +4,7 @@
 ## See the file COPYING for copying conditions.
 
 # shellcheck source=/usr/libexec/helper-scripts/has.sh
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.sh"
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
 ## Return codes:
 ## 0: Secure Boot enabled.

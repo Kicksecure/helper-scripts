@@ -6,9 +6,9 @@
 true "$0: START"
 
 # shellcheck source=./check_runtime.bsh
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/check_runtime.bsh"
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 # shellcheck source=./strings.bsh
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/strings.bsh"
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 if was_executed "${BASH_SOURCE[0]}"; then
   live_mode_sourced='false'

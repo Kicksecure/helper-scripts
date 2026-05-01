@@ -3,8 +3,8 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh"
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/log_run_die.sh"
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
 ## Wrapper that supports su, sudo, doas
 root_cmd(){
