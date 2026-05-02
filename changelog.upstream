@@ -1,3 +1,133 @@
+commit 99631f66144772e87d941dccdcb22d5465f25fea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 16:45:03 2026 -0400
+
+    add CLAUDE.md
+
+commit 62b62789458cb4e9c3b84715c37002bbd3c6b65f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 15:41:02 2026 -0400
+
+    comment
+
+commit 85b27ccc67704958ef99a0666719b7f2cb35851f
+Merge: ec312da 448a683
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 15:34:50 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/configure-repo-access-hZI4X'
+
+commit 448a683d8044bf0fd17d20aff1c7dbbd4eb00ff4
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 1 16:59:04 2026 +0000
+
+    AGENTS.md: cross-link to Kicksecure, not assisted-by-ai
+
+    assisted-by-ai hosts our AI-work mirror; canonical location is
+    upstream Kicksecure. Point the bash-style-guide cross-link at
+    Kicksecure/developer-meta-files.
+
+    https://claude.ai/code/session_01U5dqsVj1msLQMiCemkuddP
+
+commit 71a4c23cc2e3810803cb7253cbdc7b9db13644ec
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 1 16:47:28 2026 +0000
+
+    AGENTS.md: cross-link to canonical bash style guide in dev-meta-files
+
+    The org-wide bash style guide is now hosted canonically in
+    developer-meta-files (it was briefly in derivative-maker; that copy
+    has been deleted on derivative-maker PR #11). Add a cross-link here
+    so contributors looking up bash conventions for files in this repo
+    land on the canonical reference.
+
+    https://claude.ai/code/session_01U5dqsVj1msLQMiCemkuddP
+
+commit 3ee21682ebdea4f6d4c5cfb9b8a3360eec148ba1
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 1 16:15:09 2026 +0000
+
+    Revert "agents/: host bash-style-guide and github-actions-security canonically"
+
+    This reverts commit 34ce037344c65b9d4772b88b0b09600c7e1934a0.
+
+commit 34ce037344c65b9d4772b88b0b09600c7e1934a0
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 1 16:13:15 2026 +0000
+
+    agents/: host bash-style-guide and github-actions-security canonically
+
+    These two docs are generic - shared across the assisted-by-ai org -
+    and were previously hosted in derivative-maker with a pointer stub
+    in helper-scripts. Move the canonical content here so derivative-maker
+    no longer has to host docs unrelated to derivative-maker's specific
+    build/derivative concerns.
+
+    - agents/bash-style-guide.md: new file, canonical content moved from
+      derivative-maker.
+    - agents/github-actions-security.md: replace the pointer stub with
+      the full canonical content moved from derivative-maker.
+    - AGENTS.md: index both docs.
+
+    derivative-maker and developer-meta-files will follow up by deleting
+    their copies / updating their AGENTS.md links to point here.
+
+    https://claude.ai/code/session_01U5dqsVj1msLQMiCemkuddP
+
+commit 388381bdc262de14462a2af8a22d013c1ae58409
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 1 15:11:08 2026 +0000
+
+    fuzz: consolidate to single ClusterFuzzLite workflow
+
+    Drops the redundant direct-Atheris pipeline (.github/workflows/fuzz.yml
+    + ci/fuzz-{install,run}.sh) in favor of ClusterFuzzLite, which runs the
+    same fuzz/fuzz_*.py harnesses with Atheris as the engine and adds SARIF
+    output, PR annotations, corpus persistence via actions/cache, and crash
+    dedup that the direct path didn't have.
+
+    Merges cflite-pr.yml + cflite-batch.yml into a single fuzz.yml with
+    two jobs gated by event:
+      - pr:    code-change mode, 60s/fuzzer, on pull_request
+      - batch: batch mode, 600s/fuzzer, on schedule + workflow_dispatch
+
+    Net: 3 workflows -> 1, 2 ci/fuzz scripts -> 0, same coverage. Local
+    fuzz harness invocation still works directly via
+    'python3 fuzz/fuzz_<pkg>.py -max_total_time=60' since Atheris is the
+    engine either way.
+
+    agents/fuzzing.md collapsed from three layers (Hypothesis, Atheris,
+    ClusterFuzzLite) to two (Hypothesis, ClusterFuzzLite). The
+    'AI-Assisted' marker on the H1 follows the bash-style-guide rule.
+
+    https://claude.ai/code/session_01U5dqsVj1msLQMiCemkuddP
+
+commit 593f3e5333fab33d7f664be4ec631ffc9b5c0592
+Merge: 938c7c1 ec312da
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 1 15:07:29 2026 +0000
+
+    Merge remote-tracking branch 'origin/master' into claude/configure-repo-access-hZI4X
+
+commit 938c7c19708c3b2bf9dcd5fb2a7244ce1f016e99
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 1 14:28:25 2026 +0000
+
+    benchmark/trace/xtrace.bsh: AI-Assisted file header marker
+
+    These three helpers were created from scratch by AI tooling. Per the
+    agents/bash-style-guide.md convention in derivative-maker, scripts
+    created from scratch by AI tools get the AI-Assisted token directly
+    under the copyright block.
+
+    https://claude.ai/code/session_01U5dqsVj1msLQMiCemkuddP
+
+commit ec312daf26db794956b23e469609836ccf3ad977
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 1 11:16:05 2026 +0000
+
+    bumped changelog version
+
 commit 7bd284ae2e52fd157488e3cba4a3ba53ebdf32d8
 Merge: 98341a6 0539bdd
 Author: Patrick Schleizer <adrelanos@whonix.org>
