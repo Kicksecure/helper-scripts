@@ -1,0 +1,80 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Reusable helpers for waiting on background jobs while still
+## capturing each job's exit status. Source from a bash script.
+##
+## Background:
+##   `wait pid1 pid2 ...` returns the exit status of the *last* PID
+##   only - earlier failures are silently dropped. The helpers below
+##   work around that using bash 5.1's `wait -n -p VAR`, which
+##   returns when any one child finishes and writes its PID into
+##   VAR. `wait -n` for a child that has already exited returns its
+##   saved exit status immediately, so total wall-clock cost is
+##   bounded by the slowest job regardless of completion order.
+##
+## Requirements: bash >= 5.1 (for `wait -n -p`); `local -n` (bash
+## >= 4.3) for the array-by-reference parameter.
+
+# shellcheck source=/usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
+# shellcheck source=/usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
+
+## Output array populated by parallel_wait on failure.
+parallel_failures=()
+
+## parallel_wait NAME
+##
+## Wait for every PID in the associative array NAME and return 0
+## if all jobs succeeded. On failure, log each failed job and
+## populate the global array `parallel_failures` with the labels
+## of the failed jobs, then return 1.
+##
+## NAME is the *name* of an associative array { pid => label },
+## taken by reference via bash nameref.
+##
+## Usage:
+##   declare -A jobs=()
+##   sleep 1 & jobs[$!]="job-A"
+##   sleep 2 & jobs[$!]="job-B"
+##   if ! parallel_wait jobs ; then
+##      log error "failed jobs: ${parallel_failures[*]}"
+##      exit 1
+##   fi
+parallel_wait() {
+  local remaining done_pid failed_label
+
+  check_variable_name "${1}" || return 1
+  local -n _parallel_jobs="${1}"
+
+  parallel_failures=()
+  remaining="${#_parallel_jobs[@]}"
+
+  if [ "${remaining}" -le 0 ]; then
+    log debug "parallel_wait: no jobs to wait for"
+    return 0
+  fi
+
+  while [ "${remaining}" -gt 0 ] ; do
+    ## `wait -n -p done_pid` may unset done_pid when no child is
+    ## available; reset before each iteration.
+    done_pid=""
+    if ! wait -n -p done_pid ; then
+      if [ -n "${done_pid:-}" ] \
+         && [ -n "${_parallel_jobs[${done_pid}]:-}" ] ; then
+        failed_label="${_parallel_jobs[${done_pid}]}"
+      else
+        failed_label="pid ${done_pid:-unknown}"
+      fi
+      parallel_failures+=( "${failed_label}" )
+      log warn "parallel_wait: job failed: '${failed_label}'"
+    fi
+    remaining=$(( remaining - 1 ))
+  done
+  [ "${#parallel_failures[@]}" -eq 0 ]
+}

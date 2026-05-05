@@ -3,31 +3,14 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# shellcheck source=/usr/libexec/helper-scripts/get_colors.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh
+# shellcheck source=/usr/libexec/helper-scripts/strings.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
-
-if ! command -v stecho &>/dev/null ; then
-  ## Fallback to 'printf' in case 'stecho' is unavailable.
-  stecho() {
-    printf "%s\n" "$*"
-  }
-fi
-
-disable_xtrace() {
-  if test "${xtrace:-}" = "1"; then
-    xtrace_was_on=true
-    set +o xtrace
-  else
-    xtrace_was_on=false
-  fi
-}
-
-xtrace_reenable_maybe() {
-  trap '' RETURN
-  if [ "${xtrace_was_on:-}" = "true" ]; then
-    set -o xtrace
-  fi
-}
+# shellcheck source=/usr/libexec/helper-scripts/xtrace.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/xtrace.bsh
+# shellcheck source=/usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
 __log_level_num() {
   case "${1:-notice}" in
@@ -52,9 +35,10 @@ __log_level_num() {
 log() {
   local log_level="${log_level:-notice}"
 
-  ## Avoid clogging output if log() is working alright.
-  disable_xtrace
-  trap 'xtrace_reenable_maybe' RETURN
+  ## Suppress xtrace for this function; local - saves and restores shell
+  ## options automatically on every exit path (return, die, fall-through).
+  local -
+  set +x
 
   local log_type log_type_up log_color log_source_script log_level_colorized log_content log_full
   local should_print=0
@@ -166,6 +150,17 @@ die() {
       ;;
   esac
   exit "${1}"
+}
+
+
+## Exit with an error if any of the listed commands are not available.
+## usage: die_if_not_has cmd1 [cmd2 ...]
+die_if_not_has() {
+  local cmd
+
+  for cmd in "$@"; do
+    has "${cmd}" || die 1 "Required command not found: '${cmd}'"
+  done
 }
 
 
