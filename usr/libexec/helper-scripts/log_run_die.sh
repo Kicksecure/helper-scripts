@@ -98,6 +98,9 @@ log() {
   fi
   log_level_colorized="[${log_color}${log_type_up}${nocolor}]"
   log_content="${*}"
+  if has sanitize-string; then
+    log_content="$(printf '%s' "${log_content}" | sanitize-string -- "${LOG_MAX_LEN:-nolimit}")"
+  fi
   ## error logs are the minimum and should always be printed, even if
   ## failing to assign a correct log type
   ## send bugs and error to stdout and stderr
