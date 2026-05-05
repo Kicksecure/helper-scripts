@@ -66,7 +66,7 @@ jobs:
 
     ## Forks won't have the secrets set; skip on forks rather than have
     ## the run fail with a missing-secret error halfway through.
-    if: github.repository == 'assisted-by-ai/helper-scripts' || github.event_name == 'workflow_dispatch'
+    if: github.repository == 'Kicksecure/helper-scripts' || github.event_name == 'workflow_dispatch'
 
     timeout-minutes: 30
 
