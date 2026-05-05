@@ -144,14 +144,7 @@ die() {
     log warn "Skipping termination because of with code '${1}' due to 'allow_errors' setting."
     return 0
   fi
-  case "${1}" in
-    106|107)
-      true
-      ;;
-    *)
-      log error "Aborting."
-      ;;
-  esac
+  log error "Aborting."
   exit "${1}"
 }
 
