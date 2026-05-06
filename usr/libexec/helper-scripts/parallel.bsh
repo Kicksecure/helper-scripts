@@ -90,9 +90,21 @@ parallel_wait() {
       ## Defensive: all tracked PIDs already reaped or otherwise
       ## not waitable. Bash returned without populating done_pid;
       ## the loop's progress condition depends on done_pid removal
-      ## from remaining_pids, so without it we'd spin. Surface and
-      ## break.
+      ## from remaining_pids, so without it we'd spin. Mark every
+      ## remaining tracked PID as a failure so the caller's
+      ## `[ "${#parallel_failures[@]}" -eq 0 ]` final check returns
+      ## non-zero - silently dropping unwaitable PIDs would let
+      ## "missing observation" look indistinguishable from "all
+      ## succeeded".
+      ## Caught by Codex P2 on helper-scripts#1 parallel.bsh:96.
       log warn "parallel_wait: ${#remaining_pids[@]} tracked job(s) could not be waited on"
+      for pid_iter in "${remaining_pids[@]}"; do
+        if [ -n "${_parallel_jobs[${pid_iter}]:-}" ]; then
+          parallel_failures+=( "${_parallel_jobs[${pid_iter}]} (unwaitable)" )
+        else
+          parallel_failures+=( "pid ${pid_iter} (unwaitable)" )
+        fi
+      done
       break
     fi
     new_remaining=()
