@@ -1,0 +1,131 @@
+#!/usr/bin/python3 -su
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+# pylint: disable=invalid-name,broad-exception-caught
+
+## Note for reviewers: We intentionally do not check if we have the ability to
+## access files before opening them for reading or writing. This would be
+## susceptible to TOCTOU issues, and this code is not complex enough to
+## warrant giving information beyond a generic error message and a Python
+## backtrace if I/O fails.
+
+"""
+extract-openpgp-policy-trusted-certs - Extracts certificates from
+openpgp-policy.toml files as used by sq-git. All certificates with a specified
+trust attribute set to 'true' will be extracted into an output directory.
+"""
+
+import sys
+import tomllib
+import traceback
+from pathlib import Path
+from typing import NoReturn, Any
+
+
+def error_msg(msg: str) -> NoReturn:
+    """
+    Outputs an error message and exits 1.
+    """
+
+    print(msg, file=sys.stderr)
+    sys.exit(1)
+
+
+# pylint: disable=too-many-branches
+def main() -> NoReturn:
+    """
+    Main function.
+    """
+
+    if len(sys.argv) != 4:
+        error_msg("Incorrect number of arguments.")
+
+    if sys.argv[1] == "":
+        error_msg("Policy file path cannot be empty!")
+    if sys.argv[2] == "":
+        error_msg("Trust key cannot be empty!")
+    if sys.argv[3] == "":
+        error_msg("Output dir path cannot be empty!")
+
+    policy_path: Path = Path(sys.argv[1])
+    trust_key: str = sys.argv[2]
+    output_dir_path: Path = Path(sys.argv[3])
+
+    try:
+        ## tomllib requires that the file it reads be opened in binary mode.
+        with open(policy_path, "rb") as policy_file:
+            policy_map: dict[Any, Any] = tomllib.load(policy_file)
+    except Exception:
+        print("Unable to load policy file! Details:", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
+        sys.exit(1)
+
+    if "version" not in policy_map:
+        error_msg("Policy file does not include version key!")
+    if not isinstance(policy_map["version"], int):
+        error_msg("Policy file version key is not an integer!")
+    if policy_map["version"] != 0:
+        error_msg(
+            f"Unexpected policy file version '{policy_map['version']}'!"
+        )
+
+    if "authorization" not in policy_map:
+        error_msg("Policy file does not include authorization key!")
+    if not isinstance(policy_map["authorization"], dict):
+        error_msg("Policy file authorization key is not a dictionary!")
+
+    key_count: int = 1
+
+    for auth_key, auth_dict in policy_map["authorization"].items():
+        if not isinstance(auth_key, str):
+            error_msg(
+                "Policy file contains a non-string item in the 'authorization' group!"
+            )
+
+        if not isinstance(auth_dict, dict):
+            error_msg(
+                f"Policy file authorization entry for user '{auth_key}' is not a dictionary!"
+            )
+
+        if trust_key not in auth_dict:
+            continue
+        if not isinstance(auth_dict[trust_key], bool):
+            error_msg(
+                f"Policy file trust key '{trust_key}' is not a boolean for "
+                + f"user '{auth_key}'!"
+            )
+        if not auth_dict[trust_key]:
+            continue
+
+        if "keyring" not in auth_dict:
+            continue
+        if not isinstance(auth_dict["keyring"], str):
+            error_msg(
+                f"Policy file keyring is not a string for user '{auth_key}'!"
+            )
+
+        extract_path: Path = Path(output_dir_path, str(key_count))
+
+        try:
+            extract_path.write_text(
+                auth_dict["keyring"],
+                encoding="utf-8",
+            )
+        except Exception:
+            print(
+                f"Unable to save keyring for user '{auth_key}' to file "
+                + f"'{str(extract_path)}'! Details:",
+                file=sys.stderr,
+            )
+            traceback.print_exc(file=sys.stderr)
+            sys.exit(1)
+
+        key_count += 1
+
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

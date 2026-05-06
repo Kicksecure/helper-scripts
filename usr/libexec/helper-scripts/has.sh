@@ -7,10 +7,13 @@
 ## spamming '>/dev/null' throughout this function. This also guards
 ## against aliases and functions.
 ## https://github.com/dylanaraps/pfetch/blob/pfetch#L53
-has(){
-  local _cmd
-  _cmd="$(command -v "${1}")" 2>/dev/null || return 1
-  [ -x "${_cmd}" ] || return 1
+has() {
+  local _cmd _name
+
+  for _name in "$@"; do
+    _cmd="$(command -v "${_name}")" 2>/dev/null || return 1
+    [ -x "${_cmd}" ] || return 1
+  done
 }
 
 lsmod_deterministic() {

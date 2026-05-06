@@ -52,6 +52,19 @@ on:
     - cron: '0 6 * * 0'
   workflow_dispatch:
 
+## Upstream-only gate. github.repository == env.CANONICAL_REPO
+## prevents forks (and the org-ai-assisted mirror) from running this
+## workflow's upstream-only paths - the upstream-only secret(s)
+## referenced below (vault password / Coverity token / GHORG_AUDIT_TOKEN)
+## are only set on the canonical repo. A fork would either see those
+## secrets as empty and fail mid-flight, or - worse - run the heavy
+## ops with its own arbitrary-named secret. Keeping the canonical
+## owner/repo at the top of the file as a constant rather than buried
+## in an `if:` expression makes the gate's identity reviewable and
+## avoids drift if it has to change across multiple `if:` checks.
+env:
+  CANONICAL_REPO: Kicksecure/helper-scripts
+
 permissions:
   contents: read
 
@@ -66,7 +79,10 @@ jobs:
 
     ## Forks won't have the secrets set; skip on forks rather than have
     ## the run fail with a missing-secret error halfway through.
-    if: github.repository == 'assisted-by-ai/helper-scripts' || github.event_name == 'workflow_dispatch'
+    ## workflow_dispatch is allowed on any repo so a maintainer can
+    ## trigger an ad-hoc scan on a fork they own (would still need
+    ## their own secrets set, but that is the operator's choice).
+    if: github.repository == env.CANONICAL_REPO || github.event_name == 'workflow_dispatch'
 
     timeout-minutes: 30
 

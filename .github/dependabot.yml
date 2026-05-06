@@ -3,10 +3,14 @@
 ## See the file COPYING for copying conditions.
 
 ## Authored by Claude (Anthropic).
-## Dependabot configuration. Drives automated PRs that bump:
-## 1. GitHub Actions SHA pins in .github/workflows/*.yml.
-## 2. Docker base image digests in workflow 'container:' directives
-##    (debian:stable etc. in lint.yml's matrix).
+## Dependabot configuration. Drives automated PRs that bump GitHub
+## Actions SHA pins in .github/workflows/*.yml.
+##
+## Note: dependabot's 'docker' ecosystem only watches Dockerfiles,
+## which this repo does not have. Container image references in
+## workflow 'container:' directives (debian:stable etc. in lint.yml's
+## matrix) are NOT covered by dependabot at all and need to be
+## bumped manually or by a different tool.
 ##
 ## See https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 version: 2
@@ -16,15 +20,6 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-    commit-message:
-      prefix: "ci(deps)"
-      include: scope
-
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 3
     commit-message:
       prefix: "ci(deps)"
       include: scope

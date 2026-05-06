@@ -3,16 +3,27 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# shellcheck source=/usr/libexec/helper-scripts/get_colors.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh
+# shellcheck source=/usr/libexec/helper-scripts/strings.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
+# shellcheck source=/usr/libexec/helper-scripts/xtrace.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/xtrace.bsh
+# shellcheck source=/usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
-if ! command -v stecho &>/dev/null ; then
-  ## Fallback to 'printf' in case 'stecho' is unavailable.
-  stecho() {
-    printf "%s\n" "$*"
-  }
-fi
-
+## Suspend xtrace ('set -x') around blocks whose stdout we want to
+## capture into a variable WITHOUT the xtrace traces of the inner
+## commands polluting that capture. Use sparingly - prefer
+## 'local -; set +x' inside a function (per agents/bash-style-guide.md).
+##
+## Pair: disable_xtrace then 'trap xtrace_reenable_maybe RETURN' at
+## the top of the function so xtrace is restored to its prior state
+## on every exit path (return, die, fall-through).
+##
+## Mirrors Kicksecure/helper-scripts/log_run_die.sh's definitions so
+## test_run_as_target_user (in root_cmd.sh, which uses these) keeps
+## working when the standalone is generated against this fork.
 disable_xtrace() {
   if test "${xtrace:-}" = "1"; then
     xtrace_was_on=true
@@ -52,9 +63,10 @@ __log_level_num() {
 log() {
   local log_level="${log_level:-notice}"
 
-  ## Avoid clogging output if log() is working alright.
-  disable_xtrace
-  trap 'xtrace_reenable_maybe' RETURN
+  ## Suppress xtrace for this function; local - saves and restores shell
+  ## options automatically on every exit path (return, die, fall-through).
+  local -
+  set +x
 
   local log_type log_type_up log_color log_source_script log_level_colorized log_content log_full
   local should_print=0
@@ -114,6 +126,7 @@ log() {
   fi
   log_level_colorized="[${log_color}${log_type_up}${nocolor}]"
   log_content="${*}"
+  log_content="$(printf '%s' "${log_content}" | sanitize-string -- "${LOG_MAX_LEN:-nolimit}")"
   ## error logs are the minimum and should always be printed, even if
   ## failing to assign a correct log type
   ## send bugs and error to stdout and stderr
@@ -157,15 +170,19 @@ die() {
     log warn "Skipping termination because of with code '${1}' due to 'allow_errors' setting."
     return 0
   fi
-  case "${1}" in
-    106|107)
-      true
-      ;;
-    *)
-      log error "Aborting."
-      ;;
-  esac
+  log error "Aborting."
   exit "${1}"
+}
+
+
+## Exit with an error if any of the listed commands are not available.
+## usage: die_if_not_has cmd1 [cmd2 ...]
+die_if_not_has() {
+  local cmd
+
+  for cmd in "$@"; do
+    has "${cmd}" || die 1 "Required command not found: '${cmd}'"
+  done
 }
 
 

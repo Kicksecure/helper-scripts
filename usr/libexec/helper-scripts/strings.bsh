@@ -184,6 +184,13 @@ $reason" >&2
   return 1
 }
 
+check_valid_linux_user_account_name() {
+  ## Validates per /etc/adduser.conf SYS_NAME_REGEX
+  ## (^[a-z_][-a-z0-9_]*$). Args: $1 = candidate.
+  ## Return: 0 valid, 1 invalid. Prints nothing.
+  [[ "${1:-}" =~ ^[a-z_][-a-z0-9_]*$ ]]
+}
+
 check_is_not_empty_and_only_one_line() {
   local varname value number_of_lines trimmed_value lines
 
@@ -278,7 +285,7 @@ string_quote_safe() {
 ## scientific notation such as 1.23e10
 ## negative numbers such as -1
 is_whole_number() {
-  [[ "$1" =~ ^[0-9]+$ ]]
+  [[  "$1" =~ ^[0-9]+$ ]]
 }
 
 ## same results as is_whole_number, but also allows negative numbers
