@@ -17,6 +17,11 @@
 ##   saved exit status immediately, so total wall-clock cost is
 ##   bounded by the slowest job regardless of completion order.
 ##
+##   `wait -n -p done_pid PID...` is called with the explicit list
+##   of tracked PIDs (not bare `wait -n`) so an unrelated background
+##   job started in the caller's shell cannot be reaped here and
+##   counted against this batch.
+##
 ## Requirements: bash >= 5.1 (for `wait -n -p`); `local -n` (bash
 ## >= 4.3) for the array-by-reference parameter.
 
@@ -47,24 +52,31 @@ parallel_failures=()
 ##      exit 1
 ##   fi
 parallel_wait() {
-  local remaining done_pid failed_label
+  local done_pid failed_label pid_iter
+  local -a remaining_pids new_remaining
 
   check_variable_name "${1}" || return 1
   local -n _parallel_jobs="${1}"
 
   parallel_failures=()
-  remaining="${#_parallel_jobs[@]}"
+  remaining_pids=( "${!_parallel_jobs[@]}" )
 
-  if [ "${remaining}" -le 0 ]; then
+  if [ "${#remaining_pids[@]}" -le 0 ]; then
     log debug "parallel_wait: no jobs to wait for"
     return 0
   fi
 
-  while [ "${remaining}" -gt 0 ] ; do
+  while [ "${#remaining_pids[@]}" -gt 0 ] ; do
     ## `wait -n -p done_pid` may unset done_pid when no child is
     ## available; reset before each iteration.
     done_pid=""
-    if ! wait -n -p done_pid ; then
+    ## Pass the tracked PIDs explicitly so bash only considers our
+    ## jobs. Without this, `wait -n` could reap an unrelated
+    ## background job started in the caller's shell, which would
+    ## still decrement `remaining` and cause one of our tracked
+    ## PIDs to be silently skipped. Caught by Codex on
+    ## helper-scripts#1 review thread for this file.
+    if ! wait -n -p done_pid "${remaining_pids[@]}" ; then
       if [ -n "${done_pid:-}" ] \
          && [ -n "${_parallel_jobs[${done_pid}]:-}" ] ; then
         failed_label="${_parallel_jobs[${done_pid}]}"
@@ -74,7 +86,20 @@ parallel_wait() {
       parallel_failures+=( "${failed_label}" )
       log warn "parallel_wait: job failed: '${failed_label}'"
     fi
-    remaining=$(( remaining - 1 ))
+    if [ -z "${done_pid:-}" ]; then
+      ## Defensive: all tracked PIDs already reaped or otherwise
+      ## not waitable. Bash returned without populating done_pid;
+      ## the loop's progress condition depends on done_pid removal
+      ## from remaining_pids, so without it we'd spin. Surface and
+      ## break.
+      log warn "parallel_wait: ${#remaining_pids[@]} tracked job(s) could not be waited on"
+      break
+    fi
+    new_remaining=()
+    for pid_iter in "${remaining_pids[@]}"; do
+      [ "${pid_iter}" != "${done_pid}" ] && new_remaining+=( "${pid_iter}" )
+    done
+    remaining_pids=( "${new_remaining[@]}" )
   done
   [ "${#parallel_failures[@]}" -eq 0 ]
 }
