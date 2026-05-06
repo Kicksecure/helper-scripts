@@ -99,7 +99,17 @@ log() {
   log_level_colorized="[${log_color}${log_type_up}${nocolor}]"
   log_content="${*}"
   if has sanitize-string; then
-    log_content="$(printf '%s' "${log_content}" | sanitize-string -- "${LOG_MAX_LEN:-nolimit}")"
+    ## Tolerate sanitize-string failure (e.g. a malformed LOG_MAX_LEN
+    ## value, or sanitize-string itself buggy on some unusual input)
+    ## without aborting the caller's script under errexit. Falling back
+    ## to the unsanitised content is strictly better than killing the
+    ## caller before its own error handler runs - log() is meant to
+    ## be a fail-soft observability hook, not an additional crash path.
+    ## Caught by Codex P2 on helper-scripts#1 log_run_die.sh:102.
+    local sanitized_log_content
+    if sanitized_log_content="$(printf '%s' "${log_content}" | sanitize-string -- "${LOG_MAX_LEN:-nolimit}" 2>/dev/null)"; then
+      log_content="${sanitized_log_content}"
+    fi
   fi
   ## error logs are the minimum and should always be printed, even if
   ## failing to assign a correct log type
