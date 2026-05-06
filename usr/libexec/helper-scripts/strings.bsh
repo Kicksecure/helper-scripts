@@ -185,22 +185,9 @@ $reason" >&2
 }
 
 check_valid_linux_user_account_name() {
-  ## Validates a Linux user account name per /etc/adduser.conf's
-  ## default SYS_NAME_REGEX:
-  ##   SYS_NAME_REGEX="^[a-z_][-a-z0-9_]*$"
-  ## i.e. start with a lowercase letter or underscore, then any
-  ## mix of lowercase letters, digits, underscore and dash. We
-  ## intentionally do NOT allow uppercase here (Codex P2 catch on
-  ## helper-scripts#1 strings.bsh:194): on default Debian /
-  ## Kicksecure configurations, an uppercase name passes a sloppy
-  ## pre-check and then still fails when adduser actually tries
-  ## to create the account, turning this validator into a
-  ## false-positive gate. Match upstream behaviour exactly so the
-  ## pre-check rejects the same set adduser itself rejects.
-  ##
-  ## Args: $1 = candidate name.
-  ## Return: 0 if valid, 1 if not. Prints nothing on its own;
-  ## callers print their own diagnostic on rejection.
+  ## Validates per /etc/adduser.conf SYS_NAME_REGEX
+  ## (^[a-z_][-a-z0-9_]*$). Args: $1 = candidate.
+  ## Return: 0 valid, 1 invalid. Prints nothing.
   [[ "${1:-}" =~ ^[a-z_][-a-z0-9_]*$ ]]
 }
 
