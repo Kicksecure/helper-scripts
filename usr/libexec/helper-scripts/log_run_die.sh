@@ -12,6 +12,34 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/xtrace.bsh
 # shellcheck source=/usr/libexec/helper-scripts/has.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
+## Suspend xtrace ('set -x') around blocks whose stdout we want to
+## capture into a variable WITHOUT the xtrace traces of the inner
+## commands polluting that capture. Use sparingly - prefer
+## 'local -; set +x' inside a function (per agents/bash-style-guide.md).
+##
+## Pair: disable_xtrace then 'trap xtrace_reenable_maybe RETURN' at
+## the top of the function so xtrace is restored to its prior state
+## on every exit path (return, die, fall-through).
+##
+## Mirrors Kicksecure/helper-scripts/log_run_die.sh's definitions so
+## test_run_as_target_user (in root_cmd.sh, which uses these) keeps
+## working when the standalone is generated against this fork.
+disable_xtrace() {
+  if test "${xtrace:-}" = "1"; then
+    xtrace_was_on=true
+    set +o xtrace
+  else
+    xtrace_was_on=false
+  fi
+}
+
+xtrace_reenable_maybe() {
+  trap '' RETURN
+  if [ "${xtrace_was_on:-}" = "true" ]; then
+    set -o xtrace
+  fi
+}
+
 __log_level_num() {
   case "${1:-notice}" in
     bug|error) printf '%s' 0 ;;
