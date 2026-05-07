@@ -27,8 +27,9 @@
 ##      second host with a different token) before committing.
 ##   4. Commit it to .coverity-tool-sha256.expected.
 ##
-## On success, prints the absolute path to the cov-analysis bin
-## directory so the caller can append it to the workflow's GITHUB_PATH.
+## On success, leaves the extracted Coverity tool at './cov-analysis/'
+## (relative to the repo root). The caller invokes the binaries via
+## that deterministic path - no PATH manipulation needed.
 ##
 ## Expected env (from .github/workflows/coverity.yml):
 ##   COVERITY_TOKEN
@@ -103,6 +104,3 @@ fi
 
 tar -xzf cov-analysis-linux64.tgz -C cov-analysis --strip-components=1 --
 rm -f -- cov-analysis-linux64.tgz cov-analysis-linux64.md5
-
-## Print the bin path so the workflow caller can append to $GITHUB_PATH.
-printf '%s\n' "$PWD/cov-analysis/bin"
