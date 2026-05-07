@@ -28,7 +28,11 @@ permissions:
 
 jobs:
   scorecard:
-    uses: ${{ github.repository_owner }}/developer-meta-files/.github/workflows/scorecard.yml@master
+    ## NOTE: GitHub Actions does NOT allow the 'github' context in
+    ## jobs.<id>.uses (only inputs/vars/needs/matrix are permitted),
+    ## so the owner is hardcoded. Override per-org via 'vars.X' if a
+    ## fork wants to point at its own developer-meta-files mirror.
+    uses: Kicksecure/developer-meta-files/.github/workflows/scorecard.yml@master
     permissions:
       security-events: write
       contents: read
