@@ -1,3 +1,432 @@
+commit 4d3476e5d65d23f697bb88c54f0964c4cc41551a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu May 7 14:19:57 2026 -0400
+
+    TODO
+
+commit ac87810b48d726014f22976802e7febeb8f1af25
+Merge: 780cc07 c4dd63d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu May 7 13:52:39 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/claude/fix-workflow-syntax-j1LlD'
+
+commit c4dd63d4edb8f603bea0ab250155a3e09d265eae
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 17:01:28 2026 +0000
+
+    coverity: trim verbose upstream-only gate comment
+
+commit c50a0a2eaf7e449985fa2978ef93dfe0302d9d7c
+Author: Claude <noreply@anthropic.com>
+Date:   Wed May 6 23:16:17 2026 +0000
+
+    fix: make extract-openpgp-policy-trusted-certs executable
+
+    git_sanity_test (in derivative-maker) invokes this script as
+    '${HELPER_SCRIPTS_PATH}/usr/libexec/helper-scripts/extract-openpgp-
+    policy-trusted-certs ...' - i.e. directly, expecting the +x bit.
+    The file was committed at mode 100644, so a fresh checkout (without
+    the .deb's debhelper-set perms) cannot exec it:
+
+       /work/help-steps/git_sanity_test: line 303:
+         .../extract-openpgp-policy-trusted-certs: Permission denied
+
+    Set the mode to 100755. The .deb installed perms were 0755 already,
+    so this only affects in-source-tree consumers (CI, dev runs).
+
+commit 0b9bc88c01079940ff7dc9a322352bef7cb378c4
+Author: Claude <noreply@anthropic.com>
+Date:   Wed May 6 22:49:55 2026 +0000
+
+    ci: reduce dependabot open-pull-requests-limit to 1
+
+    Was 5, which produced too much PR spam on weekly runs. One open
+    update PR at a time is enough.
+
+commit 0cca5562b379b57912e0628d1ea0d25bd175f843
+Author: Claude <noreply@anthropic.com>
+Date:   Wed May 6 21:05:36 2026 +0000
+
+    ci: inline canonical repo literal in job-level if (env context unavailable)
+
+    GitHub Actions does not expose the env context in job-level if
+    expressions (only github, inputs, needs, vars are available there);
+    referencing env.CANONICAL_REPO produced "Unrecognized named-value:
+    'env'" and prevented the workflow from loading. Inline the literal
+    'Kicksecure/helper-scripts' in the if and drop the now-unused
+    workflow-level env block. Caught by actionlint.
+
+commit 780cc073434f9fa7daf987f669cb1c7d85c32906
+Merge: 0a3903c 6b4295a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 6 15:53:18 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 0a3903c7cf34d381d5d03a948a636f8c58754e51
+Merge: 59b525f 0e15244
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 6 15:13:45 2026 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 0e152442f78048da5085994127561e95450da278
+Merge: 8816428 010e67b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 6 15:13:12 2026 -0400
+
+    Merge pull request #41 from Kicksecure/dependabot/github_actions/github/codeql-action-4.35.3
+
+    ci(deps)(deps): bump github/codeql-action from 4.35.2 to 4.35.3
+
+commit 59b525f7aae6ed34af8663b1f55d550285437946
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 6 13:11:55 2026 -0400
+
+    fix
+
+commit 1d937d429c3e0929f8c966a400f2fa57defcbedc
+Merge: 8816428 123851c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 6 13:11:28 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/claude/read-agents-meta-file-uKeT9'
+
+commit 123851ca787365327728e7c4fa6ad8b7cfa38a96
+Author: claude-code <claude-code@assisted-by-ai>
+Date:   Wed May 6 13:30:58 2026 +0000
+
+    fix(log_run_die): drop sanitize-string failure-tolerance dance
+
+    Just run the command. If it fails, it fails. With helper-scripts
+    installed sanitize-string is highly unlikely to fail; if it does,
+    the caller's own errexit handles it - the log() helper does not
+    need its own fail-soft fallback dance for a binary that is part
+    of the same package.
+
+commit 22fe618d59f25297fd10132ebb58fc59748741a2
+Author: claude-code <claude-code@assisted-by-ai>
+Date:   Wed May 6 13:24:33 2026 +0000
+
+    fix(log_run_die): require sanitize-string, drop 'has' guard
+
+    The 'if has sanitize-string; then ... fi' wrapper made
+    sanitize-string optional inside helper-scripts itself - which is
+    wrong: sanitize-string is a hard dependency declared by the
+    helper-scripts package, so any environment that has helper-scripts
+    installed automatically has sanitize-string. The runtime-stub
+    pattern is only permissible in dist-installer-cli (which runs on
+    plain Debian / Fedora / Mint / Kali images without helper-scripts
+    preinstalled).
+
+    Keep the inner errexit-tolerance pattern (sanitize-string failure
+    on a malformed input or a buggy version still falls back to the
+    unsanitised content rather than aborting the caller). The fail-soft
+    semantics for sanitize-string ITSELF failing is preserved; what
+    changes is only the does-the-binary-exist guard is gone, which
+    should always be true in a healthy helper-scripts install.
+
+commit c008ac79e4d1b5c3e1327e6a7c7f59cd07735862
+Author: claude-code <claude-code@assisted-by-ai>
+Date:   Wed May 6 13:24:07 2026 +0000
+
+    fix: log_run_die requires sanitize-string; strings.bsh comment trim
+
+    log_run_die.sh: drop the 'if has sanitize-string; then ...; fi' guard
+    and call sanitize-string unconditionally. The runtime-stub-if-missing
+    pattern is only permissible in dist-installer-cli (which runs on
+    plain Debian/Fedora/Mint/Kali images that don't have helper-scripts
+    installed). Inside helper-scripts itself, sanitize-string is a hard
+    dependency: every package that pulls in helper-scripts gets it via
+    the 'helper-scripts' Debian package's Depends, so 'has sanitize-string'
+    is always true at runtime in any environment that has helper-scripts
+    installed in the first place. Keeping the guard there made the dependency
+    optional in a context where it isn't.
+
+    strings.bsh: shrink the check_valid_linux_user_account_name comment
+    to three concise lines. The verbose history about a Codex P2 review
+    and false-positive rationale belongs in the commit log / issue
+    tracker, not above every function definition.
+
+commit 8564c25f35e271830c4a5624f83365be8e3b7703
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Wed May 6 09:14:20 2026 -0400
+
+    ci(coverity): hoist canonical-repo gate to env.CANONICAL_REPO
+
+commit 4393c7796ab8e38ac628e11ffc8898d54d6f7ec4
+Author: claude-code <claude-code@assisted-by-ai>
+Date:   Wed May 6 12:58:26 2026 +0000
+
+    log_run_die.sh: restore disable_xtrace + xtrace_reenable_maybe
+
+    These two functions were dropped during the recent log_run_die.sh
+    refactor. They are required by root_cmd.sh's test_run_as_target_user
+    (line 102), which calls disable_xtrace before capturing run_as_target_user
+    stdout into a variable - if disable_xtrace is undefined, the standalone
+    fails at line 3834 with 'disable_xtrace: command not found' (exit 127)
+    on every clean Debian/Fedora/Mint/Kali CI runner.
+
+    Restored verbatim from Kicksecure/helper-scripts/log_run_die.sh master
+    to keep the contract identical:
+      disable_xtrace        save current xtrace state, set +o xtrace
+      xtrace_reenable_maybe restore prior xtrace state, clear RETURN trap
+
+    These are distinct from xtrace_off / xtrace_restore in xtrace.bsh
+    (different convention; both exist for historical reasons and have
+    non-overlapping caller sets).
+
+    This unblocks the entire usability-misc multi-OS build matrix that
+    was failing at line 3834 on every distro variant after the standalone
+    regenerated with my recursive inliner.
+
+commit 6d42af37868a3dace9c8e03b2e3cfae426933a6d
+Author: claude-code <claude-code@assisted-by-ai>
+Date:   Wed May 6 12:26:21 2026 +0000
+
+    fix(strings.bsh): match adduser SYS_NAME_REGEX exactly (lowercase only)
+
+    Codex P2 on helper-scripts#1 strings.bsh:194: the previous regex
+    ^[a-zA-Z_][a-zA-Z0-9_-]*$ allowed uppercase, but adduser's default
+    SYS_NAME_REGEX is ^[a-z_][-a-z0-9_]*$ - lowercase only. Names like
+    'AdminUser' passed our pre-check then failed when adduser actually
+    tried to create the account, turning the validator into a
+    false-positive gate instead of an early rejection.
+
+    Tightened to the exact upstream pattern.
+
+commit e1b6e4f9016c3d3363c846666eeea7f3831d9da4
+Author: claude-code <claude-code@assisted-by-ai>
+Date:   Wed May 6 12:25:23 2026 +0000
+
+    ci: restore executable bit on shebanged scripts (lost via MCP push)
+
+    The GitHub MCP push_files / create_or_update_file API resets every
+    tree entry to mode 100644, even when the prior entry was 100755.
+    This commit re-flips the bit via 'git update-index --chmod=+x' on
+    the affected files (no content change). Resolves Codex P1 reviews
+    about EACCES at exec time + the rc=126 'Permission denied' failures
+    in CI.
+
+commit 6b4295abd9ebe1aff1e7b25d68ac6a104c671fe1
+Author: claude-code <claude-code@assisted-by-ai>
+Date:   Wed May 6 12:23:11 2026 +0000
+
+    test: probe workflow-scope on this PAT
+
+commit 79f96341c919e8c32b4e6954f9fc0b6a92c75c14
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Wed May 6 08:18:02 2026 -0400
+
+    fix(parallel.bsh): mark unwaitable tracked PIDs as failures
+
+    Codex P2 on helper-scripts#1 parallel.bsh:96. When `wait -n -p` returned
+    without populating done_pid (a tracked PID that was reaped elsewhere or
+    is otherwise unwaitable), the previous code only logged and broke out of
+    the loop, leaving parallel_failures empty - so `[ "${#parallel_failures[@]}" -eq 0 ]`
+    returned 0 and the caller saw "all jobs succeeded" even though we never
+    actually observed the supposedly-tracked PIDs.
+
+    Now mark every remaining tracked PID as a failure on that path so the
+    final check returns non-zero. Distinguishes "unwaitable" labels in the
+    failures array so callers can tell why.
+
+commit 0d6a3ce1f8036a2c6361deb6b6f4e08ee646d89f
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Wed May 6 08:07:09 2026 -0400
+
+    fix(log_run_die): tolerate sanitize-string failure under errexit
+
+    Codex P2 on helper-scripts#1 log_run_die.sh:102: the prior
+
+      log_content="$(printf '%s' "${log_content}" | sanitize-string -- "${LOG_MAX_LEN:-nolimit}")"
+
+    would propagate sanitize-string's exit status to `log()`'s caller via
+    the assignment-with-command-substitution. Under set -o errexit (which
+    many of our scripts run with), a malformed LOG_MAX_LEN value or a
+    sanitize-string bug on some unusual input would terminate the whole
+    caller script before its own error-handling path ran, defeating the
+    point of log() as a fail-soft observability hook.
+
+    Capture into a separate `local sanitized_log_content` first, gate on
+    its successful assignment, and fall back to the unsanitised content
+    on failure (with stderr suppressed). The unsanitised content path is
+    strictly better than crashing the caller; logging through is the
+    load-bearing behaviour here, sanitisation is best-effort.
+
+commit ac83aebbf665d2f575f0587ad7664b46d62193dd
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Wed May 6 07:56:07 2026 -0400
+
+    ci(deps): bump github/codeql-action 95e58e9a (v4.35.2) -> e46ed2cb (v4.35.3)
+
+    Equivalent of dependabot Kicksecure/helper-scripts#41 applied directly
+    to org-ai-assisted/helper-scripts master so the upstream dependabot
+    PR will auto-close on merge.
+
+    Comment lines bumped alongside the SHA pins (Codex P3 from earlier
+    review of #41: dependabot only updates the pin, leaves the version
+    comment lines stale).
+
+commit 3bff7d546286a11d647dd7f2ec3b519fa7caeb79
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Wed May 6 05:47:20 2026 -0400
+
+    fix(parallel.bsh): restrict parallel_wait to tracked PIDs
+
+    Codex flagged this on helper-scripts#1 (P1): the previous bare
+    `wait -n -p done_pid` call could reap any background job in the
+    caller's shell, not just the PIDs in the passed nameref. If an
+    unrelated job exited first, `remaining` was still decremented and
+    one of our tracked jobs was silently skipped - parallel_wait could
+    return success while a tracked job had failed.
+
+    Fix: pass the tracked PID list to wait via `wait -n -p done_pid
+    "${remaining_pids[@]}"`, and explicitly remove the just-reaped PID
+    from `remaining_pids` after each round so the loop terminates on
+    exactly the set we tracked. Defensive break on the all-reaped /
+    none-waitable corner case so we don't spin if every tracked PID
+    turned out to be already-reaped before the first wait call.
+
+commit 010e67b64031ee64912bcaa33a4ee683fd01077c
+Author: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+Date:   Wed May 6 06:17:00 2026 +0000
+
+    ci(deps)(deps): bump github/codeql-action from 4.35.2 to 4.35.3
+
+    Bumps [github/codeql-action](https://github.com/github/codeql-action) from 4.35.2 to 4.35.3.
+    - [Release notes](https://github.com/github/codeql-action/releases)
+    - [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)
+    - [Commits](https://github.com/github/codeql-action/compare/95e58e9a2cdfd71adc6e0353d5c52f41a045d225...e46ed2cbd01164d986452f91f178727624ae40d7)
+
+    ---
+    updated-dependencies:
+    - dependency-name: github/codeql-action
+      dependency-version: 4.35.3
+      dependency-type: direct:production
+      update-type: version-update:semver-patch
+    ...
+
+    Signed-off-by: dependabot[bot] <support@github.com>
+
+commit 632cabf118e24a812b8e8becb1d6e17d68f050f2
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Tue May 5 19:05:19 2026 -0400
+
+    feat: import extract-openpgp-policy-trusted-certs from derivative-maker
+
+    Centralise the openpgp-policy.toml trust-cert extractor here so
+    derivative-maker no longer has to ship its own Python tooling. Same
+    contents, no behavioural change.
+
+commit ff340f869183efee3373737497bb0442f19039ff
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Tue May 5 19:05:12 2026 -0400
+
+    ci: cancel-in-progress on workflow re-run
+
+    Add (or enable) concurrency: cancel-in-progress: true on workflow yml
+    files that lacked it. Re-pushed runs of the same workflow on the same
+    ref (re-tagged release, force-push, etc.) now cancel the in-flight
+    run instead of stacking.
+
+commit e46148f47ecdb30ea3e6d68946dfe9504643a1f6
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Tue May 5 18:16:21 2026 -0400
+
+    ci: dependabot.yml drop docker ecosystem; coverity.yml fix repo guard
+
+    dependabot.yml: the 'docker' ecosystem watches Dockerfiles, which
+    this repo does not have, hence the 'No Dockerfiles nor Kubernetes
+    YAML found in /' update_run failure. Container references in
+    workflow 'container:' directives are not covered by dependabot at
+    all; bump those manually.
+
+    coverity.yml: fix the repo-guard 'assisted-by-ai/helper-scripts' to
+    'Kicksecure/helper-scripts' (the canonical upstream); the prior
+    value never matched any real repo so the cron-driven scheduled run
+    was effectively dead.
+
+commit 3876b3cb97a06634fd6adfc24fa50258bfe35b85
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Tue May 5 17:57:20 2026 -0400
+
+    fix: check_valid_linux_user_account_name: strict SYS_NAME_REGEX, no trailing dollar
+
+    Remove the optional trailing dollar sign and the Samba / Windows machine
+    account comment. Stick exactly with /etc/adduser.conf's SYS_NAME_REGEX:
+      ^[a-zA-Z_][a-zA-Z0-9_-]*$
+
+commit 6379a00e409edd518f20380693610889668bf642
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Tue May 5 17:24:24 2026 -0400
+
+    log_run_die.sh: drop 106|107 special exit codes; strings.bsh: add check_valid_linux_user_account_name
+
+    log_run_die.sh: now used as a general-purpose lib by many scripts;
+    silently swallowing the "Aborting." message for exit codes 106/107
+    is a footgun - non-standard codes should print like any other.
+    strings.bsh: add a single-purpose helper for Linux user account
+    name validation (regex from /etc/adduser.conf SYS_NAME_REGEX,
+    allowing trailing '$' for Samba/Windows-style machine accounts).
+
+commit 81bfdbdbaebd95d457dbdc321d25689d9fdef383
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Tue May 5 16:27:08 2026 -0400
+
+    log: sanitize message content via sanitize-string
+
+    Add sanitize-string pipeline inside log() so every log call
+    strips control chars, ANSI sequences, and HTML without needing
+    pre-sanitization at call sites. Uses LOG_MAX_LEN env var (default
+    nolimit) so operators can cap line length globally.
+
+commit 093516d739657cfd7ea47866ecba4400e0420f65
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Tue May 5 15:42:14 2026 -0400
+
+    refactor: log_run_die.sh use xtrace.bsh; has multi-cmd; add die_if_not_has; add parallel.bsh
+
+    log_run_die.sh:
+    - Source xtrace.bsh (R-080) so callers get xtrace_off/xtrace_restore;
+      remove the now-redundant local duplicates disable_xtrace and
+      xtrace_reenable_maybe.  The trap '' RETURN inside xtrace_reenable_maybe
+      was unnecessary: bash does not re-fire the RETURN trap when the trap
+      handler itself returns (confirmed by github-org-lib.bsh which uses
+      trap xtrace_restore RETURN without a recursion guard).
+    - Switch log() to 'local -; set +x' for function-scoped xtrace
+      silencing.  This is what xtrace.bsh recommends for function-scoped
+      use; no RETURN trap is needed.
+    - Source has.sh (R-080, R-082) to support die_if_not_has.
+    - Remove the stecho fallback.  The silent printf stand-in masked a
+      missing stecho dependency; callers can now guard with die_if_not_has.
+    - Add # shellcheck source= directives to all source lines (R-080).
+    - Add die_if_not_has: exits with an error if any listed command is
+      absent (R-090, R-091, R-110).
+
+    has.sh:
+    - Extend has() to accept multiple command names; returns 0 only if
+      every listed command is present and executable (AND semantics).
+
+    parallel.bsh (new):
+    - Moved from developer-meta-files/usr/libexec/developer-meta-files/.
+    - Renamed dm_parallel_wait -> parallel_wait,
+      dm_parallel_failures -> parallel_failures (no dm_ prefix in a
+      general library).
+    - Fix source path to use ${HELPER_SCRIPTS_PATH:-} (R-080).
+    - Source log_run_die.sh; add log warn for each failed job (R-040,
+      R-110).
+    - Add AI-Assisted marker (R-002).
+    - Add # shellcheck source= directives (R-080).
+    - Short-circuit with log debug when there are no jobs to wait for.
+
+commit 88164283117dc25b7a8f67086ee6c4a6381374ef
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 4 19:51:52 2026 +0000
+
+    bumped changelog version
+
 commit f0cce596f471a99b464d55a072501047acf2f9cb
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat May 2 18:05:04 2026 -0400
