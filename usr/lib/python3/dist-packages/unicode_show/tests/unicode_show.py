@@ -5,14 +5,14 @@
 
 # pylint: disable=missing-module-docstring
 
-import unittest
-import sys
-import pty
-import tempfile
 import os
+import pty
+import sys
+import tempfile
+import unittest
+import unittest.mock as mock
 from typing import Callable
 from io import BytesIO, FileIO, TextIOWrapper
-from unittest import mock
 from stdisplay.stdisplay import stdisplay
 from unicode_show.unicode_show import main as unicode_show_main
 

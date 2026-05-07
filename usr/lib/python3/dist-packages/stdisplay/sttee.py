@@ -6,6 +6,7 @@
 
 """Safely print stdin to stdout and file."""
 
+from contextlib import ExitStack
 from sys import argv, stdin, stdout
 from typing import TextIO
 from stdisplay.stdisplay import stdisplay
@@ -20,18 +21,19 @@ def main() -> None:
         stdin.reconfigure(  # type: ignore
             encoding="utf-8", errors="replace", newline="\n"
         )
-    output_files: list[TextIO] = []
-    try:
+    with ExitStack() as stack:
+        output_files: list[TextIO] = []
         if len(argv) > 1:
             for file_arg in argv[1:]:
-                # pylint: disable=consider-using-with
                 output_files.append(
-                    open(
-                        file_arg,
-                        "w",
-                        encoding="ascii",
-                        errors="replace",
-                        newline="\n",
+                    stack.enter_context(
+                        open(
+                            file_arg,
+                            "w",
+                            encoding="ascii",
+                            errors="replace",
+                            newline="\n",
+                        )
                     )
                 )
         if stdin is not None:
@@ -41,6 +43,3 @@ def main() -> None:
                 for output_file in output_files:
                     output_file.write(rendered_text)
         stdout.flush()
-    finally:
-        for output_file in output_files:
-            output_file.close()

@@ -180,7 +180,7 @@ try:
     path_list = find_backing_items(sys.argv[1])
 except Exception as e:
     print(f"Could not find backing device(s)! reason: {e}", file=sys.stderr)
-    exit(1)
+    sys.exit(1)
 
 for path in path_list:
     print(str(path))

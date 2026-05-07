@@ -16,7 +16,6 @@
 # [6] http://www.secdev.org/projects/scapy/doc/usage.html#send-and-receive-packets-sr
 # [7] http://www.secdev.org/projects/scapy/doc/usage.html#stacking-layers
 
-import sys
 from scapy.all import *
 
 # define the target gateway & data payload

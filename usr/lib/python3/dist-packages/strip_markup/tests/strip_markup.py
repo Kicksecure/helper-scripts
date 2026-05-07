@@ -5,11 +5,11 @@
 
 # pylint: disable=missing-module-docstring,fixme,unknown-option-value
 
-import unittest
 import sys
+import unittest
+import unittest.mock as mock
 from io import BytesIO, TextIOWrapper
 from typing import Callable
-from unittest import mock
 from strip_markup.strip_markup import main as strip_markup_main
 
 
