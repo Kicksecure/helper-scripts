@@ -21,6 +21,7 @@ on:
     - cron: '30 4 * * 0'
   push:
     branches: [master]
+  workflow_dispatch:
 
 permissions:
   contents: read
