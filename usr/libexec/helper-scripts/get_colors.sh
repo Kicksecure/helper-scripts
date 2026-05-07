@@ -8,6 +8,9 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 
 # shellcheck disable=SC2034
 get_colors() {
+  local -
+  set +x
+
   local color_yes_or_no
 
   get_colors_was_run=1

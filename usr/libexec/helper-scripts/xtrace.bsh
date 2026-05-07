@@ -8,7 +8,9 @@
 ## Suspend/restore bash xtrace (set -x) around blocks that must not be
 ## echoed to logs - secret handling, noisy third-party output, etc.
 ## Single-level globals; nested xtrace_off/xtrace_restore calls are not
-## supported. For function-scoped silencing, prefer 'local -; set +x'
+## supported. For function-scoped silencing, prefer:
+##   local -
+##   set +x
 ## inside the function (see benchmark.bsh / trace.bsh for examples).
 ##
 ## Usage:
