@@ -194,6 +194,8 @@ log_run() {
 
   printf -v command_without_extraneous_spaces_temp '%q ' "${@}"
   command_without_extraneous_spaces="$(printf "%s\n" "${command_without_extraneous_spaces_temp}")"
+
+  ## TODO: rename variable to 'dry_run_skip_commands'. Potential footgun if used from other scripts.
   if test "${dry_run:-}" = "1"; then
     log "${level}" "Skipping command (dry-run): $ ${command_without_extraneous_spaces}"
     return 0
@@ -208,6 +210,7 @@ log_run() {
     disown "${background_pid}" || true
   else
     log "${level}" "Command executing: $ ${command_without_extraneous_spaces}"
+    ## TODO: '|| return 1' needed?
     "${@}" || return 1
   fi
 }
