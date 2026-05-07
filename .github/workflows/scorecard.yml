@@ -28,11 +28,13 @@ permissions:
 
 jobs:
   scorecard:
-    ## NOTE: GitHub Actions does NOT allow the 'github' context in
-    ## jobs.<id>.uses (only inputs/vars/needs/matrix are permitted),
-    ## so the owner is hardcoded. Override per-org via 'vars.X' if a
-    ## fork wants to point at its own developer-meta-files mirror.
-    uses: Kicksecure/developer-meta-files/.github/workflows/scorecard.yml@master
+    ## TESTING: hardcoded to the org-ai-assisted fork while we
+    ## validate the cross-repo workflow_call wiring end-to-end.
+    ## Will switch to 'Kicksecure/' once verified. GitHub Actions
+    ## does NOT allow '${{ github.* }}' in jobs.<id>.uses (only
+    ## inputs/vars/needs/matrix), so a dynamic-org expression is
+    ## not an option.
+    uses: org-ai-assisted/developer-meta-files/.github/workflows/scorecard.yml@master
     permissions:
       security-events: write
       contents: read
