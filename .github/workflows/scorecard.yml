@@ -28,7 +28,13 @@ permissions:
 
 jobs:
   scorecard:
-    uses: ${{ github.repository_owner }}/developer-meta-files/.github/workflows/scorecard.yml@master
+    ## TESTING: hardcoded to the org-ai-assisted fork while we
+    ## validate the cross-repo workflow_call wiring end-to-end.
+    ## Will switch to 'Kicksecure/' once verified. GitHub Actions
+    ## does NOT allow '${{ github.* }}' in jobs.<id>.uses (only
+    ## inputs/vars/needs/matrix), so a dynamic-org expression is
+    ## not an option.
+    uses: org-ai-assisted/developer-meta-files/.github/workflows/scorecard.yml@master
     permissions:
       security-events: write
       contents: read
