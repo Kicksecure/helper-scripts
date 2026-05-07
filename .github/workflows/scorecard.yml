@@ -1,23 +1,16 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## OpenSSF Scorecard - weekly posture audit. Trust footprint: OpenSSF
-## (Linux Foundation), same scope as github/codeql-action.
-##
-## Job body lives in the reusable workflow at
-## developer-meta-files/.github/workflows/scorecard.yml so all repos
-## in the org share one definition. This file is the per-repo wrapper:
-## it owns the trigger schedule (must be at the caller, GitHub Actions
-## does not allow schedule under workflow_call) and the cron slot
-## (offset from derivative-maker's 04:00 to avoid contention).
+## Thin wrapper around the reusable Scorecard workflow.
+## See https://github.com/Kicksecure/developer-meta-files/blob/master/.github/workflows/scorecard.yml
+## for trust footprint, caller responsibilities, cron-slot allocation,
+## and the full design rationale.
 
 name: Scorecard
 
 on:
   branch_protection_rule:
   schedule:
-    ## Sunday 04:30 UTC - offset from derivative-maker scorecard
-    ## (04:00) so the two repos don't contend for the same cron slot.
     - cron: '30 4 * * 0'
   push:
     branches: [master]
@@ -28,12 +21,6 @@ permissions:
 
 jobs:
   scorecard:
-    ## TESTING: hardcoded to the org-ai-assisted fork while we
-    ## validate the cross-repo workflow_call wiring end-to-end.
-    ## Will switch to 'Kicksecure/' once verified. GitHub Actions
-    ## does NOT allow '${{ github.* }}' in jobs.<id>.uses (only
-    ## inputs/vars/needs/matrix), so a dynamic-org expression is
-    ## not an option.
     uses: org-ai-assisted/developer-meta-files/.github/workflows/scorecard.yml@master
     permissions:
       security-events: write
