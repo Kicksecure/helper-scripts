@@ -51,6 +51,12 @@ on:
     ## cron contention is unlikely.
     - cron: '0 6 * * 0'
   workflow_dispatch:
+  ## TEMP: fire on the next merge to master so the broadened
+  ## fork-or-canonical gate gets exercised end-to-end. Remove in
+  ## a follow-up commit after the verification run is green; per-
+  ## commit submissions burn Coverity's daily-build quota.
+  push:
+    branches: [master]
 
 ## Upstream-only gate: required secrets (Coverity token, etc.) only
 ## exist on the canonical repo, so forks must skip via the if: below.
@@ -69,12 +75,16 @@ jobs:
     name: Coverity Scan (Python)
     runs-on: ubuntu-latest
 
-    ## Forks won't have the secrets set; skip on forks rather than have
-    ## the run fail with a missing-secret error halfway through.
+    ## Allowed where the project's Coverity secrets are configured:
+    ## canonical Kicksecure/helper-scripts AND the org-ai-assisted
+    ## fork (separate Coverity project, separate token, same code).
     ## workflow_dispatch is allowed on any repo so a maintainer can
     ## trigger an ad-hoc scan on a fork they own (would still need
     ## their own secrets set, but that is the operator's choice).
-    if: github.repository == 'Kicksecure/helper-scripts' || github.event_name == 'workflow_dispatch'
+    if: >-
+      github.repository == 'Kicksecure/helper-scripts'
+      || github.repository == 'org-ai-assisted/helper-scripts'
+      || github.event_name == 'workflow_dispatch'
 
     timeout-minutes: 30
 
@@ -99,9 +109,7 @@ jobs:
         run: bash ci/coverity-check-secrets.sh
 
       - name: Download Coverity Build Tool
-        run: |
-          cov_bin_dir="$(bash ci/coverity-download.sh | tail -n 1)"
-          printf '%s\n' "$cov_bin_dir" >> "$GITHUB_PATH"
+        run: bash ci/coverity-download.sh
 
       - name: Run Coverity build (Python source capture)
         run: bash ci/coverity-build.sh
