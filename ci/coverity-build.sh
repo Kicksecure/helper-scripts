@@ -12,8 +12,9 @@
 ## the documented Coverity approach for interpreted-only projects
 ## (Python here).
 ##
-## Expects 'cov-build' to be on $PATH (set up by ci/coverity-download.sh
-## via $GITHUB_PATH).
+## Calls cov-build via its deterministic path under ./cov-analysis/
+## (set up by ci/coverity-download.sh). No PATH manipulation, no
+## reliance on $GITHUB_PATH propagation between workflow steps.
 
 set -o errexit
 set -o nounset
@@ -29,7 +30,7 @@ fi
 
 cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/.."
 
-cov-build \
+./cov-analysis/bin/cov-build \
   --dir cov-int \
   --no-command \
   --fs-capture-search "$PWD" \

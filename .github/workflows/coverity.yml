@@ -109,9 +109,7 @@ jobs:
         run: bash ci/coverity-check-secrets.sh
 
       - name: Download Coverity Build Tool
-        run: |
-          cov_bin_dir="$(bash ci/coverity-download.sh | tail -n 1)"
-          printf '%s\n' "$cov_bin_dir" >> "$GITHUB_PATH"
+        run: bash ci/coverity-download.sh
 
       - name: Run Coverity build (Python source capture)
         run: bash ci/coverity-build.sh
