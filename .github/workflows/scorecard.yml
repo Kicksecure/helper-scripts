@@ -27,7 +27,7 @@ permissions:
 
 jobs:
   scorecard:
-    uses: Kicksecure/developer-meta-files/.github/workflows/scorecard.yml@master
+    uses: ${{ github.repository_owner }}/developer-meta-files/.github/workflows/scorecard.yml@master
     permissions:
       security-events: write
       contents: read
