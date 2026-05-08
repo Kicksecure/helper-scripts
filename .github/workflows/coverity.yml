@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   coverity:
-    uses: org-ai-assisted/developer-meta-files/.github/workflows/coverity.yml@master
+    uses: org-ai-assisted/developer-meta-files/.github/workflows/reusable-coverity.yml@master
     with:
       ## scan.coverity.com project name. Verified at
       ## https://scan.coverity.com/projects/Kicksecure-helper-scripts
