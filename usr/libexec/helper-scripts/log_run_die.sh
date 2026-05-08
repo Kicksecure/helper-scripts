@@ -40,22 +40,25 @@ for __log_run_die_cmd in stecho sanitize-string; do
   has "${__log_run_die_cmd}" || __log_run_die_missing+=("${__log_run_die_cmd}")
 done
 if [ "${#__log_run_die_missing[@]}" -ne 0 ]; then
-  ## Cannot use log/die here - that's exactly what we're failing
+  ## Cannot use log/die here - that's exactly what we are failing
   ## to bootstrap. Plain printf to stderr.
   printf '%s\n' \
     "log_run_die.sh: ERROR: required command(s) not on PATH: ${__log_run_die_missing[*]}" \
     "log_run_die.sh: ERROR:   sourced by: ${BASH_SOURCE[1]:-<unknown>}" \
     "log_run_die.sh: ERROR:   top-level script: ${BASH_SOURCE[-1]:-${0:-<unknown>}}" \
-    "log_run_die.sh: ERROR:   install: Debian packages 'stdisplay' and 'helper-scripts' provide these binaries" \
     >&2
-  ## Hard exit. 'return 1' would only make the consumer's 'source'
-  ## return 1 - which a caller without errexit would then walk
-  ## right past, hitting the first log() call and only failing
-  ## then with a less-helpful message. The whole point of this
-  ## check is to make the failure obvious and immediate; a fatal
-  ## exit is the right behavior because no script that sources
-  ## log_run_die.sh can do useful work without log/die.
-  exit 1
+  ## Use 'return 1' rather than 'exit 1'. Callers are expected to
+  ## run under errexit (R-010 strict-mode quintet); the non-zero
+  ## return from 'source' then trips errexit and the caller's ERR
+  ## trap fires - that is what does proper cleanup. In particular,
+  ## derivative-maker's help-steps/pre installs an ERR trap that
+  ## unmounts /raw / unchroots / removes the local temp apt repo
+  ## before exiting the build; an unconditional 'exit 1' here
+  ## would bypass that trap and leave the build environment in a
+  ## half-mounted state. A caller that has not enabled errexit
+  ## will walk past the failed source statement - that is a bug
+  ## in the caller, not something this file should paper over.
+  return 1
 fi
 unset __log_run_die_missing __log_run_die_cmd
 
