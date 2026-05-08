@@ -28,4 +28,4 @@ cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/.."
 
 dpkg-buildpackage -b -i -us -uc
 
-apt-get install -y -- ../helper-scripts*.deb
+apt-get install -y --no-install-recommends -- ../helper-scripts*.deb

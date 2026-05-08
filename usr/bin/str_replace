@@ -12,27 +12,21 @@ def print_usage():
     print("Or: STDIN str_replace Search Replace")
 
 def main(search_str, replace_str, source_file=None):
-    source_fh = None
-
     if source_file is not None and Path(source_file).is_dir():
         print("ERROR: '{0}' is a directory, not a file".format(source_file))
         sys.exit(1)
 
     try:
         if source_file is not None:
-            source_fh = open(source_file, "r+")
+            with open(source_file, "r+") as source_fh:
+                file_data = source_fh.read()
+                file_data = file_data.replace(search_str, replace_str)
+                source_fh.seek(0)
+                source_fh.truncate()
+                source_fh.write(file_data)
         else:
-            source_fh = sys.stdin
-
-        file_data = source_fh.read()
-        file_data = file_data.replace(search_str, replace_str)
-
-        if source_file is not None:
-            source_fh.seek(0)
-            source_fh.truncate()
-            source_fh.write(file_data)
-            source_fh.close()
-        else:
+            file_data = sys.stdin.read()
+            file_data = file_data.replace(search_str, replace_str)
             sys.stdout.write(file_data)
 
     except IOError as e:

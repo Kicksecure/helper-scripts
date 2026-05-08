@@ -2,21 +2,10 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Authored by Claude (Anthropic).
-## CodeQL static analysis for the Python packages in this repository.
-##
-## Scope:
-##   usr/lib/python3/dist-packages/{config_builder,guimessages,
-##                                   query_sock_pid,sanitize_string,
-##                                   stdisplay,strict_config_parser,
-##                                   strip_markup,term_colors,
-##                                   unicode_show}/
-##
-## Bash is NOT scanned: CodeQL has no bash extractor. Bash is covered by
-## shellcheck (in lint.yml).
-##
-## Findings are uploaded to GitHub's code scanning UI under the repo's
-## Security tab and surface as PR annotations.
+## AI-Assisted
+
+## Consumer wrapper. Docs live in the reusable:
+## https://github.com/org-ai-assisted/developer-meta-files/blob/master/.github/workflows/codeql.yml
 
 name: CodeQL
 
@@ -26,12 +15,8 @@ on:
   pull_request:
     branches: [master]
   schedule:
-    ## Weekly re-run picks up new CodeQL queries even when the repo
-    ## has not changed.
     - cron: '17 4 * * 0'
 
-## Workflow-level least-privilege default. The 'analyze' job below
-## upgrades to the additional scope it needs (security-events: write).
 permissions:
   contents: read
 
@@ -40,38 +25,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  analyze:
-    name: Analyze (Python)
-    runs-on: ubuntu-latest
-
-    ## Fork-PR guard: do not run on PRs originating from a different
-    ## repository (forks). Maintainer review required first.
-    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
-
-    timeout-minutes: 20
-
+  python:
+    uses: org-ai-assisted/developer-meta-files/.github/workflows/codeql.yml@master
+    with:
+      language: python
     permissions:
-      ## Required so the CodeQL action can upload SARIF results.
       security-events: write
-      ## Read access to private packages if any were referenced by the
-      ## CodeQL build step. Keep at 'read'.
+      contents: read
       packages: read
-
-    steps:
-      - name: Checkout repository
-        ## https://github.com/actions/checkout/releases/tag/v6.0.2
-        ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-        with:
-          persist-credentials: false
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@e46ed2cbd01164d986452f91f178727624ae40d7  # v4.35.3
-        with:
-          languages: python
-          queries: security-and-quality
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@e46ed2cbd01164d986452f91f178727624ae40d7  # v4.35.3
-        with:
-          category: "/language:python"
