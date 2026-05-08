@@ -12,6 +12,53 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/xtrace.bsh
 # shellcheck source=/usr/libexec/helper-scripts/has.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
+## Hard tool-availability check.
+##
+## log() and the BUG path inside it call out to two external
+## commands:
+##
+##   stecho          - stdisplay package; renders log lines safely
+##                     to stderr (control-character / ANSI-escape
+##                     filtering).
+##   sanitize-string - helper-scripts package; truncates and
+##                     sanitizes log content before display.
+##
+## Earlier versions of this file silently stubbed 'stecho' to a
+## plain printf when missing. That paper-over swallowed install
+## misconfiguration bugs - a script would log fine in dev and
+## explode mid-run on a stripped-down install. Stubbing has been
+## removed; instead, detect the missing tool at source-time and
+## bail with a pointer at the script that sourced us, so the
+## fault site is obvious without grep-diving.
+##
+## Bootstrap order: this check runs AFTER has.sh is sourced (so
+## 'has' is available) and BEFORE any log()/die() definition is
+## relied on by callers (so the failure happens during 'source'
+## rather than at first log call).
+__log_run_die_missing=()
+for __log_run_die_cmd in stecho sanitize-string; do
+  has "${__log_run_die_cmd}" || __log_run_die_missing+=("${__log_run_die_cmd}")
+done
+if [ "${#__log_run_die_missing[@]}" -ne 0 ]; then
+  ## Cannot use log/die here - that's exactly what we're failing
+  ## to bootstrap. Plain printf to stderr.
+  printf '%s\n' \
+    "log_run_die.sh: ERROR: required command(s) not on PATH: ${__log_run_die_missing[*]}" \
+    "log_run_die.sh: ERROR:   sourced by: ${BASH_SOURCE[1]:-<unknown>}" \
+    "log_run_die.sh: ERROR:   top-level script: ${BASH_SOURCE[-1]:-${0:-<unknown>}}" \
+    "log_run_die.sh: ERROR:   install: Debian packages 'stdisplay' and 'helper-scripts' provide these binaries" \
+    >&2
+  ## Hard exit. 'return 1' would only make the consumer's 'source'
+  ## return 1 - which a caller without errexit would then walk
+  ## right past, hitting the first log() call and only failing
+  ## then with a less-helpful message. The whole point of this
+  ## check is to make the failure obvious and immediate; a fatal
+  ## exit is the right behavior because no script that sources
+  ## log_run_die.sh can do useful work without log/die.
+  exit 1
+fi
+unset __log_run_die_missing __log_run_die_cmd
+
 ## Suspend xtrace ('set -x') around blocks whose stdout we want to
 ## capture into a variable WITHOUT the xtrace traces of the inner
 ## commands polluting that capture. Use sparingly - prefer
