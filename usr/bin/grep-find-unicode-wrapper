@@ -5,6 +5,21 @@
 
 ## https://www.kicksecure.com/wiki/Unicode#grep-find-unicode-wrapper
 
+## DEBUG-DIAGNOSTIC: temporary instrumentation. REVERT AFTER CAPTURE.
+## Investigates why CI's grep --files-with-matches output is
+## "file:line:content"-shaped when local repro produces "file"-only.
+{
+   printf '%s\n' "DEBUG-WRAPPER: invoked with args: $*"
+   printf '%s\n' "DEBUG-WRAPPER: PWD=${PWD}"
+   printf '%s\n' "DEBUG-WRAPPER: PATH=${PATH}"
+   printf '%s\n' "DEBUG-WRAPPER: which grep -> $(which grep 2>&1)"
+   printf '%s\n' "DEBUG-WRAPPER: type grep -> $(type grep 2>&1)"
+   printf '%s\n' "DEBUG-WRAPPER: grep --version -> $(grep --version 2>&1 | head -1)"
+   printf '%s\n' "DEBUG-WRAPPER: /usr/bin/grep --version -> $(/usr/bin/grep --version 2>&1 | head -1)"
+   printf '%s\n' "DEBUG-WRAPPER: bash --version -> $(bash --version 2>&1 | head -1)"
+   printf '%s\n' "DEBUG-WRAPPER: locale -> $(locale 2>&1 | head -3 | tr '\n' ' ')"
+} >&2
+
 set -o errexit
 set -o nounset
 set -o errtrace
@@ -54,9 +69,11 @@ set +o errexit
 
 one="$(LC_ALL=C grep "${grep_args[@]}" --perl-regexp '[^\x00-\x7F]' "$@")"
 check_grep_status "$?"
+printf 'DEBUG-WRAPPER: one (non-ASCII) raw output (first 30 lines):\n%s\n---\n' "$(printf '%s' "${one}" | head -30)" >&2
 
 two="$(LC_ALL=C grep "${grep_args[@]}" --perl-regexp "[^[:ascii:]]" "$@")"
 check_grep_status "$?"
+printf 'DEBUG-WRAPPER: two (non-[:ascii:]) raw output (first 30 lines):\n%s\n---\n' "$(printf '%s' "${two}" | head -30)" >&2
 
 ## https://access.redhat.com/security/vulnerabilities/RHSB-2021-007
 ## https://lintian.debian.org/tags/unicode-trojan
@@ -92,10 +109,31 @@ three="$(LC_ALL=C grep "${grep_args[@]}" --fixed-strings \
   -e $'\xE2\x81\xA9' \
   "$@")"
 check_grep_status "$?"
+printf 'DEBUG-WRAPPER: three (RHSB-trojan codepoints) raw output (first 30 lines):\n%s\n---\n' "$(printf '%s' "${three}" | head -30)" >&2
 
 ## ASCII control characters.
 four="$(LC_ALL=C grep "${grep_args[@]}" --perl-regexp '[\x00-\x08\x0B\x0C\x0D\x0E-\x1F\x7F]' "$@")"
 check_grep_status "$?"
+printf 'DEBUG-WRAPPER: four (ASCII control) raw output (first 30 lines):\n%s\n---\n' "$(printf '%s' "${four}" | head -30)" >&2
+
+## DEBUG: per-file line-1 hexdump for any flagged file in the
+## ASCII-control list, so we can see what bytes triggered.
+if [ -n "${four}" ]; then
+  printf 'DEBUG-WRAPPER: hexdump of first matching line in each "four" hit:\n' >&2
+  ## "${four}" with --files-with-matches should be filename-only.
+  ## If output is "file:line:content"-shaped, the parsing here will
+  ## still yield the filename portion before the first colon.
+  printf '%s\n' "${four}" | head -10 | while IFS= read -r entry; do
+    file="${entry%%:*}"
+    if [ -r "${file}" ]; then
+      printf 'DEBUG-WRAPPER:   entry=%q\n' "${entry}" >&2
+      printf 'DEBUG-WRAPPER:   file=%q first matching grep line:\n' "${file}" >&2
+      LC_ALL=C /usr/bin/grep -nP '[\x00-\x08\x0B\x0C\x0D\x0E-\x1F\x7F]' "${file}" 2>&1 | head -1 | od -c | head -4 >&2
+    else
+      printf 'DEBUG-WRAPPER:   entry=%q (file not readable)\n' "${entry}" >&2
+    fi
+  done
+fi
 
 set -o errexit
 
