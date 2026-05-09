@@ -21,24 +21,20 @@
 
    ## Hexdump the suspected modeline lines directly so we can see
    ## byte content as CI sees it.
-   for spec in \
-      'qubes/qubes-template-whonix/whonix-gateway/09_cleanup_post.sh:2' \
-      'qubes/qubes-template-whonix/scripts/Makefile.builder:28' \
-      'qubes/qubes-template-kicksecure/scripts/Makefile.builder:28' \
-      'qubes/qubes-template-kicksecure/kicksecure.conf:59'; do
-      file="${spec%:*}"
-      line="${spec##*:}"
-      printf 'DEBUG-WRAPPER: ===== %s line %s =====\n' "${file}" "${line}"
-      if [ -r "${file}" ]; then
-         awk -v ln="${line}" 'NR==ln' "${file}" 2>&1 | od -c | head -3
-         printf 'DEBUG-WRAPPER: total lines in file: %s\n' "$(wc -l <"${file}" 2>&1)"
-         printf 'DEBUG-WRAPPER: trailing-space grep test: '
-         /usr/bin/grep --line-number -- '[[:blank:]]$' "${file}" | head -3 || echo '(no trailing-space match)'
-         printf 'DEBUG-WRAPPER: control-char grep test: '
-         LC_ALL=C /usr/bin/grep --line-number --perl-regexp -- '[\x00-\x08\x0B\x0C\x0D\x0E-\x1F\x7F]' "${file}" | head -3 || echo '(no control-char match)'
-      else
-         printf '%s\n' "DEBUG-WRAPPER: not readable"
-      fi
+   ## Run the wrapper's 4 internal greps directly, on the WHOLE
+   ## tree the caller passes in (matches what the wrapper does
+   ## below). This pins down whether any of them matches and what
+   ## format the output takes.
+   for label_regex in \
+      'one|--perl-regexp|[^\x00-\x7F]' \
+      'four|--perl-regexp|[\x00-\x08\x0B\x0C\x0D\x0E-\x1F\x7F]'; do
+      label="${label_regex%%|*}"
+      rest="${label_regex#*|}"
+      flag="${rest%%|*}"
+      regex="${rest#*|}"
+      printf 'DEBUG-WRAPPER: ===== direct invocation grep %s "%s" =====\n' "${flag}" "${regex}"
+      LC_ALL=C /usr/bin/grep --files-with-matches --line-number --binary-files=text --recursive --binary-files=without-match --exclude=control.authcookie --exclude=LICENSE --exclude=lkrg-openrc.sh --exclude=changelog --exclude=changelog.upstream --exclude-dir=.git "${flag}" "${regex}" "$@" 2>&1 | head -15
+      printf 'DEBUG-WRAPPER: rc was %s for %s\n' "${PIPESTATUS[0]}" "${label}"
    done
 } >&2
 
