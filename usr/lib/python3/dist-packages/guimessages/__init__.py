@@ -1,1 +1,1 @@
-#!/usr/bin/python3 -su
+#!/usr/bin/python3 -Bsu
