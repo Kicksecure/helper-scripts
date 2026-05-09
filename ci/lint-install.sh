@@ -31,7 +31,7 @@ fi
 
 apt-get update --error-on=any
 apt-get dist-upgrade -y
-apt-get install -y \
+apt-get install -y --no-install-recommends \
   git python3-pytest pylint mypy black ncurses-term \
   build-essential debhelper dh-python dh-apparmor \
   python3-hypothesis

@@ -1,19 +1,18 @@
-#!/usr/bin/python3 -su
+#!/usr/bin/python3 -Bsu
 
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 # pylint: disable=missing-module-docstring,fixme,unknown-option-value
 
-import unittest
 import sys
 from io import BytesIO, TextIOWrapper
 from typing import Callable
-from unittest import mock
+from unittest import TestCase, mock
 from strip_markup.strip_markup import main as strip_markup_main
 
 
-class TestStripMarkupBase(unittest.TestCase):
+class TestStripMarkupBase(TestCase):
     """
     Tests for strip_markup.py. Also reused by the tests for
     sanitize_string.py.

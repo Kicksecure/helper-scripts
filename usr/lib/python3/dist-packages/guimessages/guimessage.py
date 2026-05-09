@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -su
+#!/usr/bin/python3 -Bsu
 
 ## Copyright (C) 2014 troubadour <trobador@riseup.net>
 ## Copyright (C) 2014 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
@@ -19,15 +19,12 @@ class gui_message(QtWidgets.QMessageBox):
 
         tr = translations._translations(file_path, section)
 
-        stream = open(file_path, 'r')
-        data = yaml.safe_load(stream)
+        with open(file_path, 'r') as stream:
+            data = yaml.safe_load(stream)
         section = data[section]
 
         self.icon = section.get('icon', None)
         self.button = section.get('button', None)
-
-        #if tr.section.get('position') == 'topleft':
-            #self.move(0,0)
 
         self._ = tr.gettext
         self.initUI()
@@ -47,7 +44,7 @@ def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     app = QtWidgets.QApplication(sys.argv)
-    message = gui_message(sys.argv[1], sys.argv[2])
+    gui_message(sys.argv[1], sys.argv[2])
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
