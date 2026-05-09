@@ -84,7 +84,7 @@ parallel_wait() {
         failed_label="pid ${done_pid:-unknown}"
       fi
       parallel_failures+=( "${failed_label}" )
-      log warn "parallel_wait: job failed: '${failed_label}'"
+      log warn "${FUNCNAME[0]}: job failed: '${failed_label}'"
     fi
     if [ -z "${done_pid:-}" ]; then
       ## Defensive: all tracked PIDs already reaped or otherwise
@@ -97,7 +97,7 @@ parallel_wait() {
       ## "missing observation" look indistinguishable from "all
       ## succeeded".
       ## Caught by Codex P2 on helper-scripts#1 parallel.bsh:96.
-      log warn "parallel_wait: ${#remaining_pids[@]} tracked job(s) could not be waited on"
+      log warn "${FUNCNAME[0]}: ${#remaining_pids[@]} tracked job(s) could not be waited on"
       for pid_iter in "${remaining_pids[@]}"; do
         if [ -n "${_parallel_jobs[${pid_iter}]:-}" ]; then
           parallel_failures+=( "${_parallel_jobs[${pid_iter}]} (unwaitable)" )
