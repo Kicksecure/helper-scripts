@@ -25,7 +25,7 @@
 ##   trap "xtrace_restore" RETURN
 
 xtrace_off() {
-   true "INFO: ${FUNCNAME[0]} called by FUNCNAME: ${FUNCNAME[1]}"
+   true "INFO: ${FUNCNAME[0]} called by FUNCNAME: ${FUNCNAME[1]:-}"
    if test -o xtrace; then
       helper_xtrace_prev_state=on
    else
@@ -43,7 +43,7 @@ xtrace_restore() {
    if [ "$_should_restore" = "on" ]; then
       set -x
    fi
-   true "INFO: ${FUNCNAME[0]} called by FUNCNAME: ${FUNCNAME[1]}"
+   true "INFO: ${FUNCNAME[0]} called by FUNCNAME: ${FUNCNAME[1]:-}"
 }
 
 ## Picks 'true' (no-op) when xtrace is on, 'echo' when xtrace is off.

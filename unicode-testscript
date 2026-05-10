@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## Copyright (C) 2025 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 #set -x
@@ -95,9 +95,7 @@ process_file() {
   ## this for log-injection-safe path quoting; verify it holds for
   ## the same trojan corpus that exercises the other tools.
   ##
-  ## Use grep-find-unicode-wrapper (the same tool already used at
-  ## the top of process_file()) to verify the property. It is
-  ## path-based, so stage the output via mktemp.
+  ## Stage the output via mktemp so grep-find-unicode-wrapper can read it.
   printf_q_tmpfile="$(mktemp)"
   string_quote_safe "$file_content" > "$printf_q_tmpfile"
   ## grep-find-unicode-wrapper does not consume '--' itself (it is a
@@ -107,14 +105,14 @@ process_file() {
   ## documents intent for any future test using a user-controlled path.
   if grep-find-unicode-wrapper -- "$printf_q_tmpfile" >/dev/null ; then
     safe-rm --force -- "$printf_q_tmpfile"
-    printf '%s\n' "$0: ERROR: 'LC_ALL=C printf %%q' did not neutralize trojan unicode in file '$file_name'." >&2
+    printf '%s\n' "$0: ERROR: 'LC_ALL=C printf %q' did not neutralize trojan unicode in file '$file_name'." >&2
     exit 1
   fi
   safe-rm --force -- "$printf_q_tmpfile"
 
   ## text-safety-scan-file orchestrates unicode-show + modeline-show.
   ## All fixtures here are known-trojan, so it must exit non-zero.
-  if text-safety-scan-file -- "$file_name" </dev/null >/dev/null 2>&1 ; then
+  if text-safety-scan-file -- "$file_name" >/dev/null 2>&1 ; then
     printf '%s\n' "$0: ERROR: 'text-safety-scan-file' did not flag trojan in file '$file_name'." >&2
     exit 1
   fi

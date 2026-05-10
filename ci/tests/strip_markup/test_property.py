@@ -5,8 +5,6 @@
 
 ## AI-Assisted
 
-# pylint: disable=missing-module-docstring
-
 """
 Hypothesis property-based tests for strip_markup.
 
@@ -29,6 +27,12 @@ class TestStripMarkupProperties(unittest.TestCase):
     def test_never_raises(self, s: str) -> None:
         """strip_markup must accept any str without raising."""
         strip_markup(s)
+
+    @given(st.text())
+    def test_output_length(self, s: str) -> None:
+        """strip_markup output must never be longer than input"""
+        stripped = strip_markup(s)
+        self.assertLessEqual(len(stripped), len(s))
 
     @given(st.text())
     @settings(max_examples=200)

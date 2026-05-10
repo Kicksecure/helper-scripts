@@ -26,12 +26,7 @@ picture.
 
 This tool intentionally does NOT do directory recursion, MIME
 classification, VCS pruning, or symlink filtering. For directory
-trees, compose with `find`(1):
-
-    find /path -type f -print0 | xargs -0 -r text-safety-scan-file --
-
-or use `text-safety-scan-find`(1), a thin wrapper around the same
-idiom.
+trees, use `text-safety-scan-find`(1).
 
 ## OPTIONS
 
@@ -55,8 +50,7 @@ idiom.
 
 * `2`
   Hard error. Reasons include: an input does not exist, an input is
-  a directory (use `text-safety-scan-find`(1) instead), a plugin is
-  not installed, stdin capture failed, etc.
+  a directory, a plugin is not installed, stdin capture failed, etc.
 
 ## EXAMPLES
 
@@ -92,15 +86,14 @@ Scan a tree but skip the `.git` directory and `*.png` images:
 `text-safety-scan-file` is for AUDITING content, not for hardening
 against an attacker who can race the scanner. Specifically:
 
-* The scan-then-read sequence has an inherent TOCTOU window: between
-  the caller's `find` listing a file and a plugin opening it, the
-  file can be replaced.
+* It is trivial for a scanned file to have malicious text added to it after
+  or even during the scan.
 * Symlink arguments are followed (`open()` follows links by default).
   The user explicitly passed the path; we defer to that.
-* Hostile filenames (newlines, ANSI escapes, strings like
-  `::error::FORGED`) are routed through `printf %q` before logging,
-  so they cannot forge log lines or CI annotations. Logs of hostile
-  paths read as bash `$'...'` literals.
+* Semantic text content (such as HTML tags, source code, CI annotations, etc.)
+  are not sanitized out before being echoed. However, paths are routed through
+  `printf %q` before logging, so they cannot inject control characters or shell
+  special characters into the output.
 
 The intended deployment is: the caller extracts an archive (or
 checks out a tree) into a directory the attacker cannot write to

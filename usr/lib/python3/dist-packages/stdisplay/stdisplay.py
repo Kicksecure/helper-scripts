@@ -202,7 +202,7 @@ def get_sgr_pattern(
     ## 15: emu
     ## 52: d430*, dg+cc, dgunix+ccc
     ## 64: hpterm-color, wy370*, wyse370
-    ## 8 colors (always present once sgr >= 8 above)
+    ## 8 colors (always present at this point due to sgr check above)
     pal_3bit = r"0*(0|[3-4][0-7])"
     sgr_combo = rf"{pal_3bit}"
     if sgr >= 2**4:  ## 16 colors

@@ -5,8 +5,6 @@
 
 ## AI-Assisted
 
-# pylint: disable=missing-module-docstring
-
 """
 Hypothesis property-based tests for sanitize_string.
 
@@ -40,22 +38,23 @@ class TestSanitizeStringProperties(unittest.TestCase):
 
     @given(st.text())
     @settings(max_examples=200)
-    def test_no_control_bytes_in_output(self, s: str) -> None:
+    def test_only_ascii_in_output(self, s: str) -> None:
         """
-        Output must not contain control characters other than \\n / \\t.
-        sanitize_string applies stdisplay LAST (after strip_markup),
-        and unlike standalone stdisplay it is documented to disable
-        SGR (so the ESC fallback does not apply).
+        Output must not contain control characters other than \\n / \\t
+        or Unicode characters (stdisplay, which sanitize-string uses
+        internally, filters out both). sanitize_string applies stdisplay
+        LAST (after strip_markup), and unlike standalone stdisplay it is
+        documented to disable SGR (so the ESC fallback does not apply).
         """
         out = sanitize_string(s)
         for ch in out:
             cp = ord(ch)
             if ch in _ALLOWED_CONTROL:
                 continue
-            if cp < 0x20 or cp == 0x7F:
+            if cp < 0x20 or cp > 0x7E:
                 self.fail(
-                    f"unexpected control byte U+{cp:04X} in sanitize_string "
-                    f"output: input={s!r} output={out!r}"
+                    f"unexpected char U+{cp:04X} in sanitize_string output: "
+                    f"input={s!r} output={out!r}"
                 )
 
 

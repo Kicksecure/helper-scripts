@@ -74,8 +74,7 @@ parallel_wait() {
     ## jobs. Without this, `wait -n` could reap an unrelated
     ## background job started in the caller's shell, which would
     ## still decrement `remaining` and cause one of our tracked
-    ## PIDs to be silently skipped. Caught by Codex on
-    ## helper-scripts#1 review thread for this file.
+    ## PIDs to be silently skipped.
     if ! wait -n -p done_pid "${remaining_pids[@]}" ; then
       if [ -n "${done_pid:-}" ] \
          && [ -n "${_parallel_jobs[${done_pid}]:-}" ] ; then
@@ -96,7 +95,6 @@ parallel_wait() {
       ## non-zero - silently dropping unwaitable PIDs would let
       ## "missing observation" look indistinguishable from "all
       ## succeeded".
-      ## Caught by Codex P2 on helper-scripts#1 parallel.bsh:96.
       log warn "${FUNCNAME[0]}: ${#remaining_pids[@]} tracked job(s) could not be waited on"
       for pid_iter in "${remaining_pids[@]}"; do
         if [ -n "${_parallel_jobs[${pid_iter}]:-}" ]; then
@@ -113,5 +111,5 @@ parallel_wait() {
     done
     remaining_pids=( "${new_remaining[@]}" )
   done
-  [ "${#parallel_failures[@]}" -eq 0 ]
+  [ "${#parallel_failures[@]}" -eq 0 ] || return 1
 }

@@ -57,11 +57,6 @@ can do that, they probably already have enough access to the machine to do
 much worse things.
 """
 
-#!/usr/bin/python3 -Bsu
-## python option '-B' in shebang is used to simplify the AppArmor profile.
-## man python
-## -B     Don't write .pyc files on import.
-
 import sys
 import subprocess
 import re

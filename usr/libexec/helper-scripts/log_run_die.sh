@@ -14,7 +14,7 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 # shellcheck source=/usr/libexec/helper-scripts/trace.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/trace.bsh
 
-if ! has stecho || ! has sanitize-string; then
+if ! has stecho sanitize-string; then
   printf '%s\n' "$0: ERROR: stecho and/or sanitize-string missing."
   printf '%s\n' "$0: INFO: function_trace:"
   function_trace
@@ -37,10 +37,6 @@ fi
 ## Pair: disable_xtrace then 'trap xtrace_reenable_maybe RETURN' at
 ## the top of the function so xtrace is restored to its prior state
 ## on every exit path (return, die, fall-through).
-##
-## Mirrors Kicksecure/helper-scripts/log_run_die.sh's definitions so
-## test_run_as_target_user (in root_cmd.sh, which uses these) keeps
-## working when the standalone is generated against this fork.
 disable_xtrace() {
   if test "${xtrace:-}" = "1"; then
     xtrace_was_on=true
@@ -80,8 +76,7 @@ __log_level_num() {
 log() {
   local log_level="${log_level:-notice}"
 
-  ## Suppress xtrace for this function; local - saves and restores shell
-  ## options automatically on every exit path (return, die, fall-through).
+  ## Avoid clogging output if log() is working alright.
   local -
   set +x
 
@@ -195,10 +190,17 @@ die() {
 ## Exit with an error if any of the listed commands are not available.
 ## usage: die_if_not_has cmd1 [cmd2 ...]
 die_if_not_has() {
-  local cmd
+  local cmd any_missing
 
+  any_missing='false'
   for cmd in "$@"; do
-    has "${cmd}" || die 1 "Required command not found: '${cmd}'"
+    if ! has "${cmd}"; then
+      log error "Required command not found: '${cmd}'"
+      any_missing='true'
+    fi
+    if [ "${any_missing}" = 'true' ]; then
+      die 1 "Required commands are missing!"
+    fi
   done
 }
 
