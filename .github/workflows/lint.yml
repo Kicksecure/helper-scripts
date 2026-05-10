@@ -123,10 +123,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Install linters
-        run: bash ci/lint-install.sh
+        run: ci/lint-install.sh
       - name: Build helper-scripts deb
-        run: bash ci/lint-build.sh
+        run: ci/lint-build.sh
       - name: Clone trojan-source corpus
-        run: bash ci/lint-clone-trojan-source.sh
+        run: ci/lint-clone-trojan-source.sh
       - name: Run tests
-        run: bash ci/lint-tests.sh
+        run: ci/lint-tests.sh
