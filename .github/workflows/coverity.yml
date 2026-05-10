@@ -1,11 +1,10 @@
----
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 ## AI-Assisted
 
 ## Consumer wrapper. Docs live in the reusable:
-## https://github.com/org-ai-assisted/developer-meta-files/blob/master/.github/workflows/coverity.yml
+## https://github.com/org-ai-assisted/developer-meta-files/blob/master/.github/workflows/reusable-coverity.yml
 
 name: Coverity
 
@@ -24,9 +23,11 @@ jobs:
     uses: org-ai-assisted/developer-meta-files/.github/workflows/reusable-coverity.yml@master
     with:
       ## scan.coverity.com project name. Verified at
-      ## https://scan.coverity.com/projects/Kicksecure-helper-scripts
-      project-name: Kicksecure-helper-scripts
+      ## https://scan.coverity.com/projects/Kicksecure-helper-scripts (URL renders / as -; API still wants the slash)
+      project-name: Kicksecure/helper-scripts
       canonical-repos: "Kicksecure/helper-scripts,org-ai-assisted/helper-scripts"
-    secrets: inherit
+    secrets:
+      COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+      COVERITY_SCAN_EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
     permissions:
       contents: read
