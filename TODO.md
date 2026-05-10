@@ -1,25 +1,3 @@
-# helper-scripts: outstanding TODOs
-
-## Coverity Scan: HTTP 401 on tarball download
-
-Pre-existing condition (every Coverity run since 2026-05-06 has
-failed); not introduced by the dev-meta-files reusable migration.
-
-### What's already fixed (master)
-
-- Workflow uses the org-wide reusable in
-  `org-ai-assisted/developer-meta-files/.github/workflows/coverity.yml`.
-- Project name corrected to `Kicksecure-helper-scripts` (commit
-  `f761e8b`) - matches the project page at
-  https://scan.coverity.com/projects/Kicksecure-helper-scripts .
-- Variable / URL / form-field audit clean: secret names
-  (`COVERITY_SCAN_TOKEN`, `COVERITY_SCAN_EMAIL`), env mapping
-  (`COVERITY_TOKEN` / `COVERITY_EMAIL` / `COVERITY_PROJECT`),
-  endpoints (`/download/linux64`, `/builds?project=...`), and
-  form fields (`token` / `project` / `email` / `file` / `version`
-  / `description`) all match Coverity Scan's documented API and
-  the pre-refactor inline workflow.
-
 ### What's blocking
 
 `scan.coverity.com` returns HTTP 401 on the `/download/linux64`
