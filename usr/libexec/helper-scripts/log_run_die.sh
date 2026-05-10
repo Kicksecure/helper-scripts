@@ -198,10 +198,10 @@ die_if_not_has() {
       log error "Required command not found: '${cmd}'"
       any_missing='true'
     fi
-    if [ "${any_missing}" = 'true' ]; then
-      die 1 "Required commands are missing!"
-    fi
   done
+  if [ "${any_missing}" = 'true' ]; then
+    die 1 "Required commands are missing!"
+  fi
 }
 
 

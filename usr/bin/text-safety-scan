@@ -5,7 +5,7 @@
 
 ## AI-Assisted
 
-## See text-safety-scan-file(1) for the full description, options,
+## See text-safety-scan(1) for the full description, options,
 ## examples, and security model.
 
 set -o errexit
@@ -38,8 +38,8 @@ declare -a remaining_args=()
 
 usage() {
   cat <<'EOF'
-Usage: text-safety-scan-file [PATH...]
-       text-safety-scan-file < input
+Usage: text-safety-scan [PATH...]
+       text-safety-scan < input
 
 Scan one or more files (or stdin) using all known plugins.
 All plugins run for every input even if an earlier plugin reports
@@ -50,7 +50,7 @@ Options:
   --             End of options; remaining arguments are paths.
                  Paths whose first character is '-' are supported via
                  this marker, e.g.
-                     text-safety-scan-file -- --weird-name
+                     text-safety-scan -- --weird-name
 
 Exit codes:
   0  clean

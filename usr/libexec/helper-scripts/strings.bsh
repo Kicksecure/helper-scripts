@@ -245,7 +245,7 @@ trim_collapse_split() {
 }
 
 ## Print a string quoted to prevent special characters in the string from being
-## interpreted by the  shell. The output is guaranteed pure-ASCII printable
+## interpreted by the shell. The output is guaranteed pure-ASCII printable
 ## regardless of caller locale:
 ##
 ##   - Bytes > 0x7E (incl. valid UTF-8 multibyte sequences such as U+202E

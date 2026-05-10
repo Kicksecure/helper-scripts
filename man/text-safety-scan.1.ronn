@@ -1,4 +1,4 @@
-text-safety-scan-file(1) -- Run all configured text-safety plugins across files or stdin
+text-safety-scan(1) -- Run all configured text-safety plugins across files or stdin
 ========================================================================================
 
 <!--
@@ -12,9 +12,9 @@ text-safety-scan-file(1) -- Run all configured text-safety plugins across files 
 
 ## SYNOPSIS
 
-`text-safety-scan-file` [`--help`] [`--`] [*PATH*...]
+`text-safety-scan` [`--help`] [`--`] [*PATH*...]
 
-`text-safety-scan-file` < *input*
+`text-safety-scan` < *input*
 
 ## DESCRIPTION
 
@@ -56,34 +56,34 @@ trees, use `text-safety-scan-find`(1).
 
 Scan a single file:
 
-    text-safety-scan-file ./changelog
+    text-safety-scan ./changelog
 
 Scan multiple files explicitly:
 
-    text-safety-scan-file ./README ./CHANGELOG ./LICENSE
+    text-safety-scan ./README ./CHANGELOG ./LICENSE
 
 Scan stdin:
 
-    cat ./suspicious.txt | text-safety-scan-file
-    curl -fsSL https://example.invalid/script.sh | text-safety-scan-file
+    cat ./suspicious.txt | text-safety-scan
+    curl -fsSL https://example.invalid/script.sh | text-safety-scan
 
 Scan a file whose name begins with a hyphen:
 
-    text-safety-scan-file -- --weird-name
+    text-safety-scan -- --weird-name
 
 Scan a tree, using find for the recursion (this is what
 `text-safety-scan-find`(1) does internally):
 
-    find /repo -type f -print0 | xargs -0 -r text-safety-scan-file --
+    find /repo -type f -print0 | xargs -0 -r text-safety-scan --
 
 Scan a tree but skip the `.git` directory and `*.png` images:
 
     find /repo -not -path '*/.git/*' -not -name '*.png' -type f -print0 \
-      | xargs -0 -r text-safety-scan-file --
+      | xargs -0 -r text-safety-scan --
 
 ## SECURITY MODEL
 
-`text-safety-scan-file` is for AUDITING content, not for hardening
+`text-safety-scan` is for AUDITING content, not for hardening
 against an attacker who can race the scanner. Specifically:
 
 * It is trivial for a scanned file to have malicious text added to it after
@@ -97,7 +97,7 @@ against an attacker who can race the scanner. Specifically:
 
 The intended deployment is: the caller extracts an archive (or
 checks out a tree) into a directory the attacker cannot write to
-during the scan, then runs `text-safety-scan-file`(1).
+during the scan, then runs `text-safety-scan`(1).
 
 ## SEE ALSO
 
