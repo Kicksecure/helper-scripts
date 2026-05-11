@@ -1,0 +1,87 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
+.TH "TEXT\-SAFETY\-SCAN" "1" "January 2020" "helper-scripts" "helper-scripts Manual"
+
+.SH "NAME"
+\fBtext\-safety\-scan\fR \- Run all configured text\-safety plugins across files or stdin
+.SH "SYNOPSIS"
+\fBtext\-safety\-scan\fR [\fB\-\-help\fR] [\fB\-\-\fR] [\fIPATH\fR\|\.\|\.\|\.]
+.P
+\fBtext\-safety\-scan\fR < \fIinput\fR
+.SH "DESCRIPTION"
+Runs every configured text\-safety plugin (currently \fBunicode\-show\fR(1) and \fBmodeline\-show\fR(1)) against each path argument or against stdin\. All plugins run for every input even if an earlier plugin reports a finding, so a single invocation gives a complete picture\.
+.P
+This tool intentionally does NOT do directory recursion, MIME classification, VCS pruning, or symlink filtering\. For directory trees, use \fBtext\-safety\-scan\-find\fR(1)\.
+.SH "OPTIONS"
+.IP "\(bu" 4
+\fB\-h\fR, \fB\-\-help\fR Show usage and exit 0\.
+.IP "\(bu" 4
+\fB\-\-\fR End of options\. Remaining arguments are paths\. Required if a path begins with \fB\-\fR\. Plugins handle leading\-dash paths natively (\fBunicode\-show\fR iterates \fBargv\fR then \fBopen()\fR; \fBmodeline\-show\fR forwards via \fBgrep \-\-\fR)\.
+.IP "" 0
+.SH "EXIT CODES"
+.IP "\(bu" 4
+\fB0\fR All plugins clean for all inputs\.
+.IP "\(bu" 4
+\fB1\fR At least one plugin reported a finding (e\.g\. a Unicode hit or a Vim/Emacs modeline)\.
+.IP "\(bu" 4
+\fB2\fR Hard error\. Reasons include: an input does not exist, an input is a directory, a plugin is not installed, stdin capture failed, etc\.
+.IP "" 0
+.SH "EXAMPLES"
+Scan a single file:
+.IP "" 4
+.nf
+text\-safety\-scan \./changelog
+.fi
+.IP "" 0
+.P
+Scan multiple files explicitly:
+.IP "" 4
+.nf
+text\-safety\-scan \./README \./CHANGELOG \./LICENSE
+.fi
+.IP "" 0
+.P
+Scan stdin:
+.IP "" 4
+.nf
+cat \./suspicious\.txt | text\-safety\-scan
+curl \-fsSL https://example\.invalid/script\.sh | text\-safety\-scan
+.fi
+.IP "" 0
+.P
+Scan a file whose name begins with a hyphen:
+.IP "" 4
+.nf
+text\-safety\-scan \-\- \-\-weird\-name
+.fi
+.IP "" 0
+.P
+Scan a tree, using find for the recursion (this is what \fBtext\-safety\-scan\-find\fR(1) does internally):
+.IP "" 4
+.nf
+find /repo \-type f \-print0 | xargs \-0 \-r text\-safety\-scan \-\-
+.fi
+.IP "" 0
+.P
+Scan a tree but skip the \fB\.git\fR directory and \fB*\.png\fR images:
+.IP "" 4
+.nf
+find /repo \-not \-path '*/\.git/*' \-not \-name '*\.png' \-type f \-print0 \e
+  | xargs \-0 \-r text\-safety\-scan \-\-
+.fi
+.IP "" 0
+.SH "SECURITY MODEL"
+\fBtext\-safety\-scan\fR is for AUDITING content, not for hardening against an attacker who can race the scanner\. Specifically:
+.IP "\(bu" 4
+It is trivial for a scanned file to have malicious text added to it after or even during the scan\.
+.IP "\(bu" 4
+Symlink arguments are followed (\fBopen()\fR follows links by default)\. The user explicitly passed the path; we defer to that\.
+.IP "\(bu" 4
+Semantic text content (such as HTML tags, source code, CI annotations, etc\.) are not sanitized out before being echoed\. However, paths are routed through \fBprintf %q\fR before logging, so they cannot inject control characters or shell special characters into the output\.
+.IP "" 0
+.P
+The intended deployment is: the caller extracts an archive (or checks out a tree) into a directory the attacker cannot write to during the scan, then runs \fBtext\-safety\-scan\fR(1)\.
+.SH "SEE ALSO"
+text\-safety\-scan\-find(1), unicode\-show(1), modeline\-show(1), grep\-find\-unicode\-wrapper(1), find(1), xargs(1)
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@whonix\.org)\.

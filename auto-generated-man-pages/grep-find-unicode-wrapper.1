@@ -11,7 +11,7 @@
 .P
 It exists to apply a fixed set of vetted regex patterns \- the same set referenced by the Unicode Trojan and "Trojan Source" advisories \- across whatever files the user names, while still letting the user inject their own \fBgrep\fR flags such as \fB\-\-recursive\fR\.
 .P
-This tool is \fBpipeline\-friendly\fR, not user\-friendly\. End users who just want to know whether a file or directory contains anything unsafe should use \fBtext\-safety\-scan\-file\fR(1) instead\.
+This tool is \fBpipeline\-friendly\fR, not user\-friendly\. End users who just want to know whether a file or directory contains anything unsafe should use \fBtext\-safety\-scan\fR(1) instead\.
 .SS "Detection set"
 Each invocation runs four \fBgrep\fR passes (results are merged and de\-duplicated):
 .IP "1." 4
@@ -21,7 +21,7 @@ Non\-ASCII characters via \fB[^[:ascii:]]\fR (Perl regex)\.
 .IP "3." 4
 The bidirectional / formatting control characters listed in the Trojan Source advisory: \fBU+061C\fR, \fBU+200E\fR, \fBU+200F\fR, \fBU+202A\fR\-\fBU+202E\fR, \fBU+2066\fR\-\fBU+2069\fR\.
 .IP "4." 4
-ASCII control characters (\fBU+0000\fR\-\fBU+0008\fR, \fBU+000B\fR\-\fBU+000C\fR, \fBU+000E\fR\-\fBU+001F\fR, \fBU+007F\fR)\.
+ASCII control characters (\fBU+0000\fR\-\fBU+0008\fR, \fBU+000B\fR\-\fBU+001F\fR, \fBU+007F\fR)\.
 .IP "" 0
 .P
 \fB\-\-binary\-files=text\fR is set so that NUL and backspace bytes are matched even in files \fBgrep\fR would otherwise classify as binary\.
@@ -44,21 +44,21 @@ These intentionally mirror \fBgrep\fR(1):
 \fB2\fR \fBgrep\fR reported a syntax or I/O error\. The wrapper exits with the same code\.
 .IP "" 0
 .P
-This is the right contract for use in pipelines and shell scripts (\fBif grep\-find\-unicode\-wrapper \-r src/; then \|\.\|\.\|\.\fR), but it is the opposite of what most other safety tools return (clean = 0)\. If you want "non\-zero means unsafe was found", use \fBtext\-safety\-scan\-file\fR(1)\.
+This is the right contract for use in pipelines and shell scripts (\fBif grep\-find\-unicode\-wrapper \-r \-\- src/; then \|\.\|\.\|\.\fR), but it is the opposite of what most other safety tools return (clean = 0)\. If you want "non\-zero means unsafe was found", use \fBtext\-safety\-scan\fR(1)\.
 .SH "EXAMPLES"
 Scan a single file:
 .P
-\fBgrep\-find\-unicode\-wrapper file\.txt\fR
+\fBgrep\-find\-unicode\-wrapper \-\- file\.txt\fR
 .P
 Scan a directory recursively:
 .P
-\fBgrep\-find\-unicode\-wrapper \-\-recursive src/\fR
+\fBgrep\-find\-unicode\-wrapper \-\-recursive \-\- src/\fR
 .P
 Use in a shell condition (note the inverted sense):
 .P
-\fBif grep\-find\-unicode\-wrapper \-\-recursive src/; then printf '%s\en' 'Suspicious characters found\.' >&2 exit 1 fi\fR
+\fBif grep\-find\-unicode\-wrapper \-\-recursive \-\- src/; then printf '%s\en' 'Suspicious characters found\.' >&2 exit 1 fi\fR
 .SH "SEE ALSO"
-text\-safety\-scan\-file(1), unicode\-show(1), grep(1)
+text\-safety\-scan(1), unicode\-show(1), grep(1)
 .P
 Background:
 .IP "\(bu" 4
