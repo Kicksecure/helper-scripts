@@ -1,3 +1,794 @@
+commit dfb1fea751d6e82190d723d7dd35702f26640fff
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 11 16:26:23 2026 -0400
+
+    re-generate man pages (generated using "genmkfile manpages")
+
+commit b6ec986699005a13831c850c061e04683a96645a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 11 15:59:49 2026 -0400
+
+    fix
+
+commit 77bc541424308f3cfdab53f819a21c62807dfd06
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 11 15:54:59 2026 -0400
+
+    fix
+
+commit 2274dec01fd22c8163223fe2d9880b875123baa3
+Merge: 97319a2 aedaaa3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 11 15:03:34 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 97319a23d82e561bf1886c1e5a931ba7950e1ec8
+Merge: 24de55e ba2e363
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 11 12:53:02 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit aedaaa3093b4fe828989578bfc2eb95aaaba74de
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Mon May 11 04:29:14 2026 -0400
+
+    strings.bsh: drop two restate-only comments (R-151) (#24)
+
+    Function name br_add_to_* carries the intent; mapfile + array-length is self-evident.
+
+commit fcfe7cd120c741e66ad904a43eb768c495e716ec
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sun May 10 21:51:05 2026 -0400
+
+    fuzz.yml: dedupe rationale comments (R-150) (#23)
+
+    Single rationale at top-level permissions; jobs just list permissions.
+
+commit f33ddf6bce156f77d5d7ec1a7db930a825962acf
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sun May 10 21:10:34 2026 -0400
+
+    fuzz.yml: add contents: read to pr/batch job permissions (W-005) (#22)
+
+    Job-level permissions REPLACE top-level (not merge); the workflow's 'contents: read' was not propagating to either job. actions/checkout in pr/batch jobs had no contents access. Caught by ci/tests/test_workflow_yaml.sh W-005 in dmf.
+
+commit 294be38c62efe0d62ee37449bb4d24c08a311213
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sun May 10 20:18:46 2026 -0400
+
+    workflows: add concurrency blocks (#21)
+
+    3 cancellable + 1 singleton (coverity).
+
+commit ba2e3638dfbafca344045c1132100cbb6184a9d2
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun May 10 18:33:58 2026 -0400
+
+    Misc fixes, rename text-safety-scan-file back to text-safety-scan
+
+commit c73bb2cc8296073ff852cee677bd16ad06a3d7f3
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun May 10 18:18:02 2026 -0400
+
+    checkpoint
+
+commit 369585ee1ae34ab56eeeeb338eaa1ac793711076
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sun May 10 17:59:35 2026 -0400
+
+    codex-review: forward only OPENAI_API_KEY explicitly (#20)
+
+    Replace secrets: inherit with explicit single-secret map.
+
+commit b2ea3e5c2c59103ffb677b6aadedfe0adb264835
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sun May 10 17:18:13 2026 -0400
+
+    lint.yml: drop "bash" prefix; rely on shebang (#19)
+
+    All ci/lint-*.sh scripts are mode 100755 with #!/bin/bash shebang.
+
+commit 24de55e944030a35f27ebeaa6ba67a4ff3d3ce45
+Merge: d37f367 9b28b59
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 10 14:35:08 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 9b28b5961cba7b5214087600d182ff1d64a0ec6e
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sun May 10 14:07:53 2026 -0400
+
+    restore: re-apply session work (rebased away) (#18)
+
+    Re-applies session work lost during rebase to upstream. Changes:
+    - `.github/workflows/claude-code.yml`: replace `secrets: inherit` with
+    explicit `ANTHROPIC_API_KEY` map.
+    - `.github/workflows/coverity.yml`: restore explicit secrets map
+    (`COVERITY_SCAN_TOKEN`, `COVERITY_SCAN_EMAIL`) and slash-form
+    `project-name: Kicksecure/helper-scripts`.
+
+    Co-authored-by: claude-code <claude-code@anthropic.com>
+
+commit d37f367fa14b738016733eef5e2ed0f107006e09
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 10 11:45:56 2026 -0400
+
+    todo
+
+commit 1c91272829345daf7d98390097ddd46bb5aac38a
+Merge: 0da76b4 970d3ee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 9 14:31:45 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 0da76b4833f9682c2f94a702f251ade15348161b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 9 14:26:48 2026 -0400
+
+    refactoring
+
+commit df659a06d6bb7e262d047cc69a8b3998878a8e66
+Merge: 06cbab7 3d128ff
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 9 14:19:54 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/claude/test-github-token-access-HVDXY'
+
+commit 06cbab7a4ef2838d7d2864bc5db3be5a4787116a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 9 12:33:18 2026 -0400
+
+    chmod +x
+
+commit 505f81196f425d7838eb2eebba0faa8f26855824
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 9 12:33:05 2026 -0400
+
+    refactoring
+
+commit 970d3eedd2915ce7ac93ef4a85130fff2efe2ae4
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 9 14:16:53 2026 +0000
+
+    python: standardize shebangs to '#!/usr/bin/python3 -Bsu'
+
+    Audit pass: 37 files used '-su', 1 used '-suB' (inconsistent
+    ordering), 0 used the canonical '-Bsu'. All 73 python3-shebang
+    files in the tree are now '#!/usr/bin/python3 -Bsu'.
+
+      -B  don't write .pyc on import (keeps __pycache__ out of the
+          installed/source tree)
+      -s  don't add user site-packages to sys.path
+      -u  unbuffered stdout/stderr
+
+    The -B flag matters operationally for derivative-maker / Whonix
+    builds: dm-check-unicode walks the source tree and rejects any
+    file lacking a trailing 0x0A under "Missing newlines at end of
+    file". Compiled .pyc bytecode is binary and never ends in 0x0A,
+    so without -B every helper-scripts python invocation populates
+    __pycache__/*.pyc and breaks the next sanity-check pass.
+
+commit b462cbe5f4d7e8fe2d8c385a6b9f65ba349a92b1
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 9 15:35:00 2026 +0000
+
+    Revert "DEBUG: instrument grep-find-unicode-wrapper"
+
+    This reverts commit 57033da55147c29eee2f87a2c8a69db0012c6856.
+
+commit fe6cf90271fb6fccf50483f7d1c2b6242c680af0
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 9 15:35:00 2026 +0000
+
+    Revert "DEBUG: hexdump suspected modeline lines (REVERT)"
+
+    This reverts commit 57e04f2ba6d9a903e541cdf09ff748fa463d2203.
+
+commit fb4ea45a4824004693e97ead5605355ad625bc0a
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 9 15:35:00 2026 +0000
+
+    Revert "DEBUG: run wrapper-grep variants directly (REVERT)"
+
+    This reverts commit 742442a66ecfcf1a9d078f33e6a1f12ef5f13af5.
+
+commit 742442a66ecfcf1a9d078f33e6a1f12ef5f13af5
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 9 15:24:11 2026 +0000
+
+    DEBUG: run wrapper-grep variants directly (REVERT)
+
+commit 57e04f2ba6d9a903e541cdf09ff748fa463d2203
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 9 15:16:59 2026 +0000
+
+    DEBUG: hexdump suspected modeline lines (REVERT)
+
+commit 57033da55147c29eee2f87a2c8a69db0012c6856
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 9 15:01:47 2026 +0000
+
+    DEBUG: instrument grep-find-unicode-wrapper
+
+    REVERT AFTER CAPTURE. Adds diagnostic output to investigate
+    discrepancy where CI's grep --files-with-matches produces
+    file:line:content-shaped output that local repro cannot reproduce.
+
+    Captures: PATH, grep binary, grep version, locale, per-grep raw
+    output, hexdump of first matching line for any control-char hit.
+
+commit 3d128ffcd0f69c6df9e4d1ca4dcc0359799063ca
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 9 14:16:53 2026 +0000
+
+    python: standardize shebangs to '#!/usr/bin/python3 -Bsu'
+
+    Audit pass: 37 files used '-su', 1 used '-suB' (inconsistent
+    ordering), 0 used the canonical '-Bsu'. All 73 python3-shebang
+    files in the tree are now '#!/usr/bin/python3 -Bsu'.
+
+      -B  don't write .pyc on import (keeps __pycache__ out of the
+          installed/source tree)
+      -s  don't add user site-packages to sys.path
+      -u  unbuffered stdout/stderr
+
+    The -B flag matters operationally for derivative-maker / Whonix
+    builds: dm-check-unicode walks the source tree and rejects any
+    file lacking a trailing 0x0A under "Missing newlines at end of
+    file". Compiled .pyc bytecode is binary and never ends in 0x0A,
+    so without -B every helper-scripts python invocation populates
+    __pycache__/*.pyc and breaks the next sanity-check pass.
+
+commit cbd837a95b601b01f72391bbc5a56089e209631e
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 18:48:06 2026 +0000
+
+    codeql: drop packages: read
+
+    None of our CodeQL builds pull from ghcr.io (kloak runs
+    'bash build.sh', security-misc runs 'bash ci/codeql-build.sh',
+    helper-scripts and msgcollector are pure-Python). Drop the
+    defensive 'packages: read' grant in favor of least-privilege.
+
+    A future consumer that genuinely authenticates to GitHub
+    Packages from a CodeQL build step can re-add it locally.
+
+    Reusable docblock notes the rationale so a future maintainer
+    doesn't reflexively re-add it.
+
+commit 70767ad87294db97d14525d034ef1f015de0d175
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 15:48:58 2026 +0000
+
+    claude-code: restore id-token: write
+
+    Reverts the earlier 'drop id-token' commit. Verified against a live
+    workflow log that the action DOES use OIDC federation:
+
+      Requesting OIDC token...
+      OIDC token successfully obtained
+      Exchanging OIDC token for app token...
+      Using GITHUB_TOKEN from OIDC
+
+    The action federates the runner's id-token to an Anthropic-controlled
+    GitHub App which mints a higher-privilege GITHUB_TOKEN used to post
+    review comments. Without id-token: write the next run would have
+    failed with 'Could not fetch an OIDC token'.
+
+commit a0718856449a28c71faf099a337c6cdefe9900de
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 15:21:17 2026 +0000
+
+    claude-code: drop id-token: write
+
+    The reusable workflow no longer needs id-token: write (the action
+    authenticates to api.anthropic.com via a static ANTHROPIC_API_KEY;
+    OIDC federation is unused). Drop the permission to honor
+    least-privilege - an OIDC token, if forged or leaked, can
+    authenticate to cloud-provider integrations.
+
+commit 2ba9800b07a7a35df2cbaeb8836af2b6d931fe1b
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 13:34:16 2026 +0000
+
+    ci: switch reusable refs to 'reusable-<name>.yml'
+
+    developer-meta-files renamed its reusable workflow files to
+    carry a 'reusable-' prefix (G-A-005 convention codified in
+    agents/github-actions.md). Update the cross-repo 'uses:' lines
+    in this repo's consumer wrappers accordingly.
+
+      codeql.yml         -> reusable-codeql.yml
+      scorecard.yml      -> reusable-scorecard.yml
+      claude-code.yml    -> reusable-claude-code-review.yml
+      codex-review.yml   -> reusable-codex-review.yml
+      coverity.yml       -> reusable-coverity.yml
+
+    Consumer wrapper filenames in this repo are unchanged - only the
+    '@master' target paths shift.
+
+commit 9d48114f088f031744db287c6e7e6bc890e55970
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 12:38:26 2026 +0000
+
+    TODO.md: dashboard membership for assisted-by-ai; coverity stays on fork
+
+    Two updates to the Coverity TODO writeup.
+
+    1. New section: add 'assisted-by-ai' as a member on each of
+       the three Coverity projects (Kicksecure-helper-scripts,
+       Whonix-kloak, Kicksecure-security-misc). Dashboard
+       membership is required to view per-defect detail and to
+       rotate the project token, which is what unblocks the
+       token-refresh step for any operator who is not the
+       original owner.
+
+    2. Reverse the earlier 'disable Coverity on
+       org-ai-assisted/kloak' note. Per latest direction, the
+       workflow stays on the fork; the token mismatch will be
+       fixed in the upstream non-fork orgs (Kicksecure / Whonix).
+       Latest-wins dashboard semantics noted as an acceptable
+       trade-off for short-lived fork branches.
+
+commit b3c1fdb56e07113efa6e0d1b5127b1f8031684ea
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 12:20:12 2026 +0000
+
+    TODO.md: note Coverity 401 (token refresh required)
+
+    Pre-existing 401 from scan.coverity.com. Workflow infrastructure
+    and project name are correct on master; the only remaining fix
+    is refreshing the COVERITY_SCAN_TOKEN repo secret with the
+    current project token from scan.coverity.com/projects/
+    Kicksecure-helper-scripts.
+
+    Captured here so the open thread does not get forgotten while
+    sorting out kloak / security-misc / helper-scripts in parallel.
+
+commit f761e8bc14654cc353ae4555d4396b74e56b11c8
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 12:07:41 2026 +0000
+
+    coverity: use real Coverity Scan project name
+
+    The scan.coverity.com project for this repo is registered under
+    'Kicksecure-helper-scripts' (verified at
+    https://scan.coverity.com/projects/Kicksecure-helper-scripts).
+    The reusable wrapper was passing the bare repo name 'helper-scripts'
+    instead, producing HTTP 401 on every cov-build download attempt
+    because the project+token pair did not match.
+
+    The pre-refactor workflow had the same bug (vars.COVERITY_PROJECT
+    unset, fallback to literal 'helper-scripts'), which is why every
+    past Coverity run on this repo was failing. The reusable refactor
+    preserved the pre-existing bug; this commit fixes both.
+
+commit fa71316e3ce94bec1c4fbfa3803f8f5c53ab8156
+Merge: 38d5ed1 ae124dd
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Fri May 8 08:01:41 2026 -0400
+
+    Merge pull request #9 from org-ai-assisted/claude/test-github-token-access-HVDXY
+
+    codeql: fix valid code-scanning alerts
+
+commit ae124dd8950504f9ed7a24ea870986845b1490b0
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 11:46:19 2026 +0000
+
+    coverity: switch to org-wide reusable; drop in-repo scripts
+
+    The four ci/coverity-*.sh scripts move to developer-meta-files/ci/
+    where the new reusable workflow checks them out alongside the
+    consumer repo. Drop the local copies; .github/workflows/coverity.yml
+    becomes a thin wrapper that passes project-name + canonical-repos
+    allow-list and inherits secrets.
+
+commit 5a5bd753534125f635eb201c9f0155cbc24eb71d
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 11:35:21 2026 +0000
+
+    ai-reviews: secrets:inherit
+
+    Replace the explicit secret-mapping block with 'secrets: inherit'.
+    Org-wide ANTHROPIC_API_KEY / OPENAI_API_KEY propagate without
+    per-repo secret declarations.
+
+commit 506b9511cea90654aa5fc64f4dbd2ddd15523609
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 11:27:46 2026 +0000
+
+    ai-reviews: add Claude + Codex review wrappers
+
+    Two minimal consumer wrappers calling the org-wide reusables in
+    developer-meta-files:
+
+      .github/workflows/claude-code.yml
+      .github/workflows/codex-review.yml
+
+    Behavior matches the kloak setup: pull_request + comment-triggered
+    Claude review; pull_request + workflow_dispatch (fork-PR override)
+    Codex review. Allow-lists inherit the reusable's defaults.
+
+    Requires repo secrets ANTHROPIC_API_KEY and OPENAI_API_KEY to be
+    set before these will produce useful output.
+
+commit 4318dd4e4943b6ada36c6a15f9643080aab5056e
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 10:53:22 2026 +0000
+
+    log_run_die.sh: return 1 not exit 1; drop wrong install hint
+
+    Two corrections to the bootstrap tools check.
+
+    1. Drop the 'install Debian packages stdisplay/helper-scripts'
+       hint - 'stecho' and 'sanitize-string' both ship inside the
+       helper-scripts package itself, so the hint is wrong (and
+       redundant: the message already names the missing commands).
+
+    2. Switch from 'exit 1' to 'return 1'. Callers are expected to
+       run under errexit (R-010 strict-mode quintet); the non-zero
+       return from 'source' then trips errexit and the caller's ERR
+       trap fires - which is what runs proper cleanup.
+
+       The motivating concrete example: derivative-maker's
+       help-steps/pre installs an ERR trap (exception_handler_general)
+       that unmounts /raw, unchroots, removes the local temp apt
+       repo, and then exits the build. An unconditional 'exit 1'
+       from here would bypass that trap and leave the build env in
+       a half-mounted, half-built state; 'return 1' lets the trap
+       fire and clean up before the build aborts.
+
+       A caller that has not enabled errexit walks past the failed
+       source statement - that is a bug in the caller, not something
+       this file should paper over.
+
+commit 4abc732383a6616dc4426a79118837424d150846
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 8 10:49:11 2026 +0000
+
+    log_run_die.sh: hard tools check with caller info
+
+    Earlier versions stubbed 'stecho' to a plain printf when the
+    binary was missing. The stub silently masked install
+    misconfiguration: a script would log fine in a development tree
+    and explode mid-run on a stripped-down install.
+
+    Stubbing has been removed; log() now requires both 'stecho' (from
+    stdisplay) and 'sanitize-string' (from helper-scripts) at runtime.
+    Without an explicit check, a caller missing those binaries would
+    hit the failure at the first log() call - a confusing, far-from-
+    the-bootstrap-point failure.
+
+    Add a source-time tools check immediately after has.sh is loaded:
+
+      - 'has stecho' / 'has sanitize-string'
+      - if either is missing, print to stderr:
+          * the missing command name(s)
+          * BASH_SOURCE[1]  (the script that sourced log_run_die.sh)
+          * BASH_SOURCE[-1] (the top-level invocation, sometimes
+            different in deeper source chains)
+          * an install hint
+      - hard 'exit 1' so the caller does not continue. 'return 1'
+        would only fail the source statement; a caller without
+        errexit would walk past it and hit the same first-log() blow-
+        up the check is meant to prevent.
+
+    The error uses plain printf because we cannot bootstrap log()
+    when stecho is exactly what is missing.
+
+commit ea27ec4f5ee9ea5096657456bbb4c8f6a4faee11
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 23:14:39 2026 +0000
+
+    ci: apt-get install --no-install-recommends
+
+    Recommends are user-facing convenience packages that often pull in
+    GUI tooling (man pages, fonts, suggested helpers). On a CI runner
+    they only enlarge the install footprint and can mask which
+    packages a step actually depends on. Match the pattern adopted by
+    the new ci/codeql-build.sh and build.sh wrappers.
+
+commit 572e0a532bd99bda45982265b1618877c30fd587
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 23:09:33 2026 +0000
+
+    codeql wrapper: trim to minimal; link to centralized docs
+
+    The wrapper duplicated information already documented in the
+    reusable workflow's header comment. Drop the duplication; keep
+    just a one-line pointer at the URL on master.
+
+commit c31ddb8b8c1707ee591e4eb41f55d152814ac826
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 22:55:50 2026 +0000
+
+    codeql wrapper: add AI-Assisted header marker
+
+    Per developer-meta-files agents/bash-style-guide.md R-002.
+
+commit 3dcc287f37851bad0ca8d02c88bf9543b4d94429
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 22:38:54 2026 +0000
+
+    codeql: switch to org-wide reusable workflow
+
+    Replace the inline CodeQL job body with a call to the reusable
+    codeql.yml in developer-meta-files. Hardening retained (branch-
+    filtered triggers, fork-PR guard, contents:read default, timeout,
+    security-and-quality, category) - moved into the reusable, and now
+    shared with kloak (and any future consumer) via a single source.
+
+    NOTE: until org-ai-assisted/developer-meta-files PR <#> merges,
+    the '@master' ref will not resolve. Either land that PR first, or
+    temporarily bump '@master' to the feature-branch ref to validate
+    this PR's CI.
+
+commit bceaa29dbee053d83ec390996062f53a88e92a4c
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 22:27:37 2026 +0000
+
+    codeql/lint: prefer 'from unittest import TestCase, mock'
+
+    The previous attempt at #19/#20 (`import unittest.mock as mock`)
+    silenced CodeQL's py/import-and-import-from but tripped pylint's
+    R0402 (consider-using-from-import). Switching to a single
+    `from unittest import TestCase, mock` and dropping `import unittest`
+    satisfies both: only one form is used, and no R0402 alias.
+
+commit 6a751298a8d6996bdf7cc094d4f2053993fad2f1
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 22:24:02 2026 +0000
+
+    codeql: fix valid code-scanning alerts
+
+    Address the actionable code-level alerts surfaced by CodeQL on the
+    default branch. Skipped Scorecard meta-alerts (repo policy, not code)
+    and the random-between clear-text-logging alert (false positive: the
+    script's documented purpose is to print the random number to stdout).
+
+    Fixed:
+    - stdisplay.py: drop tautological `if sgr >= 2**3` so sgr_combo is
+      always initialized (alert #9, py/uninitialized-local-variable).
+    - guimessage.py: open file via `with`, drop dead commented-out code,
+      drop unused local `message` (#21, #7, #8).
+    - str_replace: open file via `with`; stdin path no longer needs a
+      shared file handle (#22, py/file-not-closed).
+    - sttee.py: manage output file lifetimes via `contextlib.ExitStack`
+      instead of manual try/finally close loop (#23).
+    - get-backing-devices-for-mountpoint: replace builtin `exit()` with
+      `sys.exit()` (#10, py/use-of-exit-or-quit).
+    - translations.py: bare `except:` -> `except Exception:`, `== None`
+      -> `is None`, drop unused `import sys` (#17, #24, #25, #26).
+    - leak-tests/{exhaustive_ip_send,simple_ping,tcp_test,udp_test}.py,
+      find_wl_compositor, tor-dormant-check, tor-signal-newnym: drop
+      unused imports (#11, #12, #13, #14, #15, #16, #18).
+    - strip_markup/tests/strip_markup.py and unicode_show/tests/
+      unicode_show.py: replace `from unittest import mock` with
+      `import unittest.mock as mock` so `unittest` isn't imported both
+      ways (#19, #20).
+
+commit e0f92c63a4d3efd9ac381b0caee19fd4a77329a9
+Merge: 7f53b1a 38d5ed1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu May 7 17:32:52 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 38d5ed1ca979d57f491f3de9188c5892a0863fe3
+Merge: a5f29f4 99d4282
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Thu May 7 17:23:52 2026 -0400
+
+    Merge pull request #8 from org-ai-assisted/claude/coverity-unmask-download-error
+
+    coverity: stop masking the download step's exit status
+
+commit 99d428268a45dbe64be0b076f83b620307843d74
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 21:10:17 2026 +0000
+
+    coverity: simplify download / build path handoff (no GITHUB_PATH)
+
+    Drop the GITHUB_PATH manipulation entirely. Hand off via the
+    deterministic './cov-analysis/' path that the download script
+    already extracts to.
+
+    * .github/workflows/coverity.yml 'Download Coverity Build Tool' step
+      collapses from a 4-line block (with a stdout-piped path capture
+      that masked errors) to a single 'bash ci/coverity-download.sh'.
+    * ci/coverity-download.sh stops printing the bin path on stdout (no
+      consumer left).
+    * ci/coverity-build.sh invokes ./cov-analysis/bin/cov-build directly
+      rather than relying on PATH propagation between workflow steps.
+
+    ci/coverity-submit.sh untouched - it never called cov-build, only
+    tar + curl. ci/coverity-check-secrets.sh untouched.
+
+    No '>>' redirection, no PATH side effects, no inter-step state
+    beyond the on-disk ./cov-analysis/ tree.
+
+commit a5f29f441f9799fc6e51135df81ac1bfce431deb
+Merge: 848474c 4cd0ef6
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Thu May 7 17:05:31 2026 -0400
+
+    Merge pull request #7 from org-ai-assisted/claude/coverity-broaden-gate
+
+    coverity: broaden gate to fork + temp push trigger for verification
+
+commit 4cd0ef668c99cb89d1c7bd6cb03f819ad0d5a2dc
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 21:05:08 2026 +0000
+
+    coverity: broaden gate to fork (org-ai-assisted has secrets too) + temp push trigger
+
+    Two changes:
+
+    1. The if: gate now allows BOTH Kicksecure/helper-scripts (canonical)
+       AND org-ai-assisted/helper-scripts (fork) as fully-fledged Coverity
+       targets. The fork now has its own COVERITY_SCAN_TOKEN /
+       COVERITY_SCAN_EMAIL secrets configured and runs against a separate
+       Coverity project.
+    2. Temporarily add 'push: branches: [master]' so the post-merge push
+       fires the workflow end-to-end against the fork's just-configured
+       secrets. To be removed in a follow-up commit once verification
+       completes - per-commit submissions burn the daily-build quota.
+
+commit 848474c20e2b10c23dc5d660728bab231bc24a19
+Merge: 3c1358a 8ab617a
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Thu May 7 16:54:47 2026 -0400
+
+    Merge pull request #6 from org-ai-assisted/claude/scorecard-trim-wrapper
+
+    scorecard: trim wrapper to thin pointer (commentary lives in developer-meta-files)
+
+commit 3c1358a4fe2081aa50f1cf30e3e965ca2814e917
+Merge: d84fac0 7c04593
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Thu May 7 16:54:42 2026 -0400
+
+    Merge pull request #5 from org-ai-assisted/claude/dependabot-group-actions
+
+    dependabot: bundle action bumps into one grouped PR per cycle
+
+commit 8ab617ace63d95115b8689dd091e2db64d5bca99
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 20:51:52 2026 +0000
+
+    scorecard: trim wrapper to thin pointer (commentary lives upstream)
+
+    Caller-side rationale, trust-footprint notes, cron-slot allocation
+    policy, and the github.* / uses: constraint all live in the reusable
+    workflow at:
+
+      https://github.com/Kicksecure/developer-meta-files/blob/master/.github/workflows/scorecard.yml
+
+    This file is now just trigger config + permissions + uses: line +
+    a one-line pointer. Single source of truth for design notes.
+
+commit 7c04593bb7630812f6100d9770f1896ae59f2a55
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 20:40:22 2026 +0000
+
+    dependabot: bundle action bumps into one PR per cycle
+
+    Adds 'groups: { github-actions: { patterns: ["*"] } }' to the
+    github-actions ecosystem. Without grouping, dependabot finds N
+    updates per cycle, opens one PR per update, and the
+    'open-pull-requests-limit: 1' silently drops everything past the
+    first - so we miss bumps and don't notice. With grouping, a single
+    PR carries every update at once, reviewable as one diff.
+
+    Same change applied in parallel PRs to derivative-maker and kloak.
+
+commit d84fac0df0cb2e095085a91994bc3816bd923806
+Merge: c1bed71 191c6c5
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Thu May 7 16:31:59 2026 -0400
+
+    Merge pull request #4 from org-ai-assisted/claude/scorecard-fix-forward-hardcode
+
+    scorecard: fix-forward — hardcode Kicksecure (github.* not allowed in uses:)
+
+commit 191c6c5767c1a44af0d2aef0af9ef94eeeb9c3b0
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 20:31:53 2026 +0000
+
+    scorecard: TESTING owner = org-ai-assisted to verify wiring
+
+    Lets the post-merge push trigger run Scorecard against the fork's
+    developer-meta-files mirror (which has the reusable now). Will
+    switch to canonical Kicksecure once the wiring is confirmed
+    green.
+
+commit fb1914802188c6f9e1aa69615c86658fab866eb1
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 20:28:34 2026 +0000
+
+    scorecard: revert to hardcoded Kicksecure (github.* not allowed in uses:)
+
+    The previous ${{ github.repository_owner }} expression in
+    jobs.<id>.uses fails workflow load on master with:
+
+      Unrecognized named-value: 'github'.
+      Located at position 1 within expression: github.repository_owner
+
+    GitHub Actions only permits the inputs/vars/needs/matrix contexts in
+    'uses:', not github. I was wrong about this earlier; that's a real
+    constraint we need to respect (and document).
+
+    Hardcoding 'Kicksecure/developer-meta-files@master' is the
+    production-correct ref. Fork CI on org-ai-assisted/helper-scripts
+    won't be able to resolve this until the reusable lands on canonical
+    Kicksecure/developer-meta-files master, but that's the same
+    canonical-first trade-off accepted on previous fork PRs.
+
+commit c1bed7152a9b630ca245ae2dbf55829eb46ef882
+Merge: 7f53b1a 7d8c367
+Author: assisted-by-ai (Bot Account) <server@kicksecure.com>
+Date:   Thu May 7 16:25:34 2026 -0400
+
+    Merge pull request #3 from org-ai-assisted/claude/scorecard-use-reusable
+
+    scorecard: consume reusable workflow from developer-meta-files
+
+commit 7d8c367f8fb673f5ae1dd4fd127411e1be6c88db
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 20:20:17 2026 +0000
+
+    scorecard: add workflow_dispatch for ad-hoc testing
+
+    Lets a maintainer trigger a Scorecard run on demand from the
+    Actions UI or API without waiting for the weekly schedule. Useful
+    for verifying the reusable workflow_call wiring before letting it
+    ride the cron.
+
+commit 190314d547eaf2a94ed8bc19e2568711723a28a8
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 20:11:06 2026 +0000
+
+    scorecard: use ${{ github.repository_owner }} for cross-repo uses
+
+    Resolves to org-ai-assisted/developer-meta-files on the fork (where
+    the reusable lives now after the just-merged PR) and to
+    Kicksecure/developer-meta-files on canonical, since helper-scripts
+    and developer-meta-files share both fork and canonical orgs. Lets
+    this PR's CI exercise the reusable end-to-end now instead of waiting
+    for upstream sync. GitHub Actions added support for expression-based
+    'uses:' in jobs.<id>.uses in 2024.
+
+commit e487257fd461b355e9925dd5fe02306ab0c73864
+Author: Claude <noreply@anthropic.com>
+Date:   Thu May 7 20:05:02 2026 +0000
+
+    scorecard: consume reusable workflow from developer-meta-files
+
+    Replace this repo's scorecard.yml body with a wrapper that delegates
+    to the reusable workflow at
+    Kicksecure/developer-meta-files/.github/workflows/scorecard.yml@master.
+
+    Trigger schedule and cron slot stay at the caller level (GitHub
+    Actions does not allow schedule: under workflow_call). The wrapper
+    keeps this repo's existing cron offset ('30 4 * * 0', staggered
+    behind derivative-maker's '0 4 * * 0' to avoid contention) and
+    the existing 'push: branches: [master]' trigger.
+
+    Eliminates the duplicate maintenance burden across helper-scripts
+    and derivative-maker. Future repos that adopt Scorecard get a
+    ~10-line wrapper instead of a ~70-line copy.
+
+commit 7f53b1a13713936a360b0304e22b3627249aac68
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu May 7 19:24:16 2026 +0000
+
+    bumped changelog version
+
 commit 6c850d5fa31b3b27fcd254ff0d4bd60099e48ba9
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu May 7 14:52:00 2026 -0400
