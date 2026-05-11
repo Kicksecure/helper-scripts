@@ -36,6 +36,12 @@ on:
   ## schedule:
   ##   - cron: '30 3 * * *'
 
+## Default-deny at workflow level; every job that needs more
+## redeclares its full set. Job-level permissions REPLACE
+## top-level (not merge), so jobs using actions/checkout MUST
+## re-list 'contents: read' even though it's already at top-level
+## here. See agents/github-actions.md G-A-006 (or
+## test_workflow_yaml.sh W-005).
 permissions:
   contents: read
 
@@ -50,13 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
-      ## actions/checkout reads the repo via this token.
-      ## Required because job-level permissions REPLACE top-level
-      ## (not merge), so the workflow-level 'contents: read' does
-      ## not propagate here. See agents/github-actions.md G-A-006
-      ## (or test_workflow_yaml.sh W-005).
       contents: read
-      ## Required to upload findings as PR annotations.
       security-events: write
     steps:
       - name: Checkout repository
@@ -92,11 +92,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
-      ## actions/checkout reads the repo via this token.
-      ## Required because job-level permissions REPLACE top-level
-      ## (not merge), so the workflow-level 'contents: read' does
-      ## not propagate here. See agents/github-actions.md G-A-006
-      ## (or test_workflow_yaml.sh W-005).
       contents: read
       security-events: write
       ## ClusterFuzzLite stores corpora / crashes via actions/cache,
