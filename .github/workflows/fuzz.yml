@@ -50,6 +50,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
+      ## actions/checkout reads the repo via this token.
+      ## Required because job-level permissions REPLACE top-level
+      ## (not merge), so the workflow-level 'contents: read' does
+      ## not propagate here. See agents/github-actions.md G-A-006
+      ## (or test_workflow_yaml.sh W-005).
+      contents: read
       ## Required to upload findings as PR annotations.
       security-events: write
     steps:
@@ -86,6 +92,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
+      ## actions/checkout reads the repo via this token.
+      ## Required because job-level permissions REPLACE top-level
+      ## (not merge), so the workflow-level 'contents: read' does
+      ## not propagate here. See agents/github-actions.md G-A-006
+      ## (or test_workflow_yaml.sh W-005).
+      contents: read
       security-events: write
       ## ClusterFuzzLite stores corpora / crashes via actions/cache,
       ## which needs neither contents:write nor actions:write -
