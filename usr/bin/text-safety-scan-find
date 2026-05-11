@@ -14,30 +14,26 @@ set -o errtrace
 set -o pipefail
 
 usage() {
-  printf '%s\n' \
-    'Usage: text-safety-scan-find PATH [find-expression...]' \
-    '' \
-    'Thin wrapper that feeds every regular file under the given' \
-    'starting point(s) to text-safety-scan-file(1). User-injected' \
-    'find(1) expressions control recursion / pruning / symlink /' \
-    'size / type policy.' \
-    '' \
-    'Examples:' \
-    '  text-safety-scan-find /repo' \
-    "  text-safety-scan-find /repo -not -path '*/.git/*'" \
-    "  text-safety-scan-find /repo -not -name '*.png'" \
-    '  text-safety-scan-find -L /repo            # follow symlinks' \
-    '  text-safety-scan-find /repo -size -1M' \
-    '' \
-    'Internally:' \
-    '  find "$@" -type f -print0 | xargs -0 -r text-safety-scan-file --' \
-    '' \
-    'Exit codes (forwarded from the find/xargs/text-safety-scan-file' \
-    'pipeline; xargs collapses any child rc 1..125 to its own 123):' \
-    '  0         clean' \
-    '  non-zero  error or finding' \
-    '' \
-    'See man text-safety-scan-find for the full doc.'
+  cat <<'EOF'
+Usage: text-safety-scan-find PATH [find-expression...]
+
+Thin wrapper that feeds every regular file under the given
+starting point(s) to text-safety-scan(1). User-injected
+find(1) expressions control recursion / pruning / symlink /
+size / type policy.
+
+Examples:
+  text-safety-scan-find /repo
+  text-safety-scan-find /repo -not -path '*/.git/*'
+  text-safety-scan-find /repo -not -name '*.png'
+  text-safety-scan-find -L /repo # follow symlinks
+  text-safety-scan-find /repo -size -1M
+
+Exit codes (forwarded from the find/xargs/text-safety-scan
+pipeline; xargs collapses any child rc 1..125 to its own 123):
+  0         clean
+  non-zero  error or finding
+EOF
 }
 
 case "${1:-}" in
@@ -52,4 +48,4 @@ case "${1:-}" in
 esac
 
 find "$@" -type f -print0 \
-  | xargs -0 -r text-safety-scan-file --
+  | xargs -0 -r text-safety-scan --

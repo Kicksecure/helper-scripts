@@ -5,8 +5,6 @@
 
 ## AI-Assisted
 
-# pylint: disable=missing-module-docstring
-
 """
 Hypothesis property-based tests for unicode_show.
 

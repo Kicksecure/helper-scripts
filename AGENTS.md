@@ -1,5 +1,5 @@
 <!--
-Copyright (C) 2025 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 See the file COPYING for copying conditions.
 -->
 

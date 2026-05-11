@@ -44,7 +44,10 @@ def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     app = QtWidgets.QApplication(sys.argv)
-    gui_message(sys.argv[1], sys.argv[2])
+    ## Keep a reference to the gui_message object to ensure the garbage
+    ## collector does not destroy it.
+    # pylint: ignore=unused-variable
+    message = gui_message(sys.argv[1], sys.argv[2])
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

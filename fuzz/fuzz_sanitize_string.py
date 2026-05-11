@@ -22,7 +22,9 @@ with atheris.instrument_imports():
 
 def TestOneInput(data: bytes) -> None:
     fdp = atheris.FuzzedDataProvider(data)
-    s = fdp.ConsumeUnicodeNoSurrogates(sys.maxsize)
+    ## Don't use sys.maxsize here, it may try to allocate around 8 exabytes of
+    ## random characters. 2 million and some characters is more than enough.
+    s = fdp.ConsumeUnicodeNoSurrogates(2 ** 21)
     once = sanitize_string(s)
     twice = sanitize_string(once)
     if once != twice:

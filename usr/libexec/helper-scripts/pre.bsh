@@ -103,7 +103,7 @@ fi
 if test -r "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh; then
   # shellcheck source=./get_colors.sh
   if ! source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh; then
-    true "$0: ERROR: Failed to source ${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh"
+    true "$0: ERROR: Failed to source '${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh'"
   fi
 fi
 

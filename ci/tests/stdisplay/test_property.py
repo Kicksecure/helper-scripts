@@ -5,8 +5,6 @@
 
 ## AI-Assisted
 
-# pylint: disable=missing-module-docstring
-
 """
 Hypothesis property-based tests for stdisplay.
 
@@ -24,7 +22,10 @@ from hypothesis import given, settings, strategies as st
 from stdisplay.stdisplay import stdisplay
 
 ## Allowed control characters that stdisplay legitimately preserves.
-_ALLOWED_CONTROL = {"\n", "\t"}
+## SGR / OSC / CSI sequences are the SGR-eligible exceptions when sgr support
+## is enabled - those are ESC-prefixed sequences that we do sanitize tail
+## bytes of, but the leading ESC (U+001B) may survive.
+_ALLOWED_CONTROL = {"\n", "\t", "\x1b"}
 
 
 class TestStdisplayProperties(unittest.TestCase):
@@ -44,26 +45,20 @@ class TestStdisplayProperties(unittest.TestCase):
 
     @given(st.text())
     @settings(max_examples=200)
-    def test_no_control_bytes_in_output(self, s: str) -> None:
+    def test_only_ascii_in_output(self, s: str) -> None:
         """
-        Output must not contain control characters (U+0000..U+001F or
-        U+007F) other than the documented allow-list. SGR / OSC / CSI
-        sequences are the SGR-eligible exceptions when sgr support is
-        enabled - those are ESC-prefixed sequences that we do
-        sanitize tail bytes of, but the leading ESC (U+001B) may
-        survive.
+        Output must be purely 7-bit ASCII, and must not contain control
+        characters (U+0000..U+001F or U+007F) other than the documented
+        allow-list.
         """
         out = stdisplay(s)
         for ch in out:
             cp = ord(ch)
             if ch in _ALLOWED_CONTROL:
                 continue
-            if ch == "\x1b":
-                ## ESC may survive as the SGR sequence introducer.
-                continue
-            if cp < 0x20 or cp == 0x7F:
+            if cp < 0x20 or cp > 0x7E:
                 self.fail(
-                    f"unexpected control byte U+{cp:04X} in stdisplay output: "
+                    f"unexpected char U+{cp:04X} in stdisplay output: "
                     f"input={s!r} output={out!r}"
                 )
 

@@ -1,7 +1,9 @@
-## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
-## See the file COPYING for copying conditions.
+<!--
+Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+See the file COPYING for copying conditions.
 
-## AI-Assisted
+AI-Assisted
+-->
 
 # Fuzzing
 
@@ -9,7 +11,7 @@ Two layers, in increasing depth:
 
 ## 1. Hypothesis property tests
 
-Live in `ci/tests/<pkg>/test_property.py`. **Outside** the Python
+Lives in `ci/tests/<pkg>/test_property.py`. **Outside** the Python
 package tree on purpose: `debian/helper-scripts.install` ships
 `usr/*`, so keeping property tests under `ci/tests/` means they do
 NOT end up in the installed `.deb`. The original (non-Hypothesis)

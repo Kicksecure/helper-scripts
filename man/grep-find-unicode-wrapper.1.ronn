@@ -30,7 +30,7 @@ inject their own `grep` flags such as `--recursive`.
 
 This tool is **pipeline-friendly**, not user-friendly. End users who
 just want to know whether a file or directory contains anything
-unsafe should use `text-safety-scan-file`(1) instead.
+unsafe should use `text-safety-scan`(1) instead.
 
 ### Detection set
 
@@ -43,7 +43,7 @@ de-duplicated):
    the Trojan Source advisory:
    `U+061C`, `U+200E`, `U+200F`, `U+202A`-`U+202E`, `U+2066`-`U+2069`.
 4. ASCII control characters
-   (`U+0000`-`U+0008`, `U+000B`-`U+000C`, `U+000E`-`U+001F`, `U+007F`).
+   (`U+0000`-`U+0008`, `U+000B`-`U+001F`, `U+007F`).
 
 `--binary-files=text` is set so that NUL and backspace bytes are
 matched even in files `grep` would otherwise classify as binary.
@@ -74,28 +74,28 @@ These intentionally mirror `grep`(1):
   the same code.
 
 This is the right contract for use in pipelines and shell scripts
-(`if grep-find-unicode-wrapper -r src/; then ...`), but it is the
+(`if grep-find-unicode-wrapper -r -- src/; then ...`), but it is the
 opposite of what most other safety tools return (clean = 0). If you
-want "non-zero means unsafe was found", use `text-safety-scan-file`(1).
+want "non-zero means unsafe was found", use `text-safety-scan`(1).
 
 ## EXAMPLES
 
 Scan a single file:
 
 <code>
-grep-find-unicode-wrapper file.txt
+grep-find-unicode-wrapper -- file.txt
 </code>
 
 Scan a directory recursively:
 
 <code>
-grep-find-unicode-wrapper --recursive src/
+grep-find-unicode-wrapper --recursive -- src/
 </code>
 
 Use in a shell condition (note the inverted sense):
 
 <code>
-if grep-find-unicode-wrapper --recursive src/; then
+if grep-find-unicode-wrapper --recursive -- src/; then
     printf '%s\n' 'Suspicious characters found.' >&2
     exit 1
 fi
@@ -103,7 +103,7 @@ fi
 
 ## SEE ALSO
 
-text-safety-scan-file(1), unicode-show(1), grep(1)
+text-safety-scan(1), unicode-show(1), grep(1)
 
 Background:
 

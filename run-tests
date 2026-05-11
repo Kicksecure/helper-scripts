@@ -14,7 +14,7 @@ pytest=(python3 -m pytest -o 'python_files=tests/*.py')
 ## Separate pytest config for ci/tests/<pkg>/, which uses standard
 ## test_*.py discovery rather than tests/*.py. Run via
 ## --import-mode=importlib so a test file named e.g. test_stdisplay.py
-## couldn't shadow the real stdisplay package on PYTHONPATH (defensive
+## can't shadow the real stdisplay package on PYTHONPATH (defensive
 ## - currently only test_property.py lives there).
 pytest_ci_tests=(python3 -m pytest --import-mode=importlib)
 black=(black --config="${pyrc}" --color --diff --check)
@@ -49,15 +49,17 @@ done
 ## for strict typing is low, and cross-package linting from this layout
 ## requires extra sys.path / mypy_path plumbing that isn't worth the
 ## maintenance cost. black --check still runs so style stays consistent.
-for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
-  test_path="${ci_tests_dir}/${py_lib_to_test}"
-  if [ -d "${test_path}" ]; then
-    cd -- "${test_path}"
-    NO_COLOR="" COLORTERM="" TERM="xterm-direct" \
-      "${pytest_ci_tests[@]}" "${@}"
-    "${black[@]}" .
-  fi
-done
+if [ "${CI:-}" = "true" ] || [ "${ALLOW_LOCAL:-}" = "true" ]; then
+  for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
+    test_path="${ci_tests_dir}/${py_lib_to_test}"
+    if [ -d "${test_path}" ]; then
+      cd -- "${test_path}"
+      NO_COLOR="" COLORTERM="" TERM="xterm-direct" \
+        "${pytest_ci_tests[@]}" "${@}"
+      "${black[@]}" .
+    fi
+  done
+fi
 
 stdin_file_read_utils=(stcat stcatn)
 stdin_implicit_read_utils=(sttee stsponge strip-markup unicode-show)
