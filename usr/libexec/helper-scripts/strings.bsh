@@ -42,7 +42,6 @@ br_add() {
     in="$(cat)"
   fi
 
-  ## Replace each newline with "<br />\n"
   out="${in//$'\n'/'<br />'$'\n'}"
   printf '%s\n' "$out"
 }
@@ -212,7 +211,6 @@ check_is_not_empty_and_only_one_line() {
     return 1
   fi
 
-  ## Count the number of lines using mapfile.
   mapfile -t lines <<<"$value"
   number_of_lines="${#lines[@]}"
 
