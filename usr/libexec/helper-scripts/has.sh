@@ -16,6 +16,16 @@ has() {
   done
 }
 
+is_type_file() {
+  local _name
+
+  for _name in "$@"; do
+    if ! [ "$(type -t "${_name}")" = "file" ]; then
+      return 1
+    fi
+  done
+}
+
 lsmod_deterministic() {
   lsmod | awk 'NR>1 {print $1}' | LC_ALL='C' sort
 }
