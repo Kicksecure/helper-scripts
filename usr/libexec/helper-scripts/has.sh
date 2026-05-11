@@ -26,6 +26,14 @@ is_type_file() {
   done
 }
 
+type_exists() {
+  local _name
+
+  for _name in "$@"; do
+    [ "$(type -t "${_name}")" ] || return 1
+  done
+}
+
 lsmod_deterministic() {
   lsmod | awk 'NR>1 {print $1}' | LC_ALL='C' sort
 }

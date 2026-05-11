@@ -14,7 +14,7 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 # shellcheck source=/usr/libexec/helper-scripts/trace.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/trace.bsh
 
-if ! is_type_file stecho sanitize-string; then
+if ! type_exists stecho sanitize-string; then
   printf '%s\n' "$0: ERROR: stecho and/or sanitize-string missing."
   printf '%s\n' "$0: INFO: function_trace:"
   function_trace
