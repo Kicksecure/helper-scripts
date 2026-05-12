@@ -44,30 +44,47 @@ class StripMarkupEngine(HTMLParser):
         return self.text.getvalue()
 
 
+def _underscore_sanitize(text: str) -> str:
+    """
+    Neuter markup metacharacters when the parser path is unsafe.
+    See https://stackoverflow.com/a/10371699/19474638
+    """
+
+    return "".join("_" if char in ["<", ">", "&"] else char for char in text)
+
+
 def strip_markup(untrusted_string: str) -> str:
     """
     Stripping function.
     """
 
     markup_stripper: StripMarkupEngine = StripMarkupEngine()
-    markup_stripper.feed(untrusted_string)
+    try:
+        markup_stripper.feed(untrusted_string)
+    except Exception:  # pylint: disable=broad-except
+        ## CPython's HTMLParser raises uncaught exceptions on some
+        ## malformed inputs (e.g. AssertionError on '<![...' patterns
+        ## before gh-77057 landed). Sanitization must never propagate
+        ## parser internals to the caller, so fall back to the
+        ## underscore strategy on the original input.
+        return _underscore_sanitize(untrusted_string)
     strip_one_string: str = markup_stripper.get_data()
+
     markup_stripper = StripMarkupEngine()
-    markup_stripper.feed(strip_one_string)
+    try:
+        markup_stripper.feed(strip_one_string)
+    except Exception:  # pylint: disable=broad-except
+        return _underscore_sanitize(strip_one_string)
     strip_two_string: str = markup_stripper.get_data()
     if strip_one_string == strip_two_string:
         return strip_one_string
 
     ## If we get this far, the second strip attempt further transformed the
     ## text, indicating an attempt to maliciously circumvent the stripper.
-    ## Sanitize the malicious text by changing all '<', '>', and '&'
-    ## characters to underscores. See
-    ## https://stackoverflow.com/a/10371699/19474638
+    ## Sanitize the malicious text by underscore-replacing markup
+    ## metacharacters.
     ##
     ## Note that we sanitize strip_one_string, NOT strip_two_string, so that
     ## the neutered malicious text is displayed to the user. This is so that
     ## the user is alerted to something odd happening.
-    sanitized_string: str = "".join(
-        "_" if char in ["<", ">", "&"] else char for char in strip_one_string
-    )
-    return sanitized_string
+    return _underscore_sanitize(strip_one_string)
