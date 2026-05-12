@@ -17,16 +17,17 @@ the fuzzed input. Both functions must:
 import atheris
 import sys
 
-## unicode_show.unicode_show transitively imports stdisplay.stdisplay
-## (package.submodule-shaped re-export). Atheris' default loader
-## override mis-handles this chained import under PyInstaller and
-## raises `ModuleNotFoundError: No module named 'unicode_show.unicode_show'`
-## at fuzzer-build time. enable_loader_override=False is the
-## atheris-suggested escape hatch in the warning that precedes the
-## failure; the other three harnesses in this directory do not hit
-## the same path because they only import a single layer deep.
-with atheris.instrument_imports(enable_loader_override=False):
-    from unicode_show.unicode_show import describe_char, is_suspicious
+## unicode_show.unicode_show uniquely does a cross-package absolute
+## import (`from stdisplay.stdisplay import stdisplay`); the three
+## sibling fuzz targets either only touch stdlib or use intra-package
+## relative imports. Under PyInstaller's static analysis, wrapping
+## that import in `with atheris.instrument_imports():` confuses the
+## submodule discovery and the frozen binary fails at runtime with
+## `ModuleNotFoundError: No module named 'unicode_show.unicode_show'`.
+## atheris.instrument_all() (called at runtime in main()) is the
+## documented alternative for cases the import-time instrumentation
+## can't handle.
+from unicode_show.unicode_show import describe_char, is_suspicious
 
 
 def TestOneInput(data: bytes) -> None:
@@ -48,6 +49,7 @@ def TestOneInput(data: bytes) -> None:
 
 
 def main() -> None:
+    atheris.instrument_all()
     atheris.Setup(sys.argv, TestOneInput)
     atheris.Fuzz()
 
