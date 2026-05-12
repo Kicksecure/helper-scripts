@@ -102,9 +102,7 @@ def scan_line(
 
     annotated: str = ""
     has_suspicious: bool = False
-    display_name: str = (
-        stdisplay(filename, sgr=-1) if filename else "<stdin>"
-    )
+    display_name: str = stdisplay(filename, sgr=-1) if filename else "<stdin>"
     prefix: str = f"{display_name}:{lineno}: "
     suspicious_descrs: list[str] = []
 
@@ -163,9 +161,7 @@ def scan_file(f: TextIO, filename: str | None = None) -> bool:
     if last_line is not None and not last_line.endswith("\n"):
         found = True
         ## Missing newline at the end is suspicious.
-        display_name: str = (
-            stdisplay(filename, sgr=-1) if filename else "<stdin>"
-        )
+        display_name = stdisplay(filename, sgr=-1) if filename else "<stdin>"
         msg: str = (
             f"{display_name}:"
             + f"{last_lineno}: "
