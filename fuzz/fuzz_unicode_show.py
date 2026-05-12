@@ -17,7 +17,15 @@ the fuzzed input. Both functions must:
 import atheris
 import sys
 
-with atheris.instrument_imports():
+## unicode_show.unicode_show transitively imports stdisplay.stdisplay
+## (package.submodule-shaped re-export). Atheris' default loader
+## override mis-handles this chained import under PyInstaller and
+## raises `ModuleNotFoundError: No module named 'unicode_show.unicode_show'`
+## at fuzzer-build time. enable_loader_override=False is the
+## atheris-suggested escape hatch in the warning that precedes the
+## failure; the other three harnesses in this directory do not hit
+## the same path because they only import a single layer deep.
+with atheris.instrument_imports(enable_loader_override=False):
     from unicode_show.unicode_show import describe_char, is_suspicious
 
 
