@@ -17,17 +17,8 @@ the fuzzed input. Both functions must:
 import atheris
 import sys
 
-## unicode_show.unicode_show uniquely does a cross-package absolute
-## import (`from stdisplay.stdisplay import stdisplay`); the three
-## sibling fuzz targets either only touch stdlib or use intra-package
-## relative imports. Under PyInstaller's static analysis, wrapping
-## that import in `with atheris.instrument_imports():` confuses the
-## submodule discovery and the frozen binary fails at runtime with
-## `ModuleNotFoundError: No module named 'unicode_show.unicode_show'`.
-## atheris.instrument_all() (called at runtime in main()) is the
-## documented alternative for cases the import-time instrumentation
-## can't handle.
-from unicode_show.unicode_show import describe_char, is_suspicious
+with atheris.instrument_imports():
+    from unicode_show.unicode_show import describe_char, is_suspicious
 
 
 def TestOneInput(data: bytes) -> None:
@@ -49,7 +40,6 @@ def TestOneInput(data: bytes) -> None:
 
 
 def main() -> None:
-    atheris.instrument_all()
     atheris.Setup(sys.argv, TestOneInput)
     atheris.Fuzz()
 

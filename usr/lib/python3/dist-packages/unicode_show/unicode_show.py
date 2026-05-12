@@ -103,7 +103,7 @@ def scan_line(
     annotated: str = ""
     has_suspicious: bool = False
     prefix: str = (
-        f"{stdisplay(filename, sgr=-1) if filename else "<stdin>"}:{lineno}: "
+        f"{stdisplay(filename, sgr=-1) if filename else '<stdin>'}:{lineno}: "
     )
     suspicious_descrs: list[str] = []
 
@@ -163,7 +163,7 @@ def scan_file(f: TextIO, filename: str | None = None) -> bool:
         found = True
         ## Missing newline at the end is suspicious.
         msg: str = (
-            f"{stdisplay(filename, sgr=-1) if filename else "<stdin>"}:"
+            f"{stdisplay(filename, sgr=-1) if filename else '<stdin>'}:"
             + f"{last_lineno}: "
             + colorize("[missing newline at end]", RED)
         )
