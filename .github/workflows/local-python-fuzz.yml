@@ -17,24 +17,21 @@
 name: Fuzz
 
 on:
-  ## Manual-only until the ClusterFuzzLite build setup is verified
-  ## green at least once. Once that lands, uncomment the pull_request
-  ## and schedule blocks.
   workflow_dispatch:
     inputs:
       fuzz_seconds:
         description: 'Per-fuzzer time budget in seconds (batch job)'
         required: false
         default: '600'
-  ## pull_request:
-  ##   branches: [master]
-  ##   paths:
-  ##     - 'usr/lib/python3/dist-packages/**/*.py'
-  ##     - 'fuzz/**'
-  ##     - '.clusterfuzzlite/**'
-  ##     - '.github/workflows/fuzz.yml'
-  ## schedule:
-  ##   - cron: '30 3 * * *'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'usr/lib/python3/dist-packages/**/*.py'
+      - 'fuzz/**'
+      - '.clusterfuzzlite/**'
+      - '.github/workflows/local-python-fuzz.yml'
+  schedule:
+    - cron: '30 3 * * *'
 
 ## Default-deny at workflow level; every job that needs more
 ## redeclares its full set. Job-level permissions REPLACE
