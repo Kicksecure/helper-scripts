@@ -26,6 +26,19 @@
 ## binaries built in the base-builder land cleanly in the run
 ## container. Do not pin to the ubuntu-24-04 tag without also
 ## forking CFLite to override its hardcoded run image.
+##
+## Upstream tracking:
+##   https://github.com/google/clusterfuzzlite/issues/145 - asks
+##     for Ubuntu 20.04 -> 24.04 migration (open, June 2025; cites
+##     Python 3.8 being too old for modern projects).
+##   https://github.com/google/clusterfuzzlite/pull/146 - proposes
+##     flipping the build + run actions to :ubuntu-24-04-v1 tags
+##     (not merged; reviewer blocked on missing opt-in / backward-
+##     compat path for existing users).
+##
+## When that work lands and OSS-Fuzz republishes :latest pointing
+## at the new ABI, this pin can be refreshed in a single digest
+## swap.
 FROM gcr.io/oss-fuzz-base/base-builder-python@sha256:52b32769a56b9fe3350908266099d78852626ea44664ffdc7c12f43f62abb3f8
 
 COPY . $SRC/helper-scripts
