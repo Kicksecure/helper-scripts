@@ -16,11 +16,17 @@
 ##   https://github.com/google/oss-fuzz/tree/master/infra/base-images/base-builder-python
 ##   https://google.github.io/oss-fuzz/getting-started/new-project-guide/python-lang/
 ##
-## Digest sha256:92b94004... resolved from the 'latest' tag via
+## Digest sha256:52b32769... resolved from the 'latest' tag via
 ## the registry manifest API (verification step, not trust source):
 ##   https://gcr.io/v2/oss-fuzz-base/base-builder-python/manifests/latest
 ##   (docker-content-digest header)
-FROM gcr.io/oss-fuzz-base/base-builder-python@sha256:92b940040eaa039d39de69ea44254cb7943c5d729a7f8094a87bedb318f5cec3
+##
+## :latest stays matched to clusterfuzzlite-run-fuzzers:v1's ABI
+## (Ubuntu 20.04 / glibc 2.31) - OSS-Fuzz keeps this guarantee so
+## binaries built in the base-builder land cleanly in the run
+## container. Do not pin to the ubuntu-24-04 tag without also
+## forking CFLite to override its hardcoded run image.
+FROM gcr.io/oss-fuzz-base/base-builder-python@sha256:52b32769a56b9fe3350908266099d78852626ea44664ffdc7c12f43f62abb3f8
 
 COPY . $SRC/helper-scripts
 COPY .clusterfuzzlite/build.sh $SRC/build.sh
