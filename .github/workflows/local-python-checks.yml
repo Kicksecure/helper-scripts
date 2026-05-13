@@ -6,71 +6,8 @@ name: Lint scripts
 on:
   push:
     branches: [master]
-    paths:
-      ## Python packages exercised by ./run-tests.
-      - usr/lib/python3/dist-packages/stdisplay/**
-      - usr/lib/python3/dist-packages/sanitize_string/**
-      - usr/lib/python3/dist-packages/strip_markup/**
-      - usr/lib/python3/dist-packages/unicode_show/**
-      - usr/lib/python3/dist-packages/strict_config_parser/**
-      ## CI-only Hypothesis property tests.
-      - ci/tests/**
-      ## CI plumbing the lint workflow invokes.
-      - ci/lint-*.sh
-      ## Lint config (pylint / mypy / black / pytest).
-      - pyproject.toml
-      ## Workflow itself.
-      - .github/workflows/lint.yml
-      ## Test driver script.
-      - run-tests
-      ## Debian package build inputs (control = deps, rules = build,
-      ## *.install = what ships in the .deb).
-      - debian/control
-      - debian/rules
-      - debian/helper-scripts.install
-      - debian/helper-scripts.maintscript
-      - debian/helper-scripts.postinst
-      ## CLI utilities tested by the bottom of run-tests.
-      - usr/bin/stcat
-      - usr/bin/stcatn
-      - usr/bin/stecho
-      - usr/bin/stprint
-      - usr/bin/stsponge
-      - usr/bin/sttee
-      - usr/bin/strip-markup
-      - usr/bin/unicode-show
-      - usr/bin/sanitize-string
-      - unicode-testscript
   pull_request:
     branches: [master]
-    paths:
-      - usr/lib/python3/dist-packages/stdisplay/**
-      - usr/lib/python3/dist-packages/sanitize_string/**
-      - usr/lib/python3/dist-packages/strip_markup/**
-      - usr/lib/python3/dist-packages/unicode_show/**
-      - usr/lib/python3/dist-packages/strict_config_parser/**
-      - ci/tests/**
-      - ci/lint-*.sh
-      - pyproject.toml
-      - .github/workflows/lint.yml
-      - run-tests
-      - debian/control
-      - debian/rules
-      - debian/helper-scripts.install
-      - debian/helper-scripts.maintscript
-      - debian/helper-scripts.postinst
-      - usr/bin/stcat
-      - usr/bin/stcatn
-      - usr/bin/stecho
-      - usr/bin/stprint
-      - usr/bin/stsponge
-      - usr/bin/sttee
-      - usr/bin/strip-markup
-      - usr/bin/unicode-show
-      - usr/bin/sanitize-string
-      - unicode-testscript
-
-## Least privilege.
   workflow_dispatch:
 
 permissions:
