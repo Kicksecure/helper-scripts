@@ -37,6 +37,20 @@ concurrency:
 
 jobs:
   review:
+    ## Pre-filter comment events for the '@claude' substring before
+    ## the runner spins up. The reusable's job-level 'if:' enforces
+    ## the same gate plus the allowed-users roster check, but doing
+    ## the cheap substring test here too prevents a runner from
+    ## starting (and stopping seconds later) for every unrelated
+    ## comment on every issue/PR. pull_request and workflow_dispatch
+    ## events pass through unconditionally.
+    if: |
+      github.event_name == 'pull_request' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment'
+        && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment'
+        && contains(github.event.comment.body, '@claude'))
     uses: org-ai-assisted/developer-meta-files/.github/workflows/reusable-claude-code-review.yml@master
     ## Explicit secret forwarding (NOT 'secrets: inherit'). With
     ## inherit, every caller-side secret would flow into the
