@@ -1,3 +1,626 @@
+commit 41b9cf2dd0c294f9424dda24c314d4ce45f3da0f
+Merge: f096053 0c14004
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 15 14:33:45 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 0c1400422b1612690f54e9af37dea906fe8d1198
+Merge: 2c25a89 8d95d7a
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Fri May 15 13:43:02 2026 -0400
+
+    Merge pull request #38 from org-ai-assisted/claude/audit-github-actions-security-vXOos
+
+    ci(lint): emit step summary on local-python-checks matrix
+
+commit 8d95d7a87dc4309816d1849aa4347a2c3eed5405
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Fri May 15 13:24:32 2026 -0400
+
+    ci(lint): emit step summary on local-python-checks matrix
+
+    Add ci/step-summary-emit.sh to the lint job so each matrix leg
+    (debian:stable/testing/unstable, ubuntu:rolling) shows a headline
+    panel (outcome + image) on the Actions tab instead of just a
+    green check.
+
+    The script is sourced from developer-meta-files@master via an
+    extra actions/checkout step into .dmf (helper-scripts does not
+    vendor a copy). Both steps are 'if: always()' so the summary
+    fires even when ci/lint-tests.sh fails.
+
+    Template values flow through env: per the pattern fixed in
+    developer-meta-files#87 to keep CodeQL clean. matrix.image is a
+    static workflow literal but follows the same convention.
+
+    Closes the last summary-panel gap in helper-scripts (companion
+    to #37 which covered local-python-fuzz.yml).
+
+commit f09605342e16388d32bd719b037d3a8ac0176afc
+Merge: fb1aa38 2c25a89
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 15 13:09:41 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 2c25a89720cc2c51afa12007cc24641a387f7490
+Merge: 3ea2ecb 2e84176
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Fri May 15 12:35:17 2026 -0400
+
+    Merge pull request #37 from org-ai-assisted/claude/audit-github-actions-security-vXOos
+
+    ci(fuzz): emit step summary on local-python-fuzz jobs
+
+commit 2e84176af4ac191cb339a7ba4b3559766970c820
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Fri May 15 12:30:36 2026 -0400
+
+    ci(fuzz): emit step summary on local-python-fuzz jobs
+
+    Add ci/step-summary-emit.sh calls to both jobs (pr + batch) of
+    local-python-fuzz.yml so the Actions tab shows a headline panel
+    (outcome, mode, per-fuzzer budget) instead of just a green check.
+
+    The script is sourced from developer-meta-files@master via an
+    extra actions/checkout step into .dmf (helper-scripts does not
+    vendor a copy). The step is 'if: always()' so the summary fires
+    even when run_fuzzers reports crashes or hits its time budget.
+
+    Template-substituted values flow through env: rather than being
+    inlined in the run: block, matching the pattern fixed in
+    developer-meta-files#87 to keep CodeQL clean.
+
+commit 3ea2ecbfde39f80804f06a915f169e5b8a9f57b1
+Merge: ff4038a 42067b4
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Thu May 14 18:49:00 2026 -0400
+
+    Merge pull request #36 from org-ai-assisted/claude/audit-github-actions-security-PcwM2
+
+    consumer-claude-code: pre-filter @claude on comment events
+
+commit 42067b429f0d7226bdba085c5dc16f0d71cf3ce6
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Thu May 14 18:38:40 2026 -0400
+
+    consumer-claude-code: pre-filter @claude on comment events
+
+    Surfaced during a GHA security audit against the patterns in
+    https://securitylab.github.com/resources/github-actions-new-patterns-and-mitigations/.
+
+    issue_comment and pull_request_review_comment triggers fire a runner
+    spin-up on every comment. The reusable workflow's job-level if: then
+    gates the actual work behind a @claude substring check + allowed-users
+    roster. Doing the cheap substring test in the consumer wrapper too
+    prevents the unnecessary runner spin-up for unrelated comments.
+
+    This is an operational fix (saves CI minutes on noisy comment
+    threads), not a security fix; the in-reusable gate already prevents
+    unauthorized execution.
+
+    Byte-identical to the canonical template in developer-meta-files.
+
+commit ff4038a6e85305b8e2d7c882f68b471f8df39002
+Merge: 29c3713 9cd3650
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Wed May 13 06:35:18 2026 -0400
+
+    Merge pull request #34 from org-ai-assisted/claude/cflite-base-builder-refresh
+
+    fuzz: refresh base-builder-python pin to current :latest digest
+
+commit 9cd36505e3a1d6d34e31fe35154e0e0e0cc6629e
+Author: Claude <noreply@anthropic.com>
+Date:   Wed May 13 09:26:19 2026 +0000
+
+    fuzz: document upstream CFLite ubuntu-24-04 tracking issues
+
+    Same comment refresh as the parallel kloak PR. References:
+      https://github.com/google/clusterfuzzlite/issues/145 (open)
+      https://github.com/google/clusterfuzzlite/pull/146 (not merged)
+
+    Until #146 (or a successor with opt-in support) lands and
+    OSS-Fuzz republishes :latest on Ubuntu 24.04, this pin stays
+    on the current :latest digest which OSS-Fuzz keeps matched to
+    clusterfuzzlite-run-fuzzers:v1's Ubuntu 20.04 / glibc 2.31
+    ABI.
+
+commit 40b1ace0c597eeaf1f7cf3a23ef85b000563ad92
+Author: Claude <noreply@anthropic.com>
+Date:   Wed May 13 09:17:19 2026 +0000
+
+    fuzz: refresh base-builder-python pin to current :latest digest
+
+    OSS-Fuzz republishes base-builder-python on :latest periodically;
+    the digest we pinned at bootstrap (92b94004...) was the :latest
+    at the time, but the registry has since moved on to 52b32769....
+
+    Bump the pin so future rebuilds of the fuzz container start from
+    a current image. No behavioural change expected - OSS-Fuzz keeps
+    :latest on the same Ubuntu 20.04 / glibc 2.31 ABI as the
+    clusterfuzzlite-run-fuzzers:v1 image (the CFLite run_fuzzers
+    GitHub Action exposes no input to override the run container,
+    so :latest is the only base-builder tag that stays
+    runtime-compatible). Pinning to ubuntu-24-04 instead would
+    produce glibc-2.38 binaries that fail to load in run-fuzzers.
+
+    Reference: kloak#28 attempted the ubuntu-24-04 upgrade and hit
+    this exact incompatibility:
+    https://github.com/org-ai-assisted/kloak/actions/runs/25789561809
+
+commit 29c3713cc099a9b885e1326ac65a5715b965cfd4
+Merge: 3d5289f 6fdb544
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Wed May 13 04:02:53 2026 -0400
+
+    Merge pull request #32 from org-ai-assisted/claude/review-github-actions-IQwcy
+
+    fuzz_unicode_show: disable atheris loader override
+
+commit 6fdb54496bffdaf832ae2861e1d6be0f85663422
+Merge: 8f694c5 3d5289f
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Tue May 12 19:54:20 2026 -0400
+
+    Merge branch 'master' into claude/review-github-actions-IQwcy
+
+commit 3d5289fbac0dcbaaa5940a5379ca63625464006a
+Merge: f6a3dc5 787ad3c
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Tue May 12 19:54:15 2026 -0400
+
+    Merge pull request #33 from org-ai-assisted/claude/strip-markup-harden
+
+    strip_markup: never propagate parser exceptions
+
+commit 787ad3cba8bd043621535c3bf663d31f4544be32
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 21:08:12 2026 +0000
+
+    strip_markup: never propagate parser exceptions
+
+    The strip_markup function is the project's HTML-sanitization
+    primitive. Its contract is: any string in -> safe string out,
+    never raise. The previous implementation called HTMLParser.feed()
+    unguarded and would propagate any parser exception to the caller.
+
+    CPython's html.parser.HTMLParser is documented as tolerant of
+    malformed input, but in practice raises uncaught exceptions on
+    some inputs - most notably AssertionError on '<![...' patterns
+    that route through _markupbase.parse_marked_section ->
+    _scan_name. Upstream fixed the HTMLParser-visible path in
+    gh-77057 (commit 76c0b01) by tightening the CDATA discriminator
+    from '<![' to '<![CDATA[', so only fully-formed CDATA reaches
+    parse_marked_section. The fix was backported to 3.11, 3.13, 3.14;
+    unpatched Pythons (notably OSS-Fuzz's 3.11.13 base image, which
+    is what surfaced this via fuzz_sanitize_string) still raise.
+
+    The underlying _markupbase.ParserBase._scan_name still does
+    'raise AssertionError(...)' on hostile input in every current
+    Python including 3.13/3.14 - it's just no longer reachable from
+    HTMLParser on patched versions.
+
+    Defense in depth: wrap each feed() call in try/except. On any
+    parser exception, fall back to the existing underscore-sanitize
+    strategy (markup metacharacters '<', '>', '&' replaced with '_').
+    The fallback was already present for the 'second pass differed
+    from first pass' branch; this extends it to cover parser
+    exceptions too. Both call sites of the underscore-sanitize logic
+    factor into a single _underscore_sanitize helper.
+
+    Three branches now share the helper:
+      1. first feed() raised -> sanitize untrusted_string
+      2. second feed() raised -> sanitize strip_one_string
+      3. second pass differed -> sanitize strip_one_string (existing)
+
+    Verified:
+    - all 4 existing unit tests pass unchanged
+    - mock-injected exception on first feed: returns underscore-
+      sanitized original input, no exception propagates
+    - mock-injected exception on second feed: returns underscore-
+      sanitized first-pass result, no exception propagates
+    - adversarial input '<![<<<<<<<<<<<<<<<<<' that crashes
+      fuzz_sanitize_string on unpatched Pythons no longer raises;
+      on patched 3.11.15 the HTMLParser path returns '' as before
+
+    Refs: https://github.com/python/cpython/issues/77057
+
+commit 8f694c59bce013a2f5c45189f1fd375a89b8fedf
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 20:19:19 2026 +0000
+
+    local-python-checks: drop paths filter, always run lint
+
+    The 13-entry paths filter went out of date - the workflow filename
+    reference was still '.github/workflows/lint.yml' from before the
+    G-A-005 three-prefix rename to 'local-python-checks.yml'. A filter
+    that requires editing every time a CLI utility, Python package, or
+    debian/* file is added/renamed is fragile; missed entries silently
+    skip lint on PRs they should cover.
+
+    helper-scripts is ~100% Python; the filter mostly excluded top-level
+    changelog edits. The lint job is fast (10-min timeout, usually <5
+    min). Drop the filter so lint always runs on push(master) and
+    pull_request(master).
+
+commit 8485f860ec105a60a35aae79c04a53d1bb6c277a
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 19:58:35 2026 +0000
+
+    unicode_show: fold display_name onto single line (black)
+
+    Black wants the conditional assignment on one line because it fits
+    within the 79-char line limit configured in pyproject.toml.
+
+commit 6e0c327e27506259f969c7bb7e94ddc4fd7890be
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 19:56:39 2026 +0000
+
+    unicode_show: extract display_name temp var (W1405 + 3.11)
+
+    Single-quoting the nested literal made Python 3.11 happy but
+    tripped pylint W1405 (inconsistent-quotes), because the file
+    otherwise uses double quotes throughout.
+
+    Extract the conditional 'stdisplay(filename) if filename else
+    <stdin>' to a display_name temp var before each f-string. That:
+      - keeps double-quote consistency (no W1405)
+      - keeps the f-string flat (no nested same-quote literal -> 3.11 OK)
+      - is more readable than the original inline-conditional form
+
+commit 5e1755c560ddf06b2aa979ff7bba6c751cd69656
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 19:54:53 2026 +0000
+
+    unicode_show: rewrite Python 3.12-only f-strings for 3.11
+
+    Root cause of fuzz_unicode_show ModuleNotFoundError: lines 106 and
+    166 used PEP 701 same-quote-style nested strings inside f-string
+    expressions:
+
+        f"{stdisplay(filename, sgr=-1) if filename else "<stdin>"}:..."
+
+    Python 3.12+ accepts this; Python 3.11 (which OSS-Fuzz's
+    base-builder-python image ships) rejects it as SyntaxError. PyInstaller
+    silently skips submodules it can't parse, so unicode_show.unicode_show
+    was never added to the frozen bundle - producing the runtime
+
+        ModuleNotFoundError: No module named 'unicode_show.unicode_show'
+
+    inside the fuzz_unicode_show binary. The two prior commits in this PR
+    (loader-override-off, then instrument_all) chased an atheris red
+    herring; the harness was never the problem.
+
+    Fix: switch the inner literals to single quotes so the f-strings parse
+    on 3.11 as well. Behavior is identical. Also reverts the harness to
+    the same shape as the three sibling fuzz harnesses.
+
+commit a262744331bb5ec9c7ecfb3765e820bf14ca3591
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 19:49:57 2026 +0000
+
+    fuzz_unicode_show: switch to runtime instrument_all()
+
+    The previous attempt (enable_loader_override=False) still failed
+    in CI - PyInstaller built the binary, but at runtime the bundled
+    fuzzer raised:
+
+        ModuleNotFoundError: No module named 'unicode_show.unicode_show'
+
+    Root cause: unicode_show.unicode_show uniquely does a cross-package
+    absolute import (from stdisplay.stdisplay import stdisplay). The
+    three sibling fuzz targets either only touch stdlib (stdisplay) or
+    use intra-package relative imports (sanitize_string, strip_markup).
+    Wrapping the import in 'with atheris.instrument_imports(...)'
+    confuses PyInstaller's static submodule discovery for this one case
+    and the submodule never makes it into the frozen bundle.
+
+    atheris.instrument_all(), called from main() after imports have
+    happened normally outside the context manager, is the documented
+    alternative for cases where the import-time instrumentation can't
+    handle the import shape. PyInstaller now sees the import via plain
+    static analysis.
+
+commit e51f4bf39649104c735b473969a4ef56e47f2b42
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 19:45:16 2026 +0000
+
+    local-python-fuzz: enable pull_request + schedule triggers
+
+    The workflow_dispatch-only gating was a placeholder until the
+    ClusterFuzzLite + atheris build pipeline was verified green at
+    least once. With the unicode_show loader-override fix in the
+    parent commit, all four harnesses are expected to build.
+
+    Enabling pull_request keeps the cost bounded via the paths filter
+    (only runs when fuzz infra, harness, or fuzzed packages change)
+    and gives CI feedback on the unicode_show fix itself, since
+    workflow_dispatch isn't reachable via the MCP tooling that drives
+    the PR.
+
+    Also updates the paths-filter reference from the old
+    '.github/workflows/fuzz.yml' name to the current
+    'local-python-fuzz.yml' (three-prefix convention from
+    G-A-005).
+
+commit 03b135471cfbf5cddc3de8fdf4897a0086edc4a4
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 19:43:42 2026 +0000
+
+    fuzz_unicode_show: disable atheris loader override
+
+    The unicode_show.unicode_show submodule transitively imports
+    stdisplay.stdisplay. Under PyInstaller (compile_python_fuzzer),
+    atheris' default import loader override raises:
+
+        ModuleNotFoundError: No module named 'unicode_show.unicode_show'
+
+    The atheris warning that precedes the failure explicitly suggests
+    enable_loader_override=False as the escape hatch for this case.
+    The three sibling harnesses do not hit the same path because they
+    import only one layer deep.
+
+commit f6a3dc5f908b8a75c7337955bb91d2b1871fe965
+Merge: 4d076aa 0a8866f
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Tue May 12 15:29:05 2026 -0400
+
+    Merge pull request #31 from org-ai-assisted/claude/review-github-actions-IQwcy
+
+    workflow triggers: normalize pull_request to branches: [master]
+
+commit 0a8866fddf4f7886031c17c625397681ec24ec23
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 19:25:56 2026 +0000
+
+    workflow triggers: normalize pull_request to branches: [master]
+
+    Propagate dmf canonical updates for consumer-claude-code.yml and
+    consumer-codex-review.yml: bare `pull_request:` ->
+    `pull_request: branches: [master]`. Matches the byte-identical
+    canonical in
+    developer-meta-files/consumer-templates/.github/workflows/.
+
+    Practical impact: PRs targeting feature branches no longer fire
+    the AI reviews. The org's typical workflow (feature-branch ->
+    master PR) is unaffected.
+
+commit 4d076aa64cabd32729336b46057aae9e9c85c018
+Merge: bd57547 ef4a3a8
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Tue May 12 13:48:38 2026 -0400
+
+    Merge pull request #30 from org-ai-assisted/claude/review-github-actions-IQwcy
+
+    scorecard: remove consumer-scorecard.yml (org-wide opt-out)
+
+commit ef4a3a87e6f14df30cff6ba924163903dee4fd6d
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 17:45:59 2026 +0000
+
+    scorecard: remove consumer-scorecard.yml (org-wide opt-out)
+
+    Per the consumer-template architecture's opt-in-by-file-presence
+    rule, deleting a consumer-*.yml is the opt-out signal:
+    pkg_update_consumer_workflows refreshes only files that already
+    exist on the consumer side; the next propagation pass will not
+    re-create this.
+
+    Org-wide policy: Scorecard's value-to-noise ratio is low (many
+    false positives, non-actionable signals). Keeping it only in
+    derivative-maker (the canonical baseline) where the org-wide
+    supply-chain signal is most useful.
+
+    Spec:
+    https://github.com/org-ai-assisted/developer-meta-files/blob/master/agents/github-actions-consumer-templates.md
+
+commit bd57547275343a8dbe14343e2e5614b5600b2197
+Merge: 338aeaa 0a9d316
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Tue May 12 12:47:22 2026 -0400
+
+    Merge pull request #29 from org-ai-assisted/claude/review-github-actions-IQwcy
+
+    workflows: rename legacy unprefixed to consumer- prefix
+
+commit 0a9d3161071671fdc4953d5d78f911ac73b9033e
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 16:44:39 2026 +0000
+
+    workflows: align consumer-*.yml byte-identical to dmf canonicals
+
+    Follow-up to the rename commit: in addition to renaming the
+    files, content must be byte-identical to the canonical wrappers
+    in developer-meta-files/consumer-templates/.github/workflows/.
+
+    Differences absorbed by this commit:
+
+    - scorecard.yml cron slot: per-repo allocation -> uniform
+      org-wide '0 6 * * 0' (the canonical's slot).
+    - Header comments: switched to the standard "Managed by
+      pkg_update_consumer_workflows" template so contributors see
+      the propagation contract.
+
+    User-facing `name:` fields unchanged.
+
+    Spec:
+    https://github.com/org-ai-assisted/developer-meta-files/blob/master/agents/github-actions-consumer-templates.md
+
+commit 3cc38841121f88e5729078b23378576cb6c6e0ae
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 16:42:52 2026 +0000
+
+    workflows: rename legacy unprefixed to consumer- prefix
+
+    Per consumer-template architecture (G-A-005, three-prefix
+    convention): wrappers around developer-meta-files reusables
+    carry the `consumer-` prefix. This is the bulk rollout of the
+    prefix to this repo's universal wrappers.
+
+    Each file is byte-identical to its corresponding canonical in
+    developer-meta-files/consumer-templates/.github/workflows/.
+
+    User-facing `name:` fields unchanged. cron slots converge on
+    the org-wide singleton (`0 6 * * 0` for Scorecard) per spec
+    "Scheduling in byte-identical templates" - GitHub queue
+    serializes; Scorecard's low value-to-noise ratio makes that
+    contention acceptable.
+
+    Spec:
+    https://github.com/org-ai-assisted/developer-meta-files/blob/master/agents/github-actions-consumer-templates.md
+
+commit 338aeaad5edddc9b0cde328106d4565cbbcd5b42
+Merge: 3b0dfe5 38463b1
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Tue May 12 12:33:27 2026 -0400
+
+    Merge pull request #28 from org-ai-assisted/claude/review-github-actions-IQwcy
+
+    codeql: migrate to consumer-codeql-python wrapper
+
+commit 38463b18c024864a50f27014e93d9e7bd563c9ae
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 16:19:46 2026 +0000
+
+    workflows: rename lint+fuzz to local- prefix
+
+    Per consumer-template architecture: workflows that live only in
+    one repo carry the `local-` prefix. Two renames:
+
+    - lint.yml -> local-python-checks.yml
+      (more accurate - the workflow runs both lint AND the Python
+      test suite via run-tests; 'lint' was understating its scope)
+    - fuzz.yml -> local-python-fuzz.yml
+      (language qualifier - this repo also ships bash; 'fuzz' alone
+      doesn't disambiguate)
+
+    User-facing `name:` fields unchanged.
+
+    Spec:
+    https://github.com/org-ai-assisted/developer-meta-files/blob/master/agents/github-actions-consumer-templates.md
+
+commit 2d51ff781d48c5ee59f161057d947905aeb6feef
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 15:59:02 2026 +0000
+
+    codeql: migrate to consumer-codeql-python wrapper
+
+    Per dmf #69 (reusable-codeql.yml hard refactor). The old
+    codeql.yml had a single python job with no per-repo state
+    (no prepare-command, no build-command); the migration is just
+    a rename to the byte-identical consumer-codeql-python.yml.
+
+    helper-scripts has no genmkfile-tagged Python sources, so no
+    prepare-command is needed. No .github/dm-consumer.yml
+    codeql-python section either - the reusable soft-skips the
+    prepare step when the section is absent.
+
+commit 3b0dfe5d19c7a46dcee9f0c99fd24db88ded8fef
+Merge: fb1aa38 565869b
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Tue May 12 11:33:56 2026 -0400
+
+    Merge pull request #27 from org-ai-assisted/claude/review-github-actions-IQwcy
+
+    coverity: migrate to consumer-template architecture
+
+commit 565869bbaf37f7379efe03ff6f5ad50b49f41e3f
+Author: Claude <noreply@anthropic.com>
+Date:   Tue May 12 15:21:22 2026 +0000
+
+    coverity: migrate to consumer-template architecture
+
+    Per dmf #67 (reusable refactor) + #68 (deadlock hotfix):
+
+    - New: .github/dm-consumer.yml with coverity.project-name +
+      canonical-repos.
+    - Renamed: .github/workflows/coverity.yml -> consumer-coverity.yml,
+      byte-identical to dmf canonical (no `with:`, secrets-only).
+
+    Behavior changes:
+
+    - Cron slot moves from '0 6 * * 0' (Sunday 06:00) to '0 4 * * 5'
+      (Friday 04:00) - the org-wide singleton slot in the canonical
+      template.
+    - push: branches: [master] trigger dropped (canonical only has
+      push: tags: ['*']). Master pushes no longer auto-trigger
+      Coverity scans; tag pushes still do, plus weekly Friday cron
+      + workflow_dispatch.
+
+commit fb1aa38347e4dad5e6ddddbedb789b694b3c7ce5
+Merge: ddc5597 cdaa224
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 12 08:13:11 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit cdaa2242c602c44be6cbcbb229bdb69558323c5c
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Mon May 11 16:56:02 2026 -0400
+
+    workflows: workflow_dispatch + PR-keyed concurrency + lint.yml branches filter (#26)
+
+    ## Changes
+
+    Three normalization changes in `.github/workflows/`:
+
+    1. **`workflow_dispatch:` added** to `claude-code.yml`, `codeql.yml`,
+    `lint.yml` (the three consumer wrappers that lacked it).
+    2. **PR-number-keyed concurrency group** in `claude-code.yml` and
+    `codex-review.yml`. Plain `${{ github.workflow }}-${{ github.ref }}` is
+    wrong for `issue_comment` / `pull_request_review_comment` events because
+    `github.ref` resolves to the default branch on those events — so
+    unrelated PRs' comment-triggered runs queue into the same group. New key
+    uses `pull_request.number || issue.number || ref` for `claude-code.yml`,
+    `pull_request.number || ref` for `codex-review.yml`. Matches dmf #54.
+    3. **`lint.yml` push and pull_request: `branches: [master]`** added
+    alongside the existing paths filter. The org convention is `push:
+    branches: [master] + pull_request: branches: [master]`; lint.yml was the
+    only consumer in the org without it.
+
+    ## Why
+
+    - `workflow_dispatch:` consistency: lets admins manually re-run any
+    workflow without an empty commit.
+    - Concurrency fix is the CI-time lever: with the wrong key, 5 pushes to
+    a PR fire 5 full claude-code runs that all complete (no cancellation).
+    With the PR-keyed group, the first 4 cancel on each new push; only the
+    tip commit's run completes.
+    - `lint.yml` branches filter: avoids running paths-filtered lint on
+    feature-branch pushes that aren't yet PRed against master.
+
+    ## Mandatory Checklist
+
+    - [x] Legal agreements accepted. [Terms of
+    Service](https://www.kicksecure.com/wiki/Terms_of_Service), [Privacy
+    Policy](https://www.kicksecure.com/wiki/Privacy_Policy), [Cookie
+    Policy](https://www.kicksecure.com/wiki/Cookie_Policy), [E-Sign
+    Consent](https://www.kicksecure.com/wiki/E-Sign_Consent),
+    [DMCA](https://www.kicksecure.com/wiki/DMCA),
+    [Imprint](https://www.kicksecure.com/wiki/Imprint)
+
+    ## Optional Checklist
+
+    - [x] I have tested it locally (YAML parses, trigger shapes intact).
+
+    Fixes #
+
+    https://claude.ai/code/session_018rti4CCm2SQ3PWKa7jRt7p
+
+    ---
+    _Generated by [Claude
+    Code](https://claude.ai/code/session_018rti4CCm2SQ3PWKa7jRt7p)_
+
+    Co-authored-by: Claude <noreply@anthropic.com>
+
+commit ddc5597492c002e20b97883adbf937bef1861236
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 11 20:26:25 2026 +0000
+
+    bumped changelog version
+
 commit dfb1fea751d6e82190d723d7dd35702f26640fff
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 11 16:26:23 2026 -0400
