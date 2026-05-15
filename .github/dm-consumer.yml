@@ -1,0 +1,19 @@
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Per-repo parameter overrides. Read at workflow runtime by the
+## reusable workflows in developer-meta-files. Top-level keys
+## mirror the consumer-template basename without the
+## 'consumer-' prefix.
+##
+## Spec:
+## https://github.com/org-ai-assisted/developer-meta-files/blob/master/agents/github-actions-consumer-templates.md
+
+coverity:
+  ## scan.coverity.com project name. The URL renders the slash as
+  ## a dash for display ('/projects/Kicksecure-helper-scripts')
+  ## but the API form-parameter requires the actual slash.
+  project-name:    "Kicksecure/helper-scripts"
+  canonical-repos: "Kicksecure/helper-scripts,org-ai-assisted/helper-scripts"

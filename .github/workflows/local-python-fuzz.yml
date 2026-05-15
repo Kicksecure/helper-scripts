@@ -17,24 +17,21 @@
 name: Fuzz
 
 on:
-  ## Manual-only until the ClusterFuzzLite build setup is verified
-  ## green at least once. Once that lands, uncomment the pull_request
-  ## and schedule blocks.
   workflow_dispatch:
     inputs:
       fuzz_seconds:
         description: 'Per-fuzzer time budget in seconds (batch job)'
         required: false
         default: '600'
-  ## pull_request:
-  ##   branches: [master]
-  ##   paths:
-  ##     - 'usr/lib/python3/dist-packages/**/*.py'
-  ##     - 'fuzz/**'
-  ##     - '.clusterfuzzlite/**'
-  ##     - '.github/workflows/fuzz.yml'
-  ## schedule:
-  ##   - cron: '30 3 * * *'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'usr/lib/python3/dist-packages/**/*.py'
+      - 'fuzz/**'
+      - '.clusterfuzzlite/**'
+      - '.github/workflows/local-python-fuzz.yml'
+  schedule:
+    - cron: '30 3 * * *'
 
 ## Default-deny at workflow level; every job that needs more
 ## redeclares its full set. Job-level permissions REPLACE
@@ -86,6 +83,34 @@ jobs:
           sanitizer: address
           output-sarif: true
 
+      - name: Checkout developer-meta-files (summary script)
+        if: always()
+        ## Needed for ci/step-summary-emit.sh. helper-scripts does
+        ## not vendor a copy; checkout @master keeps the org's
+        ## single source of truth.
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: org-ai-assisted/developer-meta-files
+          ref: master
+          path: .dmf
+          persist-credentials: false
+
+      - name: Emit step summary
+        if: always()
+        ## Minimal panel for the PR Checks tab. Crash details / SARIF
+        ## live in the run_fuzzers step's outputs. Template values
+        ## routed through env: per developer-meta-files#87 (avoid
+        ## CodeQL inline-${{...}}-in-run: flag).
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          ./.dmf/ci/step-summary-emit.sh \
+            --tool 'ClusterFuzzLite (code-change)' \
+            --column-header field \
+            --row "outcome=${JOB_STATUS}" \
+            --row "mode=code-change" \
+            --row "fuzz-seconds=60"
+
   batch:
     name: ClusterFuzzLite batch fuzz
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -123,3 +148,32 @@ jobs:
           mode: 'batch'
           sanitizer: address
           output-sarif: true
+
+      - name: Checkout developer-meta-files (summary script)
+        if: always()
+        ## Needed for ci/step-summary-emit.sh. See same step in the
+        ## 'pr' job above for rationale.
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: org-ai-assisted/developer-meta-files
+          ref: master
+          path: .dmf
+          persist-credentials: false
+
+      - name: Emit step summary
+        if: always()
+        ## Same minimal pattern as the 'pr' job above. The
+        ## fuzz_seconds env value comes from the workflow_dispatch
+        ## input on manual runs, defaulting to '600' otherwise.
+        ## Template values routed through env: per
+        ## developer-meta-files#87.
+        env:
+          JOB_STATUS: ${{ job.status }}
+          FUZZ_SECONDS: ${{ github.event.inputs.fuzz_seconds || '600' }}
+        run: |
+          ./.dmf/ci/step-summary-emit.sh \
+            --tool 'ClusterFuzzLite (batch)' \
+            --column-header field \
+            --row "outcome=${JOB_STATUS}" \
+            --row "mode=batch" \
+            --row "fuzz-seconds=${FUZZ_SECONDS}"
