@@ -71,3 +71,32 @@ jobs:
         run: ci/lint-clone-trojan-source.sh
       - name: Run tests
         run: ci/lint-tests.sh
+
+      - name: Checkout developer-meta-files (summary script)
+        if: always()
+        ## Needed for ci/step-summary-emit.sh. helper-scripts does
+        ## not vendor a copy; checkout @master keeps the org's
+        ## single source of truth. Matches the pattern in
+        ## local-python-fuzz.yml.
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: org-ai-assisted/developer-meta-files
+          ref: master
+          path: .dmf
+          persist-credentials: false
+
+      - name: Emit step summary
+        if: always()
+        ## One panel per matrix leg (distinct check name in the
+        ## Actions UI). matrix.image is a static workflow literal,
+        ## but routed through env: anyway to keep the convention
+        ## uniform (matches developer-meta-files#87).
+        env:
+          JOB_STATUS: ${{ job.status }}
+          IMAGE: ${{ matrix.image }}
+        run: |
+          ./.dmf/ci/step-summary-emit.sh \
+            --tool 'Lint scripts' \
+            --column-header field \
+            --row "outcome=${JOB_STATUS}" \
+            --row "image=${IMAGE}"
