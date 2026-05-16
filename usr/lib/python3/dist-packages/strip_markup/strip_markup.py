@@ -53,7 +53,8 @@ def main() -> int:
         if len(arg_list) > 1:
             print_usage()
             return 1
-        untrusted_string = arg_list[0]
+        if len(arg_list) == 1:
+            untrusted_string = arg_list[0]
 
     ## Read untrusted_string from stdin if needed
     if untrusted_string is None:
