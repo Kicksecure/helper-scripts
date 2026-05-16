@@ -436,6 +436,21 @@ string_bsh_tests() {
   run_test "one_line: accepts normal text" check_is_not_empty_and_only_one_line 0 test_value "Hello, World!"
   run_test "one_line: accepts text with surrounding spaces" check_is_not_empty_and_only_one_line 0 test_value "  Hello  "
 
+  ## check_valid_linux_user_account_name tests
+  ## Regex: ^[a-zA-Z_][a-zA-Z0-9_-]*\$?$ (SYS_NAME_REGEX)
+  check_valid_linux_user_account_name "user" || error "linux_user_account_name: 'user' should be valid"
+  check_valid_linux_user_account_name "_user" || error "linux_user_account_name: '_user' should be valid"
+  check_valid_linux_user_account_name "user123" || error "linux_user_account_name: 'user123' should be valid"
+  check_valid_linux_user_account_name "user-name" || error "linux_user_account_name: 'user-name' should be valid"
+  check_valid_linux_user_account_name "_sysuser\$" || error "linux_user_account_name: '_sysuser\$' should be valid"
+
+  check_valid_linux_user_account_name "" && error "linux_user_account_name: empty string should be invalid"
+  check_valid_linux_user_account_name "1user" && error "linux_user_account_name: '1user' should be invalid"
+  check_valid_linux_user_account_name "-user" && error "linux_user_account_name: '-user' should be invalid"
+  check_valid_linux_user_account_name "user name" && error "linux_user_account_name: 'user name' should be invalid"
+  check_valid_linux_user_account_name "user@host" && error "linux_user_account_name: 'user@host' should be invalid"
+  check_valid_linux_user_account_name "user\$bad" && error "linux_user_account_name: 'user\$bad' should be invalid"
+
   run_test "time: 0" gpg_bash_lib_function_displaytime 0 test_value 0
   run_test "time: 500" gpg_bash_lib_function_displaytime 0 test_value 500
   run_test "time: 10000" gpg_bash_lib_function_displaytime 0 test_value 10000
