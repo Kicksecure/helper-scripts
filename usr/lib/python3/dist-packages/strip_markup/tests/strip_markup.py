@@ -413,3 +413,31 @@ input.
         """
 
         self._test_malicious_markup_strings(strip_markup_main, self.argv0)
+
+    def test_bare_separator(self) -> None:
+        """
+        Regression test: 'strip-markup --' with no positional argument
+        following the separator must fall back to reading stdin, not
+        crash with IndexError on arg_list[0].
+        """
+
+        ## With stdin available, '--' alone reads from stdin.
+        self._test_stdin(
+            main_func=strip_markup_main,
+            argv0=self.argv0,
+            stdout_string="hello",
+            stderr_string="",
+            args=["--"],
+            stdin_string="hello",
+        )
+
+        ## With stdin closed (mock.patch.object stdin to None), '--' alone
+        ## exits cleanly with no output.
+        self._test_args(
+            main_func=strip_markup_main,
+            argv0=self.argv0,
+            stdout_string="",
+            stderr_string="",
+            exit_code=0,
+            args=["--"],
+        )
