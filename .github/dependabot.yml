@@ -1,30 +1,42 @@
 ---
+## propagation: manual
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 ## AI-Assisted
 
-## Managed by pkg_update_consumer_workflows / pkg_install_dependabot_yml.
-## Byte-identical across consumers; this file is `cp`-ed from
+## Hand-maintained: this repo opts out of byte-identical
+## propagation from
 ## developer-meta-files/consumer-templates/.github/dependabot.yml.
-## DO NOT hand-edit this file in the consumer repo - changes
-## will be overwritten on the next propagation pass.
+## The "## propagation: manual" marker above is recognized by
+## dependabot_yml_is_manual in dm-packaging-helper-script;
+## pkg_update_consumer_workflows and pkg_install_dependabot_yml
+## both honour it and skip this file.
+##
+## Why opted out: this repo carries a Dockerfile at
+## .clusterfuzzlite/Dockerfile (not at /). The canonical is now
+## github-actions-only (a previous canonical's
+## `package-ecosystem: docker` block targeted `directory: "/"`
+## which broke every consumer without /Dockerfile and would not
+## have matched .clusterfuzzlite/Dockerfile here anyway). To
+## keep Dependabot coverage for the docker base-image pin in
+## .clusterfuzzlite/Dockerfile, this file adds a docker block
+## scoped to `directory: ".clusterfuzzlite"`.
+##
+## Invariant: the `github-actions` updates entry below MUST stay
+## byte-identical to the one in
+## developer-meta-files/consumer-templates/.github/dependabot.yml
+## so org-wide action-bump uniformity is preserved. Only the
+## docker block and the marker line diverge from the canonical.
 ##
 ## Architecture docs:
 ## https://github.com/org-ai-assisted/developer-meta-files/blob/master/agents/github-actions-consumer-templates.md
-##
-## Carries BOTH github-actions and docker package-ecosystems even
-## in repos without Dockerfiles. The docker ecosystem only watches
-## Dockerfiles in well-known locations; in repos that have none
-## the block is a harmless no-op (no PRs opened). The uniform
-## shape across the org keeps propagation byte-identical with no
-## per-repo divergence.
+## (see "Per-repo manual dependabot.yml" section).
 ##
 ## Note: Dependabot does NOT auto-bump container digests inside
-## workflow 'image:' lines, only Dockerfile 'FROM' lines. Workflow
-## container pins (debian:trixie@sha256:... in lint.yml etc.) need
-## manual re-pinning; see agents/github-actions-security.md for
-## the procedure.
+## workflow 'image:' / 'container:' lines, only Dockerfile 'FROM'
+## lines. Workflow container pins need manual re-pinning; see
+## agents/github-actions-security.md for the procedure.
 
 version: 2
 updates:
@@ -45,7 +57,7 @@ updates:
           - "*"
 
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: ".clusterfuzzlite"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 1
