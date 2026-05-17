@@ -5,38 +5,9 @@
 
 ## AI-Assisted
 
-## Hand-maintained: this repo opts out of byte-identical
-## propagation from
-## developer-meta-files/consumer-templates/.github/dependabot.yml.
-## The "## propagation: manual" marker above is recognized by
-## dependabot_yml_is_manual in dm-packaging-helper-script;
-## pkg_update_consumer_workflows and pkg_install_dependabot_yml
-## both honour it and skip this file.
-##
-## Why opted out: this repo carries a Dockerfile at
-## .clusterfuzzlite/Dockerfile (not at /). The canonical is now
-## github-actions-only (a previous canonical's
-## `package-ecosystem: docker` block targeted `directory: "/"`
-## which broke every consumer without /Dockerfile and would not
-## have matched .clusterfuzzlite/Dockerfile here anyway). To
-## keep Dependabot coverage for the docker base-image pin in
-## .clusterfuzzlite/Dockerfile, this file adds a docker block
-## scoped to `directory: ".clusterfuzzlite"`.
-##
-## Invariant: the `github-actions` updates entry below MUST stay
-## byte-identical to the one in
-## developer-meta-files/consumer-templates/.github/dependabot.yml
-## so org-wide action-bump uniformity is preserved. Only the
-## docker block and the marker line diverge from the canonical.
-##
-## Architecture docs:
-## https://github.com/org-ai-assisted/developer-meta-files/blob/master/agents/github-actions-consumer-templates.md
-## (see "Per-repo manual dependabot.yml" section).
-##
-## Note: Dependabot does NOT auto-bump container digests inside
-## workflow 'image:' / 'container:' lines, only Dockerfile 'FROM'
-## lines. Workflow container pins need manual re-pinning; see
-## agents/github-actions-security.md for the procedure.
+## Hand-maintained. Dockerfile lives at .clusterfuzzlite/Dockerfile.
+## See developer-meta-files/agents/github-actions-consumer-templates.md
+## "Per-repo manual dependabot.yml".
 
 version: 2
 updates:
@@ -48,9 +19,6 @@ updates:
     commit-message:
       prefix: "ci(deps)"
       include: scope
-    ## Bundle every action update into a single PR per cycle.
-    ## Without this, dependabot opens one PR per action and
-    ## 'open-pull-requests-limit: 1' silently drops the rest.
     groups:
       github-actions:
         patterns:
