@@ -220,8 +220,6 @@ log_run() {
     return 0
   fi
 
-  ## TODO: Still an issue? CI expects no output from root_cmd() which calls log_run().
-
   if test "${run_background:-}" = "1"; then
     log "${level}" "Background command starting: $ ${command_without_extraneous_spaces} &"
     "${@}" &
@@ -229,8 +227,7 @@ log_run() {
     disown "${background_pid}" || true
   else
     log "${level}" "Command executing: $ ${command_without_extraneous_spaces}"
-    ## TODO: '|| return 1' needed?
-    "${@}" || return 1
+    "${@}"
   fi
 }
 
