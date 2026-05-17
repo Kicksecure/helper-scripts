@@ -1,0 +1,485 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Test script for grep-find-unicode-wrapper
+## Tests for Unicode bypass vulnerabilities by checking that various
+## suspicious characters are properly detected.
+##
+## Bug found: Check 3 used bash $'\uXXXX' expansion which requires a
+## UTF-8 locale at parse time. In non-UTF-8 locales (LANG=C or LANG=),
+## the \u sequences are passed through literally, creating a character
+## class of [0-9A-Fu\] that causes massive false positives.
+## Fix: Use raw \x byte sequences instead of \u escapes.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+test_dir=""
+pass_count=0
+fail_count=0
+skip_count=0
+
+source /usr/libexec/helper-scripts/get_colors.sh
+source /usr/libexec/helper-scripts/safe-rm-maybe.bsh
+source /usr/libexec/helper-scripts/has.sh
+
+cleanup() {
+  if [ -n "$test_dir" ] && [ -d "$test_dir" ]; then
+    rm-safe-maybe --recursive --force -- "$test_dir"
+  fi
+}
+trap cleanup EXIT
+
+test_dir="$(mktemp --directory)"
+
+## grep-find-unicode-wrapper is similar to grep.
+## - Exit code 0: if found.
+## - Non-zero exit code: if not found.
+has grep-find-unicode-wrapper
+has write-long-line-with-unicode
+
+expect_detected() {
+  local description="$1"
+  local file_name="$2"
+
+  if grep-find-unicode-wrapper "$file_name" &>/dev/null ; then
+    printf "%s\n" "${green}PASS${nocolor}: Detected:     $description"
+    pass_count=$(( pass_count + 1 ))
+  else
+    printf "%s\n" "${red}FAIL${nocolor}: NOT detected: $description" >&2
+    fail_count=$(( fail_count + 1 ))
+  fi
+}
+
+expect_clean() {
+  local description="$1"
+  local file_name="$2"
+
+  if ! grep-find-unicode-wrapper "$file_name" &>/dev/null ; then
+    printf "%s\n" "${green}PASS${nocolor}: Clean:        $description"
+    pass_count=$(( pass_count + 1 ))
+  else
+    printf "%s\n" "${red}FAIL${nocolor}: False positive: $description" >&2
+    fail_count=$(( fail_count + 1 ))
+  fi
+}
+
+write_file() {
+  local name="$1"
+  local content="$2"
+  local file_name="$test_dir/$name"
+  printf '%s' "$content" | tee -- "$file_name" &>/dev/null
+  printf '%s' "$file_name"
+}
+
+write_file_binary() {
+  local name="$1"
+  shift
+  local file_name="$test_dir/$name"
+  printf "$@" | tee -- "$file_name" &>/dev/null
+  printf '%s' "$file_name"
+}
+
+printf '%s\n' "===== grep-find-unicode-wrapper bypass tests ====="
+printf '%s\n' ""
+
+## ===================================================================
+## Section 0: Check 3 locale bug validation
+## ===================================================================
+printf '%s\n' "--- Check 3 locale bug (\$'\\u' expansion) ---"
+
+## Verify whether $'\uXXXX' expands to UTF-8 in the current locale.
+## If it doesn't, check 3 in the wrapper would be broken with the old pattern.
+check3_locale_ok="false"
+check3_test_byte="$(printf '%s' $'\u061C' | od --address-radix=n --format=x1 | tr --delete ' \n')"
+if [ "$check3_test_byte" = "d89c" ]; then
+  check3_locale_ok="true"
+  printf '%s\n' "${green}PASS${nocolor}: \$'\\u061C' expands to UTF-8 bytes (d8 9c) - check 3 works in this locale"
+  pass_count=$(( pass_count + 1 ))
+else
+  printf '%s\n' "${yellow}WARN${nocolor}: \$'\\u061C' expands to literal '\\u061C' (got: $check3_test_byte) - check 3 would be broken with old pattern!"
+  printf '%s\n' "       Current locale: LANG='${LANG:-}' LC_ALL='${LC_ALL:-}'"
+  printf '%s\n' "       The old \$'\\u...' pattern becomes a character class of"
+  printf '%s\n' "       literal chars [0-9A-Fu\\] causing false positives on most files."
+  printf '%s\n' "       BiDi chars are still caught by checks 1+2 (non-ASCII byte detection)."
+  printf '%s\n' "       Fix: use \\x byte sequences instead of \\u escapes in the wrapper."
+  skip_count=$(( skip_count + 1 ))
+fi
+
+## Test the old $'\u...' pattern (before the fix) for false positives.
+## The $'\u...' expansion happens at bash parse time using the caller's locale,
+## NOT the LC_ALL=C set on the grep command. In non-UTF-8 locales, \u sequences
+## are passed through literally, creating a bracket expression containing ASCII
+## chars like digits, hex letters, 'u', and '\'. This causes false positives
+## on nearly any file with digits or hex characters.
+## The wrapper has been fixed to use \x byte sequences. These tests document
+## the old behavior - false positives in non-UTF-8 locales are expected.
+old_check3_pattern=$'[\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]'
+
+check3_false_positive_test() {
+  local description="$1"
+  local file_name="$2"
+  if LC_ALL=C grep --files-with-matches --line-number --binary-files=text "$old_check3_pattern" "$file_name" &>/dev/null; then
+    if [ "$check3_locale_ok" = "true" ]; then
+      ## UTF-8 locale: old pattern should work, so this is a real failure.
+      printf '%s\n' "${red}FAIL${nocolor}: Old check 3 false positive: $description" >&2
+      fail_count=$(( fail_count + 1 ))
+    else
+      ## Non-UTF-8 locale: false positive from old pattern is expected.
+      printf '%s\n' "${yellow}WARN${nocolor}: Old check 3 false positive (expected, locale bug): $description"
+      skip_count=$(( skip_count + 1 ))
+    fi
+  else
+    printf '%s\n' "${green}PASS${nocolor}: Old check 3 clean:      $description"
+    pass_count=$(( pass_count + 1 ))
+  fi
+}
+
+printf '%s\n' ""
+printf '%s\n' "--- Old check 3 false positive tests (\$'\\u' pattern before fix) ---"
+
+f="$(write_file "check3_digits.txt" "x = 12345")"
+check3_false_positive_test "File with digits" "$f"
+
+f="$(write_file "check3_hex.txt" "color = 0xDEADBEEF")"
+check3_false_positive_test "File with hex values" "$f"
+
+f="$(write_file "check3_code.txt" "for (int i = 0; i < 100; i++) { printf(\"%d\", i); }")"
+check3_false_positive_test "File with typical C code" "$f"
+
+f="$(write_file "check3_uuid.txt" "uuid = \"550e8400-e29b-41d4-a716-446655440000\"")"
+check3_false_positive_test "File with UUID" "$f"
+
+f="$(write_file "check3_backslash.txt" "path = C:\\\\Users\\\\test")"
+check3_false_positive_test "File with backslashes" "$f"
+
+f="$(write_file "check3_plain.txt" "Hello World")"
+check3_false_positive_test "File with plain text (no digits)" "$f"
+
+## ===================================================================
+## Section 1: Clean files (should NOT be detected)
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- Clean files (no false positives expected) ---"
+
+f="$(write_file "clean_ascii.txt" "Hello, World!")"
+expect_clean "Plain ASCII text" "$f"
+
+f="$(write_file "clean_with_tab.txt" "$(printf 'col1\tcol2')")"
+expect_clean "ASCII with TAB (0x09)" "$f"
+
+f="$(write_file_binary "clean_with_newline.txt" 'line1\nline2\n')"
+expect_clean "ASCII with LF (0x0A)" "$f"
+
+f="$(write_file "clean_printable.txt" ' !"#$%&'\''()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~')"
+expect_clean "All printable ASCII characters" "$f"
+
+f="$(write_file "empty.txt" "")"
+expect_clean "Empty file" "$f"
+
+## ===================================================================
+## Section 2: ASCII control characters (check 4)
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- ASCII control characters ---"
+
+f="$(write_file_binary "null.txt" '\x00')"
+expect_detected "NULL byte (0x00)" "$f"
+
+f="$(write_file_binary "soh.txt" '\x01')"
+expect_detected "SOH (0x01)" "$f"
+
+f="$(write_file_binary "stx.txt" '\x02')"
+expect_detected "STX (0x02)" "$f"
+
+f="$(write_file_binary "bell.txt" '\x07')"
+expect_detected "BEL (0x07)" "$f"
+
+f="$(write_file_binary "backspace.txt" '\x08')"
+expect_detected "Backspace (0x08) - can overwrite displayed text" "$f"
+
+f="$(write_file_binary "vt.txt" '\x0B')"
+expect_detected "Vertical Tab (0x0B)" "$f"
+
+f="$(write_file_binary "ff.txt" '\x0C')"
+expect_detected "Form Feed (0x0C)" "$f"
+
+f="$(write_file_binary "cr.txt" '\x0D')"
+expect_detected "Carriage Return (0x0D) - can overwrite line content" "$f"
+
+f="$(write_file_binary "so.txt" '\x0E')"
+expect_detected "Shift Out (0x0E)" "$f"
+
+f="$(write_file_binary "si.txt" '\x0F')"
+expect_detected "Shift In (0x0F)" "$f"
+
+f="$(write_file_binary "escape.txt" '\x1B')"
+expect_detected "Escape (0x1B) - terminal escape sequences" "$f"
+
+f="$(write_file_binary "us.txt" '\x1F')"
+expect_detected "Unit Separator (0x1F)" "$f"
+
+f="$(write_file_binary "del.txt" '\x7F')"
+expect_detected "DEL (0x7F)" "$f"
+
+## ===================================================================
+## Section 3: BiDi / Trojan Source characters (CVE-2021-42574)
+## Using \x byte sequences to create test files reliably.
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- BiDi / Trojan Source characters (CVE-2021-42574) ---"
+
+## U+061C ARABIC LETTER MARK -> D8 9C
+f="$(write_file_binary "bidi_alm.txt" 'test\xD8\x9Ctext')"
+expect_detected "U+061C ARABIC LETTER MARK" "$f"
+
+## U+200E LEFT-TO-RIGHT MARK -> E2 80 8E
+f="$(write_file_binary "bidi_lrm.txt" 'test\xE2\x80\x8Etext')"
+expect_detected "U+200E LEFT-TO-RIGHT MARK" "$f"
+
+## U+200F RIGHT-TO-LEFT MARK -> E2 80 8F
+f="$(write_file_binary "bidi_rlm.txt" 'test\xE2\x80\x8Ftext')"
+expect_detected "U+200F RIGHT-TO-LEFT MARK" "$f"
+
+## U+202A LEFT-TO-RIGHT EMBEDDING -> E2 80 AA
+f="$(write_file_binary "bidi_lre.txt" 'test\xE2\x80\xAAtext')"
+expect_detected "U+202A LEFT-TO-RIGHT EMBEDDING" "$f"
+
+## U+202B RIGHT-TO-LEFT EMBEDDING -> E2 80 AB
+f="$(write_file_binary "bidi_rle.txt" 'test\xE2\x80\xABtext')"
+expect_detected "U+202B RIGHT-TO-LEFT EMBEDDING" "$f"
+
+## U+202C POP DIRECTIONAL FORMATTING -> E2 80 AC
+f="$(write_file_binary "bidi_pdf.txt" 'test\xE2\x80\xACtext')"
+expect_detected "U+202C POP DIRECTIONAL FORMATTING" "$f"
+
+## U+202D LEFT-TO-RIGHT OVERRIDE -> E2 80 AD
+f="$(write_file_binary "bidi_lro.txt" 'test\xE2\x80\xADtext')"
+expect_detected "U+202D LEFT-TO-RIGHT OVERRIDE" "$f"
+
+## U+202E RIGHT-TO-LEFT OVERRIDE -> E2 80 AE
+f="$(write_file_binary "bidi_rlo.txt" 'test\xE2\x80\xAEtext')"
+expect_detected "U+202E RIGHT-TO-LEFT OVERRIDE" "$f"
+
+## U+2066 LEFT-TO-RIGHT ISOLATE -> E2 81 A6
+f="$(write_file_binary "bidi_lri.txt" 'test\xE2\x81\xA6text')"
+expect_detected "U+2066 LEFT-TO-RIGHT ISOLATE" "$f"
+
+## U+2067 RIGHT-TO-LEFT ISOLATE -> E2 81 A7
+f="$(write_file_binary "bidi_rli.txt" 'test\xE2\x81\xA7text')"
+expect_detected "U+2067 RIGHT-TO-LEFT ISOLATE" "$f"
+
+## U+2068 FIRST STRONG ISOLATE -> E2 81 A8
+f="$(write_file_binary "bidi_fsi.txt" 'test\xE2\x81\xA8text')"
+expect_detected "U+2068 FIRST STRONG ISOLATE" "$f"
+
+## U+2069 POP DIRECTIONAL ISOLATE -> E2 81 A9
+f="$(write_file_binary "bidi_pdi.txt" 'test\xE2\x81\xA9text')"
+expect_detected "U+2069 POP DIRECTIONAL ISOLATE" "$f"
+
+## ===================================================================
+## Section 4: Invisible / zero-width Unicode characters
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- Invisible / zero-width Unicode characters ---"
+
+## U+200B ZERO WIDTH SPACE -> E2 80 8B
+f="$(write_file_binary "zwsp.txt" 'ab\xE2\x80\x8Bcd')"
+expect_detected "U+200B ZERO WIDTH SPACE" "$f"
+
+## U+200C ZERO WIDTH NON-JOINER -> E2 80 8C
+f="$(write_file_binary "zwnj.txt" 'ab\xE2\x80\x8Ccd')"
+expect_detected "U+200C ZERO WIDTH NON-JOINER" "$f"
+
+## U+200D ZERO WIDTH JOINER -> E2 80 8D
+f="$(write_file_binary "zwj.txt" 'ab\xE2\x80\x8Dcd')"
+expect_detected "U+200D ZERO WIDTH JOINER" "$f"
+
+## U+2060 WORD JOINER -> E2 81 A0
+f="$(write_file_binary "wj.txt" 'ab\xE2\x81\xA0cd')"
+expect_detected "U+2060 WORD JOINER" "$f"
+
+## U+FEFF BOM -> EF BB BF
+f="$(write_file_binary "bom.txt" '\xEF\xBB\xBFtext')"
+expect_detected "U+FEFF BOM / ZERO WIDTH NO-BREAK SPACE" "$f"
+
+## U+00AD SOFT HYPHEN -> C2 AD
+f="$(write_file_binary "soft_hyphen.txt" 'ab\xC2\xADcd')"
+expect_detected "U+00AD SOFT HYPHEN" "$f"
+
+## U+034F COMBINING GRAPHEME JOINER -> CD 8F
+f="$(write_file_binary "cgj.txt" 'ab\xCD\x8Fcd')"
+expect_detected "U+034F COMBINING GRAPHEME JOINER" "$f"
+
+## ===================================================================
+## Section 5: Homoglyph / confusable characters
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- Homoglyph attacks (visually similar to ASCII) ---"
+
+## U+0410 CYRILLIC A -> D0 90
+f="$(write_file_binary "cyrillic_a.txt" '\xD0\x90dmin')"
+expect_detected "U+0410 CYRILLIC CAPITAL A (looks like Latin A)" "$f"
+
+## U+043E CYRILLIC o -> D0 BE
+f="$(write_file_binary "cyrillic_o.txt" 'passw\xD0\xBErd')"
+expect_detected "U+043E CYRILLIC SMALL O (looks like Latin o)" "$f"
+
+## U+03BF GREEK OMICRON -> CE BF
+f="$(write_file_binary "greek_omicron.txt" 'passw\xCE\xBFrd')"
+expect_detected "U+03BF GREEK SMALL OMICRON (looks like Latin o)" "$f"
+
+## U+FF21 FULLWIDTH A -> EF BC A1
+f="$(write_file_binary "fullwidth_A.txt" '\xEF\xBC\xA1dmin')"
+expect_detected "U+FF21 FULLWIDTH LATIN CAPITAL A" "$f"
+
+## ===================================================================
+## Section 6: Special Unicode spaces and separators
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- Unicode whitespace / separators ---"
+
+## U+00A0 NO-BREAK SPACE -> C2 A0
+f="$(write_file_binary "nbsp.txt" 'a\xC2\xA0b')"
+expect_detected "U+00A0 NO-BREAK SPACE" "$f"
+
+## U+2002 EN SPACE -> E2 80 82
+f="$(write_file_binary "en_space.txt" 'a\xE2\x80\x82b')"
+expect_detected "U+2002 EN SPACE" "$f"
+
+## U+2003 EM SPACE -> E2 80 83
+f="$(write_file_binary "em_space.txt" 'a\xE2\x80\x83b')"
+expect_detected "U+2003 EM SPACE" "$f"
+
+## U+2009 THIN SPACE -> E2 80 89
+f="$(write_file_binary "thin_space.txt" 'a\xE2\x80\x89b')"
+expect_detected "U+2009 THIN SPACE" "$f"
+
+## U+200A HAIR SPACE -> E2 80 8A
+f="$(write_file_binary "hair_space.txt" 'a\xE2\x80\x8Ab')"
+expect_detected "U+200A HAIR SPACE" "$f"
+
+## U+2028 LINE SEPARATOR -> E2 80 A8
+f="$(write_file_binary "line_sep.txt" 'a\xE2\x80\xA8b')"
+expect_detected "U+2028 LINE SEPARATOR" "$f"
+
+## U+2029 PARAGRAPH SEPARATOR -> E2 80 A9
+f="$(write_file_binary "para_sep.txt" 'a\xE2\x80\xA9b')"
+expect_detected "U+2029 PARAGRAPH SEPARATOR" "$f"
+
+## U+3000 IDEOGRAPHIC SPACE -> E3 80 80
+f="$(write_file_binary "ideographic_space.txt" 'a\xE3\x80\x80b')"
+expect_detected "U+3000 IDEOGRAPHIC SPACE" "$f"
+
+## U+2800 BRAILLE PATTERN BLANK -> E2 A0 80
+f="$(write_file_binary "braille_blank.txt" 'a\xE2\xA0\x80b')"
+expect_detected "U+2800 BRAILLE PATTERN BLANK (invisible)" "$f"
+
+## ===================================================================
+## Section 7: Tag characters (Supplementary Plane, used in exploits)
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- Unicode tag characters ---"
+
+## U+E0061 TAG LATIN SMALL LETTER A -> F3 A0 81 A1
+f="$(write_file_binary "tag_latin_a.txt" 'test\xF3\xA0\x81\xA1text')"
+expect_detected "U+E0061 TAG LATIN SMALL LETTER A" "$f"
+
+## U+E007F CANCEL TAG -> F3 A0 81 BF
+f="$(write_file_binary "cancel_tag.txt" 'test\xF3\xA0\x81\xBFtext')"
+expect_detected "U+E007F CANCEL TAG" "$f"
+
+## ===================================================================
+## Section 8: Overlong UTF-8 / malformed sequences
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- Malformed / overlong UTF-8 ---"
+
+## Overlong encoding of NULL (C0 80 instead of 00).
+f="$(write_file_binary "overlong_null.txt" '\xC0\x80')"
+expect_detected "Overlong UTF-8 NULL (0xC0 0x80)" "$f"
+
+## Overlong encoding of '/' (C0 AF instead of 2F).
+f="$(write_file_binary "overlong_slash.txt" '\xC0\xAF')"
+expect_detected "Overlong UTF-8 slash (0xC0 0xAF)" "$f"
+
+## Invalid continuation byte.
+f="$(write_file_binary "invalid_continuation.txt" '\x80')"
+expect_detected "Invalid UTF-8 continuation byte (0x80)" "$f"
+
+## Invalid start byte.
+f="$(write_file_binary "invalid_start.txt" '\xFE')"
+expect_detected "Invalid UTF-8 start byte (0xFE)" "$f"
+
+f="$(write_file_binary "invalid_ff.txt" '\xFF')"
+expect_detected "Invalid byte (0xFF)" "$f"
+
+## ===================================================================
+## Section 9: Sneaky embedding in otherwise clean files
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- Sneaky embeddings in normal-looking files ---"
+
+## Zero-width space (E2 80 8B) hidden in a comment.
+f="$(write_file_binary "hidden_in_comment.txt" '# This is a normal comment\xE2\x80\x8B\ndef hello():\n    print('"'"'hello'"'"')\n')"
+expect_detected "Zero-width space hidden in comment" "$f"
+
+## LTR mark (E2 80 8E) hidden in a string literal.
+f="$(write_file_binary "hidden_in_string.txt" 'x = "hello\xE2\x80\x8Eworld"')"
+expect_detected "LTR mark hidden in string literal" "$f"
+
+## Trojan Source BiDi attack pattern.
+## Embeds BiDi overrides around the word "test" to demonstrate detection.
+f="$(write_file_binary "trojan_source_example.txt" 'access_level = "user\xE2\x80\xAA\xE2\x81\xA6\xE2\x81\xA9\xE2\x81\xA6test\xE2\x81\xA9\xE2\x80\xAC"')"
+expect_detected "Trojan Source BiDi attack pattern" "$f"
+
+## Backspace (\x08) overwrite: text followed by backspaces then replacement.
+## Would display "BADX" overwriting "GOOD" on a terminal.
+f="$(write_file_binary "backspace_overwrite.txt" 'GOOD\x08\x08\x08\x08BADX')"
+expect_detected "Backspace overwrite (GOOD overwritten by BADX)" "$f"
+
+## Carriage return (\x0D) overwrite: second text replaces first on display.
+## Would display "ERROR: You should not see this" on a terminal.
+f="$(write_file_binary "cr_overwrite.txt" 'This line looks safe\x0DERROR: You should not see this')"
+expect_detected "CR overwrite (hides text behind carriage return)" "$f"
+
+## ===================================================================
+## Section 10: Mixed content edge cases
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "--- Edge cases ---"
+
+## File with only a BOM (EF BB BF) and nothing else.
+f="$(write_file_binary "bom_only.txt" '\xEF\xBB\xBF')"
+expect_detected "File containing only BOM" "$f"
+
+## Suspicious char at very end of file.
+f="$(write_file_binary "trailing_bidi.txt" 'normal text\xE2\x80\x8E')"
+expect_detected "BiDi char at end of file" "$f"
+
+## Suspicious char at very start of file.
+f="$(write_file_binary "leading_null.txt" '\x00normal text')"
+expect_detected "NULL byte at start of file" "$f"
+
+## Very long line with suspicious char in the middle (ZWSP = E2 80 8B).
+write-long-line-with-unicode "$test_dir/long_line.txt"
+expect_detected "Suspicious char buried in 20000-char line" "$test_dir/long_line.txt"
+
+## ===================================================================
+## Summary
+## ===================================================================
+printf '%s\n' ""
+printf '%s\n' "===== Results ====="
+printf '%s\n' "Passed: $pass_count | Failed: $fail_count | Skipped: $skip_count"
+
+if [ "$fail_count" -gt 0 ]; then
+  printf '%s\n' "${red}SOME TESTS FAILED - potential Unicode bypass found!${nocolor}"
+  exit 1
+fi
+
+printf '%s\n' "${green}All tests passed - no bypass detected.${nocolor}"
+exit 0

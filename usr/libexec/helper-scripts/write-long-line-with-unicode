@@ -1,0 +1,28 @@
+#!/usr/bin/python3 -su
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+"""
+Writes a long line with a suspicious Unicode character (ZWSP, U+200B)
+buried in the middle. Used by test_grep_find_unicode_wrapper to test
+detection in large files.
+
+Usage: write-long-line-with-unicode <output-file>
+"""
+
+import sys
+
+def main():
+    if len(sys.argv) != 2:
+        sys.stderr.write("Usage: write-long-line-with-unicode <output-file>\n")
+        return 1
+    output_path = sys.argv[1]
+    ## 10000 'a' bytes + ZWSP (E2 80 8B) + 10000 'b' bytes
+    data = b'a' * 10000 + b'\xe2\x80\x8b' + b'b' * 10000
+    with open(output_path, 'wb') as output_file:
+        output_file.write(data)
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
