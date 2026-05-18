@@ -1,3 +1,15 @@
+commit 745d675abf387f647913cc664b50fe835ef9758a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 18 15:19:46 2026 -0400
+
+    log_run_die: add output_on_failure helper
+
+commit 9445ca44710adc1c2fa1320ae33dbbff2032b88a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 18 10:03:35 2026 +0000
+
+    bumped changelog version
+
 commit 8a6aa93d566f5a04272f9ea50347270ca7834041
 Merge: 40d58ef 08fc427
 Author: Patrick Schleizer <adrelanos@whonix.org>
