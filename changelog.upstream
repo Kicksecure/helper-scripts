@@ -1,3 +1,178 @@
+commit 8a6aa93d566f5a04272f9ea50347270ca7834041
+Merge: 40d58ef 08fc427
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 17 16:22:37 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 08fc427375ae5f034e03189fb3344b2d2848b0fc
+Merge: 40d58ef 745734a
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sun May 17 14:03:04 2026 -0400
+
+    Merge pull request #42 from org-ai-assisted/claude/fix-dependabot-action-UnL7w
+
+    dependabot.yml: hand-maintain with correct docker directory
+
+commit 745734a89c32803db56fa2a4efec86028573a0ad
+Author: Claude <noreply@anthropic.com>
+Date:   Sun May 17 17:59:48 2026 +0000
+
+    trim file commentary
+
+commit 2cae3bd183be0e09affadafb3b2cd7d45552040d
+Author: Claude <noreply@anthropic.com>
+Date:   Sun May 17 17:45:23 2026 +0000
+
+    dependabot.yml: hand-maintain with correct docker directory
+
+    This repo's Dockerfile lives at .clusterfuzzlite/Dockerfile, not
+    at /. The old canonical at
+    developer-meta-files/consumer-templates/.github/dependabot.yml
+    carried a `package-ecosystem: docker` block with `directory: "/"`,
+    which was wrong for this repo: dependabot scanned `/Dockerfile`,
+    didn't find one, and aborted the job with
+    `dependency_file_not_found` - killing the github-actions
+    ecosystem run that shared it too.
+
+    Opt this repo out of byte-identical propagation via the
+    "## propagation: manual" header marker (recognized by
+    dependabot_yml_is_manual in dm-packaging-helper-script). The
+    docker block is now scoped to `directory: ".clusterfuzzlite"` so
+    dependabot finds .clusterfuzzlite/Dockerfile and can bump its
+    FROM pin.
+
+    The github-actions block is kept byte-identical to
+    developer-meta-files/consumer-templates/.github/dependabot.yml
+    so org-wide action-bump uniformity is preserved; only the docker
+    block and the marker line diverge.
+
+    See org-ai-assisted/developer-meta-files PR #105 for the
+    canonical change, the marker mechanism, and the architecture
+    doc updates (agents/github-actions-consumer-templates.md
+    "Per-repo manual dependabot.yml").
+
+commit 40d58efbca203f0cf341106f1d8c74a1ab060dbf
+Merge: 913235f 0437db9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 17 07:18:07 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 0437db939d81769b2edbd0b2effcde837ad3dd9e
+Merge: 3df5559 29c3b16
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sun May 17 07:12:22 2026 -0400
+
+    Merge pull request #41 from org-ai-assisted/claude/test-linux-user-validation-UAhru
+
+    log_run_die: drop redundant '|| return 1' from log_run, remove stale CI TODO
+
+commit 29c3b165ea6f0aeea173a3a6ca0279b0938d2a96
+Author: Claude <noreply@anthropic.com>
+Date:   Sun May 17 09:11:03 2026 +0000
+
+    log_run_die: drop '|| return 1' from log_run, remove stale TODOs
+
+    log_run's tail call was 'cmd || return 1'. Under errexit the result
+    is the same as plain 'cmd', and the explicit 'return 1' clobbers the
+    child's exit code (e.g. 42) down to 1, losing information for any
+    caller that uses 'log_run cmd || handle'. Drop it and let the natural
+    exit code propagate.
+
+    Also remove the adjacent stale TODO that asked whether 'CI expects no
+    output from root_cmd() which calls log_run()'. The CI self-test in
+    get_su_cmd (root_cmd.sh) bypasses log_run entirely (calls 'sudo
+    --non-interactive -- test -d /usr' directly), and current consumers
+    (dist-installer-cli) either accept log lines in their 2>&1 capture
+    or silence them via 'root_cmd_loglevel=null'; neither path depends on
+    log_run being silent. The dry_run-rename TODO is left in place per
+    user request.
+
+    Verified end-to-end:
+      log_run notice bash -c 'exit 42'        -> rc=42 (was 1)
+      errexit + log_run failing cmd           -> outer rc=42 (was 1)
+      errexit + log_run false                 -> aborts (unchanged)
+      log_run stdout untouched, log to stderr -> unchanged
+      log_run null ...                        -> silent (unchanged)
+
+    https://claude.ai/code/session_01ERrnoUpNAyTSNtR2DqRzSu
+
+commit 913235f531dd40161ff9fbeafc17e2f79ea7afc6
+Merge: 83d7f21 3df5559
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 17 04:20:45 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 3df555995672a6a0b4d5c331abae64c883c36838
+Merge: 4a2449b f090146
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sat May 16 18:59:03 2026 -0400
+
+    Merge pull request #40 from org-ai-assisted/claude/test-linux-user-validation-UAhru
+
+    strings.bsh: add tests for check_valid_linux_user_account_name
+
+commit f090146c345d75467605f5688831c7874aaee7ed
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 16 21:42:16 2026 +0000
+
+    strings.bsh: add tests for check_valid_linux_user_account_name
+
+    Lock down the SYS_NAME_REGEX accept/reject behavior of
+    check_valid_linux_user_account_name with 11 lightweight inline
+    assertions inside string_bsh_tests(), matching the existing br_add
+    test style. Covers leading-char class, inner-char class, the optional
+    trailing '$', and anchoring.
+
+    https://claude.ai/code/session_01ERrnoUpNAyTSNtR2DqRzSu
+
+commit 83d7f215bd8def0d89da94d3b44ca6d6520bf0de
+Merge: 760d94f 4a2449b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 16 17:13:53 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 4a2449b1956c17cf8d389b9ca8022efd6ccdce55
+Merge: 760d94f cbd3fbe
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sat May 16 16:02:46 2026 -0400
+
+    Merge pull request #39 from org-ai-assisted/claude/test-strip-markup-security-Cw4xu
+
+    strip-markup: fix IndexError on bare '--' argument
+
+commit cbd3fbe6b8f1d03e8ec1c7d1631bfea34c760799
+Author: Claude <noreply@anthropic.com>
+Date:   Sat May 16 19:53:49 2026 +0000
+
+    strip-markup: fix IndexError on bare '--' argument
+
+    'strip-markup --' (option separator with no positional argument
+    following) crashed with IndexError on arg_list[0] in main(), leaking a
+    Python traceback (including local file paths) to stderr. The same
+    crash also affected 'echo foo | strip-markup --' even though that case
+    should read 'foo' from stdin.
+
+    Mirror sanitize_string's argument-parsing structure by only assigning
+    the positional argument when one is actually present; otherwise fall
+    through to stdin reading. Add a regression test covering both the
+    stdin-available and stdin-closed paths.
+
+commit 760d94f6d5112141041ef098003fcf2163a947a6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat May 16 06:01:49 2026 -0400
+
+    update .github/workflows/consumer-claude-code.yml
+
+commit fa0cc5ddd89b5a062d44f8fadf7b7c912a6c9e46
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 15 18:39:21 2026 +0000
+
+    bumped changelog version
+
 commit 41b9cf2dd0c294f9424dda24c314d4ce45f3da0f
 Merge: f096053 0c14004
 Author: Patrick Schleizer <adrelanos@whonix.org>
