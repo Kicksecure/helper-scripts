@@ -232,6 +232,25 @@ log_run() {
 }
 
 
+log_run_silent_if_success() {
+  local rc output
+
+  local -
+  set +x
+
+  log info "${FUNCNAME[0]}: $ ${*}"
+
+  rc=0
+  output="$("${@}" 2>&1)" || rc=$?
+
+  if [ "${rc}" -ne 0 ]; then
+    printf '%s\n' "${output}" >&2
+  fi
+
+  return "${rc}"
+}
+
+
 ## Useful to get runtime mid run to log easily
 ## Variable to define outside: start_time
 # shellcheck disable=SC2154
