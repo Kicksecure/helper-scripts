@@ -3,7 +3,7 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-# pylint: disable=unknown-option-value
+# pylint: disable=unknown-option-value,broad-exception-caught
 
 """
 strip_markup_lib.py: Library for stripping markup from a string.
@@ -61,7 +61,7 @@ def strip_markup(untrusted_string: str) -> str:
     markup_stripper: StripMarkupEngine = StripMarkupEngine()
     try:
         markup_stripper.feed(untrusted_string)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         ## CPython's HTMLParser raises uncaught exceptions on some
         ## malformed inputs (e.g. AssertionError on '<![...' patterns
         ## before gh-77057 landed). Sanitization must never propagate
@@ -73,7 +73,7 @@ def strip_markup(untrusted_string: str) -> str:
     markup_stripper = StripMarkupEngine()
     try:
         markup_stripper.feed(strip_one_string)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         return _underscore_sanitize(strip_one_string)
     strip_two_string: str = markup_stripper.get_data()
     if strip_one_string == strip_two_string:
