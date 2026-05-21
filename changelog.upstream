@@ -1,3 +1,15 @@
+commit 34147766e8388cde6337169e6d85c35e639b09db
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 20 16:56:51 2026 -0400
+
+    genmkfile uch
+
+commit 7df7075a07fc09d0d0937c2889256b46e1150fe4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 18 21:35:28 2026 +0000
+
+    bumped changelog version
+
 commit 745d675abf387f647913cc664b50fe835ef9758a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 18 15:19:46 2026 -0400
@@ -758,7 +770,7 @@ Date:   Mon May 11 16:56:02 2026 -0400
     2. **PR-number-keyed concurrency group** in `claude-code.yml` and
     `codex-review.yml`. Plain `${{ github.workflow }}-${{ github.ref }}` is
     wrong for `issue_comment` / `pull_request_review_comment` events because
-    `github.ref` resolves to the default branch on those events — so
+    `github.ref` resolves to the default branch on those events _ so
     unrelated PRs' comment-triggered runs queue into the same group. New key
     uses `pull_request.number || issue.number || ref` for `claude-code.yml`,
     `pull_request.number || ref` for `codex-review.yml`. Matches dmf #54.
@@ -1504,7 +1516,7 @@ Date:   Thu May 7 16:31:59 2026 -0400
 
     Merge pull request #4 from org-ai-assisted/claude/scorecard-fix-forward-hardcode
 
-    scorecard: fix-forward — hardcode Kicksecure (github.* not allowed in uses:)
+    scorecard: fix-forward _ hardcode Kicksecure (github.* not allowed in uses:)
 
 commit 191c6c5767c1a44af0d2aef0af9ef94eeeb9c3b0
 Author: Claude <noreply@anthropic.com>
