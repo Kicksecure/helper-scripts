@@ -19,6 +19,16 @@ circuit_established = controller.get_info("status/circuit-established")
 ## Possible answer, if not established:
 ## 0
 
+## Caveat: status/circuit-established is C-Tor's sticky
+## have_completed_a_circuit() flag - set on the first multi-hop circuit
+## built and reset only on clock-jump/idle, stale dir-info, or teardown
+## (never on a failed fetch). So "1" can be a false positive with paths
+## actually down, even for general (not just onion) circuits: treat it
+## as "worth trying", not "usable now" - usability is only proven by an
+## actual connection.
+## https://gitlab.torproject.org/tpo/core/tor/-/issues/28027
+## https://gitlab.torproject.org/tpo/core/tor/-/issues/21422
+
 print(format(circuit_established))
 
 controller.close()

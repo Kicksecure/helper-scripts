@@ -1,0 +1,19 @@
+include <tunables/global>
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Same control-port access as tor-circuit-established-check; the extra
+## EXTENDCIRCUIT/SETEVENTS go over the same connection (no extra access).
+
+/usr/libexec/helper-scripts/tor_circuit_built_check.py flags=(attach_disconnected) {
+  include <abstractions/consoles>
+  include <abstractions/gstreamer>
+  include <abstractions/tor-circuit-established-check>
+  include if exists <abstractions/tor>
+  include if exists <local/usr.libexec.helper-scripts.tor_circuit_built_check>
+
+  /usr/libexec/helper-scripts/tor_circuit_built_check.py r,
+}
