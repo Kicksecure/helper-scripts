@@ -83,10 +83,6 @@ def main():
                 print_error_and_bail(
                     f"Error while reading file '{orig_file_path}'!"
                 )
-        if executable_name == "append-once":
-            if line_to_append in file_contents:
-                print_info(f"Line already exists in: '{orig_file_path}'")
-                sys.exit(0)
         if not os.access(file_path, os.W_OK):
             print_error_and_bail(f"File '{orig_file_path}' not writable!")
     else:
@@ -98,20 +94,31 @@ def main():
                 "should be created) is not writable!"
             )
 
-    if executable_name == "overwrite":
-        print_info(f"Overwriting file: '{orig_file_path}'")
-    else:
-        print_info(f"Appending data to: '{orig_file_path}'")
-
-    if file_contents != "" and file_contents[-1] != "\n":
+    if not file_contents.endswith("\n"):
         # Fix a missing terminating newline. Some text editors will fail to
         # write these properly and it will break our line appending if we don't
         # correct it first.
         file_contents += "\n"
-    if line_to_append != "" and line_to_append[-1] != "\n":
+    if not line_to_append.endswith("\n"):
         # Make sure we add a terminating newline ourselves too :)
         line_to_append += "\n"
+
+    if executable_name == "append-once":
+        ## Look for a whole line match, not just a substring match. The extra
+        ## newline at the beginning of line_to_append ensures that
+        ## line_to_append occurs on a line by itself, the extra newline at the
+        ## beginning of file_contents allows line_to_append to match the first
+        ## line of the file.
+        if "\n" + line_to_append in "\n" + file_contents:
+            print_info(f"Line already exists in: '{orig_file_path}'")
+            sys.exit(0)
+
     file_contents += line_to_append
+
+    if executable_name == "overwrite":
+        print_info(f"Overwriting file: '{orig_file_path}'")
+    else:
+        print_info(f"Appending data to: '{orig_file_path}'")
 
     temp_file = None
     try:
