@@ -350,7 +350,9 @@ determine_circuit_confirmed() {
    else
       circuit_confirmed="0"
    fi
-   output_cmd "Circuit confirmation: active build exit_code '$tor_circuit_built_check_exit_code' => circuit_confirmed='$circuit_confirmed'. ($tor_circuit_built_output)"
+   ## Not outputting $tor_circuit_built_output to avoid minor information leak.
+   ## > CIRC 1515 BUILT
+   output_cmd "Circuit confirmation: active build exit_code '$tor_circuit_built_check_exit_code' => circuit_confirmed='$circuit_confirmed'."
 }
 
 circuit_confirmed_backward_proceed() {
