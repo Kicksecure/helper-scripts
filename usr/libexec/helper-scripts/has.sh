@@ -24,14 +24,16 @@ is_type_file() {
       return 1
     fi
   done
+  return 0
 }
 
 type_exists() {
   local _name
 
   for _name in "$@"; do
-    [ "$(type -t "${_name}")" ] || return 1
+    [ -n "$(type -t "${_name}")" ] || return 1
   done
+  return 0
 }
 
 lsmod_deterministic() {

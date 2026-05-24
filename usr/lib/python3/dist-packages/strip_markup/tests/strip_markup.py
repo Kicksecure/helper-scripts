@@ -416,9 +416,9 @@ input.
 
     def test_bare_separator(self) -> None:
         """
-        Regression test: 'strip-markup --' with no positional argument
-        following the separator must fall back to reading stdin, not
-        crash with IndexError on arg_list[0].
+        Ensure 'strip-markup --' with no positional argument following the
+        separator falls back to reading stdin, rather than crashing with
+        IndexError on arg_list[0].
         """
 
         ## With stdin available, '--' alone reads from stdin.
@@ -431,8 +431,7 @@ input.
             stdin_string="hello",
         )
 
-        ## With stdin closed (mock.patch.object stdin to None), '--' alone
-        ## exits cleanly with no output.
+        ## With stdin closed, '--' alone exits cleanly with no output.
         self._test_args(
             main_func=strip_markup_main,
             argv0=self.argv0,
