@@ -86,7 +86,8 @@ check_tor_bootstrap_helper_run_helper_script() {
    check_bootstrap_helper_script_exit_code="0"
 
    ## TODO: Consider moving the privleap configuration that allows this to work
-   ##   into this package (right now it's part of systemcheck)
+   ##       into this package (right now it's part of systemcheck)
+   ##       See also: /etc/privleap/conf.d/systemcheck.conf
    check_bootstrap_helper_script_output=$( \
       timeout \
       --kill-after="$check_tor_bootstrap_helper_kill_after" \
