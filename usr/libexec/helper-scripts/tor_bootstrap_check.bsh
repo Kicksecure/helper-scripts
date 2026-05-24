@@ -179,6 +179,16 @@ check_tor_circuit_established() {
    fi
 }
 
+check_tor_circuit_built() {
+   ## Active, non-stale alternative to check_tor_circuit_established: build a
+   ## fresh circuit (EXTENDCIRCUIT 0) and wait for BUILT, via the privleap
+   ## action (which passes its own timeout to fit the leaprun window).
+   check_bootstrap_helper_script="tor-circuit-built-check"
+   check_tor_bootstrap_helper_run_helper_script
+   tor_circuit_built_check_exit_code="$check_bootstrap_helper_script_exit_code"
+   tor_circuit_built_output="$check_bootstrap_helper_script_output"
+}
+
 tor_consensus_valid-after() {
    check_bootstrap_helper_script="tor-consensus-valid-after"
 
