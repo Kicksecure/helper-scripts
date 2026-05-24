@@ -345,14 +345,16 @@ determine_circuit_confirmed() {
    fi
 
    check_tor_circuit_built ## tor_bootstrap_check.bsh
-   if [ "$tor_circuit_built_check_exit_code" = "0" ]; then
-      circuit_confirmed="1"
-   else
-      circuit_confirmed="0"
-   fi
+
    ## Not outputting $tor_circuit_built_output to avoid minor information leak.
    ## > CIRC 1515 BUILT
-   output_cmd "Circuit confirmation: active build exit_code '$tor_circuit_built_check_exit_code' => circuit_confirmed='$circuit_confirmed'."
+   if [ "$tor_circuit_built_check_exit_code" = "0" ]; then
+      circuit_confirmed="1"
+      output_cmd "Circuit confirmation: yes"
+   else
+      circuit_confirmed="0"
+      output_cmd "Circuit confirmation: no"
+   fi
 }
 
 circuit_confirmed_backward_proceed() {
@@ -425,9 +427,9 @@ te_pe_tb_check() {
 
    determine_circuit_confirmed
    if circuit_confirmed_backward_proceed; then
-      output_cmd "INFO: Tor circuit confirmed; clock within Tor's tolerance. \
-Proceeding so sdwdate can fetch the time and correct it (pool median, never \
-below the replay floor). anondate remains forward-only."
+      ## Tor circuit confirmed; clock within Tor's tolerance.
+      ## Proceeding so sdwdate can fetch the time and correct it.
+      output_cmd "Conclusion: Tor already reports circuit confirmed."
       exit_code=0
       exit "$exit_code"
    fi
