@@ -93,7 +93,7 @@ check_tor_bootstrap_helper_run_helper_script() {
       --kill-after="$check_tor_bootstrap_helper_kill_after" \
       "$check_tor_bootstrap_helper_timeout_after" \
          leaprun \
-            "$check_bootstrap_helper_script" \
+            "$check_bootstrap_privleap_action" \
                2>&1 \
                ) \
                || { check_bootstrap_helper_script_exit_code="$?" ; true; };
@@ -105,12 +105,12 @@ check_tor_bootstrap_helper() {
 }
 
 run_signal_newnym() {
-   check_bootstrap_helper_script="tor-signal-newnym"
+   check_bootstrap_privleap_action="tor-signal-newnym"
    check_tor_bootstrap_helper_run_helper_script
 }
 
 check_tor_dormant_status() {
-   check_bootstrap_helper_script="tor-dormant-check"
+   check_bootstrap_privleap_action="tor-dormant-check"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
@@ -134,7 +134,7 @@ check_tor_dormant_status() {
 }
 
 check_tor_bootstrap_status() {
-   check_bootstrap_helper_script="tor-bootstrap-check"
+   check_bootstrap_privleap_action="tor-bootstrap-check"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
@@ -158,7 +158,7 @@ check_tor_bootstrap_status() {
 }
 
 check_tor_circuit_established() {
-   check_bootstrap_helper_script="tor-circuit-established-check"
+   check_bootstrap_privleap_action="tor-circuit-established-check"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
@@ -184,14 +184,14 @@ check_tor_circuit_built() {
    ## Active, non-stale alternative to check_tor_circuit_established: build a
    ## fresh circuit (EXTENDCIRCUIT 0) and wait for BUILT, via the privleap
    ## action (which passes its own timeout to fit the leaprun window).
-   check_bootstrap_helper_script="tor-circuit-built-check"
+   check_bootstrap_privleap_action="tor-circuit-built-check"
    check_tor_bootstrap_helper_run_helper_script
    tor_circuit_built_check_exit_code="$check_bootstrap_helper_script_exit_code"
    tor_circuit_built_output="$check_bootstrap_helper_script_output"
 }
 
 tor_consensus_valid-after() {
-   check_bootstrap_helper_script="tor-consensus-valid-after"
+   check_bootstrap_privleap_action="tor-consensus-valid-after"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output
@@ -212,7 +212,7 @@ tor_consensus_valid-after() {
 }
 
 tor_consensus_valid-until() {
-   check_bootstrap_helper_script="tor-consensus-valid-until"
+   check_bootstrap_privleap_action="tor-consensus-valid-until"
 
    ## sets: check_bootstrap_helper_script_exit_code
    ## sets: check_bootstrap_helper_script_output

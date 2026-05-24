@@ -136,7 +136,7 @@ tor_dormant_status() {
 }
 
 check_tor_circuit_established_yet() {
-   ## sets: check_bootstrap_helper_script
+   ## sets: check_bootstrap_privleap_action
    ## sets: lastpid
    ## sets: tor_bootstrap_percent
    ## sets: tor_bootstrap_status
@@ -149,7 +149,7 @@ check_tor_circuit_established_yet() {
    for invalid_exit_code in "124" "137" "254" ; do
       if [ "$tor_circuit_established_check_exit_code" = "$invalid_exit_code" ]; then
          output_cmd "Tor Bootstrap Result:
-check_bootstrap_helper_script: $check_bootstrap_helper_script
+check_bootstrap_privleap_action: $check_bootstrap_privleap_action
 tor_bootstrap_timeout_type: $tor_bootstrap_timeout_type
 tor_circuit_established_check_exit_code: $tor_circuit_established_check_exit_code"
          exit_code=1
