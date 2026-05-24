@@ -15,7 +15,7 @@
 ##   1   - no circuit reached BUILT within the timeout
 ##   255 - could not connect to the Tor control port
 ##
-## Usage: tor_circuit_built_check.py [timeout_seconds]  (default 30)
+## Usage: tor_circuit_built_check.py [timeout_seconds]  (default 8)
 
 import sys
 import stem
@@ -24,7 +24,9 @@ from stem.connection import connect
 try:
     timeout = float(sys.argv[1])
 except (IndexError, ValueError):
-    timeout = 30.0
+    ## Active circuit-readiness check for onion-time-pre-script
+    ## (8 seconds fits the 'leaprun' timeout in 'tor_bootstrap_check.bsh').
+    timeout = 8.0
 
 controller = connect()
 
