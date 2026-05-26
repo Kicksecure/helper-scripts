@@ -53,6 +53,9 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_enabled_check
 ## provides check_tor_bootstrap_status
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_bootstrap_check.bsh
 
+## provides was_executed
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
+
 detect_vm_type() {
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
       VM="Gateway"
@@ -133,7 +136,7 @@ tor_dormant_status() {
 }
 
 check_tor_circuit_established_yet() {
-   ## sets: check_bootstrap_helper_script
+   ## sets: check_bootstrap_privleap_action
    ## sets: lastpid
    ## sets: tor_bootstrap_percent
    ## sets: tor_bootstrap_status
@@ -146,7 +149,7 @@ check_tor_circuit_established_yet() {
    for invalid_exit_code in "124" "137" "254" ; do
       if [ "$tor_circuit_established_check_exit_code" = "$invalid_exit_code" ]; then
          output_cmd "Tor Bootstrap Result:
-check_bootstrap_helper_script: $check_bootstrap_helper_script
+check_bootstrap_privleap_action: $check_bootstrap_privleap_action
 tor_bootstrap_timeout_type: $tor_bootstrap_timeout_type
 tor_circuit_established_check_exit_code: $tor_circuit_established_check_exit_code"
          exit_code=1
@@ -330,6 +333,40 @@ anondate_use() {
    exit "$exit_code"
 }
 
+determine_circuit_confirmed() {
+   ## Sets circuit_confirmed=1 when a real circuit is confirmed. Gateway:
+   ## actively build a fresh circuit (non-stale, unlike the sticky
+   ## status/circuit-established flag). Workstation: onion-grater forbids
+   ## EXTENDCIRCUIT and it defers to the gateway, so fall back to the flag.
+   if [ "$VM" = "Workstation" ]; then
+      circuit_confirmed="$tor_circuit_established"
+      output_cmd "Circuit confirmation (workstation): status/circuit-established = '$tor_circuit_established'."
+      return 0
+   fi
+
+   check_tor_circuit_built ## tor_bootstrap_check.bsh
+
+   ## Not outputting $tor_circuit_built_output to avoid minor information leak.
+   ## > CIRC 1515 BUILT
+   if [ "$tor_circuit_built_check_exit_code" = "0" ]; then
+      circuit_confirmed="1"
+      output_cmd "Circuit confirmation: yes"
+   else
+      circuit_confirmed="0"
+      output_cmd "Circuit confirmation: no"
+   fi
+}
+
+circuit_confirmed_backward_proceed() {
+   ## A confirmed circuit proves the clock is within Tor's tolerance => let
+   ## sdwdate fetch and correct it (forward OR backward), regardless of the
+   ## consensus verdict. A false positive is safe: sdwdate's fetch is the
+   ## real probe (pool median, replay-floor gated) and just retries on bad
+   ## times. anondate stays forward-only. Pure function for unit-testing.
+   [ "$circuit_confirmed" = "1" ] || return 1
+   return 0
+}
+
 te_pe_tb_check() {
    ## For better look inside sdwdate log viewer.
    printf '\n'
@@ -388,6 +425,15 @@ te_pe_tb_check() {
       #exit "$exit_code"
    fi
 
+   determine_circuit_confirmed
+   if circuit_confirmed_backward_proceed; then
+      ## Tor circuit confirmed; clock within Tor's tolerance.
+      ## Proceeding so sdwdate can fetch the time and correct it.
+      output_cmd "Conclusion: Tor already reports circuit confirmed."
+      exit_code=0
+      exit "$exit_code"
+   fi
+
    if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
       anondate_use
       ## Time incorrect but not by giant amounts.
@@ -404,4 +450,7 @@ te_pe_tb_check() {
    exit "$exit_code"
 }
 
-te_pe_tb_check "$@"
+## Only auto-run when executed, not when sourced (unit tests source it).
+if was_executed "${BASH_SOURCE[0]}"; then
+   te_pe_tb_check "$@"
+fi
