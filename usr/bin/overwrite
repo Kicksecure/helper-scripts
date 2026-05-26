@@ -1,3 +1,8 @@
-#!/bin/bash
+#!/usr/bin/python3 -Bsu
 
-exec /usr/libexec/helper-scripts/append-shared overwrite "$@"
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+import sys
+from append_shared.append_shared import append_shared
+sys.exit(append_shared("overwrite", sys.argv[1:]))

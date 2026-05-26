@@ -27,6 +27,7 @@ py_lib_to_test_list=(
   'strip_markup'
   'unicode_show'
   'strict_config_parser'
+  'append_shared'
 )
 
 for py_lib_to_test in "${py_lib_to_test_list[@]}"; do
