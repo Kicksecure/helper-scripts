@@ -1,0 +1,11 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+if [ -e /run/qubes-service/debug-kicksecure ] \
+  || [ -e /etc/debug-kicksecure ] \
+  || [ -e /usr/local/etc/debug-kicksecure ]; then
+  exit 0
+fi
+exit 1
