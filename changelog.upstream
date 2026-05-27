@@ -1,3 +1,43 @@
+commit 83f816d418c49b52d297a5a7ff3e0e248ecf2c95
+Merge: 8fff1f28 ad2ef207
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 27 18:55:12 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 8fff1f28290815a161bfbbb53f8fca55a0a815e6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 27 22:50:54 2026 +0000
+
+    bumped changelog version
+
+commit ad2ef207de63d8c1bb41d0de2ce02a5a2c3530be
+Merge: 8ff6037a 47aeccdf
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Wed May 27 17:17:53 2026 -0400
+
+    Merge pull request #50 from org-ai-assisted/claude/confident-archimedes-2KQwy
+
+    ci(deps)(deps): bump oss-fuzz-base/base-builder-python from `04d1a93` to `9dd557a` in /.clusterfuzzlite in the docker group across 1 directory
+
+commit 47aeccdf88b38fa0cb2e5515e1a0e1d61663f7a8
+Author: Claude <noreply@anthropic.com>
+Date:   Wed May 27 21:13:52 2026 +0000
+
+    ci(deps)(deps): bump oss-fuzz-base/base-builder-python from `04d1a93` to `9dd557a` in /.clusterfuzzlite in the docker group across 1 directory
+
+    Mirrors Kicksecure/helper-scripts#43 (Dependabot).
+
+    Bumps the docker group with 1 update in the /.clusterfuzzlite directory:
+    oss-fuzz-base/base-builder-python.
+
+    Updates `oss-fuzz-base/base-builder-python` from `04d1a93` to `9dd557a`.
+
+    Same image path (gcr.io/oss-fuzz-base/base-builder-python), SHA-pinned;
+    single-line digest swap. The pin still rides OSS-Fuzz's :latest stream,
+    which the upstream comment block notes is held to the Ubuntu 20.04 /
+    glibc 2.31 v1 ABI required by ClusterFuzzLite's run image.
+
 commit c895e786e1a5c5cbeb3bc43ffa52954ec66ac95b
 Merge: 754444b8 8ff6037a
 Author: Patrick Schleizer <adrelanos@whonix.org>
