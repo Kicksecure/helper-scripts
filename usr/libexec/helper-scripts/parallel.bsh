@@ -36,9 +36,11 @@ parallel_failures=()
 ## parallel_wait NAME
 ##
 ## Wait for every PID in the associative array NAME and return 0
-## if all jobs succeeded. On failure, log each failed job and
-## populate the global array `parallel_failures` with the labels
-## of the failed jobs, then return 1.
+## if all jobs succeeded. Each job's outcome is logged as it is
+## reaped: 'log info' on success, 'log error' on failure. The
+## failure log line includes the job's PID and exit code. On any
+## failure, the global array `parallel_failures` is populated with
+## the labels of the failed jobs and the function returns 1.
 ##
 ## NAME is the *name* of an associative array { pid => label },
 ## taken by reference via bash nameref.
@@ -52,7 +54,7 @@ parallel_failures=()
 ##      exit 1
 ##   fi
 parallel_wait() {
-  local done_pid failed_label pid_iter
+  local done_pid label pid_iter wait_rc
   local -a remaining_pids new_remaining
 
   check_variable_name "${1}" || return 1
@@ -70,21 +72,18 @@ parallel_wait() {
     ## `wait -n -p done_pid` may unset done_pid when no child is
     ## available; reset before each iteration.
     done_pid=""
+    wait_rc=0
     ## Pass the tracked PIDs explicitly so bash only considers our
     ## jobs. Without this, `wait -n` could reap an unrelated
     ## background job started in the caller's shell, which would
     ## still decrement `remaining` and cause one of our tracked
     ## PIDs to be silently skipped.
-    if ! wait -n -p done_pid "${remaining_pids[@]}" ; then
-      if [ -n "${done_pid:-}" ] \
-         && [ -n "${_parallel_jobs[${done_pid}]:-}" ] ; then
-        failed_label="${_parallel_jobs[${done_pid}]}"
-      else
-        failed_label="pid ${done_pid:-unknown}"
-      fi
-      parallel_failures+=( "${failed_label}" )
-      log warn "${FUNCNAME[0]}: job failed: '${failed_label}'"
-    fi
+    ##
+    ## Capture the exit code via '|| wait_rc=$?' so we can branch
+    ## on success vs failure (and surface the exit code in the log
+    ## line) without errexit terminating the loop on a failed job.
+    wait -n -p done_pid "${remaining_pids[@]}" || wait_rc=$?
+
     if [ -z "${done_pid:-}" ]; then
       ## Defensive: all tracked PIDs already reaped or otherwise
       ## not waitable. Bash returned without populating done_pid;
@@ -95,7 +94,7 @@ parallel_wait() {
       ## non-zero - silently dropping unwaitable PIDs would let
       ## "missing observation" look indistinguishable from "all
       ## succeeded".
-      log warn "${FUNCNAME[0]}: ${#remaining_pids[@]} tracked job(s) could not be waited on"
+      log error "${FUNCNAME[0]}: ${#remaining_pids[@]} tracked job(s) could not be waited on (wait_rc=${wait_rc})"
       for pid_iter in "${remaining_pids[@]}"; do
         if [ -n "${_parallel_jobs[${pid_iter}]:-}" ]; then
           parallel_failures+=( "${_parallel_jobs[${pid_iter}]} (unwaitable)" )
@@ -105,6 +104,16 @@ parallel_wait() {
       done
       break
     fi
+
+    label="${_parallel_jobs[${done_pid}]:-pid ${done_pid}}"
+
+    if [ "${wait_rc}" -eq 0 ]; then
+      log info "${FUNCNAME[0]}: job succeeded: '${label}' (pid=${done_pid})"
+    else
+      log error "${FUNCNAME[0]}: job failed: '${label}' (pid=${done_pid}, exit=${wait_rc})"
+      parallel_failures+=( "${label}" )
+    fi
+
     new_remaining=()
     for pid_iter in "${remaining_pids[@]}"; do
       [ "${pid_iter}" != "${done_pid}" ] && new_remaining+=( "${pid_iter}" )
