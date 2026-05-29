@@ -5,14 +5,13 @@
 
 ## AI-Assisted
 
-## Actively build one fresh circuit (EXTENDCIRCUIT 0, Tor's own path
-## selection - no named destination) and wait for it to reach BUILT. Unlike
-## the sticky status/circuit-established flag, BUILT cannot be a stale false
-## positive (tor#28027, tor#21422).
+## Actively build one fresh circuit and wait for it to finish
+## building. Unlike the sticky status/circuit-established flag, this
+## cannot be a stale false positive.
 ##
 ## Exit codes (mirroring tor-circuit-established-check):
-##   0   - a circuit reached BUILT within the timeout
-##   1   - no circuit reached BUILT within the timeout
+##   0   - a circuit was built within the timeout
+##   1   - no circuit was built within the timeout
 ##   255 - could not connect to the Tor control port
 ##
 ## Usage: tor_circuit_built_check.py [timeout_seconds]  (default 8)
@@ -40,14 +39,16 @@ try:
 ## stem.Timeout subclasses stem.ControllerError, so catch it first.
 except stem.Timeout:
     controller.close()
-    print("no new circuit reached BUILT within {}s".format(timeout))
+    print("no new circuit built within {}s".format(timeout))
     sys.exit(1)
-except stem.ControllerError as build_error:
+except Exception as build_error:
+    ## controller.new_circuit() can fail with more than just
+    ## stem.ControllerError.
     controller.close()
     print("circuit build failed: {}".format(build_error))
     sys.exit(1)
 
 controller.close()
 
-print("CIRC {} BUILT".format(circuit_id))
+print("Circuit {} built".format(circuit_id))
 sys.exit(0)

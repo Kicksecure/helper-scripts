@@ -9,8 +9,6 @@ include <tunables/global>
 ## EXTENDCIRCUIT/SETEVENTS go over the same connection (no extra access).
 
 /usr/libexec/helper-scripts/tor_circuit_built_check.py flags=(attach_disconnected) {
-  include <abstractions/consoles>
-  include <abstractions/gstreamer>
   include <abstractions/tor-circuit-established-check>
   include if exists <abstractions/tor>
   include if exists <local/usr.libexec.helper-scripts.tor_circuit_built_check>

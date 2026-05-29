@@ -19,15 +19,15 @@ circuit_established = controller.get_info("status/circuit-established")
 ## Possible answer, if not established:
 ## 0
 
-## Caveat: status/circuit-established is C-Tor's sticky
-## have_completed_a_circuit() flag - set on the first multi-hop circuit
-## built and reset only on clock-jump/idle, stale dir-info, or teardown
-## (never on a failed fetch). So "1" can be a false positive with paths
-## actually down, even for general (not just onion) circuits: treat it
-## as "worth trying", not "usable now" - usability is only proven by an
-## actual connection.
-## https://gitlab.torproject.org/tpo/core/tor/-/issues/28027
-## https://gitlab.torproject.org/tpo/core/tor/-/issues/21422
+## Caveat: status/circuit-established can report that a circuit is
+## established, and Tor connectivity can still be down, even for
+## general (not just onion) circuits. It means that Tor successfully
+## built a circuit, and nothing has changed to make Tor think that it
+## maybe can't, not that connections are guaranteed or even likely to
+## succeed, see
+## https://gitlab.torproject.org/tpo/core/tor/-/blob/892dc508dbbbcacf583eb879325c97f36d468c99/src/core/mainloop/mainloop.c#L218.
+## Treat it as "worth trying", not "usable now" - usability is only
+## proven by an actual connection.
 
 print(format(circuit_established))
 

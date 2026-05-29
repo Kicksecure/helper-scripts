@@ -347,7 +347,6 @@ determine_circuit_confirmed() {
    check_tor_circuit_built ## tor_bootstrap_check.bsh
 
    ## Not outputting $tor_circuit_built_output to avoid minor information leak.
-   ## > CIRC 1515 BUILT
    if [ "$tor_circuit_built_check_exit_code" = "0" ]; then
       circuit_confirmed="1"
       output_cmd "Circuit confirmation: yes"
