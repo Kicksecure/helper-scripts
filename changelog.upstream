@@ -1,3 +1,154 @@
+commit 83f816d418c49b52d297a5a7ff3e0e248ecf2c95
+Merge: 8fff1f28 ad2ef207
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 27 18:55:12 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 8fff1f28290815a161bfbbb53f8fca55a0a815e6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 27 22:50:54 2026 +0000
+
+    bumped changelog version
+
+commit ad2ef207de63d8c1bb41d0de2ce02a5a2c3530be
+Merge: 8ff6037a 47aeccdf
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Wed May 27 17:17:53 2026 -0400
+
+    Merge pull request #50 from org-ai-assisted/claude/confident-archimedes-2KQwy
+
+    ci(deps)(deps): bump oss-fuzz-base/base-builder-python from `04d1a93` to `9dd557a` in /.clusterfuzzlite in the docker group across 1 directory
+
+commit 47aeccdf88b38fa0cb2e5515e1a0e1d61663f7a8
+Author: Claude <noreply@anthropic.com>
+Date:   Wed May 27 21:13:52 2026 +0000
+
+    ci(deps)(deps): bump oss-fuzz-base/base-builder-python from `04d1a93` to `9dd557a` in /.clusterfuzzlite in the docker group across 1 directory
+
+    Mirrors Kicksecure/helper-scripts#43 (Dependabot).
+
+    Bumps the docker group with 1 update in the /.clusterfuzzlite directory:
+    oss-fuzz-base/base-builder-python.
+
+    Updates `oss-fuzz-base/base-builder-python` from `04d1a93` to `9dd557a`.
+
+    Same image path (gcr.io/oss-fuzz-base/base-builder-python), SHA-pinned;
+    single-line digest swap. The pin still rides OSS-Fuzz's :latest stream,
+    which the upstream comment block notes is held to the Ubuntu 20.04 /
+    glibc 2.31 v1 ABI required by ClusterFuzzLite's run image.
+
+commit c895e786e1a5c5cbeb3bc43ffa52954ec66ac95b
+Merge: 754444b8 8ff6037a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 27 14:38:13 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 8ff6037a4d54b69d9f67fc6438e783f06282b94e
+Merge: cb57f897 cb9d5642
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Wed May 27 14:36:30 2026 -0400
+
+    parallel.bsh: log per-success at info, per-failure at error with pid+exit (#49)
+
+    parallel.bsh: log per-success at info, per-failure at error with pid+exit
+
+commit cb9d564290c9fd40918d667393ad045c86c9cbb5
+Author: Claude <noreply@anthropic.com>
+Date:   Wed May 27 18:26:07 2026 +0000
+
+    parallel.bsh: log per-success at info, per-failure at error with pid+exit
+
+    The old parallel_wait was silent on success and used 'log warn' for
+    failures with only the label:
+
+      make-helper-one.bsh [WARN]: parallel_wait: job failed: 'adrelanos'
+
+    Two improvements:
+
+    1. Per-success 'log info' line: 'job succeeded: <label> (pid=N)'.
+       Was silent before; users had no per-job confirmation that a
+       given push / build / whatever actually went through. Useful
+       when one of several parallel jobs fails - the success lines
+       prove the others made it.
+
+    2. Per-failure escalated to 'log error' and now includes the
+       child's exit code: 'job failed: <label> (pid=N, exit=K)'.
+       'warn' undersold the severity (parallel_wait returns 1 in
+       this case - that is by definition a failure, not a warning),
+       and the exit code disambiguates kinds of failure (e.g.
+       git push rule violation vs network timeout vs killed by
+       signal) without re-reading the child's stdout/stderr.
+
+    The unwaitable defensive branch is also upgraded from 'log warn'
+    to 'log error' and now surfaces wait_rc, since reaching that
+    branch means we are returning failures the caller cannot
+    distinguish from "ran but exited non-zero".
+
+    Algorithm and return semantics are unchanged: 0 on all-success,
+    1 on any failure, parallel_failures[] populated with labels.
+
+commit 754444b809b2c2e0303aeb2064f0610f5a877679
+Merge: 4e4d29a6 cb57f897
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 26 07:29:10 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 4e4d29a6cc71b8a273b5dfdd8dd4eb1a53f2fabd
+Merge: 7c77dc91 a673ffc1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 26 07:26:27 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit a673ffc1e468726fbef72e85719a2353c3b0c3d4
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue May 26 00:11:31 2026 -0400
+
+    Add helper script for detecting a debug-kicksecure drop file
+
+commit 8b5fb2ea9800ded3e74071a80868219f463eec15
+Merge: aae4f604 7c77dc91
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon May 25 21:41:58 2026 -0400
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit cb57f8974ecf61db3666cbade0a2749dd9c0acd7
+Author: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+Date:   Wed May 20 10:59:07 2026 +0000
+
+    ci(deps)(deps): bump oss-fuzz-base/base-builder-python
+
+    Bumps the docker group with 1 update in the /.clusterfuzzlite directory: oss-fuzz-base/base-builder-python.
+
+
+    Updates `oss-fuzz-base/base-builder-python` from `52b3276` to `04d1a93`
+
+    ---
+    updated-dependencies:
+    - dependency-name: oss-fuzz-base/base-builder-python
+      dependency-version: e24e8e50612617101dd10038502f68268ab45f31d79a3722c230464277a951b3
+      dependency-type: direct:production
+      dependency-group: docker
+    ...
+
+    Signed-off-by: dependabot[bot] <support@github.com>
+
+commit aae4f6049bf0675891c272eab4d8b97bc71eabe8
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon May 25 00:06:41 2026 -0400
+
+    Refactor append-shared into a Python library, write unit tests
+
+commit 7c77dc919d06f4a832547e5bd8d00743199a8a26
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 24 19:08:43 2026 +0000
+
+    bumped changelog version
+
 commit 42443866e2d70c1db7208b178cecfb5f2e177d49
 Merge: 70552954 6a9db3ea
 Author: Patrick Schleizer <adrelanos@whonix.org>
