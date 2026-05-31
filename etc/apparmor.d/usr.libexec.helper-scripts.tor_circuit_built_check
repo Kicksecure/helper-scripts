@@ -13,5 +13,6 @@ include <tunables/global>
   include if exists <abstractions/tor>
   include if exists <local/usr.libexec.helper-scripts.tor_circuit_built_check>
 
+  /usr/libexec/helper-scripts/ r,
   /usr/libexec/helper-scripts/tor_circuit_built_check.py r,
 }
