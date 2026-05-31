@@ -1,3 +1,35 @@
+commit cf8d756ba275cc4bc869d2f7c9fd24d9dd3616f5
+Merge: 116ddd5e 5beb322c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 31 16:15:43 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 5beb322cde4f16bb385edeba41bcc1c0e4c68007
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sat May 30 23:46:35 2026 -0400
+
+    apparmor
+
+commit 8f1d1921be778b0000ee3b942bb25e22646115bd
+Merge: d347cb7e 116ddd5e
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sat May 30 23:40:21 2026 -0400
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit d347cb7e215b9e71c30d8a832ffd0e4fec709826
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu May 28 22:58:10 2026 -0400
+
+    Minor tweaks, remove likely unnecessary permissions from tor_circuit_built_check.py
+
+commit 116ddd5e581207bb5be815f00d0788bfccb7d2c9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 27 22:58:37 2026 +0000
+
+    bumped changelog version
+
 commit 83f816d418c49b52d297a5a7ff3e0e248ecf2c95
 Merge: 8fff1f28 ad2ef207
 Author: Patrick Schleizer <adrelanos@whonix.org>
