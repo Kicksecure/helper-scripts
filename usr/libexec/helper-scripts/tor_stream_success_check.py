@@ -15,11 +15,9 @@
 ## (tor-circuit-established-check). That value is C-Tor's sticky
 ## have_completed_a_circuit() flag: set once on the first MECHANICALLY
 ## built multi-hop circuit and reset only on a clock-jump/idle, stale
-## directory info, or process teardown - never on a failed fetch. So it
-## can read 1 while no circuit actually carries traffic - a false
-## positive even for general-purpose (not just onion) circuits:
-##   https://gitlab.torproject.org/tpo/core/tor/-/issues/28027
-##   https://gitlab.torproject.org/tpo/core/tor/-/issues/21422
+## directory info, process teardown, etc. - not on a failed fetch. So
+## it can read 1 while no circuit actually carries traffic - a false
+## positive even for general-purpose (not just onion) circuits.
 ##
 ## IMPORTANT - this is a PASSIVE observer. It reports success only if a
 ## stream actually reaches SUCCEEDED within the timeout window; it does
