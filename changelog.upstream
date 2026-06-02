@@ -1,3 +1,41 @@
+commit 44dbea0d63e15e70b069b05a40b1dfa8b8ccbc6a
+Merge: e769aa0c b9bc0ec6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 2 18:33:59 2026 -0400
+
+    Merge remote-tracking branch 'gitlab-adrelanos/master'
+
+commit b9bc0ec61c054880ab015edb48eac17c055e63e2
+Author: Claude <noreply@anthropic.com>
+Date:   Tue Jun 2 13:20:25 2026 -0400
+
+    Add -B to fuzz/property-test shebangs to stop .pyc generation
+
+    The 4 fuzz harnesses and 4 CI property tests used "#!/usr/bin/python3
+    -su", missing the -B flag the other 81 Python entry points carry. Run
+    without -B, each invocation wrote bytecode caches not just for itself
+    but for every library package it imports (append_shared, strip_markup,
+    stdisplay, ...). Switch them to -Bsu for consistency and to suppress
+    the spurious __pycache__/*.pyc output.
+
+commit e3fb1cadd519ed3d91064558285376c9a4f45b12
+Author: Claude <noreply@anthropic.com>
+Date:   Tue Jun 2 13:08:09 2026 -0400
+
+    Fix spurious leading newline in overwrite mode
+
+    In overwrite mode the file is never read, so file_contents stays "".
+    The terminating-newline correction then saw "" does not end in "\n"
+    and prepended a "\n", producing an extra blank line at the top of the
+    output. Guard the correction on non-empty content so it only repairs a
+    genuinely missing trailing newline (append to a non-empty file).
+
+commit e769aa0c325e79a850a77407cad4ceef04a56a2e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun May 31 20:33:33 2026 +0000
+
+    bumped changelog version
+
 commit cf8d756ba275cc4bc869d2f7c9fd24d9dd3616f5
 Merge: 116ddd5e 5beb322c
 Author: Patrick Schleizer <adrelanos@whonix.org>
