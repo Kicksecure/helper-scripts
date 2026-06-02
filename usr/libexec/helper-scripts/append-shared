@@ -94,10 +94,12 @@ def main():
                 "should be created) is not writable!"
             )
 
-    if not file_contents.endswith("\n"):
+    if file_contents != "" and not file_contents.endswith("\n"):
         # Fix a missing terminating newline. Some text editors will fail to
         # write these properly and it will break our line appending if we don't
-        # correct it first.
+        # correct it first. Skip this when there are no existing contents (e.g.
+        # overwrite mode, or an empty/nonexistent file) to avoid prepending a
+        # spurious leading newline.
         file_contents += "\n"
     if not line_to_append.endswith("\n"):
         # Make sure we add a terminating newline ourselves too :)
