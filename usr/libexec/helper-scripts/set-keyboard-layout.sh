@@ -315,7 +315,7 @@ warn_kloak_is_running() {
   ##
   ## We want just the bit between 'argv[]=' and the ending semicolon. This
   ## will include an extra space at the end, but we can live with that.
-  IFS=' ' read -r -a -- kloak_command_line_list < <("${timeout_command[@]}" \
+  IFS=' ' read -r -a kloak_command_line_list < <("${timeout_command[@]}" \
     systemctl show --no-pager --quiet --value --property=ExecStart \
     -- kloak.service \
     | sed 's/.*argv\[\]=\([^;]\+\);.*/\1/')
