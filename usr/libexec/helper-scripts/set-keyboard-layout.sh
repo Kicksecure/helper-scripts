@@ -315,7 +315,11 @@ warn_kloak_is_running() {
   ##
   ## We want just the bit between 'argv[]=' and the ending semicolon. This
   ## will include an extra space at the end, but we can live with that.
-  IFS=' ' read -r -a -- kloak_command_line_list < <("${timeout_command[@]}" \
+  ##
+  ## The '--' must come AFTER the array name: 'read -r -a -- name' fails
+  ## ("'--': not a valid identifier") because '-a' consumes the next word as
+  ## the array name. Placed after the name, '--' is the end-of-options marker.
+  IFS=' ' read -r -a kloak_command_line_list -- < <("${timeout_command[@]}" \
     systemctl show --no-pager --quiet --value --property=ExecStart \
     -- kloak.service \
     | sed 's/.*argv\[\]=\([^;]\+\);.*/\1/')
