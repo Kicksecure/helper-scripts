@@ -1,3 +1,59 @@
+commit 5fecf688351d27fc768624e55050883e8666ff83
+Merge: 15b82060 44e0e1fa
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 27 10:09:21 2026 -0400
+
+    Merge remote-tracking branch 'gitlab-adrelanos/master'
+
+commit 44e0e1fa18f135f6df4283d290ec34092113fc32
+Author: claude (dev19 452d6a32-78ae-4574-a7aa-e04eaa9194f2) <noreply@anthropic.com>
+Date:   Sat Jun 27 08:05:28 2026 -0400
+
+    set-keyboard-layout.sh: restore end-of-options '--' on the kloak read
+
+    Follow-up to the previous fix: keep the end-of-options '--' for
+    consistency, but in the only position where it is valid for an array
+    read -- AFTER the array name.
+
+    'read -r -a -- name' fails with "'--': not a valid identifier" because
+    '-a' takes the immediately-following word as the array NAME, so '--'
+    became the name. 'read -r -a name --' instead treats '--' as the
+    end-of-options marker (verified working with the process-substitution
+    input under errexit/nounset/pipefail). A comment documents the gotcha.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01J4U4YpkvdtZK3nhTLBjC9V
+
+commit d480ec1afb0bd3a1d0facc45f47e9fe965ef79f3
+Author: claude (dev19 452d6a32-78ae-4574-a7aa-e04eaa9194f2) <noreply@anthropic.com>
+Date:   Sat Jun 27 07:43:05 2026 -0400
+
+    set-keyboard-layout.sh: fix broken 'read -a --' array read
+
+    The end-of-options campaign blindly appended '--' to the kloak
+    ExecStart array read in warn_kloak_is_running(). Unlike a plain
+    'read -r -- var', the '-a' option consumes the very next word as the
+    array NAME, so '--' became the array name:
+
+      read: `--': not a valid identifier
+
+    read then exits non-zero, errexit fires the error_handler, and
+    kloak_command_line_list is never populated. Drop the spurious '--'
+    (restoring the pre-campaign form); 'read' has no other options after
+    the array name so end-of-options support is unnecessary here.
+
+    The plain 'read -r -- var' calls elsewhere in this file are valid and
+    left untouched.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01J4U4YpkvdtZK3nhTLBjC9V
+
+commit 15b820600d2471c213901ec4ed2bacea4bd3e398
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 2 22:37:47 2026 +0000
+
+    bumped changelog version
+
 commit 44dbea0d63e15e70b069b05a40b1dfa8b8ccbc6a
 Merge: e769aa0c b9bc0ec6
 Author: Patrick Schleizer <adrelanos@whonix.org>
