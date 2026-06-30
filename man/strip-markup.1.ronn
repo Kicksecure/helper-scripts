@@ -20,7 +20,13 @@ If a string is provided as an argument, it is used as the input.
 Otherwise, the string is read from standard input.
 
 HTML character references (such as `&amp;`, `&lt;`, `&#60;`) are
-decoded to their corresponding characters.
+decoded to their corresponding characters. This decoding can produce
+non-printable or otherwise dangerous characters: for example `&#0;`,
+`&#27;`, and `&#x202e;` decode to NUL, the ESC that begins ANSI escape
+sequences, and the Unicode right-to-left override respectively. The
+decoded output can therefore be **more dangerous than the input** -
+harmless literal text such as `&#x202e;` becomes a real control
+character - and is not safe to print to a terminal as-is.
 
 ### Double-strip protection
 
@@ -39,6 +45,18 @@ does **not** escape the output for safe embedding in HTML attributes or
 other HTML contexts. If the output will be inserted into HTML, the
 caller is responsible for applying appropriate context-specific
 escaping.
+
+`strip-markup` is **not** a display-safety boundary. It removes markup
+only; it does not remove control characters, ANSI escape sequences, or
+non-ASCII / Unicode characters, and (as noted above) it decodes HTML
+entities, which can introduce such characters. Its output must not be
+printed to a terminal or shown to a user without further sanitization.
+
+For any string that will be displayed to a user - in a terminal or as
+HTML content - use `sanitize-string`(1) instead. It combines
+`strip-markup` with `stdisplay`(1) and forces ASCII output, so control
+characters, escapes, and Unicode cannot survive. `strip-markup` is a
+building block of that pipeline, not a substitute for it.
 
 ## RETURN VALUES
 

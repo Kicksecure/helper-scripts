@@ -61,6 +61,7 @@ def strip_markup(untrusted_string: str) -> str:
     markup_stripper: StripMarkupEngine = StripMarkupEngine()
     try:
         markup_stripper.feed(untrusted_string)
+        markup_stripper.close()
     except Exception:
         ## CPython's HTMLParser raises uncaught exceptions on some
         ## malformed inputs (e.g. AssertionError on '<![...' patterns
@@ -73,11 +74,21 @@ def strip_markup(untrusted_string: str) -> str:
     markup_stripper = StripMarkupEngine()
     try:
         markup_stripper.feed(strip_one_string)
+        markup_stripper.close()
     except Exception:
         return _underscore_sanitize(strip_one_string)
     strip_two_string: str = markup_stripper.get_data()
     if strip_one_string == strip_two_string:
-        return strip_one_string
+        ## Qt's HTML parser (as used by QTextBrowser) violates the HTML
+        ## specification and allows whitespace between the opening `<`
+        ## character of a tag and the tag name. Python's parser complies with
+        ## the spec and does not consider strings like `< a>` to be tags, thus
+        ## they are left behind and Qt will interpret them. We therefore have
+        ## to remove '<' characters from the sanitized string even though it
+        ## no longer contains true HTML at this point. '>' and '&' alone
+        ## cannot open a tag, and neutering them would corrupt legitimate
+        ## text, so they are left as-is.
+        return strip_one_string.replace("<", "_")
 
     ## If we get this far, the second strip attempt further transformed the
     ## text, indicating an attempt to maliciously circumvent the stripper.

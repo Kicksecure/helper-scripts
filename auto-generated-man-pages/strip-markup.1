@@ -10,11 +10,15 @@
 .P
 If a string is provided as an argument, it is used as the input\. Otherwise, the string is read from standard input\.
 .P
-HTML character references (such as \fB&amp;\fR, \fB&lt;\fR, \fB&#60;\fR) are decoded to their corresponding characters\.
+HTML character references (such as \fB&amp;\fR, \fB&lt;\fR, \fB&#60;\fR) are decoded to their corresponding characters\. This decoding can produce non\-printable or otherwise dangerous characters: for example \fB&#0;\fR, \fB&#27;\fR, and \fB&#x202e;\fR decode to NUL, the ESC that begins ANSI escape sequences, and the Unicode right\-to\-left override respectively\. The decoded output can therefore be \fBmore dangerous than the input\fR \- harmless literal text such as \fB&#x202e;\fR becomes a real control character \- and is not safe to print to a terminal as\-is\.
 .SS "Double\-strip protection"
 \fBstrip\-markup\fR performs two consecutive strip passes over the input\. If the second pass further transforms the text, this indicates that the first pass revealed new markup that was hidden inside nested tags (for example, \fB<<b>b>Bold<</b>/b>\fR)\. In this case, the tool treats the input as malicious and replaces all \fB<\fR, \fB>\fR, and \fB&\fR characters in the first\-pass result with underscores (\fB_\fR), so that the neutered text is visible to the user as a warning\.
 .SS "Scope"
 \fBstrip\-markup\fR ensures that its output does not contain HTML tags\. It does \fBnot\fR escape the output for safe embedding in HTML attributes or other HTML contexts\. If the output will be inserted into HTML, the caller is responsible for applying appropriate context\-specific escaping\.
+.P
+\fBstrip\-markup\fR is \fBnot\fR a display\-safety boundary\. It removes markup only; it does not remove control characters, ANSI escape sequences, or non\-ASCII / Unicode characters, and (as noted above) it decodes HTML entities, which can introduce such characters\. Its output must not be printed to a terminal or shown to a user without further sanitization\.
+.P
+For any string that will be displayed to a user \- in a terminal or as HTML content \- use \fBsanitize\-string\fR(1) instead\. It combines \fBstrip\-markup\fR with \fBstdisplay\fR(1) and forces ASCII output, so control characters, escapes, and Unicode cannot survive\. \fBstrip\-markup\fR is a building block of that pipeline, not a substitute for it\.
 .SH "RETURN VALUES"
 .IP "\(bu" 4
 \fB0\fR Successfully stripped markup and printed the result\.

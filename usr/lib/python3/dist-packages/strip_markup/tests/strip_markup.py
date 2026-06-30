@@ -154,6 +154,14 @@ for good measure: &#^*$&^%&!%#^&@%$R(*!_|:?}:"|}][',',./. And how about
 Of course, this example wouldn't be complete without a hard return. This is
 probably long enough, so let's let this be the end of it.
 """,
+            ## A tagless string containing '&' (e.g. any URL with a query
+            ## string) must round-trip. With convert_charrefs=True the parser
+            ## buffers such text and only flushes it on close(); a missing
+            ## close() used to drop the whole value, emptying the confirmation
+            ## dialog. These guard that fix.
+            "http://example.com/?a=1&b=2",
+            "http://example.com/search?q=foo&lang=en&page=2",
+            "http://example.com/?trailing=amp&",
         ]
         for test_case in test_case_list_1:
             self._test_args(
@@ -257,6 +265,27 @@ document with an embedded script. :)
                 "<huh>This is a document containing tags that don't really "
                 + "exist.</huh>",
                 "This is a document containing tags that don't really exist.",
+            ),
+            ## A '<' followed by whitespace then a tag name is not a tag to
+            ## Python's html.parser, so it passes through verbatim - but a more
+            ## lenient downstream parser (Qt's QTextDocument, used by
+            ## msgcollector's generic_gui_message) skips the whitespace and
+            ## revives the tag. The residual '<' must be neutered to '_' so the
+            ## stripped output cannot be re-interpreted as markup.
+            (
+                "< a href='http://example.com'>click</a>",
+                "_ a href='http://example.com'>click",
+            ),
+            (
+                "< img src='http://example.com/beacon.png'>",
+                "_ img src='http://example.com/beacon.png'>",
+            ),
+            ## A benign, non-markup '<' is neutered to '_' as well. This is a
+            ## deliberate, conservative choice: guaranteeing no '<' survives is
+            ## provably safe against any downstream HTML parser.
+            (
+                "a < b",
+                "a _ b",
             ),
         ]
 
