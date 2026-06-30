@@ -1,3 +1,102 @@
+commit c761f971d027081ab6f25d97fb5b844bb800919d
+Merge: 4b487ec3 64b79556
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 30 15:03:34 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 64b79556bb1c771f407f8c44c3e3362d19f6b765
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Jun 29 21:30:23 2026 -0400
+
+    Modified and squashed commit of the following:
+
+    commit c49245a966521b7721b89927f4db8d0f71f41d71
+    Author: claude (dev26 2ff89067-ed45-4016-a970-4c261ee4ed0f) <noreply@anthropic.com>
+    Date:   Mon Jun 29 16:05:23 2026 -0400
+
+        strip-markup(1): document that it is not a display-safety boundary
+
+        strip-markup strips markup only and decodes HTML entities, so it can turn
+        harmless literal text (e.g. "&#x202e;", "&#0;", "&#27;") into a real control
+        character (RLO, NUL, the ESC that starts ANSI sequences) - making its output
+        potentially MORE dangerous than its input and unsafe to print to a terminal or
+        show to a user as-is.
+
+        Document this in the man page: a new note in DESCRIPTION about entity decoding
+        producing dangerous characters, and an expanded SCOPE section stating that
+        strip-markup is not a display-safety boundary and that sanitize-string(1)
+        (which composes strip-markup with stdisplay and forces ASCII output) is the
+        tool to use for anything shown to a user. Regenerated the roff with ronn.
+
+        Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+        Claude-Session: https://claude.ai/code/session_01R1fnYEDUievJpNVEQEE9p1
+
+    commit ec9fb64108239cdbcb1d556483a768f7e0e17229
+    Author: claude (dev26 2ff89067-ed45-4016-a970-4c261ee4ed0f) <noreply@anthropic.com>
+    Date:   Mon Jun 29 15:22:29 2026 -0400
+
+        strip_markup: call HTMLParser.close() so '&' strings are not dropped
+
+        StripMarkupEngine sets convert_charrefs=True, under which HTMLParser buffers
+        character data to coalesce entities and only flushes it at the next tag or on
+        close(). strip_markup never called close(), so a tagless string containing a
+        '&' - notably ANY URL with a query string ("http://example.com/?a=1&b=2") -
+        never reached handle_data and get_data() returned "", silently dropping the
+        entire value.
+
+        In open-link-confirmation this emptied the confirmation dialog: the link the
+        user is asked to confirm was shown blank while the real (raw) URL still opened
+        on "yes" - defeating the dialog's purpose (informed consent), and breaking it
+        for the common case of any URL with parameters.
+
+        Fix: call close() after each feed(). It is inside the existing try/except, so a
+        parser error on malformed input still falls back to _underscore_sanitize. The
+        no-'<' guarantee is unchanged (the neutering runs on the flushed data), and the
+        existing unit + property tests (idempotent, output-never-longer, markup-free,
+        ASCII-only) still pass. Adds URL-with-'&' round-trip regression vectors.
+
+        Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+        Claude-Session: https://claude.ai/code/session_01R1fnYEDUievJpNVEQEE9p1
+
+    commit 22ff930e31295c3d38265087e6fe67da13fafc23
+    Author: claude (dev26 2ff89067-ed45-4016-a970-4c261ee4ed0f) <noreply@anthropic.com>
+    Date:   Mon Jun 29 13:17:34 2026 -0400
+
+        strip_markup: neuter residual '<' so stripped output cannot revive into a tag
+
+        strip_markup stripped tags using Python's html.parser, then returned the
+        extracted text. A '<' that html.parser does not treat as a tag - notably a
+        '<' followed by whitespace then a tag name ("< a href=...>", "<\timg ...>"),
+        or a '<' produced by decoding an entity such as "&lt img src=x>" - was passed
+        through verbatim. A more lenient downstream HTML parser (Qt's QTextDocument,
+        used by msgcollector's generic_gui_message) skips that whitespace and revives
+        the tag, so sanitize-string output embedded in a confirmation/error dialog
+        could inject an attacker-controlled clickable <a href> or an <img> - a markup
+        injection in a security-relevant dialog (e.g. open-link-confirmation).
+
+        Fix: in the happy path, replace any residual '<' with '_'. Guaranteeing no
+        '<' survives is provably safe against any downstream HTML parser, rather than
+        modelling that parser's tag grammar - which is the exact assumption that
+        caused this bug. '>' and '&' alone cannot open a tag and neutering them would
+        corrupt legitimate text, so they are left as-is. This matches the existing
+        _underscore_sanitize fallback, which already neuters '<'. The change is
+        length-preserving and idempotent, so the strip_markup / sanitize_string
+        property tests (output-never-longer, idempotent, markup-free, ASCII-only) and
+        the existing vectors are unaffected.
+
+        Adds regression vectors for the whitespace-tag bypass and for a benign '<'
+        (neutered to '_' by design).
+
+        Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+        Claude-Session: https://claude.ai/code/session_01R1fnYEDUievJpNVEQEE9p1
+
+commit 4b487ec3a7381a51a486861e44512e4f7275533d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 27 14:11:54 2026 +0000
+
+    bumped changelog version
+
 commit 5fecf688351d27fc768624e55050883e8666ff83
 Merge: 15b82060 44e0e1fa
 Author: Patrick Schleizer <adrelanos@whonix.org>
