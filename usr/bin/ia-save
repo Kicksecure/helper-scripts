@@ -15,7 +15,6 @@ set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
 
-# shellcheck source-path=SCRIPTDIR
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
