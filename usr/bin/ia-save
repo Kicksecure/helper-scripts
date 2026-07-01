@@ -121,6 +121,14 @@ ${curl_output}"
     die 1 "Could not parse snapshot URL from 'location' header: '${location}'."
   fi
 
+  ## web.archive.org may return a relative redirect (e.g. '/web/...');
+  ## make it an absolute, clickable URL.
+  case "${link}" in
+    /*)
+      link="https://web.archive.org${link}"
+      ;;
+  esac
+
   printf '%s\n' "${link}"
 }
 
