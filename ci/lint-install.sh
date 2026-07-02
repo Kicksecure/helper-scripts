@@ -9,8 +9,9 @@
 ## (.github/workflows/lint.yml).
 ##
 ## Linters and build helpers come from the Debian/Ubuntu archive (the
-## workflow runs in a debian:* / ubuntu:* matrix container), EXCEPT black,
-## which is pinned to the trixie (Debian 13 stable) version below.
+## workflow runs in a debian:* / ubuntu:* matrix container), EXCEPT the
+## style/type linters (black, pylint, mypy), which are pinned to the trixie
+## (Debian 13 stable) versions below.
 ##
 ## 'git config safe.directory' is needed because actions/checkout
 ## clones with the runner user but the container may treat the
