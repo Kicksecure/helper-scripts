@@ -3,18 +3,133 @@
 ## Copyright (C) 2022 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-#set -x
-set -e
+## AI-Assisted
 
-if [ "$1" = "" ]; then
-   echo "$0: ERROR: No link given!" >&2
-   exit 1
-fi
+## Save a URL to the Internet Archive (web.archive.org) and print the
+## resulting snapshot URL. Optionally routes the request over Tor.
 
-curl_output=$(curl --silent --head "https://web.archive.org/save/$1")
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
-location=$(echo "$curl_output" | grep '^location:')
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
-link=$(echo "$location" | awk '{ print $2 }')
+tor_ip=127.0.0.1
+tor_port=9050
+connect_timeout=30
+max_time=60
 
-echo "$link"
+usage() {
+  printf '%s\n' "\
+Usage: ${0##*/} [--tor] [--tor-ip <ip>] [--tor-port <port>] <url>
+
+Save <url> to web.archive.org and print the snapshot URL.
+
+  --tor             Route the request over Tor (SOCKS5).
+  --tor-ip <ip>     Tor proxy IP. Default: ${tor_ip}.
+  --tor-port <port> Tor proxy port. Default: ${tor_port}.
+  --help            Show this help."
+}
+
+main() {
+  local url use_tor curl_cmd curl_output curl_rc location link
+
+  url=""
+  use_tor=false
+
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --tor)
+        use_tor=true
+        ;;
+      --tor-ip)
+        shift
+        if [ "$#" -eq 0 ]; then
+          die 1 "'--tor-ip' requires an argument."
+        fi
+        tor_ip="$1"
+        ;;
+      --tor-port)
+        shift
+        if [ "$#" -eq 0 ]; then
+          die 1 "'--tor-port' requires an argument."
+        fi
+        tor_port="$1"
+        ;;
+      --help|-h)
+        usage
+        exit 0
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        die 1 "Unknown option '$1'."
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
+
+  if [ "$#" -gt 0 ]; then
+    url="$1"
+    shift
+  fi
+
+  if [ "${url}" = "" ]; then
+    usage >&2
+    die 1 "No URL given."
+  fi
+
+  curl_cmd=(
+    curl
+    --silent
+    --show-error
+    --head
+    --connect-timeout "${connect_timeout}"
+    --max-time "${max_time}"
+  )
+  if [ "${use_tor}" = "true" ]; then
+    curl_cmd+=( --socks5-hostname "${tor_ip}:${tor_port}" )
+  fi
+  curl_cmd+=( "https://web.archive.org/save/${url}" )
+
+  curl_rc=0
+  curl_output="$( "${curl_cmd[@]}" )" || curl_rc="$?"
+  if [ "${curl_rc}" != "0" ]; then
+    die 1 "Request to web.archive.org failed (curl exit code '${curl_rc}'). Try again later or use '--tor'."
+  fi
+
+  location=""
+  location="$(printf '%s\n' "${curl_output}" \
+    | grep --ignore-case --max-count=1 '^location:' \
+    | tr --delete '\r')" || true
+  if [ "${location}" = "" ]; then
+    die 1 "No 'location' header returned; archiving did not succeed (rate-limited or blocked). Response headers:
+${curl_output}"
+  fi
+
+  link="$(printf '%s\n' "${location}" | awk '{ print $2 }')"
+  if [ "${link}" = "" ]; then
+    die 1 "Could not parse snapshot URL from 'location' header: '${location}'."
+  fi
+
+  ## web.archive.org may return a relative redirect (e.g. '/web/...');
+  ## make it an absolute, clickable URL.
+  case "${link}" in
+    /*)
+      link="https://web.archive.org${link}"
+      ;;
+  esac
+
+  printf '%s\n' "${link}"
+}
+
+main "$@"
