@@ -33,19 +33,22 @@ fi
 apt-get update --error-on=any
 apt-get dist-upgrade -y
 apt-get install -y --no-install-recommends \
-  git python3-pytest pylint mypy python3-pip ncurses-term \
+  git python3-pytest python3-pip ncurses-term \
   build-essential debhelper dh-python dh-apparmor \
   python3-hypothesis
 
-## Pin black to the trixie (Debian 13 stable) version instead of each
-## container's own archive black. sid/testing/rolling ship a NEWER black that
-## reformats files the trixie black -- and this repo -- consider clean, which
-## made 'black --check' non-reproducible across the matrix (it flagged
-## append_shared.py only on the newer containers). Trixie's black is 25.1.0;
-## pinning it via pip gives the same formatting everywhere. Not from apt
-## because no single apt suite serves trixie's black to all four containers
-## (sid/testing/ubuntu do not have it); --break-system-packages is safe in the
-## ephemeral CI container. Keep this in sync with Debian stable's black.
-pip install --break-system-packages 'black==25.1.0'
+## Pin the style/type linters (black, pylint, mypy) to the trixie (Debian 13
+## stable) versions instead of each container's own archive linters.
+## sid/testing/rolling ship NEWER linters that reject code the trixie linters --
+## and this repo -- consider clean (newer black reformatted append_shared.py;
+## newer pylint flagged its module variable as a mis-named constant), making the
+## checks non-reproducible across the matrix. Pin via pip so all four containers
+## apply the SAME rules. Not from apt: no single apt suite serves trixie's
+## versions to all four containers (sid/testing/ubuntu lack them);
+## --break-system-packages is safe in the ephemeral CI container. Keep these in
+## sync with Debian stable. (pytest/hypothesis stay from apt -- they gate
+## runtime behavior, not version-opinionated style.)
+pip install --break-system-packages \
+  'black==25.1.0' 'pylint==3.3.4' 'mypy==1.15.0'
 
 git config --global --add safe.directory "${GITHUB_WORKSPACE:-$PWD}"
