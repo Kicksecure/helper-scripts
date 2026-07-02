@@ -1,3 +1,22 @@
+commit 719cbfc044bcde3d7ab3420611325b947d2425bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 2 02:13:26 2026 -0400
+
+    .
+
+commit 5eace9e50b6564ccbbd196de51a735c372282c07
+Merge: 1a8f452f 67266f6e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 2 02:11:21 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 1a8f452f2b234d78b3b811bd74393dc3ecbce3c2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 2 06:09:11 2026 +0000
+
+    bumped changelog version
+
 commit 7c3917033c9ff130d18257d7f416095eb9379328
 Merge: ea814501 a94eb1af
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -66,6 +85,71 @@ Date:   Wed Jul 1 20:52:46 2026 -0400
 
         Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
         Claude-Session: https://claude.ai/code/session_018bezwAzE9uxSX1xrH7okFV
+
+commit 67266f6ee29f79d1d660ddd32f81e340490262b5
+Author: claude (dev33 eafa91ee-ab48-4832-aa32-d47aaacfe10a) <noreply@anthropic.com>
+Date:   Wed Jul 1 16:37:17 2026 -0400
+
+    ia-save: handle relative Location redirect from web.archive.org
+
+    web.archive.org's /save/ endpoint can return a relative 'Location'
+    header (e.g. '/web/<timestamp>/<url>'). The previous code printed the
+    header value verbatim, so a relative redirect produced a bare path
+    instead of a usable snapshot URL. Prepend the scheme+host when the
+    value starts with '/'.
+
+    Found via AI review (local reviewer pass).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01KsKfio8dkvYawpvXvSBTYq
+
+commit 9bd5eebd580c96b000571515ba98b140b876cd8a
+Author: claude (dev33 eafa91ee-ab48-4832-aa32-d47aaacfe10a) <noreply@anthropic.com>
+Date:   Wed Jul 1 16:23:20 2026 -0400
+
+    helper-scripts: resolve sourced files via .shellcheckrc source-path
+
+    The submodule .shellcheckrc sets 'external-sources=true' but did not
+    tell shellcheck where to resolve the relative 'source=' directives
+    from, so every bin that sources helper-scripts (34 of them) tripped
+    SC1091 ("not following") when the static gate linted it - the paths
+    are written relative to each script's own directory, but shellcheck
+    resolved them relative to the invocation CWD.
+
+    Add 'source-path=SCRIPTDIR' so shellcheck resolves 'source=' relative
+    to each script's directory. This keeps the stricter 'follow the
+    sources' stance (SC1091 stays enabled for genuinely missing files)
+    instead of blanket-disabling SC1091 like the sibling repos do.
+
+    Also drop the now-redundant in-file 'source-path=SCRIPTDIR' directive
+    from ia-save; the shared .shellcheckrc covers it, matching the other
+    bins.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01KsKfio8dkvYawpvXvSBTYq
+
+commit fddb1b9f697a26834f9915b3f561a8d1cc7c2877
+Author: claude (dev33 eafa91ee-ab48-4832-aa32-d47aaacfe10a) <noreply@anthropic.com>
+Date:   Wed Jul 1 15:27:22 2026 -0400
+
+    ia-save: harden Internet Archive save wrapper
+
+    The previous version had no request timeout, so an unreachable or slow
+    web.archive.org (e.g. clearnet blocked in Whonix) made it hang forever.
+    It also only matched a lowercase 'location:' header (breaking under
+    HTTP/1.1 'Location:'), and emitted an empty string with no error on a
+    missing header (rate-limit / block), silently exiting.
+
+    - add --connect-timeout 30 and --max-time 60 (bounded, no more hangs)
+    - add --tor (and --tor-ip / --tor-port) to route the save over Tor,
+      mirroring the sibling archive.today tool
+    - match 'location:' case-insensitively and strip CR
+    - fail loud with a diagnostic when curl errors or no location header
+      is returned, instead of printing an empty result
+    - adopt the strict-mode preamble and log/die helpers; add --help
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01KsKfio8dkvYawpvXvSBTYq
 
 commit ea81450130ca26d4b485ddc7524864556d392e53
 Author: Patrick Schleizer <adrelanos@whonix.org>
