@@ -36,4 +36,28 @@ printf '%s\n' "USER=${USER:-<unset>}  EUID=$EUID"
 ls -la -- "${HOME:-/root}/trojan-source" 2>/dev/null | head || true
 printf '%s\n' "::endgroup::"
 
+## The suite includes permission-based rejection tests (e.g. 'append' refusing
+## an unwritable parent dir). Those are no-ops under root: CAP_DAC_OVERRIDE lets
+## root write regardless of the mode bits, so os.access(dir, W_OK) returns true
+## and the rejection never fires -- the test then false-fails (got 0, want 1).
+## CI container jobs run as root, so run the whole suite as a throwaway NON-ROOT
+## user, which exercises the real rejection path. No test needs root, and the
+## trojan-source corpus (cloned to ~/trojan-source) is not consumed here.
+##
+## Gated on CI too, not EUID alone: this block creates a system user and
+## 'chown --recursive's the checkout, which is fine in the ephemeral CI
+## container but would be a destructive surprise on a dev host running
+## 'sudo ALLOW_LOCAL=true ./ci/lint-tests.sh'. Locally, just run as-is.
+if [ "${EUID}" -eq 0 ] && [ "${CI:-}" = "true" ]; then
+  test_user='hs-tester'
+  id -- "${test_user}" >/dev/null 2>&1 \
+    || useradd --create-home --shell /bin/bash -- "${test_user}"
+  ## git refuses a repo owned by a different user ("dubious ownership"), so hand
+  ## the whole checkout to the test user; pytest/black/pylint/mypy read from it
+  ## and the tests write only to their own /tmp TemporaryDirectory.
+  chown --recursive -- "${test_user}:${test_user}" .
+  exec runuser --user "${test_user}" -- \
+    env HOME="/home/${test_user}" CI="${CI:-true}" ./run-tests
+fi
+
 ./run-tests
