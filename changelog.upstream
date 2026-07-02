@@ -1,3 +1,80 @@
+commit 4c217699c8365cbc9e3189ca871201a880f89798
+Merge: 4d49e8a2 e19b3184
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 2 06:15:11 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit e19b3184220b2deea40dae1e81d8fdf9f4240078
+Author: claude (dev22 c20093f1-1b30-4397-87b6-9586321c87df) <noreply@anthropic.com>
+Date:   Thu Jul 2 05:00:00 2026 -0400
+
+    ci/lint-install: pin pylint + mypy to trixie too (not just black)
+
+    Follow-up to 674ee694: pinning black alone left the same version skew for the
+    other linters. On sid/testing the newer pylint rejects append_shared.py's
+    module variable _executable_name as a mis-named constant (C0103), which
+    trixie's pylint 3.3.4 (and this repo) accept -- it is a mutable module var,
+    not a constant, so renaming it UPPER_CASE would be semantically wrong. Pin
+    pylint 3.3.4 and mypy 1.15.0 (trixie versions) via pip alongside black 25.1.0
+    so all four matrix containers apply identical rules. debian:stable and
+    ubuntu:rolling were already green after the black pin.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_018bezwAzE9uxSX1xrH7okFV
+
+commit 674ee694d9f3b36f229d786ceeaa1c95451e32c8
+Author: claude (dev22 c20093f1-1b30-4397-87b6-9586321c87df) <noreply@anthropic.com>
+Date:   Thu Jul 2 04:51:31 2026 -0400
+
+    ci: pin black to trixie's 25.1.0 + give non-root test user trojan-source
+
+    Two follow-ups to the non-root test run (3f5265f2):
+
+    - black skew: black was installed unpinned via apt across a stable/testing/
+      unstable/rolling container matrix, so sid/testing/rolling ran a NEWER black
+      that reformats append_shared.py while trixie's black (and this repo) consider
+      it clean -- 'black --check' was non-reproducible. Pin black to trixie's
+      25.1.0 via pip so all four containers format identically (no single apt suite
+      serves trixie's black to all four).
+
+    - trojan-source regression: run-tests reads "${HOME}/trojan-source" and exits 1
+      if absent; the corpus was cloned into root's HOME, but the run now switches to
+      the non-root test user whose HOME differs. Copy the corpus into the test
+      user's HOME so the lookup succeeds.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_018bezwAzE9uxSX1xrH7okFV
+
+commit 3f5265f277b726b57b768d347de023f7a92cff37
+Author: claude (dev22 c20093f1-1b30-4397-87b6-9586321c87df) <noreply@anthropic.com>
+Date:   Thu Jul 2 03:10:54 2026 -0400
+
+    ci/lint-tests: run the suite as non-root (root bypassed permission tests)
+
+    The CI container job runs as root, and root's CAP_DAC_OVERRIDE bypasses
+    directory mode bits, so os.access(parent, W_OK) is always true and
+    append_shared's unwritable-parent-dir rejection never fires -- the test
+    test_append_reject_unwritable_parent_dir then false-failed (got 0, want 1).
+
+    Run the whole suite as a throwaway non-root 'hs-tester' user (create it,
+    chown the checkout so git/pytest/black/pylint/mypy work, then re-exec
+    run-tests via runuser), so permission-rejection tests exercise their real
+    path. exec preserves run-tests' exit code, so a genuine failure still fails
+    CI. No test needs root; the trojan-source corpus is not consumed here.
+
+    Gated on CI=true as well as EUID==0 so a local 'sudo ALLOW_LOCAL=true' run
+    does not create a system user or chown a dev's working tree (per CodeRabbit).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_018bezwAzE9uxSX1xrH7okFV
+
+commit 4d49e8a2660404ab006c820ddf2ca902e3223292
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 2 06:14:50 2026 +0000
+
+    bumped changelog version
+
 commit 719cbfc044bcde3d7ab3420611325b947d2425bc
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jul 2 02:13:26 2026 -0400
