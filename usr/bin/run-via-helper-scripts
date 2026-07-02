@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 ## AI-Assisted
@@ -60,5 +60,5 @@ esac
 ## process tree (the call chain is easier to debug); forward the tool's
 ## exit code.
 exit_code=0
-"$tool" "$@" || exit_code=$?
+"$tool" "$@" || exit_code="$?"
 exit "$exit_code"
