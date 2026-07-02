@@ -158,7 +158,18 @@ def scan_file(f: TextIO, filename: str | None = None) -> bool:
         if scan_line(line, lineno=lineno, filename=filename):
             found = True
 
-    if last_line is not None and not last_line.endswith("\n"):
+    ## A missing final newline is benign to some callers (e.g. scanning git
+    ## blob temp files that legitimately lack one). Suppress just this finding
+    ## when UNICODE_SHOW_ALLOW_MISSING_FINAL_NEWLINE=1, so the exit code and
+    ## output reflect only genuinely suspicious characters.
+    suppress_missing_newline: bool = (
+        os.environ.get("UNICODE_SHOW_ALLOW_MISSING_FINAL_NEWLINE") == "1"
+    )
+    if (
+        last_line is not None
+        and not last_line.endswith("\n")
+        and not suppress_missing_newline
+    ):
         found = True
         ## Missing newline at the end is suspicious.
         display_name = stdisplay(filename, sgr=-1) if filename else "<stdin>"
