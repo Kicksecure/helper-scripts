@@ -1,3 +1,28 @@
+commit 94768df1287e4ec4c588417f93979aa41e6f91e3
+Merge: 36c29096 642f7d69
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 2 07:58:00 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 642f7d69b1aebd30500f7fc54e683dabae90f58f
+Author: claude (dev22 c20093f1-1b30-4397-87b6-9586321c87df) <noreply@anthropic.com>
+Date:   Thu Jul 2 07:24:56 2026 -0400
+
+    ci/lint-install: comment says all three linters are pinned, not just black
+
+    Follow-up to e19b3184 (pylint+mypy pin): the header comment still read
+    "EXCEPT black"; correct it to black/pylint/mypy (AI-review nit).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_018bezwAzE9uxSX1xrH7okFV
+
+commit 36c29096c012ebb6617f589cada0c4d514a7ce4b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 2 11:16:44 2026 +0000
+
+    bumped changelog version
+
 commit 4c217699c8365cbc9e3189ca871201a880f89798
 Merge: 4d49e8a2 e19b3184
 Author: Patrick Schleizer <adrelanos@whonix.org>
