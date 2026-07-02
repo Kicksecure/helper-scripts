@@ -41,8 +41,9 @@ printf '%s\n' "::endgroup::"
 ## root write regardless of the mode bits, so os.access(dir, W_OK) returns true
 ## and the rejection never fires -- the test then false-fails (got 0, want 1).
 ## CI container jobs run as root, so run the whole suite as a throwaway NON-ROOT
-## user, which exercises the real rejection path. No test needs root, and the
-## trojan-source corpus (cloned to ~/trojan-source) is not consumed here.
+## user, which exercises the real rejection path. No test needs root. run-tests
+## does read the trojan-source corpus from the runner's HOME, so it is copied to
+## the test user's HOME below.
 ##
 ## Gated on CI too, not EUID alone: this block creates a system user and
 ## 'chown --recursive's the checkout, which is fine in the ephemeral CI
@@ -56,6 +57,15 @@ if [ "${EUID}" -eq 0 ] && [ "${CI:-}" = "true" ]; then
   ## the whole checkout to the test user; pytest/black/pylint/mypy read from it
   ## and the tests write only to their own /tmp TemporaryDirectory.
   chown --recursive -- "${test_user}:${test_user}" .
+  ## run-tests reads "${HOME}/trojan-source" (the unicode-testscript corpus) and
+  ## exits 1 if it is absent. The previous CI step cloned it into root's HOME
+  ## (ci/lint-clone-trojan-source.sh uses "${HOME:-/root}"), but the test user's
+  ## HOME differs, so give it its own readable copy.
+  src_corpus="${HOME:-/root}/trojan-source"
+  if [ -d "${src_corpus}" ]; then
+    cp --recursive -- "${src_corpus}" "/home/${test_user}/trojan-source"
+    chown --recursive -- "${test_user}:${test_user}" "/home/${test_user}/trojan-source"
+  fi
   exec runuser --user "${test_user}" -- \
     env HOME="/home/${test_user}" CI="${CI:-true}" ./run-tests
 fi

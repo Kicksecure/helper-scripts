@@ -8,8 +8,9 @@
 ## Install Debian apt dependencies for the lint workflow
 ## (.github/workflows/lint.yml).
 ##
-## All linters and build helpers come from the Debian/Ubuntu archive
-## (the workflow runs in a debian:* / ubuntu:* matrix container).
+## Linters and build helpers come from the Debian/Ubuntu archive (the
+## workflow runs in a debian:* / ubuntu:* matrix container), EXCEPT black,
+## which is pinned to the trixie (Debian 13 stable) version below.
 ##
 ## 'git config safe.directory' is needed because actions/checkout
 ## clones with the runner user but the container may treat the
@@ -32,8 +33,19 @@ fi
 apt-get update --error-on=any
 apt-get dist-upgrade -y
 apt-get install -y --no-install-recommends \
-  git python3-pytest pylint mypy black ncurses-term \
+  git python3-pytest pylint mypy python3-pip ncurses-term \
   build-essential debhelper dh-python dh-apparmor \
   python3-hypothesis
+
+## Pin black to the trixie (Debian 13 stable) version instead of each
+## container's own archive black. sid/testing/rolling ship a NEWER black that
+## reformats files the trixie black -- and this repo -- consider clean, which
+## made 'black --check' non-reproducible across the matrix (it flagged
+## append_shared.py only on the newer containers). Trixie's black is 25.1.0;
+## pinning it via pip gives the same formatting everywhere. Not from apt
+## because no single apt suite serves trixie's black to all four containers
+## (sid/testing/ubuntu do not have it); --break-system-packages is safe in the
+## ephemeral CI container. Keep this in sync with Debian stable's black.
+pip install --break-system-packages 'black==25.1.0'
 
 git config --global --add safe.directory "${GITHUB_WORKSPACE:-$PWD}"
