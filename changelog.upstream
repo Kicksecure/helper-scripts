@@ -1,3 +1,78 @@
+commit 7c3917033c9ff130d18257d7f416095eb9379328
+Merge: ea814501 a94eb1af
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 2 01:30:55 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit a94eb1afe47ee837b62d89496ddbaccb351cf73c
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Jul 1 21:40:43 2026 -0400
+
+    minor
+
+commit a327f781a2af83db0e5a02e8c1eb01bf2f4a2e93
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Jul 1 20:52:46 2026 -0400
+
+    Modified and squashed commit of the following:
+
+    commit 74fe4baf4a4e5ccaf2290c1655f1b63840e76b86
+    Author: claude (dev22 c20093f1-1b30-4397-87b6-9586321c87df) <noreply@anthropic.com>
+    Date:   Tue Jun 30 18:45:25 2026 -0400
+
+        run-via-helper-scripts: only self-locate when HELPER_SCRIPTS_PATH unset
+
+        Simplify the path setup: drop the 'helper_scripts_dir' intermediate (assign
+        straight into HELPER_SCRIPTS_PATH) and guard the self-location with
+        '[ ! -v HELPER_SCRIPTS_PATH ]', so the readlink + cd dance only runs when the
+        variable is unset rather than every invocation. Uses the preferred '[ -v ]'
+        defaulting idiom.
+
+        Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+        Claude-Session: https://claude.ai/code/session_018bezwAzE9uxSX1xrH7okFV
+
+    commit b69ff62195ec5f20fac616d3f7a03024dc642021
+    Author: claude (dev22 c20093f1-1b30-4397-87b6-9586321c87df) <noreply@anthropic.com>
+    Date:   Tue Jun 30 16:07:37 2026 -0400
+
+        helper-scripts-run -> run-via-helper-scripts; run as child, not exec
+
+        Rename the wrapper to run-via-helper-scripts (clearer: "run <tool> via the
+        helper-scripts env"). Replace the final 'exec' with running the tool as a
+        child and forwarding its exit code, so the wrapper stays visible in the
+        process tree, which keeps the call chain easier to debug.
+
+        Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+        Claude-Session: https://claude.ai/code/session_018bezwAzE9uxSX1xrH7okFV
+
+    commit 66c56632555fa647c38819b6f4501400adfa766b
+    Author: claude (dev22 c20093f1-1b30-4397-87b6-9586321c87df) <noreply@anthropic.com>
+    Date:   Tue Jun 30 10:21:11 2026 -0400
+
+        helper-scripts-run: run a helper-script with HELPER_SCRIPTS_PATH + PYTHONPATH set
+
+        Unify the env setup needed to call in-tree helper-scripts -- especially the
+        Python ones (e.g. stcat, whose 'stdisplay' module lives in the in-tree
+        dist-packages) -- during the derivative-maker build bootstrap, before
+        helper-scripts is installed. Previously each caller had to repeat the
+        HELPER_SCRIPTS_PATH / PYTHONPATH boilerplate.
+
+        'helper-scripts-run <tool|command> [args...]' derives HELPER_SCRIPTS_PATH
+        from its own location (honoring an already-set value), puts the in-tree
+        dist-packages on PYTHONPATH, resolves a bare tool name against this tree's
+        usr/bin, and execs it. So a caller can simply run e.g.
+        'helper-scripts-run stcat "$file"'.
+
+        Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+        Claude-Session: https://claude.ai/code/session_018bezwAzE9uxSX1xrH7okFV
+
+commit ea81450130ca26d4b485ddc7524864556d392e53
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 30 19:23:18 2026 +0000
+
+    bumped changelog version
+
 commit c761f971d027081ab6f25d97fb5b844bb800919d
 Merge: 4b487ec3 64b79556
 Author: Patrick Schleizer <adrelanos@whonix.org>
