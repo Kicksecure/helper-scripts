@@ -8,8 +8,9 @@
 ## Install Debian apt dependencies for the lint workflow
 ## (.github/workflows/lint.yml).
 ##
-## All linters and build helpers come from the Debian/Ubuntu archive
-## (the workflow runs in a debian:* / ubuntu:* matrix container).
+## Linters and build helpers come from the Debian/Ubuntu archive (the
+## workflow runs in a debian:* / ubuntu:* matrix container), EXCEPT black,
+## which is pinned to the trixie (Debian 13 stable) version below.
 ##
 ## 'git config safe.directory' is needed because actions/checkout
 ## clones with the runner user but the container may treat the
@@ -32,8 +33,22 @@ fi
 apt-get update --error-on=any
 apt-get dist-upgrade -y
 apt-get install -y --no-install-recommends \
-  git python3-pytest pylint mypy black ncurses-term \
+  git python3-pytest python3-pip ncurses-term \
   build-essential debhelper dh-python dh-apparmor \
   python3-hypothesis
+
+## Pin the style/type linters (black, pylint, mypy) to the trixie (Debian 13
+## stable) versions instead of each container's own archive linters.
+## sid/testing/rolling ship NEWER linters that reject code the trixie linters --
+## and this repo -- consider clean (newer black reformatted append_shared.py;
+## newer pylint flagged its module variable as a mis-named constant), making the
+## checks non-reproducible across the matrix. Pin via pip so all four containers
+## apply the SAME rules. Not from apt: no single apt suite serves trixie's
+## versions to all four containers (sid/testing/ubuntu lack them);
+## --break-system-packages is safe in the ephemeral CI container. Keep these in
+## sync with Debian stable. (pytest/hypothesis stay from apt -- they gate
+## runtime behavior, not version-opinionated style.)
+pip install --break-system-packages \
+  'black==25.1.0' 'pylint==3.3.4' 'mypy==1.15.0'
 
 git config --global --add safe.directory "${GITHUB_WORKSPACE:-$PWD}"
