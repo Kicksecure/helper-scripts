@@ -128,5 +128,8 @@ def strip_markup(untrusted_string: str) -> str:
         if _strip_once(candidate_string) == candidate_string:
             return candidate_string
     except Exception:
+        ## Re-stripping the candidate raised a parser-internal error, so it
+        ## cannot be trusted as a fixed point. Fall through to the
+        ## guaranteed-idempotent underscore fallback below.
         pass
     return _underscore_sanitize(strip_one_string)

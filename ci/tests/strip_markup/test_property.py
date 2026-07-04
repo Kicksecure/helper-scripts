@@ -57,15 +57,20 @@ class TestStripMarkupProperties(unittest.TestCase):
         it. Guard the whole class so a regression fails here, not only in
         the fuzzer.
         """
-        seeds = [
-            ## Minimal reduction of the crash below.
-            "<T&#7\x00",
-            ## The original ClusterFuzzLite crash input.
+        ## The original ClusterFuzzLite crash input. Built as its own
+        ## explicitly-concatenated literal (not an element in the list below)
+        ## so it does not read as a list entry with a forgotten comma.
+        crash_input = (
             "\x1a\x00&e\x02[\x7f\x7f\x7f\x7f\x7f7T&&&&#6.&&&#&6&#&\x00\x00"
             "!>\x7f\x7f&7&T&&&&#X6&&#&&e<-\x01&\x006&\x01\x00\x7f&7&T&&&&#X6"
             "&&#&&e<-]\x01&\x006&\x01\x00&\x7f\x7f\x7f\x7f\x7f\x7f\x7f<t\x7f"
             "\x04\x7f7e&T&&&&#66&&&3&66&#&\x00\x00!>\x7f\x7f&7&T&&&&&&e<-\x01"
-            "&\x006e!",
+            "&\x006e!"
+        )
+        seeds = [
+            ## Minimal reduction of the crash above.
+            "<T&#7\x00",
+            crash_input,
         ]
         for seed in seeds:
             once = strip_markup(seed)
