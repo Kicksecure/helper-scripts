@@ -46,6 +46,32 @@ class TestStripMarkupProperties(unittest.TestCase):
         twice = strip_markup(once)
         self.assertEqual(once, twice)
 
+    def test_idempotent_regression_seeds(self) -> None:
+        """
+        Deterministic idempotency seeds for inputs found by the Atheris
+        harness that the randomized strategies above do not reliably
+        rediscover. Each of these once made strip_markup(strip_markup(s))
+        != strip_markup(s): the '<' shielded a character reference (e.g.
+        '&#7') from the parser, and neutering that '<' to '_' after the
+        idempotency check exposed the reference so a later strip decoded
+        it. Guard the whole class so a regression fails here, not only in
+        the fuzzer.
+        """
+        seeds = [
+            ## Minimal reduction of the crash below.
+            "<T&#7\x00",
+            ## The original ClusterFuzzLite crash input.
+            "\x1a\x00&e\x02[\x7f\x7f\x7f\x7f\x7f7T&&&&#6.&&&#&6&#&\x00\x00"
+            "!>\x7f\x7f&7&T&&&&#X6&&#&&e<-\x01&\x006&\x01\x00\x7f&7&T&&&&#X6"
+            "&&#&&e<-]\x01&\x006&\x01\x00&\x7f\x7f\x7f\x7f\x7f\x7f\x7f<t\x7f"
+            "\x04\x7f7e&T&&&&#66&&&3&66&#&\x00\x00!>\x7f\x7f&7&T&&&&&&e<-\x01"
+            "&\x006e!",
+        ]
+        for seed in seeds:
+            once = strip_markup(seed)
+            twice = strip_markup(once)
+            self.assertEqual(once, twice, f"not idempotent: {seed!r}")
+
 
 if __name__ == "__main__":
     unittest.main()
