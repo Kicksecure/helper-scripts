@@ -3,10 +3,22 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## Exit codes:
+##   0 - no suspicious unicode found in the ref's new commits
+##   1 - suspicious unicode found
+##   2 - error (no target ref given, ref does not exist, not inside a git
+##       working tree, no new commits in the ref, or a git failure)
+##
+## This mirrors unicode-show (0 clean / 1 found / 2 error) so a caller can tell
+## a real detection apart from a usage or setup error by the exit code, rather
+## than both sharing exit 1.
+
 set -o errexit
 set -o nounset
 set -o errtrace
 set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
@@ -19,31 +31,31 @@ check_ref_commits_for_unicode() {
 
   target_ref="${1:-}"
   if [ -z "${target_ref}" ]; then
-    die 1 'No target ref specified!'
+    die 2 'No target ref specified!'
   fi
 
   if ! [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = 'true' ]; then
-    die 1 'Current working directory is not inside a Git working tree!'
+    die 2 'Current working directory is not inside a Git working tree!'
   fi
 
   if ! git rev-parse --verify "${target_ref}" >/dev/null 2>/dev/null; then
-    die 1 'Target ref does not exist!'
+    die 2 'Target ref does not exist!'
   fi
 
   git_log_cmd=( git log --format=%H "HEAD..${target_ref}" )
 
   if ! git_log_output="$( "${git_log_cmd[@]}" )"; then
-    die 1 "git_log_cmd failed! git_log_cmd: ${git_log_cmd[*]}"
+    die 2 "git_log_cmd failed! git_log_cmd: ${git_log_cmd[*]}"
   fi
 
   if [ "$git_log_output" = "" ]; then
-    die 1 'No new commits in target ref!'
+    die 2 'No new commits in target ref!'
   fi
 
   readarray -t commit_list <<< "$git_log_output"
 
   if [ -z "${commit_list[0]:-}" ]; then
-    die 1 'commit_list array first element is empty or missing!'
+    die 2 'commit_list array first element is empty or missing!'
   fi
 
   found_malicious_unicode='false'
