@@ -81,55 +81,32 @@ def strip_markup(untrusted_string: str) -> str:
         ## underscore strategy on the original input.
         return _underscore_sanitize(untrusted_string)
 
-    try:
-        strip_two_string: str = _strip_once(strip_one_string)
-    except Exception:
-        return _underscore_sanitize(strip_one_string)
-
-    if strip_one_string != strip_two_string:
-        ## The second strip attempt further transformed the text, indicating
-        ## an attempt to maliciously circumvent the stripper. Sanitize the
-        ## malicious text by underscore-replacing markup metacharacters.
-        ##
-        ## Note that we sanitize strip_one_string, NOT strip_two_string, so
-        ## that the neutered malicious text is displayed to the user. This is
-        ## so that the user is alerted to something odd happening.
-        return _underscore_sanitize(strip_one_string)
-
-    ## Qt's HTML parser (as used by QTextBrowser) violates the HTML
-    ## specification and allows whitespace between the opening `<` character of
-    ## a tag and the tag name. Python's parser complies with the spec and does
-    ## not consider strings like `< a>` to be tags, thus they are left behind
-    ## and Qt will interpret them. We therefore have to remove '<' characters
-    ## from the sanitized string even though it no longer contains true HTML at
-    ## this point. '>' and '&' alone cannot open a tag, and neutering them
-    ## would corrupt legitimate text, so they are left as-is.
-    candidate_string: str = strip_one_string.replace("<", "_")
-
-    ## The idempotency check above validated strip_one_string, but the return
-    ## value is candidate_string, a DIFFERENT string. Removing a '<' can expose
-    ## a character reference that the '<' had shielded from the parser (e.g.
-    ## '<...&#66' where the '<' kept the parser out of data mode; once the '<'
-    ## becomes '_', a later parse decodes '&#66' to 'B'). candidate_string is
-    ## therefore not guaranteed to be a parser fixed point, which would break
-    ## the idempotency sanitize_string's double-strip protection relies on. If
-    ## re-stripping candidate_string would change it, fall back to full
-    ## metacharacter neutering, whose output contains no '<', '>' or '&' and is
-    ## thus always a fixed point.
+    ## Previously, we had code here that re-stripped the stripped string,
+    ## detected if a second strip changed the string further, and returned a
+    ## special "sanitized" version of the single-stripped string if so. This
+    ## was intended to allow special characters in strings so long as they did
+    ## not form HTML entities or tags. This code has been removed, because:
     ##
-    ## This is also what makes leaving '&' and '>' in candidate_string safe:
-    ## any surviving character reference that decodes to a '<' (e.g. '&lt;',
-    ## '&#60;', '&#x3c;') would let a downstream parser revive a tag. Python's
-    ## convert_charrefs decodes every such reference, so its presence changes
-    ## the re-strip and forces the full-neuter fallback above. The guarantee
-    ## therefore holds as long as Python's parser decodes a superset of the
-    ## '<'-producing entities any downstream (e.g. Qt) parser would.
-    try:
-        if _strip_once(candidate_string) == candidate_string:
-            return candidate_string
-    except Exception:
-        ## Re-stripping the candidate raised a parser-internal error, so it
-        ## cannot be trusted as a fixed point. Fall through to the
-        ## guaranteed-idempotent underscore fallback below.
-        pass
+    ## * Qt's HTML parser (as used by QTextBrowser) violates the HTML
+    ##   specification and allows whitespace between the opening `<` character
+    ##   of a tag and the tag name. Python's parser complies with the spec and
+    ##   does not consider strings like `< a>` to be tags, thus they are left
+    ##   behind and Qt will interpret them.
+    ## * When attempting to work around the above issue by only sanitizing out
+    ##   '<' characters after a successful strip, we discovered that a
+    ##   combination of non-printing characters and '<' characters can
+    ##   sometimes fool StripMarkupEngine into not parsing an HTML entity.
+    ##   Stripping out just '<' characters but leaving '&' characters in this
+    ##   instance would leave entities that downstream consumers may parse.
+    ##   This could be worked around by doing a third strip pass, but it's
+    ##   unclear what other bugs or strange behaviors we may encounter in the
+    ##   future.
+    ##
+    ## We no longer consider it safe to leave any metacharacters in a string
+    ## that is being HTML-stripped. We do a single strip pass, then sanitize
+    ## whatever's left unconditionally and return it. This behaves almost the
+    ## same as the old code, but '<', '>' and '&' characters are turned into
+    ## underscores even if this is not technically necessary to make the
+    ## string no longer contain HTML according to the HTML5 specification.
+
     return _underscore_sanitize(strip_one_string)

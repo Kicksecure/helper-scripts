@@ -147,21 +147,13 @@ This string is kinda long and has a newline at both the start and the end.
             """\
 This string is so long it may as well be an article. Embedded newlines make an
 appearance here, as does a \t tab character. We'll throw in a bunch of symbols
-for good measure: &#^*$&^%&!%#^&@%$R(*!_|:?}:"|}][',',./. And how about
+for good measure: #^*$^%!%#^@%$R(*!_|:?}:"|}][',',./. And how about
 25 numbers? 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 20, 21, 22, 23, 24, 25.
 
 Of course, this example wouldn't be complete without a hard return. This is
 probably long enough, so let's let this be the end of it.
 """,
-            ## A tagless string containing '&' (e.g. any URL with a query
-            ## string) must round-trip. With convert_charrefs=True the parser
-            ## buffers such text and only flushes it on close(); a missing
-            ## close() used to drop the whole value, emptying the confirmation
-            ## dialog. These guard that fix.
-            "http://example.com/?a=1&b=2",
-            "http://example.com/search?q=foo&lang=en&page=2",
-            "http://example.com/?trailing=amp&",
         ]
         for test_case in test_case_list_1:
             self._test_args(
@@ -274,18 +266,46 @@ document with an embedded script. :)
             ## stripped output cannot be re-interpreted as markup.
             (
                 "< a href='http://example.com'>click</a>",
-                "_ a href='http://example.com'>click",
+                "_ a href='http://example.com'_click",
             ),
             (
                 "< img src='http://example.com/beacon.png'>",
-                "_ img src='http://example.com/beacon.png'>",
+                "_ img src='http://example.com/beacon.png'_",
             ),
-            ## A benign, non-markup '<' is neutered to '_' as well. This is a
-            ## deliberate, conservative choice: guaranteeing no '<' survives is
-            ## provably safe against any downstream HTML parser.
+            ## Benign, non-markup '<', '>', and '&' characters are neutered to
+            ## '_' as well. This is a deliberate, conservative choice:
+            ## these characters can interact in surprising ways and trigger
+            ## implementation-specific behavior in parsers. Guaranteeing they
+            ## don't exist makes this provably safe against any downstream
+            ## HTML parser.
             (
                 "a < b",
                 "a _ b",
+            ),
+            (
+                "a > b",
+                "a _ b",
+            ),
+            (
+                "a & b",
+                "a _ b",
+            ),
+            ## A tagless string containing '&' (e.g. any URL with a query
+            ## string) must be sanitized, not completely removed. With
+            ## convert_charrefs=True the parser buffers such text and only
+            ## flushes it on close(); a missing close() used to drop the whole
+            ## value, emptying the confirmation dialog. These guard that fix.
+            (
+                "http://example.com/?a=1&b=2",
+                "http://example.com/?a=1_b=2",
+            ),
+            (
+                "http://example.com/search?q=foo&lang=en&page=2",
+                "http://example.com/search?q=foo_lang=en_page=2",
+            ),
+            (
+                "http://example.com/?trailing=amp&",
+                "http://example.com/?trailing=amp_",
             ),
         ]
 
