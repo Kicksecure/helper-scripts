@@ -1,3 +1,60 @@
+commit 2c0a23fbf5ef4ce3e6a953155abd51b61ecfbf34
+Merge: c4127221 48e624e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 3 13:07:19 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 48e624e10213065cfd2a56f7a69eb634d69248c4
+Merge: c4127221 5f43d2c7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 3 13:05:23 2026 -0400
+
+    Merge pull request #51 from org-ai-assisted/claude/loving-fermat-ZeNGB
+
+    user_create.bsh: drain pending update-shells before chsh
+
+commit c4127221a8498d33f20316f840bd23c78f398eac
+Merge: 1cc632fb ad68bb29
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 3 13:01:53 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit ad68bb29ac52b9a6a5f78a3b10143ab5ddbcc358
+Merge: 1cc632fb ddde1f43
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 3 12:59:29 2026 -0400
+
+    Merge pull request #55 from org-ai-assisted/claude/unicode-show-allow-missing-final-newline
+
+    unicode-show: env var to suppress the missing-final-newline finding
+
+commit ddde1f43f7042718bbfbf4fcccbb0b0a73eccaf9
+Author: claude (derivative-maker b0dfc869-1cb7-42f6-8aa8-8ad1eafa0b81) <noreply@anthropic.com>
+Date:   Thu Jul 2 10:03:00 2026 -0400
+
+    unicode-show: env var to suppress the "missing newline at end" finding
+
+    Add UNICODE_SHOW_ALLOW_MISSING_FINAL_NEWLINE=1 to skip the benign
+    "missing newline at end" report, so the exit code reflects only
+    genuinely suspicious characters. Default behavior is unchanged.
+
+    Motivation: callers that scan git blob temp files (e.g. the git-meld /
+    git-diff-review safe review drivers) legitimately encounter blobs without
+    a trailing newline and must not get a false positive; with the env var
+    they can rely on unicode-show's exit code directly instead of grepping
+    its output.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01FhPYFwuCtfJn3tJJHstoXg
+
+commit 1cc632fb7f426b6a49f7f29aa4fbea3fcdf23521
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 2 12:18:01 2026 +0000
+
+    bumped changelog version
+
 commit 94768df1287e4ec4c588417f93979aa41e6f91e3
 Merge: 36c29096 642f7d69
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -471,6 +528,44 @@ Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Sat May 30 23:40:21 2026 -0400
 
     Merge branch 'master' into arraybolt3/trixie
+
+commit 5f43d2c7f64e3c9ffe99f8fe60239bd34c729017
+Author: Claude <noreply@anthropic.com>
+Date:   Fri May 29 10:28:30 2026 +0000
+
+    user_create.bsh: drain pending update-shells before chsh
+
+    Big-fat-debian-build logs have long had a cosmetic "chsh: Warning:
+    /usr/bin/zsh is an invalid shell" emitted by dist-base-files.postinst
+    during installation -- the chsh call still succeeds (postinst prints
+    "Shell for account 'user' has been set to 'zsh', ok." right after) but
+    the warning is noise that confuses casual log readers.
+
+    Root cause: modern debianutils ships
+    `/usr/share/debianutils/shells.d/<pkg>` drop-ins and regenerates
+    `/etc/shells` from them via a `interest-noawait` trigger -- the file
+    `/usr/share/debianutils/shells.d/zsh` is shipped by the zsh package and
+    adds `/bin/zsh` + `/usr/bin/zsh`. Because the trigger is `noawait`,
+    zsh-common's install queues the trigger but the activating package does
+    not block, and dpkg defers `update-shells` until the end of the apt run.
+    A sibling package like dist-base-files (Pre-Depends: zsh) can therefore
+    have its postinst run -- and call this `linux_user_account_shell_to_zsh`
+    function -- between zsh being configured and `/etc/shells` being
+    updated. At that instant /etc/shells still has only the bootstrap
+    template (no zsh line), so chsh's validation fails and prints the
+    warning.
+
+    Fix: drain the queued regeneration ourselves by running
+    `update-shells` (the debianutils-provided helper that materialises
+    the drop-ins into /etc/shells) immediately before chsh. The helper
+    is idempotent, atomically renames /etc/shells, requires no extra
+    dependency (debianutils is essential), and a `|| true` keeps the
+    function robust on systems where the helper is missing (pre-trixie).
+
+    Verified in the dist-encrypted-reproduce container: with this change
+    applied to user_create.bsh, the warning disappears from the
+    dist-base-files postinst log lines without otherwise altering its
+    behaviour.
 
 commit d347cb7e215b9e71c30d8a832ffd0e4fec709826
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
