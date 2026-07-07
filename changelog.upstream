@@ -1,3 +1,138 @@
+commit c74115664b9eff62ee4e93c5043894ab5af376a7
+Merge: 441c649c 103820ca
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 7 06:16:25 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 103820ca46e815cf0629995705f4aa662b3d832e
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 5 01:45:13 2026 -0400
+
+    Give up on preserving "safe" metacharacters in strip_markup, fix whitespace in AGENTS.md
+
+commit cb6041fc93449c66a3d71f53d0bd975e1d0e5836
+Merge: b18b79b1 07a3fe14
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 5 00:42:29 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/claude/strip-markup-idempotency-after-neuter' into arraybolt3/trixie
+
+commit b18b79b1e05cb856121880246a9d60798ef11a0b
+Merge: 0fa32b91 441c649c
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 5 00:36:49 2026 -0400
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 0fa32b9154a2d988b030b19e466a4a863a4bc5fd
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 5 00:03:55 2026 -0400
+
+    Fix append-shared empty file handling, enhance regression tests
+
+commit 07a3fe14713de9e83d675431fc626c8d119a7a3b
+Author: claude (dev50 41d18206-3993-4e2d-b8af-8f119b406c31) <noreply@anthropic.com>
+Date:   Sat Jul 4 08:16:17 2026 -0400
+
+    strip_markup: address CodeQL findings on the idempotency fix
+
+    Two CodeQL alerts on the previous commit, both taken:
+
+    - py/implicit-string-concatenation-in-a-list (test_property.py): the
+      multi-line crash-input literal sat inside the seeds list, which reads as
+      a list entry with a forgotten comma. Hoist it to a named crash_input
+      variable built as its own explicit concatenation, then reference it in
+      the list.
+
+    - py/empty-except (strip_markup_lib.py): the fixed-point re-check's
+      'except Exception: pass' had no explanatory comment. Document why the
+      swallow is intentional: a parser-internal error means the candidate
+      cannot be trusted as a fixed point, so we fall through to the
+      guaranteed-idempotent underscore fallback.
+
+    Both are comment/structure-only; behavior is unchanged. Also documents
+    the trust boundary that keeps leaving '&'/'>' in the candidate safe
+    (Python's convert_charrefs decodes every '<'-producing entity, so any
+    such entity fails the fixed-point re-check and is fully neutered).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01A9b3kp7Cf8Yo53Rox3JSYJ
+
+commit 637436ed38172561e79d1a260f8d44818d7e177a
+Author: claude (dev50 41d18206-3993-4e2d-b8af-8f119b406c31) <noreply@anthropic.com>
+Date:   Sat Jul 4 07:46:32 2026 -0400
+
+    strip_markup: verify idempotency of the '<'-neutered result
+
+    The ClusterFuzzLite fuzz_strip_markup harness found an input where
+    strip_markup(strip_markup(s)) != strip_markup(s), breaking the
+    idempotency that sanitize_string's documented double-strip protection
+    relies on.
+
+    Root cause: the idempotency check compared strip_one_string against a
+    re-strip of itself, but the safe branch then RETURNED
+    strip_one_string.replace("<", "_") -- a different string that was never
+    verified. Removing a '<' can expose a character reference the '<' had
+    shielded from the parser (e.g. '<...&#66', where the '<' kept the parser
+    out of data mode so '&#66' was emitted verbatim); once that '<' becomes
+    '_', a subsequent strip decodes '&#66' to 'B'. The returned value was
+    therefore not a parser fixed point.
+
+    Fix: after building the '<'-neutered candidate, re-strip it and only
+    return it if it is unchanged; otherwise fall back to
+    _underscore_sanitize, whose output contains no '<', '>' or '&' and is
+    always a fixed point. Factor the single-pass parse into _strip_once to
+    avoid duplicating the engine-feed-close boilerplate now used three
+    times. Attack-detection semantics (neuter double-encoded markup, alert
+    the user with strip_one_string) are unchanged.
+
+    Add deterministic idempotency regression seeds (a 6-byte reduction plus
+    the original crash blob) so the class is guarded outside the fuzzer.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01A9b3kp7Cf8Yo53Rox3JSYJ
+
+commit 8f728925e5c441d936881a1a9eb335638f84ce54
+Author: claude (dev45 83e78390-44e7-445e-a721-d02a129c3b80) <noreply@anthropic.com>
+Date:   Fri Jul 3 15:38:58 2026 -0400
+
+    check-ref-commits-for-unicode: split exit codes (0 clean / 1 found / 2 error)
+
+    Mirror unicode-show's convention so a caller can distinguish a real suspicious-
+    unicode detection (exit 1) from a usage or setup error (exit 2): no target ref
+    given, ref does not exist, cwd not inside a git working tree, no new commits in
+    the ref, or a git failure now all exit 2 instead of overloading exit 1. Document
+    the codes in the header. Behavior on a clean or a suspicious ref is unchanged.
+
+    Also complete the strict-mode preamble (add inherit_errexit and shift_verbose)
+    so the changed file satisfies the R-010 six-line block; both are no-ops for this
+    script's control flow (no shift; every command substitution is guarded or
+    already fails under errexit).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_019yeVyH2vTpkhGX2U1qmKZD
+
+commit 04c05d3698c51abc471bd1fc90a1a6d02a44cc5b
+Author: claude (dev42 08e1f373-4824-43b0-b4d4-e48187e4d900) <noreply@anthropic.com>
+Date:   Fri Jul 3 15:30:11 2026 -0400
+
+    AGENTS.md: link to the comprehensive helper-scripts test suites in dist-ai
+
+    The deep test + fuzz suites for sanitize-string, the stcat family,
+    unicode-show, grep-find-unicode-wrapper, and check-ref-commits-for-unicode
+    are too high-volume for human review and live in the AI-maintained dist-ai
+    repo. Add a minimal pointer + the per-suite invocation.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014Pag3UZHFWciJjKjnUwPWS
+
+commit 441c649c4a1383f5ec41f5b4cae816b0857016d4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 3 17:28:56 2026 +0000
+
+    bumped changelog version
+
 commit 2c0a23fbf5ef4ce3e6a953155abd51b61ecfbf34
 Merge: c4127221 48e624e1
 Author: Patrick Schleizer <adrelanos@whonix.org>
