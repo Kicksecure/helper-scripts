@@ -23,6 +23,7 @@ class TestAppendShared(TestCase):
     """
 
     work_dir: str
+    orig_umask: int
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -32,6 +33,7 @@ class TestAppendShared(TestCase):
 
         with TemporaryDirectory(delete=False) as td:
             cls.work_dir = td
+        cls.orig_umask = os.umask(0o077)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -41,13 +43,56 @@ class TestAppendShared(TestCase):
 
         shutil.rmtree(cls.work_dir)
         cls.work_dir = ""
+        os.umask(cls.orig_umask)
+
+    @staticmethod
+    def _get_perms_str(file_path: str) -> int:
+        """
+        Gets the permissions on a file.
+        """
+
+        return os.stat(file_path).st_mode & 0o7777
 
     def test_reject_unrecognized_executable(self) -> None:
         """
-        Tests if append-once properly rejects an unrecognized executable name.
+        Tests if append-shared properly rejects an unrecognized executable
+        name.
         """
 
         self.assertEqual(append_shared("nope", ["abc", "def"]), 1)
+
+    def test_invalid_argv(self) -> None:
+        """
+        Tests if all modes properly reject invalid argument counts.
+        """
+
+        self.assertEqual(append_shared("append", []), 1)
+        self.assertEqual(append_shared("append-shared", []), 1)
+        self.assertEqual(append_shared("overwrite", []), 1)
+        self.assertEqual(append_shared("append", ["too_few_args"]), 1)
+        self.assertEqual(append_shared("append-shared", ["too_few_args"]), 1)
+        self.assertEqual(append_shared("overwrite", ["too_few_args"]), 1)
+        self.assertEqual(
+            append_shared(
+                "append",
+                ["too_many_args_1", "too_many_args_2", "too_many_args_3"],
+            ),
+            1,
+        )
+        self.assertEqual(
+            append_shared(
+                "append-shared",
+                ["too_many_args_1", "too_many_args_2", "too_many_args_3"],
+            ),
+            1,
+        )
+        self.assertEqual(
+            append_shared(
+                "overwrite",
+                ["too_many_args_1", "too_many_args_2", "too_many_args_3"],
+            ),
+            1,
+        )
 
     def test_append_create(self) -> None:
         """
@@ -61,6 +106,7 @@ class TestAppendShared(TestCase):
         self.assertEqual(
             Path(target_file).read_text(encoding="utf-8"), "append_created\n"
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_once_create(self) -> None:
@@ -77,6 +123,7 @@ class TestAppendShared(TestCase):
             Path(target_file).read_text(encoding="utf-8"),
             "append_once_created\n",
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_overwrite_create(self) -> None:
@@ -92,6 +139,7 @@ class TestAppendShared(TestCase):
             Path(target_file).read_text(encoding="utf-8"),
             "overwrite_created\n",
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_add(self) -> None:
@@ -106,6 +154,7 @@ class TestAppendShared(TestCase):
         self.assertEqual(
             target_file_path.read_text(encoding="utf-8"), "line 1\nline 2\n"
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_once_add(self) -> None:
@@ -122,6 +171,7 @@ class TestAppendShared(TestCase):
         self.assertEqual(
             target_file_path.read_text(encoding="utf-8"), "line 1\nline 2\n"
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_overwrite_clobber_file(self) -> None:
@@ -138,6 +188,7 @@ class TestAppendShared(TestCase):
         self.assertEqual(
             target_file_path.read_text(encoding="utf-8"), "line 2\n"
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_add_dup(self) -> None:
@@ -159,6 +210,7 @@ class TestAppendShared(TestCase):
             "The first line\nThe second line\n"
             + "The third line\nThe second line\n",
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_once_reject_dup(self) -> None:
@@ -194,6 +246,7 @@ class TestAppendShared(TestCase):
             target_file_path.read_text(encoding="utf-8"),
             "The first line\nThe second line\nThe third line\n",
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_once_add_partial_dup(self) -> None:
@@ -231,6 +284,7 @@ class TestAppendShared(TestCase):
             "The first line\nThe second line\nThe third line\n"
             + "The first\nsecond\nthird line\n",
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_repair_newline(self) -> None:
@@ -247,6 +301,7 @@ class TestAppendShared(TestCase):
             target_file_path.read_text(encoding="utf-8"),
             "line 1\nline 2\nline 3\n",
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_once_repair_newline(self) -> None:
@@ -265,6 +320,7 @@ class TestAppendShared(TestCase):
             target_file_path.read_text(encoding="utf-8"),
             "line 1\nline 2\nline 3\n",
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_empty_string(self) -> None:
@@ -280,6 +336,7 @@ class TestAppendShared(TestCase):
         self.assertEqual(
             target_file_path.read_text(encoding="utf-8"), "line 1\n\n"
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_once_empty_string(self) -> None:
@@ -295,6 +352,7 @@ class TestAppendShared(TestCase):
         self.assertEqual(
             target_file_path.read_text(encoding="utf-8"), "line 1\n\n"
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_empty_string_repair_newline(self) -> None:
@@ -313,6 +371,7 @@ class TestAppendShared(TestCase):
         self.assertEqual(
             target_file_path.read_text(encoding="utf-8"), "line 1\nline 2\n\n"
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_once_empty_string_repair_newline(self) -> None:
@@ -331,6 +390,7 @@ class TestAppendShared(TestCase):
         self.assertEqual(
             target_file_path.read_text(encoding="utf-8"), "line 1\nline 2\n\n"
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_once_reject_dup_empty_string(self) -> None:
@@ -358,6 +418,51 @@ class TestAppendShared(TestCase):
         self.assertEqual(
             target_file_path.read_text(encoding="utf-8"), "line 1\nline 2\n\n"
         )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_append_empty_line_to_empty_file(self) -> None:
+        """
+        Tests if 'append' appends only a single newline to an empty file.
+        """
+
+        target_file: str = self.work_dir + "/append_empty_line_to_empty_file"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("", encoding="utf-8")
+        self.assertEqual(append_shared("append", [target_file, ""]), 0)
+        self.assertEqual(target_file_path.read_text(encoding="utf-8"), "\n")
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_append_once_empty_line_to_empty_file(self) -> None:
+        """
+        Tests if 'append-once' appends only a single newline to an empty file.
+        """
+
+        target_file: str = (
+            self.work_dir + "/append_once_empty_line_to_empty_file"
+        )
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("", encoding="utf-8")
+        self.assertEqual(append_shared("append-once", [target_file, ""]), 0)
+        self.assertEqual(target_file_path.read_text(encoding="utf-8"), "\n")
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_overwrite_clobber_empty_file_with_empty_line(self) -> None:
+        """
+        Tests if 'overwrite' writes only a single newline when clobbering an
+        existing empty file.
+        """
+
+        target_file: str = (
+            self.work_dir + "/overwrite_clobber_empty_file_with_empty_line"
+        )
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("", encoding="utf-8")
+        self.assertEqual(append_shared("overwrite", [target_file, ""]), 0)
+        self.assertEqual(target_file_path.read_text(encoding="utf-8"), "\n")
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_reject_unwritable_parent_dir(self) -> None:
@@ -377,6 +482,7 @@ class TestAppendShared(TestCase):
             target_file_path.read_text(encoding="utf-8"), "line 1\n"
         )
         os.chmod(self.work_dir, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
         os.unlink(target_file)
 
     def test_append_reject_dir(self) -> None:
@@ -388,3 +494,236 @@ class TestAppendShared(TestCase):
         os.mkdir(target_dir)
         self.assertEqual(append_shared("append", [target_dir, "nope"]), 1)
         os.rmdir(target_dir)
+
+    def test_append_once_reject_dir(self) -> None:
+        """
+        Tests if 'append-shared' refuses to attempt to append to a directory.
+        """
+
+        target_dir: str = self.work_dir + "/append_once_reject_dir"
+        os.mkdir(target_dir)
+        self.assertEqual(append_shared("append-once", [target_dir, "nope"]), 1)
+        os.rmdir(target_dir)
+
+    def test_overwrite_reject_dir(self) -> None:
+        """
+        Tests if 'overwrite' refuses to replace a directory.
+        """
+
+        target_dir: str = self.work_dir + "/overwrite_reject_dir"
+        os.mkdir(target_dir)
+        self.assertEqual(append_shared("overwrite", [target_dir, "nope"]), 1)
+        os.rmdir(target_dir)
+
+    def test_append_reject_unreadable_file(self) -> None:
+        """
+        Tests if 'append' bails out if the target file exists and is
+        unreadable.
+        """
+
+        target_file: str = self.work_dir + "/append_reject_unreadable_file"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("line 1\n", encoding="utf-8")
+        os.chmod(target_file, 0)
+        self.assertEqual(append_shared("append", [target_file, "line 2"]), 1)
+        os.chmod(target_file, stat.S_IRUSR | stat.S_IWUSR)
+        self.assertEqual(
+            target_file_path.read_text(encoding="utf-8"), "line 1\n"
+        )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_append_once_reject_unreadable_file(self) -> None:
+        """
+        Tests if 'append-once' bails out if the target file exists and is
+        unreadable.
+        """
+
+        target_file: str = (
+            self.work_dir + "/append_once_reject_unreadable_file"
+        )
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("line 1\n", encoding="utf-8")
+        os.chmod(target_file, 0)
+        self.assertEqual(
+            append_shared("append-once", [target_file, "line 2"]), 1
+        )
+        os.chmod(target_file, stat.S_IRUSR | stat.S_IWUSR)
+        self.assertEqual(
+            target_file_path.read_text(encoding="utf-8"), "line 1\n"
+        )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_overwrite_clobber_unreadable_file(self) -> None:
+        """
+        Tests if 'overwrite' is able to clobber an unreadable file so long as
+        it can write to the parent directory.
+        """
+
+        target_file: str = self.work_dir + "/overwrite_clobber_unreadable_file"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("line 1\n", encoding="utf-8")
+        os.chmod(target_file, 0)
+        self.assertEqual(
+            append_shared("overwrite", [target_file, "line 2"]), 0
+        )
+        os.chmod(target_file, stat.S_IRUSR | stat.S_IWUSR)
+        self.assertEqual(
+            target_file_path.read_text(encoding="utf-8"), "line 2\n"
+        )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_append_affect_symlink(self) -> None:
+        """
+        Tests if 'append' writes to a symlink's target when invoked on a
+        symlink.
+        """
+
+        target_file: str = self.work_dir + "/append_affect_symlink"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("line 1\n", encoding="utf-8")
+        target_symlink: str = self.work_dir + "/append_affect_symlink_link"
+        target_symlink_path: Path = Path(target_symlink)
+        os.symlink(target_file, target_symlink)
+        self.assertEqual(
+            append_shared("append", [target_symlink, "line 2"]), 0
+        )
+        self.assertEqual(
+            target_file_path.read_text(encoding="utf-8"), "line 1\nline 2\n"
+        )
+        self.assertEqual(
+            target_symlink_path.read_text(encoding="utf-8"), "line 1\nline 2\n"
+        )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        self.assertEqual(
+            TestAppendShared._get_perms_str(target_symlink), 0o600
+        )
+        os.unlink(target_file)
+        os.unlink(target_symlink)
+
+    def test_append_once_affect_symlink(self) -> None:
+        """
+        Tests if 'append-once' writes to a symlink's target when invoked on a
+        symlink.
+        """
+
+        target_file: str = self.work_dir + "/append_once_affect_symlink"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("line 1\n", encoding="utf-8")
+        target_symlink: str = (
+            self.work_dir + "/append_once_affect_symlink_link"
+        )
+        target_symlink_path: Path = Path(target_symlink)
+        os.symlink(target_file, target_symlink)
+        self.assertEqual(
+            append_shared("append-once", [target_symlink, "line 2"]), 0
+        )
+        self.assertEqual(
+            target_file_path.read_text(encoding="utf-8"), "line 1\nline 2\n"
+        )
+        self.assertEqual(
+            target_symlink_path.read_text(encoding="utf-8"), "line 1\nline 2\n"
+        )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        self.assertEqual(
+            TestAppendShared._get_perms_str(target_symlink), 0o600
+        )
+        os.unlink(target_file)
+        os.unlink(target_symlink)
+
+    def test_overwrite_break_symlink(self) -> None:
+        """
+        Tests if 'overwrite" breaks symlinks.
+        """
+
+        target_file: str = self.work_dir + "/overwrite_affect_symlink"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("line 1\n", encoding="utf-8")
+        target_symlink: str = self.work_dir + "/overwrite_affect_symlink_link"
+        target_symlink_path: Path = Path(target_symlink)
+        os.symlink(target_file, target_symlink)
+        self.assertEqual(
+            append_shared("overwrite", [target_symlink, "line 2"]), 0
+        )
+        ## Symlink is correctly broken if the file and its "symlink" (which
+        ## has now been clobbered) have different contents
+        self.assertEqual(
+            target_file_path.read_text(encoding="utf-8"), "line 1\n"
+        )
+        self.assertEqual(
+            target_symlink_path.read_text(encoding="utf-8"), "line 2\n"
+        )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        self.assertEqual(
+            TestAppendShared._get_perms_str(target_symlink), 0o600
+        )
+        os.unlink(target_file)
+        os.unlink(target_symlink)
+
+    def test_append_once_duplicate_skip_repair(self) -> None:
+        """
+        Tests if 'append-once' refuses to append a line to a file or repair a
+        trailing newline when the line it is given already exists in the file
+        and the file is missing a trailing newline.
+        """
+
+        target_file: str = self.work_dir + "/append_once_duplicate_skip_repair"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("line 1\nline 2", encoding="utf-8")
+        self.assertEqual(
+            append_shared("append-once", [target_file, "line 2"]), 0
+        )
+        self.assertEqual(
+            target_file_path.read_text(encoding="utf-8"), "line 1\nline 2"
+        )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_append_reject_invalid_utf8(self) -> None:
+        """
+        Tests if 'append' refuses to append a line to a file containing
+        invalid UTF-8 characters.
+        """
+
+        target_file: str = self.work_dir + "/append_reject_invalid_utf8"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_bytes(b"\xff")
+        self.assertEqual(append_shared("append", [target_file, "line 1"]), 1)
+        self.assertEqual(target_file_path.read_bytes(), b"\xff")
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_append_once_reject_invalid_utf8(self) -> None:
+        """
+        Tests if 'append-once' refuses to append a line to a file containing
+        invalid UTF-8 characters.
+        """
+
+        target_file: str = self.work_dir + "/append_once_reject_invalid_utf8"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_bytes(b"\xff")
+        self.assertEqual(
+            append_shared("append-once", [target_file, "line 1"]), 1
+        )
+        self.assertEqual(target_file_path.read_bytes(), b"\xff")
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_overwrite_clobber_invalid_utf8(self) -> None:
+        """
+        Tests if 'overwrite' clobbers files that have invalid UTF-8 characters.
+        """
+
+        target_file: str = self.work_dir + "/overwrite_clobber_invalid_utf8"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_bytes(b"\xff")
+        self.assertEqual(
+            append_shared("overwrite", [target_file, "line 1"]), 0
+        )
+        self.assertEqual(
+            target_file_path.read_text(encoding="utf-8"), "line 1\n"
+        )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)

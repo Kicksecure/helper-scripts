@@ -101,7 +101,9 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
                         f"Error while reading file '{str(orig_file_path)}'!"
                     )
                     return 1
-                if not file_contents.endswith("\n"):
+                if len(file_contents) != 0 and not file_contents.endswith(
+                    "\n"
+                ):
                     ## Fix a missing terminating newline. Some text editors
                     ## will fail to write these properly and it will break our
                     ## line appending if we don't correct it first.
@@ -154,7 +156,10 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
                 + "could not delete temp file!"
             )
             return 1
-        _print_error(f"Error while writing file '{str(orig_file_path)}'!")
+        _print_error(
+            f"Error while writing file '{str(orig_file_path)}', is "
+            + f"'{str(file_path.parent)}' marked as sticky?"
+        )
         return 1
 
     return 0
