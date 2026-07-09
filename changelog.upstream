@@ -1,3 +1,42 @@
+commit c8cbd5aa0dd37f9de7943d3ce9281bb1d4d3ee3b
+Merge: 77892d11 c95aa8ea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 9 11:16:25 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit c95aa8ea29c5e8151dbcaef8bc7adb6d907e2366
+Merge: 77892d11 bff95b42
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Wed Jul 8 18:37:18 2026 -0400
+
+    Merge pull request #58 from org-ai-assisted/restore-coverity-dm-consumer
+
+    CI: restore lost coverity section in dm-consumer.yml
+
+commit bff95b42093a2636c9a60663ffd71aa9b4dc3420
+Author: claude (dev66 8bd92be9-9ef9-445b-84c0-4c454d528432) <noreply@anthropic.com>
+Date:   Wed Jul 8 18:20:38 2026 -0400
+
+    CI: restore coverity section in .github/dm-consumer.yml
+
+    Commit 4b4169c8 ("CI: add dist-ai-tests apt deps") added the
+    dist-ai-tests: section by overwriting the whole file, which dropped the
+    pre-existing coverity: block (project-name + canonical-repos) added in
+    565869bb. The consumer-coverity.yml workflow stayed present but lost the
+    config it reads, so Coverity had no project name / canonical-repos guard.
+
+    Restore the coverity: section alongside dist-ai-tests:; both keys now
+    coexist in the file.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 77892d1171a3869a04dbae5620fc7ebbc437caf8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jul 8 18:10:49 2026 +0000
+
+    bumped changelog version
+
 commit 9102587b86439dc77ace7de3e428ca1479a93af3
 Merge: 1a2a9c7f 4b4169c8
 Author: Patrick Schleizer <adrelanos@whonix.org>
