@@ -178,12 +178,6 @@ log() {
 ## where '#' is the exit code.
 die() {
   log error "${2}"
-  ## "allow_errors" is used by dist-installer-cli. Do not remove this check
-  ## unless simultaneously removing "allow_errors" from dist-installer-cli.
-  if test "${allow_errors:-}" = "1"; then
-    log warn "Skipping termination because of with code '${1}' due to 'allow_errors' setting."
-    return 0
-  fi
   log error "Aborting."
   exit "${1}"
 }
