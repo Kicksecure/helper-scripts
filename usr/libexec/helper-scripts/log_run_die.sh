@@ -178,10 +178,6 @@ log() {
 ## where '#' is the exit code.
 die() {
   log error "${2}"
-  if test "${allow_errors:-}" = "1"; then
-    log warn "Skipping termination because of with code '${1}' due to 'allow_errors' setting."
-    return 0
-  fi
   log error "Aborting."
   exit "${1}"
 }
