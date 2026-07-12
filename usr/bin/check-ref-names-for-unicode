@@ -3,13 +3,11 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Scan git ref NAMES (branches, tags, remote-tracking refs) for suspicious /
-## non-ASCII unicode -- bidi overrides (U+202E), homoglyphs, zero-width and
-## other invisible characters that let one ref VISUALLY SPOOF another. git's
-## check-ref-format already forbids C0 control bytes (including the terminal
-## escape 0x1b) in ref names, so this is about spoofing, NOT terminal injection.
-## Complements its sibling check-ref-commits-for-unicode (which scans a ref's new
-## COMMITS, not its NAME).
+## Scan git ref names (branches, tags, remote-tracking refs) for suspicious /
+## non-ASCII Unicode. git already forbids control characters (including the
+## terminal escape 0x1b) in ref names, so this is about spoofing, not terminal
+## injection. Complements its sibling check-ref-commits-for-unicode (which
+## scans a ref's new commits, not its name).
 ##
 ## After fetching from an untrusted remote, git prints new branch names to
 ## stderr and a spoofing name is easy to miss. Fetch quietly, then scan:
@@ -17,8 +15,8 @@
 ##   check-ref-names-for-unicode "refs/remotes/<remote>/*"
 ##
 ## Exit codes (mirroring unicode-show / check-ref-commits-for-unicode):
-##   0 - no suspicious unicode found in any matched ref name
-##   1 - suspicious unicode found in a ref name
+##   0 - no suspicious Unicode found in any matched ref name
+##   1 - suspicious Unicode found in a ref name
 ##   2 - error (not inside a git working tree, no refs matched, git failure)
 
 set -o errexit
@@ -31,14 +29,16 @@ shopt -s shift_verbose
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
+# shellcheck disable=SC2034
 log_level=info
 
 check_ref_names_for_unicode() {
   local ref_globs ref_output ref_list ref ref_neutralized unicode_report \
     unicode_show_exit_code found_malicious_unicode
 
-  ## Default to every ref; pass globs to narrow, e.g. to just the refs a fetch
-  ## touched: check-ref-names-for-unicode 'refs/remotes/org-ai-assisted/*'
+  ## Default to every ref; pass globs to narrow, e.g. to check just the refs a
+  ## fetch touched:
+  ## check-ref-names-for-unicode 'refs/remotes/org-ai-assisted/*'
   ref_globs=( "$@" )
   if [ "${#ref_globs[@]}" -eq 0 ]; then
     ref_globs=( 'refs/' )
@@ -67,10 +67,7 @@ check_ref_names_for_unicode() {
       || unicode_show_exit_code="$?"
 
     if [ -n "${unicode_report}" ] || [ "${unicode_show_exit_code}" != '0' ]; then
-      ## Show the name and the report only stcat-neutralized (a bidi/non-ASCII
-      ## byte becomes '_'); never print either raw -- the report is derived from
-      ## an attacker-controlled ref name, so pipe it through stcat too (as the
-      ## git-review scan lib does for its unicode-show reports).
+      ## Show the name and the report stcat-neutralized, never print either raw.
       ref_neutralized="$(printf '%s' "${ref}" | stcat)"
       log warn "Suspicious unicode in ref name '${ref_neutralized}' (unicode-show rc '${unicode_show_exit_code}'):"
       printf '%s\n' "${unicode_report}" | stcat || true
