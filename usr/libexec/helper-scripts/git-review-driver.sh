@@ -145,7 +145,7 @@ extract_commit() {
 }
 
 for check_mode in "${old_mode}" "${new_mode}"; do
-  [[ "${check_mode}" =~ ^[0-7]{6}$ ]] \
+  [[ "${check_mode}" =~ ^[0-7]{6}$ ]] || [ "${check_mode}" = '.' ] \
     || log warn "unexpected mode '${check_mode}' for '${diff_path_q}'."
 done
 
