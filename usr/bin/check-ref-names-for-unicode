@@ -1,0 +1,86 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Scan git ref names (branches, tags, remote-tracking refs) for suspicious /
+## non-ASCII Unicode. git already forbids control characters (including the
+## terminal escape 0x1b) in ref names, so this is about spoofing, not terminal
+## injection. Complements its sibling check-ref-commits-for-unicode (which
+## scans a ref's new commits, not its name).
+##
+## After fetching from an untrusted remote, git prints new branch names to
+## stderr and a spoofing name is easy to miss. Fetch quietly, then scan:
+##   git fetch --quiet <remote>
+##   check-ref-names-for-unicode "refs/remotes/<remote>/*"
+##
+## Exit codes (mirroring unicode-show / check-ref-commits-for-unicode):
+##   0 - no suspicious Unicode found in any matched ref name
+##   1 - suspicious Unicode found in a ref name
+##   2 - error (not inside a git working tree, no refs matched, git failure)
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
+
+# shellcheck disable=SC2034
+log_level=info
+
+check_ref_names_for_unicode() {
+  local ref_globs ref_output ref_list ref ref_neutralized unicode_report \
+    unicode_show_exit_code found_malicious_unicode
+
+  ## Default to every ref; pass globs to narrow, e.g. to check just the refs a
+  ## fetch touched:
+  ## check-ref-names-for-unicode 'refs/remotes/org-ai-assisted/*'
+  ref_globs=( "$@" )
+  if [ "${#ref_globs[@]}" -eq 0 ]; then
+    ref_globs=( 'refs/' )
+  fi
+
+  die_if_not_has git unicode-show stcat
+
+  if ! [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = 'true' ]; then
+    die 2 'Current working directory is not inside a Git working tree!'
+  fi
+
+  ## git forbids newlines in ref names (a control byte), so a newline-split list
+  ## cannot be smuggled; still, capture then readarray rather than piping.
+  if ! ref_output="$(git for-each-ref --format='%(refname)' "${ref_globs[@]}")"; then
+    die 2 "git for-each-ref failed for: ${ref_globs[*]}"
+  fi
+  if [ -z "${ref_output}" ]; then
+    die 2 "No refs matched: ${ref_globs[*]}"
+  fi
+  readarray -t ref_list <<< "${ref_output}"
+
+  found_malicious_unicode='false'
+  for ref in "${ref_list[@]}"; do
+    unicode_show_exit_code='0'
+    unicode_report="$(unicode-show <<< "${ref}" 2>&1)" \
+      || unicode_show_exit_code="$?"
+
+    if [ -n "${unicode_report}" ] || [ "${unicode_show_exit_code}" != '0' ]; then
+      ## Show the name and the report stcat-neutralized, never print either raw.
+      ref_neutralized="$(printf '%s' "${ref}" | stcat)"
+      log warn "Suspicious unicode in ref name '${ref_neutralized}' (unicode-show rc '${unicode_show_exit_code}'):"
+      printf '%s\n' "${unicode_report}" | stcat || true
+      found_malicious_unicode='true'
+    else
+      log info "No unicode in ref name '${ref}'."
+    fi
+  done
+
+  if [ "${found_malicious_unicode}" = 'true' ]; then
+    die 1 'Potentially malicious unicode detected in a ref name!'
+  fi
+  log notice 'No suspicious unicode in ref names.'
+}
+
+check_ref_names_for_unicode "$@"
