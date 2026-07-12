@@ -1,0 +1,66 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Safe git external diff driver: prints a TEXTUAL diff, but neutralized for
+## the terminal via 'stcat' (a hostile blob cannot inject terminal escape
+## sequences). Used by dm-review-branch.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+# shellcheck source=../libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
+
+has stcat
+has unicode-show
+
+git_review_self="$(readlink -f -- "${BASH_SOURCE[0]}")"
+review_tool="git-diff-review"
+
+## This display is capable of safely displaying content that triggered fatal
+## errors in unicode-show.
+git_review_display_fatal_content='true'
+
+## This display outputs to a terminal.
+git_review_outputs_to_terminal='true'
+
+## Invoked indirectly by the sourced git-review-driver.sh (not dead code).
+# shellcheck disable=SC2317
+display_regular_file() {
+  local diff_rc diff_out stcat_rc prompt_rc
+
+  printf '%s\n' "--- diff (stcat-neutralized) for ${3} ---"
+  diff_rc=0
+  diff_out="$(diff --unified --color=always -- "${1}" "${2}")" || diff_rc=$?
+  if [ "${diff_rc}" -gt 1 ]; then
+    log error "diff failed (rc='${diff_rc}') for '${3}'."
+    return "${diff_rc}"
+  fi
+  stcat_rc=0
+  printf '%s\n' "${diff_out}" | stcat || stcat_rc=$?
+  if [ "${stcat_rc}" -ne 0 ]; then
+    log warn "stcat failed (rc='${stcat_rc}') for '${3}'. Piping into unicode-show..."
+    printf '%s\n' "${diff_out}" | unicode-show || true
+    ## The content is already neutralized; offer the operator a choice only when
+    ## there IS a terminal. An explicit decline (rc 1) aborts this file with the
+    ## stcat rc; a non-interactive run (rc 2, nobody to ask) continues.
+    prompt_rc=0
+    git_review_prompt_continue || prompt_rc=$?
+    if [ "${prompt_rc}" -eq 1 ]; then
+      return "${stcat_rc}"
+    fi
+  fi
+}
+
+# shellcheck source=../libexec/helper-scripts/git-review-driver.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/git-review-driver.sh
