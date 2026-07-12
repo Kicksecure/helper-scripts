@@ -1,3 +1,71 @@
+commit f1a0ef2dcffe2573cd936914dc6d1d750c5d3ff3
+Merge: b3819204 1a5bd0cf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 12 11:49:06 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 1a5bd0cff02278cf5d2dde1e2b87a0acebd29072
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 12 10:18:36 2026 -0400
+
+    Re-remove allow_errors handling in log_run_die.sh
+
+commit 33e7e0a09f6759dd0687c92641644159140f45de
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 12 01:37:23 2026 -0400
+
+    Comments, bring back allow_errors handling in log_run_die.sh
+
+commit 9a0d3e59c75464cb36353076a8f36eeb0d845f9a
+Merge: b3819204 fffde374
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 12 00:54:15 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/add-check-ref-names-for-unicode' into arraybolt3/trixie
+
+commit fffde374f4da24cf04f63977da9ce214b81a6a3c
+Author: claude (dev70 3a82410b-863a-4533-a9a6-cfd732a46d45) <noreply@anthropic.com>
+Date:   Thu Jul 9 15:25:46 2026 -0400
+
+    add check-ref-names-for-unicode: scan git ref NAMES for spoofing unicode
+
+    git's check-ref-format forbids C0 control bytes (incl. the terminal escape
+    0x1b) in ref names, so a branch/tag name cannot inject terminal escapes -- but
+    bidi overrides (U+202E), homoglyphs, and zero-width / invisible characters ARE
+    allowed, so one ref can VISUALLY SPOOF another. git fetch prints new branch
+    names to stderr, where such a name is easy to miss.
+
+    check-ref-names-for-unicode scans ref NAMES via unicode-show (exit 0 clean /
+    1 found / 2 error, mirroring its sibling check-ref-commits-for-unicode, which
+    scans a ref's COMMITS not its NAME). An offending name is printed only
+    stcat-neutralized, never raw. Recommended after an untrusted fetch:
+
+      git fetch --quiet <remote>
+      check-ref-names-for-unicode "refs/remotes/<remote>/*"
+
+    Verified manually (this tool family has no integration-test harness, matching
+    the untested sibling): clean refs exit 0; a bidi (U+202E) branch and a
+    Cyrillic-homoglyph branch exit 1 and are reported; outside a work tree exits 2.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit af6c017cfcb9e9974aa23f25ec266df1deadb045
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Thu Jul 9 14:22:34 2026 -0400
+
+    log_run_die: die always exits; drop the unused allow_errors override (#59)
+
+    allow_errors=1 made die() return instead of exit. No consumer sets it, and it is an implicit process-global that defeats every fail-closed die for any process inheriting it. Removed.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit b3819204d34ea2df8240704e0a9ec0f611423113
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 9 15:19:03 2026 +0000
+
+    bumped changelog version
+
 commit c8cbd5aa0dd37f9de7943d3ce9281bb1d4d3ee3b
 Merge: 77892d11 c95aa8ea
 Author: Patrick Schleizer <adrelanos@whonix.org>
