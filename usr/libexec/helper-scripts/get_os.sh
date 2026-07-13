@@ -3,6 +3,9 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- sourced library; a top-level strict-mode block
+## would leak 'set -o errexit'/'nounset' into the sourcing shell.
+
 ## TODO: how to handle installer specific code?
 
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
@@ -25,16 +28,36 @@ get_os(){
   arch=""
   if has dpkg; then
     case "$(dpkg --print-architecture)" in
-      amd64) arch="x86_64" ;;
-      i386)  arch="i686" ;;
-      arm64) arch="aarch64" ;;
-      armhf) arch="armv7l" ;;
-      armel) arch="armv6l" ;;
-      ppc64el) arch="ppc64le" ;;
-      riscv64) arch="riscv64" ;;
-      s390x) arch="s390x" ;;
-      "") arch="" ;;
-      *) arch="" ;;
+      amd64)
+        arch="x86_64"
+        ;;
+      i386)
+        arch="i686"
+        ;;
+      arm64)
+        arch="aarch64"
+        ;;
+      armhf)
+        arch="armv7l"
+        ;;
+      armel)
+        arch="armv6l"
+        ;;
+      ppc64el)
+        arch="ppc64le"
+        ;;
+      riscv64)
+        arch="riscv64"
+        ;;
+      s390x)
+        arch="s390x"
+        ;;
+      "")
+        arch=""
+        ;;
+      *)
+        arch=""
+        ;;
     esac
   fi
   if [ -z "${arch}" ]; then
@@ -68,19 +91,35 @@ get_os(){
       fi
       distro="${distro##[\"\']}"
       distro="${distro%%[\"\']}"
-      case "${PATH}" in (*/bedrock/cross/*) distro='Bedrock Linux' ;; esac
+      case "${PATH}" in
+        (*/bedrock/cross/*)
+          distro='Bedrock Linux'
+          ;;
+      esac
       if [ "${WSLENV:-}" ]; then
         distro="${distro}${WSLENV+ on Windows 10 [WSL2]}"
       elif [ -z "${kernel%%*-Microsoft}" ]; then
         distro="${distro} on Windows 10 [WSL1]"
       fi
     ;;
-    Haiku) distro=$(uname -sv);;
-    Minix|DragonFly) distro="${os} ${kernel}";;
-    SunOS) IFS='(' read -r distro _ < /etc/release;;
-    OpenBSD*) distro="$(uname -sr)";;
-    FreeBSD) distro="${os} $(freebsd-version)";;
-    *) distro="${os} ${kernel}";;
+    Haiku)
+      distro=$(uname -sv)
+      ;;
+    Minix|DragonFly)
+      distro="${os} ${kernel}"
+      ;;
+    SunOS)
+      IFS='(' read -r distro _ < /etc/release
+      ;;
+    OpenBSD*)
+      distro="$(uname -sr)"
+      ;;
+    FreeBSD)
+      distro="${os} $(freebsd-version)"
+      ;;
+    *)
+      distro="${os} ${kernel}"
+      ;;
   esac
 
   ## Debian 'testing' /etc/os-release does not contain VERSION_ID.

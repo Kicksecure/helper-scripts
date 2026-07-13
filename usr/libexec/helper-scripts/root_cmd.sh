@@ -3,6 +3,11 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- sourced library; a top-level strict-mode block
+## would leak 'set -o errexit'/'nounset' into the sourcing shell.
+## style-ok: no-has -- root_cmd() below uses 'command -v' to RESOLVE a
+## command's path (has returns only a boolean); has is used elsewhere.
+
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
@@ -62,8 +67,12 @@ get_su_cmd(){
 - su"
     }
     case "${sucmd}" in
-      sudo) :;;
-      *) log warn "Using sucmd '$sucmd'. Consider installation of 'sudo' instead to cache your passwords instead of typing them every time.";;
+      sudo)
+        true
+        ;;
+      *)
+        log warn "Using sucmd '$sucmd'. Consider installation of 'sudo' instead to cache your passwords instead of typing them every time."
+        ;;
     esac
   done
 
@@ -104,7 +113,7 @@ test_run_as_target_user() {
   ## root_output would catch xtrace and hence variable root_output would be non-empty.
   ## Therefore disabling xtrace.
   disable_xtrace
-  trap 'xtrace_reenable_maybe' RETURN
+  trap xtrace_reenable_maybe RETURN
   root_output="$(run_as_target_user timeout --kill-after 5 5 test -d /usr 2>&1)"
   if test -n "${root_output}"; then
     die 1 "${underline}test_run_as_target_user:${nounderline} 'sudo -u ${target_user}' test produced unexpected output: '${root_output}'"

@@ -4,6 +4,9 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- sourced library; a top-level strict-mode block
+## would leak 'set -o errexit'/'nounset' into the sourcing shell.
+
 ## https://www.kicksecure.com/wiki/User#Meanings_of_Special_Characters_in_the_Password_Field_of_/etc/shadow_File
 ##
 ## Changing account state on Unix systems is not standardize and different
@@ -199,8 +202,12 @@ is_pass_locked(){
   user="${1:-}"
   is_user "${user}"
   case "$(get_pass "${user}")" in
-    "!"*) return 0;;
-    *) return 1;;
+    "!"*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
   esac
 }
 
@@ -216,8 +223,12 @@ is_pass_disabled(){
   user="${1:-}"
   is_user "${user}"
   case "$(get_pass "${user}")" in
-    "*"*|"!*"*) return 0;;
-    *) return 1;;
+    "*"*|"!*"*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
   esac
 }
 
@@ -321,41 +332,85 @@ get_field(){
   case "${db}" in
     passwd)
       case "${field}" in
-        pass) index=2;;
-        uid) index=3;;
-        gid) index=4;;
-        comment) index=5;;
-        home) index=6;;
-        shell) index=7;;
+        pass)
+          index=2
+          ;;
+        uid)
+          index=3
+          ;;
+        gid)
+          index=4
+          ;;
+        comment)
+          index=5
+          ;;
+        home)
+          index=6
+          ;;
+        shell)
+          index=7
+          ;;
       esac
       ;;
     shadow)
       case "${field}" in
-        pass) index=2;;
-        last-pass-change) index=3;;
-        min-pass-age) index=4;;
-        max-pass-age) index=5;;
-        warn-pass-period) index=6;;
-        lock-pass-period) index=7;;
-        expiration-date) index=8;;
+        pass)
+          index=2
+          ;;
+        last-pass-change)
+          index=3
+          ;;
+        min-pass-age)
+          index=4
+          ;;
+        max-pass-age)
+          index=5
+          ;;
+        warn-pass-period)
+          index=6
+          ;;
+        lock-pass-period)
+          index=7
+          ;;
+        expiration-date)
+          index=8
+          ;;
       esac
       ;;
     group)
       case "${field}" in
-        pass) index=2;;
-        gid) index=3;;
-        members) index=4;;
+        pass)
+          index=2
+          ;;
+        gid)
+          index=3
+          ;;
+        members)
+          index=4
+          ;;
       esac
       ;;
     gshadow)
       case "${field}" in
-        pass) index=2;;
-        admins) index=3;;
-        members) index=4;;
+        pass)
+          index=2
+          ;;
+        admins)
+          index=3
+          ;;
+        members)
+          index=4
+          ;;
       esac
       ;;
-    "") log error "No database provided"; return 1;;
-    *) log error "Unsupported database: '${db}'"; return 1;;
+    "")
+      log error "No database provided"
+      return 1
+      ;;
+    *)
+      log error "Unsupported database: '${db}'"
+      return 1
+      ;;
   esac
   if test -z "${field}"; then
     log error "Empty ${db} field provided"
@@ -383,8 +438,12 @@ get_entry(){
   db="${2:-}"
   field="${3:-}"
   case "${db}" in
-    passwd|shadow) is_user "${user}";;
-    group|gshadow) is_group "${user}";;
+    passwd|shadow)
+      is_user "${user}"
+      ;;
+    group|gshadow)
+      is_group "${user}"
+      ;;
   esac
   index="$(get_field "${db}" "${field}")"
   ## Avoid failing on last empty field adding a field delimiter at last.

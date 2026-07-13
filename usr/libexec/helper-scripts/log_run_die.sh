@@ -3,15 +3,18 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-# shellcheck source=/usr/libexec/helper-scripts/get_colors.sh
+## style-ok: no-strict -- sourced library; a top-level strict-mode block
+## would leak 'set -o errexit'/'nounset' into the sourcing shell.
+
+# shellcheck source=./get_colors.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh
-# shellcheck source=/usr/libexec/helper-scripts/strings.bsh
+# shellcheck source=./strings.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
-# shellcheck source=/usr/libexec/helper-scripts/xtrace.bsh
+# shellcheck source=./xtrace.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/xtrace.bsh
-# shellcheck source=/usr/libexec/helper-scripts/has.sh
+# shellcheck source=./has.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
-# shellcheck source=/usr/libexec/helper-scripts/trace.bsh
+# shellcheck source=./trace.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/trace.bsh
 
 if ! type_exists stecho sanitize-string; then
@@ -55,15 +58,33 @@ xtrace_reenable_maybe() {
 
 __log_level_num() {
   case "${1:-notice}" in
-    bug|error) printf '%s' 0 ;;
-    question)  printf '%s' 0 ;;
-    warn)      printf '%s' 1 ;;
-    notice)    printf '%s' 2 ;;
-    info)      printf '%s' 3 ;;
-    debug)     printf '%s' 4 ;;
-    echo)      printf '%s' 5 ;;
-    null)      printf '%s' 6 ;;
-    *)         printf '%s' 2 ;; ## unknown -> treat as notice
+    bug|error)
+      printf '%s' 0
+      ;;
+    question)
+      printf '%s' 0
+      ;;
+    warn)
+      printf '%s' 1
+      ;;
+    notice)
+      printf '%s' 2
+      ;;
+    info)
+      printf '%s' 3
+      ;;
+    debug)
+      printf '%s' 4
+      ;;
+    echo)
+      printf '%s' 5
+      ;;
+    null)
+      printf '%s' 6
+      ;;
+    *)
+      printf '%s' 2 ## unknown -> treat as notice
+      ;;
   esac
   return 0
 }
