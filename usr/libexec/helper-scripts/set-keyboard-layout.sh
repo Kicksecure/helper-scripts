@@ -1127,7 +1127,7 @@ Type 'exit' to quit without changing keyboard layout settings.
   while true; do
     log question "${FUNCNAME[0]}: Enter the keyboard layout option(s) if desired, leave empty otherwise:"
     read -r -- option_str
-    printf '\n'
+    printf '%s\n' ""
     if [ -z "${option_str}" ]; then
       break
     fi
