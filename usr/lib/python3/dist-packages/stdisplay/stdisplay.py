@@ -67,7 +67,7 @@ def get_sgr_support() -> int:
     >>> get_sgr_support()
     -1
     """
-    if environ.get("NO_COLOR"):
+    if environ.get("NO_COLOR") or environ.get("TERM") == "dumb":
         return -1
     colorterm: str | None = environ.get("COLORTERM")
     if colorterm and colorterm.lower() in ("truecolor", "24bit"):
