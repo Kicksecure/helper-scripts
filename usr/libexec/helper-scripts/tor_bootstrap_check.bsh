@@ -3,6 +3,9 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict
+## Sourced fragment; the sourcing script owns the strict-mode preamble.
+
 check_tor_bootstrap_helper_variables() {
    if command -v qubesdb-read >/dev/null 2>&1 ; then
       if [ -f /run/qubes/this-is-templatevm ] || [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
@@ -141,7 +144,7 @@ check_tor_bootstrap_status() {
    check_tor_bootstrap_helper_run_helper_script
 
    tor_bootstrap_percent="$check_bootstrap_helper_script_exit_code"
-   tor_bootstrap_status="$check_bootstrap_helper_script_output"
+   tor_bootstrap_status="$(sanitize-string -- 255 "$check_bootstrap_helper_script_output")"
 
    ## `timeout` returns:
    ## - 124 if sigterm was sufficient
