@@ -52,7 +52,13 @@ if [ -n "${LOCK_NAME-}" ]; then
 else
   flocker_key="$(realpath -- "${0}")"
 fi
-flocker_path_substituted="${flocker_key//\//_slash_}"
+## Flatten the key to a single lock filename INJECTIVELY: escape the escape
+## character ('_') first, so distinct keys can never alias to the same lock
+## file. Without the first line, 'a/b' and the literal 'a_slash_b' would both
+## become 'a_slash_b' -- a false lock collision for the generic per-key API.
+## Order matters: '_' must be escaped before '/' and '.' introduce their own.
+flocker_path_substituted="${flocker_key//_/_underscore_}"
+flocker_path_substituted="${flocker_path_substituted//\//_slash_}"
 flocker_path_substituted="${flocker_path_substituted//./_dot_}"
 flocker_lockfile="${flocker_temp_folder}/${flocker_path_substituted}"
 
