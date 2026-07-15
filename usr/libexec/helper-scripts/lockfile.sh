@@ -18,6 +18,11 @@
 ## style-ok: no-strict -- sourced flock lock helper; deliberately sets no
 ## set-options so it imposes none on the sourcing script (which sets its own).
 
+## style-ok: allow-exec -- process handoff is the mechanism here: the FLOCKER
+## idiom (flock man page) re-execs the script under 'flock' to acquire the lock,
+## and wrap mode exec's the wrapped command so IT runs as the process holding
+## that lock. Running either as a child instead would defeat the lock.
+
 true "${BASH_SOURCE[0]}: START"
 
 true "${BASH_SOURCE[0]}: INFO: FLOCKER: ${FLOCKER-}"
