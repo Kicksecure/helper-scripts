@@ -10,6 +10,9 @@
 ## Based on flock man page.
 ## > [ "${FLOCKER}" != "${0}" ] && exec env FLOCKER="${0}" flock -en "${0}" "${0}" "$@" || :
 
+## style-ok: no-strict -- sourced flock lock helper; deliberately sets no
+## set-options so it imposes none on the sourcing script (which sets its own).
+
 true "${BASH_SOURCE[0]}: START"
 
 true "${BASH_SOURCE[0]}: INFO: FLOCKER: ${FLOCKER-}"
@@ -22,8 +25,19 @@ if ! [ -d "${TMP}" ]; then
 fi
 mkdir --parents -- "${flocker_temp_folder}"
 
-flocker_path_substituted="$(realpath -- "${0}")"
-flocker_path_substituted="${flocker_path_substituted//\//_slash_}"
+## The lock key defaults to this script's own path (self-lock: one instance of
+## the sourcing script at a time). A caller that runs the SAME script
+## concurrently for different keys -- e.g. one instance per invocation, or a
+## generic 'run this command under a per-key lock' wrapper -- can set LOCK_NAME
+## to lock per key instead. LOCK_NAME need NOT be exported: it is only read on
+## the first (pre-re-exec) pass to pick the lock file; the re-exec holds the
+## flock on that file for the run, so the key is irrelevant on the second pass.
+if [ -n "${LOCK_NAME-}" ]; then
+  flocker_key="${LOCK_NAME}"
+else
+  flocker_key="$(realpath -- "${0}")"
+fi
+flocker_path_substituted="${flocker_key//\//_slash_}"
 flocker_path_substituted="${flocker_path_substituted//./_dot_}"
 flocker_lockfile="${flocker_temp_folder}/${flocker_path_substituted}"
 
