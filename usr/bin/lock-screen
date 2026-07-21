@@ -63,11 +63,11 @@ lock_failure_warn() {
   long_msg_args=( "$@" )
   case "$message_level" in
     'noisy')
-      /usr/libexec/msgcollector/generic_gui_message "${long_msg_args[@]}"
+      /usr/libexec/msgcollector/generic_gui_message.py "${long_msg_args[@]}"
       ;;
     'less-noisy')
       if [ "$(notify-send --action=MORE='More info...' --app-name="$title" 'Cannot lock screen!' "$short_msg")" = 'MORE' ]; then
-        /usr/libexec/msgcollector/generic_gui_message "${long_msg_args[@]}"
+        /usr/libexec/msgcollector/generic_gui_message.py "${long_msg_args[@]}"
       fi
       ;;
     'quiet')
@@ -113,7 +113,7 @@ if [[ "${password_status_list[user_idx]}" =~ ^Locked ]]; then
   msg="Refusing to lock screen, because current account '$active_user_name' has a locked password.
 
 If the screen was locked, it would be impossible to unlock it. Please unlock the password (and if needed, set a password) to enable screen locking."
-  msg="$(/usr/libexec/msgcollector/br_add "$msg")"
+  msg="$(/usr/libexec/msgcollector/br_add.py "$msg")"
   lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
   error_exit 1
 fi
@@ -125,7 +125,7 @@ if [[ "${password_status_list[user_idx]}" =~ ^Restricted ]]; then
   msg="Refusing to lock screen, because current account '$active_user_name' has a locked password.
 
 If the screen was locked, it would be impossible to unlock it. Please set a password to enable screen locking."
-  msg="$(/usr/libexec/msgcollector/br_add "$msg")"
+  msg="$(/usr/libexec/msgcollector/br_add.py "$msg")"
   lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
   error_exit 1
 fi
@@ -137,7 +137,7 @@ if [[ "${password_status_list[user_idx]}" =~ ^Absent ]]; then
   msg="Refusing to lock screen, because current account '$active_user_name' has no password set.
 
 If the screen was locked, it would automatically unlock the moment any user input was received. Please set a password to enable screen locking."
-  msg="$(/usr/libexec/msgcollector/br_add "$msg")"
+  msg="$(/usr/libexec/msgcollector/br_add.py "$msg")"
   lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
   error_exit 1
 fi

@@ -15,8 +15,8 @@ coverity:
   ## scan.coverity.com project name. The URL renders the slash as
   ## a dash for display ('/projects/Kicksecure-helper-scripts')
   ## but the API form-parameter requires the actual slash.
-  project-name:    "Kicksecure/helper-scripts"
-  canonical-repos: "Kicksecure/helper-scripts,org-ai-assisted/helper-scripts"
+  project-name:    "org-ai-assisted-helper-scripts"
+  canonical-repos: "org-ai-assisted/helper-scripts"
 
 dist-ai-tests:
   apt-packages: "python3 python3-pytest python3-hypothesis python3-pyqt5"

@@ -19,7 +19,7 @@ print_usage() {
   printf '%s\n' '--interactive      Show an interactive user interface.' >&2
   printf '%s\n' '--no-live-changes  Do not update grub.cfg after building layouts.' >&2
   printf '%s\n' '--build-all        Builds all standard keyboard layouts for GRUB.' >&2
-  printf '\n' >&2
+  printf '%s\n' "" >&2
   printf '%s\n' 'Examples:' >&2
   printf '%s\n' '  set-grub-keymap de' >&2
   printf '%s\n' '  set-grub-keymap us colemak' >&2
