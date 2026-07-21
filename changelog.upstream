@@ -1,3 +1,16 @@
+commit 9561235ae50aeb4cc746d0c51200f81201ea3fda
+Merge: 117e2818 30cb90f6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 21 06:10:00 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 117e28184f39976d47b34f3774584b0e25593616
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 21 09:21:41 2026 +0000
+
+    bumped changelog version
+
 commit e3996a4e80f13f11233680e6ba890e39bebda4d5
 Merge: dafbd7d8 357b3ac3
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -5,11 +18,42 @@ Date:   Tue Jul 21 05:09:03 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
 
+commit 30cb90f65c1f61d28b6c6bcf7575d7d5cf5711d7
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sun Jul 19 04:16:31 2026 -0400
+
+    helper-scripts: use .py names for msgcollector libexec scripts (#68)
+
+    Lands the .py caller migration for the call sites that exist on master,
+    independent of the Wayland PR (which stays unmerged). Part of the
+    msgcollector libexec .py migration.
+
+    AI-Assisted
+
+    Co-authored-by: claude (dev95 d7769525-599d-4781-9f2c-f21aa34d292d) <noreply@anthropic.com>
+
 commit 357b3ac3a076783a2d328d00abb7bb7106a430cb
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Sun Jul 19 00:19:57 2026 -0400
 
     Fix tor_enabled_check crashing consumers with nounset enabled
+
+commit fddc1e63a3c8f88df262d80faf9d2546595edb5c
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sat Jul 18 20:00:19 2026 -0400
+
+    Coverity: point CI at the org-ai-assisted-helper-scripts project
+
+commit 7db3a282b7eff86178f07878c343ae19bf56a70b
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sat Jul 18 08:12:05 2026 -0400
+
+    guimessages: fall back to the English mapping, not the string "en" (#66)
+
+    yaml_get() returned the literal string 'en' instead of the English translation mapping when the language was absent, causing gettext() to raise AttributeError, print a spurious ERROR line, and recover. Fall back to the English mapping so unknown locales resolve silently.
+
+    ## AI-Assisted
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
 
 commit 069accbf9c119cbdecb01628b8b0c180ea243457
 Merge: 8b04b13a dafbd7d8
@@ -17,6 +61,245 @@ Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Fri Jul 17 17:43:33 2026 -0400
 
     Merge branch 'master' into arraybolt3/trixie
+
+commit b5006a4b3133744257372f5aaaff9b070c7d437c
+Merge: 5b03ea23 7c6c1fd2
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Wed Jul 15 05:50:34 2026 -0400
+
+    Merge pull request #65: lockfile.sh LOCK_NAME per-key override + wrap mode
+
+    Adds an optional LOCK_NAME per-key override and a wrap mode ('lockfile.sh <key> -- <cmd>') to the flock helper, with injective lock-key encoding. Retires dist-encrypted's diverged PID-file lockfile and its locked-run wrapper. Reviewed (codex, CodeRabbit); collision-resistance fix folded in; covered by dist-ai lockfile-tests.
+
+commit 7c6c1fd29d895348f9dd359b48ca847375ee31dc
+Author: claude (dev79 b1dc3a35-a589-46ea-9e0a-74277c8af5cf) <noreply@anthropic.com>
+Date:   Wed Jul 15 05:40:51 2026 -0400
+
+    lockfile.sh: add R-103 allow-exec waiver for the flock re-exec
+
+    The FLOCKER re-exec and wrap-mode command handoff are deliberate process
+    replacements (that is how flock holds the lock across the run), which is exactly
+    the sanctioned R-103 'style-ok: allow-exec' case. Add the script-wide waiver
+    with its reason so the static gate is green.
+
+    ## AI-Assisted
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 1acc18963e47f60eaa4060c37f07d4fb9d2c4b42
+Author: claude (dev79 b1dc3a35-a589-46ea-9e0a-74277c8af5cf) <noreply@anthropic.com>
+Date:   Wed Jul 15 05:39:15 2026 -0400
+
+    lockfile.sh: injective lock-key encoding (no false collisions)
+
+    The key-to-filename flattening substituted '/' -> '_slash_' and '.' -> '_dot_',
+    which is NOT injective: a key 'a/b' and the literal key 'a_slash_b' both mapped
+    to the same lock file, so two unrelated commands could falsely contend for one
+    lock. Harmless for the self-lock path keys, but wrap mode exposes a generic
+    per-key API where arbitrary keys collide.
+
+    Escape the escape character ('_' -> '_underscore_') BEFORE introducing '_slash_'
+    / '_dot_', making the encoding injective (distinct keys -> distinct files).
+    Pure bash, no per-lock subprocess, and lock filenames stay human-readable for
+    ops debugging (vs hashing).
+
+    Found by CodeRabbit review of the wrap-mode change.
+
+    ## AI-Assisted
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit ab9fa869fcf60a032ba58226ef45834a657768e2
+Author: claude (dev79 b1dc3a35-a589-46ea-9e0a-74277c8af5cf) <noreply@anthropic.com>
+Date:   Wed Jul 15 04:48:50 2026 -0400
+
+    lockfile.sh: wrap-mode -- run a command under a per-key lock
+
+    Executing the helper as
+
+        lockfile.sh <lock-key> -- <command> [args...]
+
+    now runs <command> under a per-key flock, skipping (non-zero) if the key is
+    already held by a live process -- a generic "run this under a per-key lock"
+    front-end, so a caller no longer needs a separate wrapper script. Mechanism: the
+    executed run treats $1 as the lock key (via the same LOCK_NAME path) and, on the
+    locked (post-re-exec) pass, drops the key + optional '--' and execs the command,
+    clearing LOCK_NAME/FLOCKER so the command inherits neither.
+
+    SOURCE use is unchanged (the wrap branch is gated on BASH_SOURCE == $0), and an
+    executed run with NO arguments keeps the old dev self-lock behaviour.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 704dd29aa0f81e4f3788c91d03a634dad544f51a
+Author: claude (dev79 b1dc3a35-a589-46ea-9e0a-74277c8af5cf) <noreply@anthropic.com>
+Date:   Tue Jul 14 20:49:31 2026 -0400
+
+    lockfile.sh: optional LOCK_NAME key override
+
+    Default behaviour is unchanged: the lock key is the sourcing script's own
+    realpath, so a script self-locks (one instance at a time). A caller that runs
+    the SAME script concurrently for DIFFERENT keys -- e.g. one tor instance per
+    invocation from a cron for-loop, or a generic "run this command under a per-key
+    lock" wrapper -- can now set LOCK_NAME to lock per key instead of serializing on
+    that single path.
+
+    LOCK_NAME need not be exported: it is read only on the first (pre-re-exec) pass
+    to choose the lock file; the flock re-exec then holds the lock on that file for
+    the run, so the key is irrelevant on the second pass.
+
+    Backward compatible (LOCK_NAME unset -> realpath as before). Also adds a
+    'style-ok: no-strict' marker documenting the deliberate absence of set-options
+    in this sourced helper.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 5b03ea23620277630489b7af11b6cfd940339f19
+Merge: d825cda8 04daa4cf
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Tue Jul 14 03:29:02 2026 -0400
+
+    Merge pull request #64 from org-ai-assisted/ai/sanitize-tor-bootstrap-status
+
+    Sanitize tor_bootstrap_status at source (HTML-injection defense)
+
+commit 04daa4cfacc740cc55464e0385ae911d22f05c92
+Author: claude (dev78 241d086f-2b6c-4ada-883a-370b92c49a9a) <noreply@anthropic.com>
+Date:   Tue Jul 14 03:03:20 2026 -0400
+
+    Sanitize tor_bootstrap_status at source (HTML-injection defense)
+
+    check_bootstrap_helper_script_output comes from the Tor control-port reply
+    (getinfo status/bootstrap-phase), which is attacker-influenceable via a
+    compromised Tor. It flows unescaped into ~9 systemcheck message interpolations
+    that reach the GUI setHtml() path. Sanitize it once here at the source with
+    sanitize-string; control-port replies are ASCII words, so parsing is unchanged.
+    Adds the sanctioned no-strict waiver (sourced fragment).
+
+    ## AI-Assisted
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit d825cda8799c8527a85fc9553423d98b305114fe
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Mon Jul 13 11:48:28 2026 -0400
+
+    stdisplay: TERM=dumb disables SGR (same path as NO_COLOR) (#63)
+
+    ## Bug
+
+    `stdisplay.get_sgr_support()` checked `COLORTERM` **before** `TERM`, so
+    a terminal explicitly set to `TERM=dumb` was overridden by
+    `COLORTERM=truecolor` (which most terminals export) and SGR color
+    sequences were kept. That contradicts the function's own documented
+    contract:
+
+    > To disable SGR support: [...] Set the environment variable TERM to a
+    terminal that doesn't support SGR, such as 'dumb'.
+
+    ## Fix
+
+    Fold `TERM=dumb` into the same early return as `NO_COLOR` -- it takes
+    precedence over `COLORTERM` (which only advertises a *richer* mode than
+    TERM already supports; it cannot make a no-color terminal support
+    color).
+
+    ```python
+    if environ.get("NO_COLOR") or environ.get("TERM") == "dumb":
+        return -1
+    ```
+
+    All six stdisplay CLIs (`stcat`, `stcatn`, `stecho`, `stprint`,
+    `stsponge`, `sttee`) share `get_sgr_support`, so this fixes them all.
+
+    ## unicode-show
+
+    Checked as requested: `unicode-show` already handles `TERM=dumb`
+    correctly (`USE_COLOR = not NOCOLOR and not NO_COLOR and TERM != "dumb"
+    and isatty()` -- explicit TERM check, no COLORTERM bypass), so it needs
+    no change.
+
+    ## Verification
+
+    - `TERM=dumb` (with or without `COLORTERM`) -> `-1`; a color terminal +
+    `COLORTERM=truecolor` still -> `2**24`; `NO_COLOR` path unchanged.
+    - End-to-end `stcat`: strips the color under `TERM=dumb`, keeps it on
+    `xterm-256color`.
+    - `mypy` clean; doctest failure count unchanged (5 pre-existing
+    env-dependent examples, identical on the unpatched copy).
+
+    Separate from the case-arm sweep (#62) since it is an unrelated bug fix.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+    ---------
+
+    Co-authored-by: claude (dev71 31548627-e7c1-43cd-bd41-8b0900c72576) <noreply@anthropic.com>
+
+commit 41e174920731d443a2e11e70ad2f7cd813da0e2d
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Mon Jul 13 11:48:25 2026 -0400
+
+    helper-scripts: multi-line case arms (R-070) + clear touched-file gate debt (#62)
+
+    ## What
+
+    Reformats every compact single-line `case` arm to the fully multi-line
+    form (pattern label, each statement, and `;;` each on its own line), per
+    the updated **R-070** (a case arm is fully multi-line -- see
+    org-ai-assisted/developer-meta-files#144, which simplifies R-070/R-071
+    and makes the gate flag any inline `;;`).
+
+    49 arms across four sourced libraries: `accountctl.sh` (22), `get_os.sh`
+    (16 + one inline `case...esac`), `log_run_die.sh` (9), `root_cmd.sh`
+    (2). `parse_opt.sh` had none (its apparent hits were inside a `##`
+    usage-doc comment).
+
+    ## Touched-file gate debt cleared
+
+    Touching these files subjects each whole file to the static gate, which
+    surfaced pre-existing debt. Per the leave-touched-files-green rule, all
+    of it is cleared:
+
+    - **R-010**: a `## style-ok: no-strict` waiver on all four (sourced
+    libraries -- a top-level strict-mode block would leak `set -o
+    errexit`/`nounset` into the sourcing shell; the documented mechanism).
+    - **R-080** (`log_run_die.sh`): the five `shellcheck source=` directives
+    used an absolute `/usr/libexec/...` path; changed to the relative
+    same-dir name (lint-only, no runtime change).
+    - **R-051** (`root_cmd.sh`): `trap 'xtrace_reenable_maybe' RETURN` ->
+    unquoted `trap xtrace_reenable_maybe RETURN` (it was already a bare
+    function name).
+    - **R-090** (`root_cmd.sh`): a `## style-ok: no-has` waiver -- the one
+    `command -v` RESOLVES a command path (`has` returns only a boolean);
+    `has` is used elsewhere in the file.
+    - **R-130** (`root_cmd.sh`): a bare `:` no-op arm body -> `true`.
+
+    ## Verification
+
+    No behavior change. `bash -n`, `shellcheck --external-sources`, and the
+    full static gate pass on every file. Multi-statement arm splits were
+    verified to preserve both statements (and the `; return 1` chains now
+    sit on their own lines), and the libraries still source-load.
+
+    Note: this is a large mechanical diff; the reformat was done by a
+    subagent and independently re-verified.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+    ---------
+
+    Co-authored-by: claude (dev71 31548627-e7c1-43cd-bd41-8b0900c72576) <noreply@anthropic.com>
+
+commit e48600fd9f7f5e9a509a608cbe28c5026397d216
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Mon Jul 13 07:03:18 2026 -0400
+
+    set-keymap/set-keyboard-layout: blank line via printf '%s\n' "" (R-031) (#61)
+
+    Sweep the five remaining 'printf \n' bad-form usages to the R-031 explicit-empty-arg form; behavior unchanged.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
 
 commit 8b04b13a798f574901ee30d00eb2c79560caa49e
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
