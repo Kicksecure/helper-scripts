@@ -1,0 +1,83 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Safe git DIFFTOOL backend. git difftool materializes the two sides of a change
+## as real files and passes them as $LOCAL/$REMOTE; this wrapper runs the shared
+## content-hardening scan on both (Trojan-Source Unicode, over-long lines,
+## binary), fails closed on undecodable/non-UTF-8 content, then opens the chosen
+## viewer -- so a difftool review gets the same neutralization as the external-
+## diff drivers git-meld / git-kdiff3 / git-diff-review. Wire it via
+## 'git config difftool.<name>.cmd'; see git-review-tools.gitconfig. Shares the
+## hardened core git-review-scan.sh with git-review-driver.sh.
+##
+## Usage (normally invoked by git, not by hand):
+##   git-review-difftool <meld|kdiff3|diff-review> <local-file> <remote-file>
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
+
+review_tool="git-review-difftool"
+
+if [ "$#" -ne 3 ]; then
+   log error "expected 3 arguments, got '$#'."
+   die 2 "usage: ${review_tool} <meld|kdiff3|diff-review> LOCAL-FILE REMOTE-FILE"
+fi
+viewer="$1"
+local_file="$2"
+remote_file="$3"
+
+## Shared hardened scan core.
+# shellcheck source=../libexec/helper-scripts/git-review-scan.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/git-review-scan.sh
+
+## Either scanned side can be the culprit, so fail-closed messages name BOTH
+## (the per-side scan WARNING above already pinpoints which). diff_path_q keeps
+## the single reviewed path for the textual diff-review branch below.
+pair_q="$( printf '%q and %q' "${local_file}" "${remote_file}" )"
+diff_path_q="$( printf '%q' "${remote_file}" )"
+
+## Scan BOTH sides before opening anything. The scans will abort this script
+## if a fatal error occurs in unicode-show.
+git_review_scan_content "${local_file}"  "local '${local_file}'"
+local_is_binary="${git_review_is_binary}"
+git_review_scan_content "${remote_file}" "remote '${remote_file}'"
+remote_is_binary="${git_review_is_binary}"
+
+## A binary side would render as noise; surface it and do not open the viewer.
+if [ "${local_is_binary}" = 'true' ] || [ "${remote_is_binary}" = 'true' ]; then
+   log notice "${pair_q} looks BINARY (NUL byte); not opened in the viewer."
+   exit 0
+fi
+
+case "${viewer}" in
+   meld)
+      meld "${local_file}" "${remote_file}"
+      ;;
+   kdiff3)
+      kdiff3 "${local_file}" "${remote_file}"
+      ;;
+   diff-review)
+      ## Terminal-safe textual diff: 'diff' rc 0 (same) / 1 (differ) are OK; rc
+      ## >= 2 is a real error. stcat neutralizes any hostile escape sequence.
+      diff_rc=0
+      diff_out="$( diff --unified --color=always -- "${local_file}" "${remote_file}" )" || diff_rc=$?
+      if [ "${diff_rc}" -ge 2 ]; then
+         die "${diff_rc}" "diff failed (rc='${diff_rc}') for '${diff_path_q}'."
+      fi
+      printf '%s\n' "${diff_out}" | stcat
+      ;;
+   *)
+      die 2 "unknown viewer '${viewer}' (expected meld|kdiff3|diff-review)."
+      ;;
+esac

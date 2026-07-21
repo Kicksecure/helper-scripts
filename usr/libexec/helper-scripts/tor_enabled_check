@@ -21,6 +21,8 @@ check_tor_enabled_do() {
    shopt -s globstar
    shopt -s nullglob
 
+   file_name_list=""
+
    if [ -f /usr/share/tor/tor-service-defaults-torrc ]; then
       file_name_list+="/usr/share/tor/tor-service-defaults-torrc"
       file_name_list+=" "

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Safe git external diff driver: opens 'kdiff3' for regular-file diffs.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+# shellcheck source=../libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+
+has kdiff3
+
+git_review_self="$(readlink -f -- "${BASH_SOURCE[0]}")"
+review_tool="git-kdiff3"
+
+## Invoked indirectly by the sourced git-review-driver.sh (not dead code).
+# shellcheck disable=SC2317
+display_regular_file() {
+   kdiff3 "${1}" "${2}"
+}
+
+# shellcheck source=../libexec/helper-scripts/git-review-driver.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/git-review-driver.sh

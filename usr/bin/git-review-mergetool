@@ -1,0 +1,99 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Safe git MERGETOOL backend. On a conflict git materializes the three input
+## sides ($BASE/$LOCAL/$REMOTE) plus the in-progress $MERGED file; this wrapper
+## runs the shared content-hardening scan on the three inputs, fails closed on
+## undecodable/non-UTF-8 content, then opens a 3-way merge in the chosen viewer.
+## Only meld and kdiff3 (both real 3-way merge tools) are supported -- the
+## textual git-diff-review has no merge mode. Wire it via
+## 'git config mergetool.<name>.cmd' with 'trustExitCode = true'; see
+## git-review-tools.gitconfig. Shares git-review-scan.sh with git-review-driver.sh.
+##
+## Usage (normally invoked by git, not by hand):
+##   git-review-mergetool <meld|kdiff3> <base> <local> <remote> <merged>
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+# shellcheck source=../libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
+
+review_tool="git-review-mergetool"
+
+if [ "$#" -ne 5 ]; then
+   log error "expected 5 arguments, got '$#'."
+   die 2 "usage: ${review_tool} <meld|kdiff3> BASE LOCAL REMOTE MERGED"
+fi
+viewer="$1"
+base_file="$2"
+local_file="$3"
+remote_file="$4"
+merged_file="$5"
+
+## Shared hardened scan core.
+# shellcheck source=../libexec/helper-scripts/git-review-scan.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/git-review-scan.sh
+
+diff_path_q="$( printf '%q' "${merged_file}" )"
+
+## Scan the three inputs before opening the merge. $BASE can be absent (an
+## add/add conflict hands /dev/null); git_review_scan_content handles /dev/null.
+## git_review_is_binary is a global overwritten per call, so capture each side.
+## The scans will abort this script if a fatal error occurs in unicode-show.
+git_review_scan_content "${base_file}"   "base '${base_file}'"
+base_is_binary="${git_review_is_binary}"
+git_review_scan_content "${local_file}"  "local '${local_file}'"
+local_is_binary="${git_review_is_binary}"
+git_review_scan_content "${remote_file}" "remote '${remote_file}'"
+remote_is_binary="${git_review_is_binary}"
+
+## A binary conflict side cannot be meaningfully merged in a text/GUI tool and
+## would render as noise. Refuse and exit non-zero so the conflict is left
+## UNRESOLVED. Mirrors the difftool binary skip, but for a merge "skip" must
+## signal not-resolved.
+if [ "${base_is_binary}" = 'true' ] || [ "${local_is_binary}" = 'true' ] || [ "${remote_is_binary}" = 'true' ]; then
+   log notice "a conflict side of '${diff_path_q}' looks BINARY (NUL byte). Refusing to open the merge, resolve it another way."
+   exit 1
+fi
+
+## THIS wrapper -- not git -- decides resolution, so its exit code is
+## authoritative and BOTH mergetool entries set trustExitCode=true. That also
+## makes the fail-closed refusals above honored by git: with
+## trustExitCode=false git would ignore our refuse-exit and instead prompt
+## "was the merge successful?", where a careless "y" could mark an unreviewed
+## binary/ undecodable conflict resolved. meld's own exit code is unreliable
+## (0 even when closed unsaved), so we do not trust the viewer's exit.
+## Instead, if $MERGED changed, we consider the conflict resolved. kdiff3's
+## reliable exit is subsumed by the same test. '|| true' so the viewer's own
+## exit never aborts us under errexit.
+merged_before="$(sha256sum < "${merged_file}")"
+case "${viewer}" in
+   meld)
+      ## Middle pane is $MERGED (git's conflict-marked file); the user edits and
+      ## saves it in place.
+      meld "${local_file}" "${merged_file}" "${remote_file}" || true
+      ;;
+   kdiff3)
+      kdiff3 "${base_file}" "${local_file}" "${remote_file}" --output "${merged_file}" || true
+      ;;
+   *)
+      die 2 "unknown viewer '${viewer}' (expected meld|kdiff3)."
+      ;;
+esac
+merged_after="$(sha256sum < "${merged_file}")"
+
+## Resolved only if the merge output changed.
+if [ "${merged_before}" = "${merged_after}" ]; then
+   log notice "'${diff_path_q}' unchanged (viewer closed without saving or aborted); left UNRESOLVED."
+   exit 1
+fi
+exit 0
