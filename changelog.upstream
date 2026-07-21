@@ -1,3 +1,41 @@
+commit e3996a4e80f13f11233680e6ba890e39bebda4d5
+Merge: dafbd7d8 357b3ac3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 21 05:09:03 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 357b3ac3a076783a2d328d00abb7bb7106a430cb
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 19 00:19:57 2026 -0400
+
+    Fix tor_enabled_check crashing consumers with nounset enabled
+
+commit 069accbf9c119cbdecb01628b8b0c180ea243457
+Merge: 8b04b13a dafbd7d8
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Jul 17 17:43:33 2026 -0400
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 8b04b13a798f574901ee30d00eb2c79560caa49e
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 12 15:37:01 2026 -0400
+
+    Tolerate a file mode of '.' in git review scripts, since /dev/null is shown as having this file mode
+
+commit 71fe85d1e09270d7d46655e3f1a5066f6fc54c2f
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Jul 12 15:25:30 2026 -0400
+
+    Move git review scripts to helper-scripts, fix minor issues
+
+commit dafbd7d8ff93647d67c9adb218de3b166d1d31ee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 12 17:42:46 2026 +0000
+
+    bumped changelog version
+
 commit f1a0ef2dcffe2573cd936914dc6d1d750c5d3ff3
 Merge: b3819204 1a5bd0cf
 Author: Patrick Schleizer <adrelanos@whonix.org>
