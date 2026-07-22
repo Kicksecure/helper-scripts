@@ -39,7 +39,7 @@
 ## When that work lands and OSS-Fuzz republishes :latest pointing
 ## at the new ABI, this pin can be refreshed in a single digest
 ## swap.
-FROM gcr.io/oss-fuzz-base/base-builder-python@sha256:9dd557a4ba0e0cdfbeabc0bb115c98896f2dab68c3e8f301abf169469b8b5ef5
+FROM gcr.io/oss-fuzz-base/base-builder-python@sha256:6a3e2f6d0cd402285756257ccec0de734638ce7a955f6099de9a6f83a19b63bd
 
 COPY . $SRC/helper-scripts
 COPY .clusterfuzzlite/build.sh $SRC/build.sh
