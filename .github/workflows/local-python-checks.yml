@@ -60,7 +60,7 @@ jobs:
           apt-get install -y --no-install-recommends git ca-certificates
       ## https://github.com/actions/checkout/releases/tag/v6.0.2
       ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
       - name: Install linters
@@ -78,7 +78,7 @@ jobs:
         ## not vendor a copy; checkout @master keeps the org's
         ## single source of truth. Matches the pattern in
         ## local-python-fuzz.yml.
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           repository: org-ai-assisted/developer-meta-files
           ref: master
