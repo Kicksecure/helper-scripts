@@ -35,8 +35,18 @@ sudo_useable_test() {
 }
 
 sudo_error_exit_if_unavailable() {
-   if [ "$use_sudo" = "no" ]; then
-      printf '%s\n' "ERROR: sudo unavailable. Boot into sysmaint session?"
+   local msg_type err_text
+
+   msg_type="${1:-cli}"
+   err_text="ERROR: sudo unavailable. Boot into sysmaint session?"
+
+   if [ "${use_sudo}" = "no" ]; then
+      if [ "${msg_type}" = 'graphical' ]; then
+         /usr/libexec/msgcollector/generic_gui_message \
+            error "sudo unavailable" "${err_text}" "" ok || true
+      else
+         printf '%s\n' "${err_text}"
+      fi
       exit 1
    fi
 }
