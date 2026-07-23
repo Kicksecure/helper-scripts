@@ -1,3 +1,22 @@
+commit e7a6a5755aadd48a2f709501020af245ee37b02a
+Merge: 0aae6a15 fe11d7b5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 23 05:57:18 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit fe11d7b5f75e765b374ae61f59dd521d6d26e4aa
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Jul 21 22:18:32 2026 -0400
+
+    Add an optional graphical mode to sudo_error_exit_if_unavailable
+
+commit 0aae6a15ba1c473a52d92f8e0f684a4c8d60a7e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 21 10:35:34 2026 +0000
+
+    bumped changelog version
+
 commit 9561235ae50aeb4cc746d0c51200f81201ea3fda
 Merge: 117e2818 30cb90f6
 Author: Patrick Schleizer <adrelanos@whonix.org>
