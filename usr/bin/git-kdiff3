@@ -25,7 +25,12 @@ review_tool="git-kdiff3"
 ## Invoked indirectly by the sourced git-review-driver.sh (not dead code).
 # shellcheck disable=SC2317
 display_regular_file() {
-   kdiff3 "${1}" "${2}"
+   ## kdiff3 returns exit 1 whenever its two inputs differ (diff(1)
+   ## convention). Every reviewed file differs, so without '|| true' git treats
+   ## this external diff as "died" and aborts the whole review; a viewer's exit
+   ## code is not a review verdict. git-meld needs no such guard: meld returns 0
+   ## on close.
+   kdiff3 "${1}" "${2}" || true
 }
 
 # shellcheck source=../libexec/helper-scripts/git-review-driver.sh
