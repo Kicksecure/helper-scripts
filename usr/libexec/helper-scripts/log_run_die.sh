@@ -192,6 +192,35 @@ log() {
 }
 
 
+## Ask a yes/no question on the controlling terminal and read the answer.
+## Prints "<question> [y/N]" via 'log question', then reads one line from
+## /dev/tty (stdin may be redirected -- e.g. under a git external-diff driver --
+## so it is not usable to prompt on). Default is NO.
+## Returns: 0 = yes; 1 = no / empty; 2 = cannot ask (no usable controlling
+## terminal, or the read failed). Callers that must not proceed unattended fail
+## closed on 2.
+## usage: prompt_yes_no_tty "Continue?"
+prompt_yes_no_tty() {
+  local question reply
+  question="${1}"
+  ## /dev/tty can be a permission-readable device node yet fail to OPEN when the
+  ## process has no controlling terminal (ENXIO), so probe by actually opening it
+  ## rather than trusting 'test -r'.
+  if ! { true < /dev/tty; } 2>/dev/null; then
+    return 2
+  fi
+  log question "${question} [y/N]"
+  reply=""
+  read -r reply < /dev/tty 2>/dev/null || return 2
+  case "${reply,,}" in
+    y | yes)
+      return 0
+      ;;
+  esac
+  return 1
+}
+
+
 ## For one liners 'log error; die'
 ## 'log' should not handle exits, because then it would not be possible
 ## to log consecutive errors on multiple lines, making die more suitable

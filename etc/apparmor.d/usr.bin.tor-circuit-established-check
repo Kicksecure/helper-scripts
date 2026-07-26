@@ -7,7 +7,7 @@ include <tunables/global>
 
 /usr/bin/tor-circuit-established-check flags=(attach_disconnected) {
   include <abstractions/consoles>
-  include <abstractions/gstreamer>
+  include if exists <abstractions/gstreamer>
   include <abstractions/tor-circuit-established-check>
   include if exists <abstractions/tor>
   include <local/usr.bin.tor-circuit-established-check>

@@ -146,35 +146,26 @@ git_review_gitattributes_gate() {
 
 ## Interactively ask the operator whether to continue a review despite content
 ## a scan flagged. Requires that the review tool be able to handle text that
-## triggers unicode-show fatal errors. The question goes to stderr via
-## `log question` and the answer is read from /dev/tty, because in
-## external-diff mode stdin may be redirected. Consent is not cached; a file
-## that trips the scan more than has multiple issues, each of which should
-## require separate acknowledgement.
+## triggers unicode-show fatal errors. The prompt itself (log question +
+## /dev/tty read + [y/N] default-no) is prompt_yes_no_tty (log_run_die.sh).
+## Consent is not cached; a file that trips the scan more than once has multiple
+## issues, each of which should require separate acknowledgement.
 ##
-## Returns: 0 = proceed (operator said yes, or already consented); 1 = operator
-## explicitly declined; 2 = could not ask (not a terminal-safe reviewer, or no
-## usable controlling terminal).
+## Returns: 0 = proceed (operator said yes); 1 = operator explicitly declined;
+## 2 = could not ask (not a terminal-safe reviewer, or no usable controlling
+## terminal).
 git_review_prompt_continue() {
-  local reply
+  local prompt_rc
 
   if [ "${git_review_display_fatal_content:-}" != 'true' ]; then
     return 2
   fi
-  ## /dev/tty can be a permission-readable device node yet fail to OPEN when the
-  ## process has no controlling terminal (ENXIO), so probe by actually opening it
-  ## rather than trusting 'test -r'. No usable tty -> cannot ask (rc 2).
-  if ! { true < /dev/tty; } 2>/dev/null; then
-    return 2
-  fi
-  log question "Continue the review anyway? [y/N]"
-  reply=''
-  read -r reply < /dev/tty 2>/dev/null || return 2
-  if [ "${reply,,}" = 'y' ] || [ "${reply,,}" = 'yes' ]; then
-    git_review_continue_consented='true'
-    return 0
-  fi
-  return 1
+  ## The tty probe + /dev/tty read + [y/N] default-no live in prompt_yes_no_tty
+  ## (log_run_die.sh); its 0/1/2 return maps exactly onto ours. This wrapper adds
+  ## only the terminal-safe-reviewer gate above.
+  prompt_rc=0
+  prompt_yes_no_tty "Continue the review anyway?" || prompt_rc="$?"
+  return "${prompt_rc}"
 }
 
 git_review_handle_unicode_show_fatal() {
@@ -230,8 +221,10 @@ git_review_cleanup() {
 
 ## Check a specified file for Unicode and overly long lines, and warn if
 ## either is found. Also checks a file for binary content and sets
-## get_review_is_binary to 'true' if detected.
-git_review_is_binary='false'
+## git_review_is_binary to 'true' if detected. That global is an OUT-param read
+## by the callers (git-review-driver.sh / -difftool / -mergetool), not within
+## this file, so shellcheck cannot see the use.
+# shellcheck disable=SC2034
 git_review_scan_content() {
   local target label longest nul_rc
 
