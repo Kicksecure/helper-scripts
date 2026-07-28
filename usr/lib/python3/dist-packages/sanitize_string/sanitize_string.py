@@ -9,13 +9,19 @@
 sanitize_string.py: Strips markup and control characters from a string.
 """
 
+import os
 import sys
 from strip_markup.strip_markup_lib import markup_incomplete
 from .sanitize_string_lib import sanitize_string
 
-## Cap on input held back while a markup construct is still open, so an
-## unterminated construct cannot buffer without bound. Past it, sanitize what
-## has accumulated even though more input could still change its parse.
+## Cap on how much COMPLETED input is held back while a markup construct is
+## still open. Past it, sanitize what has accumulated even though more input
+## could still change its parse, which is the one case where sanitizing
+## standard input as it arrives differs from sanitizing it all at once.
+##
+## This bounds the hold-back, not memory in general: a single line is read
+## whole, so input containing no newline is still accumulated without limit,
+## exactly as reading all of standard input always did.
 STDIN_MAX_PENDING_CHARS: int = 65536
 
 
@@ -53,6 +59,36 @@ def write_sanitized(
     return remaining
 
 
+def sanitize_stdin_loop(remaining: int | None) -> int:
+    """
+    Read standard input and write sanitized output, holding lines back only
+    while a markup construct is still open. Factored out of sanitize_stdin so
+    the whole loop sits under one BrokenPipeError handler.
+    """
+
+    pending_string: str = ""
+    for untrusted_line in sys.stdin:
+        pending_string += untrusted_line
+        ## Only a markup character can leave a construct open, so skip the
+        ## parse entirely for input containing none. Without this, re-parsing
+        ## the whole pending buffer once per line is quadratic in its length.
+        if (
+            ("<" in pending_string or "&" in pending_string)
+            and len(pending_string) < STDIN_MAX_PENDING_CHARS
+            and markup_incomplete(pending_string)
+        ):
+            continue
+        remaining = write_sanitized(pending_string, remaining)
+        pending_string = ""
+        ## Stop before reading another line, which would otherwise block on a
+        ## producer still running with nothing left for us to emit.
+        if remaining is not None and remaining <= 0:
+            return 0
+    if pending_string:
+        write_sanitized(pending_string, remaining)
+    return 0
+
+
 def sanitize_stdin(max_string_length: int | None) -> int:
     """
     Sanitize standard input as it arrives rather than waiting for end of
@@ -71,6 +107,16 @@ def sanitize_stdin(max_string_length: int | None) -> int:
       construct is still open. Otherwise a construct split across lines would
       not be recognised as markup, and content the parser would have consumed
       -- the body of a multi-line comment, say -- would be emitted as text.
+
+    Two cases still differ from sanitizing the whole input at once. Neither can
+    emit markup or an escape sequence, since every chunk goes through the full
+    sanitizer and strip_markup underscores every surviving '<', '>' and '&':
+
+    * A construct still open at STDIN_MAX_PENDING_CHARS is written anyway, so
+      its text is emitted rather than consumed.
+    * A construct that makes the parser raise is written too, whereas
+      strip_markup would underscore-sanitize the whole input; chunks already
+      written cannot be revisited.
     """
 
     sys.stdin.reconfigure(  # type: ignore
@@ -80,26 +126,21 @@ def sanitize_stdin(max_string_length: int | None) -> int:
         encoding="ascii", errors="replace", newline="\n"
     )
 
-    remaining: int | None = max_string_length
-    if remaining is not None and remaining <= 0:
+    if max_string_length is not None and max_string_length <= 0:
         return 0
 
-    pending_string: str = ""
-    for untrusted_line in sys.stdin:
-        pending_string += untrusted_line
-        if len(pending_string) < STDIN_MAX_PENDING_CHARS and markup_incomplete(
-            pending_string
-        ):
-            continue
-        remaining = write_sanitized(pending_string, remaining)
-        pending_string = ""
-        ## Stop before reading another line, which would otherwise block on a
-        ## producer still running with nothing left for us to emit.
-        if remaining is not None and remaining <= 0:
-            return 0
-    if pending_string:
-        write_sanitized(pending_string, remaining)
-    return 0
+    try:
+        return sanitize_stdin_loop(max_string_length)
+    except BrokenPipeError:
+        ## Downstream closed early, e.g. piped into head. Exit quietly like any
+        ## other filter instead of reporting a traceback, and redirect stdout
+        ## to the null device so the interpreter's shutdown flush cannot raise
+        ## again. stdout need not be a real file, so tolerate a missing fileno.
+        try:
+            os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+        except (OSError, ValueError):
+            pass
+        return 0
 
 
 # pylint: disable=too-many-branches,too-many-return-statements

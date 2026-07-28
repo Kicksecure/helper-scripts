@@ -12,7 +12,10 @@ from unittest import mock
 from strip_markup.tests.strip_markup import TestStripMarkupBase
 from stdisplay.tests.stdisplay import simple_escape_cases
 
-from sanitize_string.sanitize_string import main as sanitize_string_main
+from sanitize_string.sanitize_string import (
+    STDIN_MAX_PENDING_CHARS,
+    main as sanitize_string_main,
+)
 from sanitize_string.sanitize_string_lib import sanitize_string
 
 
@@ -126,6 +129,78 @@ sanitize-string: Usage: sanitize-string [--help] max_length [string]
         )
         ## The second line must still be waiting, unread.
         self.assertEqual(stdin_buf.read(), "second line\n")
+
+    def _run_stdin(
+        self, args: list[str], stdin_string: str
+    ) -> tuple[int, str]:
+        """
+        Run main() with the given stdin, returning its exit code and stdout.
+        """
+
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=BytesIO(), encoding="utf-8", newline="\n"
+        )
+        stdout_buf_internal: BytesIO = BytesIO()
+        stdout_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdout_buf_internal, encoding="utf-8", newline="\n"
+        )
+        stdin_buf.write(stdin_string)
+        stdin_buf.seek(0, 0)
+
+        with (
+            mock.patch.object(sys, "argv", [self.argv0, *args]),
+            mock.patch.object(sys, "stdin", stdin_buf),
+            mock.patch.object(sys, "stdout", stdout_buf),
+        ):
+            exit_code: int = sanitize_string_main()
+        stdout_buf.flush()
+        return exit_code, stdout_buf_internal.getvalue().decode("utf-8")
+
+    def test_stdin_flushes_a_construct_that_never_closes(self) -> None:
+        """
+        Ensure a markup construct left open past STDIN_MAX_PENDING_CHARS is
+        written out rather than held back forever. This is the one case where
+        sanitizing standard input as it arrives knowingly differs from
+        sanitizing it all at once, so pin the behaviour.
+        """
+
+        unterminated_input: str = "<!--\n" + (
+            "padding\n" * STDIN_MAX_PENDING_CHARS
+        )
+        exit_code, stream_output = self._run_stdin(
+            args=["nolimit"], stdin_string=unterminated_input
+        )
+
+        self.assertEqual(exit_code, 0)
+        ## Held back forever would emit nothing at all.
+        self.assertNotEqual(stream_output, "")
+        ## Whatever is emitted still carries no markup metacharacter.
+        for forbidden_char in ("<", ">", "&"):
+            self.assertNotIn(forbidden_char, stream_output)
+
+    def test_stdin_exits_quietly_when_output_closes(self) -> None:
+        """
+        Ensure a closed downstream ends the run cleanly rather than raising.
+        Writing each chunk as it becomes ready means the write can now fail
+        part way through, where before there was a single write at the end.
+        """
+
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=BytesIO(), encoding="utf-8", newline="\n"
+        )
+        stdin_buf.write("first\nsecond\n")
+        stdin_buf.seek(0, 0)
+        closed_stdout = mock.MagicMock()
+        closed_stdout.write.side_effect = BrokenPipeError()
+
+        with (
+            mock.patch.object(sys, "argv", [self.argv0, "nolimit"]),
+            mock.patch.object(sys, "stdin", stdin_buf),
+            mock.patch.object(sys, "stdout", closed_stdout),
+        ):
+            exit_code: int = sanitize_string_main()
+
+        self.assertEqual(exit_code, 0)
 
     def test_safe_strings(self) -> None:
         """
