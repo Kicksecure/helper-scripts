@@ -1,3 +1,92 @@
+commit 6f62fc91bfd3808a575c7ec7dfd1424656a30dd6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 28 08:23:15 2026 -0400
+
+    output
+
+commit 84fd30d080208ed45c442cc1bad42f02833ddb51
+Merge: ec5774d5 f178acc5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 28 07:58:09 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit f178acc53d82e3c8aecf83ab278b426957a7cbb2
+Author: claude <noreply@anthropic.com>
+Date:   Tue Jul 28 06:17:14 2026 -0400
+
+    consumer-codex-review: drop OPENAI_API_KEY forward to the disabled reusable
+
+    Propagates org-ai-assisted/developer-meta-files#167. The reusable is a no-op
+    stub (job 'if: false') and no longer declares an OPENAI_API_KEY secret;
+    forwarding an undeclared secret is rejected by GitHub at workflow startup
+    (startup_failure). Dropping the forward lets the no-op run green; Codex review
+    stays cleanly disabled.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit ec5774d5bf98338bd83bd8dc92736b36df6a3359
+Merge: 315b98ae 99643ec8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 26 08:03:10 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit 99643ec828cb6a47cd367fa37ac627d00c8fdbf2
+Merge: c9ca2738 4d0a01f1
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sat Jul 25 14:36:48 2026 -0400
+
+    Merge pull request #73 from org-ai-assisted/apparmor-gstreamer-if-exists
+
+    apparmor: make optional gstreamer abstraction include-if-exists
+
+commit 4d0a01f187cdb0fb844d37d8a9447a9a14742592
+Author: claude (dev74 3cdbae8e-30ec-412d-8ce2-ba63d1c9b6af) <noreply@anthropic.com>
+Date:   Sat Jul 25 14:10:28 2026 -0400
+
+    apparmor: make optional gstreamer abstraction include-if-exists
+
+    usr.bin.tor-circuit-established-check hard-included <abstractions/gstreamer>,
+    absent on a no-GUI install, so apparmor_parser failed the profile and
+    apparmor.service failed entirely. Use 'include if exists', matching the
+    idiom the same profile already uses for <abstractions/tor>.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit c9ca2738f0fe0e0a9799af04db1543350b7d3e5e
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Fri Jul 24 05:15:47 2026 -0400
+
+    log_run_die: add prompt_yes_no_tty; git-review reuses it (#72)
+
+    Shared prompt_yes_no_tty helper (log question + /dev/tty read + [y/N] default-no, returns 0/1/2 fail-closed). git_review_prompt_continue wraps it. De-dups the ad-hoc tty-prompt logic.
+
+    AI-Assisted
+
+commit 315b98ae97bc027755163eb63bdd3dcf18521bdc
+Merge: e3e05ccf e726532c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 23 08:15:50 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master'
+
+commit e726532ca3925c482e3007611bc02af7054999cf
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Thu Jul 23 08:04:27 2026 -0400
+
+    git-review: swallow kdiff3's differ-exit so it cannot abort the review (#71)
+
+    kdiff3 returns exit 1 whenever its two inputs differ (diff(1) convention); every reviewed file differs, so an un-swallowed exit made git report 'external diff died' and abort the whole review. Guard the kdiff3 paths in git-kdiff3 and git-review-difftool with '|| true'. meld returns 0 on close, so it is deliberately left unguarded.
+
+    AI-Assisted
+
+commit e3e05ccf9ed90e005cf3f94bd8ef81396e91864e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 23 09:59:57 2026 +0000
+
+    bumped changelog version
+
 commit e7a6a5755aadd48a2f709501020af245ee37b02a
 Merge: 0aae6a15 fe11d7b5
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -5,11 +94,29 @@ Date:   Thu Jul 23 05:57:18 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
 
+commit e16fad12c327c3aae39dbbdd97c101ea5c0b9a75
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Wed Jul 22 10:21:18 2026 -0400
+
+    consumer-claude-code: forward CLAUDE_CODE_OAUTH_TOKEN (claude review OAuth port)
+
 commit fe11d7b5f75e765b374ae61f59dd521d6d26e4aa
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Tue Jul 21 22:18:32 2026 -0400
 
     Add an optional graphical mode to sudo_error_exit_if_unavailable
+
+commit 8f8e1fe2d7a5725645ba433fa501d1b4e0b8944f
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Tue Jul 21 09:06:06 2026 -0400
+
+    Coverity: point CI at the org-ai-assisted-helper-scripts project (#70)
+
+    project-name -> org-ai-assisted-helper-scripts; canonical-repos -> org-ai-assisted/helper-scripts. Project registered + repo COVERITY_SCAN_TOKEN set.
+
+    AI-Assisted
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
 
 commit 0aae6a15ba1c473a52d92f8e0f684a4c8d60a7e1
 Author: Patrick Schleizer <adrelanos@whonix.org>
