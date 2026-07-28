@@ -5,10 +5,15 @@
 
 # pylint: disable=missing-module-docstring,fixme,unknown-option-value
 
+import sys
+from io import BytesIO, TextIOWrapper
+from unittest import mock
+
 from strip_markup.tests.strip_markup import TestStripMarkupBase
 from stdisplay.tests.stdisplay import simple_escape_cases
 
 from sanitize_string.sanitize_string import main as sanitize_string_main
+from sanitize_string.sanitize_string_lib import sanitize_string
 
 
 class TestSanitizeString(TestStripMarkupBase):
@@ -61,6 +66,66 @@ sanitize-string: Usage: sanitize-string [--help] max_length [string]
                 exit_code=1,
                 args=test_args,
             )
+
+    def test_stdin_matches_whole_input_for_multiline_markup(self) -> None:
+        """
+        Ensure sanitizing standard input as it arrives matches sanitizing the
+        whole input at once when a markup construct spans a line boundary.
+        Splitting such a construct would emit content the parser should have
+        consumed, for instance the body of a multi-line comment.
+        """
+
+        multiline_input_list: list[str] = [
+            "<!--\nsecret\n-->\n",
+            "<div\nclass=x>text\n",
+            "<scr\nipt>alert(1)</scr\nipt>\n",
+            "before\n<!--\nhidden\n-->\nafter\n",
+            "<a href=\n'x'>link</a>\n",
+        ]
+
+        for multiline_input in multiline_input_list:
+            with self.subTest(multiline_input=multiline_input):
+                self._test_stdin(
+                    main_func=sanitize_string_main,
+                    argv0=self.argv0,
+                    stdout_string=sanitize_string(multiline_input),
+                    stderr_string="",
+                    args=["nolimit"],
+                    stdin_string=multiline_input,
+                )
+
+    def test_stdin_stops_reading_once_budget_is_spent(self) -> None:
+        """
+        Ensure no further line is read once max_length is reached. Reading one
+        more would block on a producer that is still running but has nothing
+        left to emit, which defeats sanitizing standard input as it arrives.
+        """
+
+        stdin_buf_internal: BytesIO = BytesIO()
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdin_buf_internal, encoding="utf-8", newline="\n"
+        )
+        stdout_buf_internal: BytesIO = BytesIO()
+        stdout_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdout_buf_internal, encoding="utf-8", newline="\n"
+        )
+        stdin_buf.write("123456\nsecond line\n")
+        stdin_buf.seek(0, 0)
+
+        with (
+            mock.patch.object(sys, "argv", [self.argv0, "5"]),
+            mock.patch.object(sys, "stdin", stdin_buf),
+            mock.patch.object(sys, "stdout", stdout_buf),
+        ):
+            exit_code: int = sanitize_string_main()
+
+        stdout_buf.flush()
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(
+            stdout_buf_internal.getvalue().decode("utf-8"), "12345"
+        )
+        ## The second line must still be waiting, unread.
+        self.assertEqual(stdin_buf.read(), "second line\n")
 
     def test_safe_strings(self) -> None:
         """

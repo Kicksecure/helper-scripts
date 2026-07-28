@@ -10,7 +10,13 @@ sanitize_string.py: Strips markup and control characters from a string.
 """
 
 import sys
+from strip_markup.strip_markup_lib import markup_incomplete
 from .sanitize_string_lib import sanitize_string
+
+## Cap on input held back while a markup construct is still open, so an
+## unterminated construct cannot buffer without bound. Past it, sanitize what
+## has accumulated even though more input could still change its parse.
+STDIN_MAX_PENDING_CHARS: int = 65536
 
 
 def print_usage() -> None:
@@ -28,42 +34,71 @@ def print_usage() -> None:
     )
 
 
+def write_sanitized(
+    untrusted_string: str, remaining: int | None
+) -> int | None:
+    """
+    Sanitize untrusted_string, write it out immediately, and return what is
+    left of the output budget.
+    """
+
+    sanitized_string: str = sanitize_string(untrusted_string)
+    if remaining is not None:
+        sanitized_string = sanitized_string[:remaining]
+        remaining -= len(sanitized_string)
+    sys.stdout.write(sanitized_string)
+    ## Not relying on line buffering: sanitizing can consume the newline that
+    ## would otherwise have triggered the flush, e.g. one inside a tag.
+    sys.stdout.flush()
+    return remaining
+
+
 def sanitize_stdin(max_string_length: int | None) -> int:
     """
-    Sanitize standard input line by line, writing each line as soon as it is
-    read rather than waiting for end of input, so output from a long-running
-    producer appears as it is produced instead of arriving in one burst when
-    the producer exits.
+    Sanitize standard input as it arrives rather than waiting for end of
+    input, so output from a long-running producer appears as it is produced
+    instead of arriving in one burst when the producer exits.
 
-    Sanitizing per line rather than over the whole input is safe:
+    Output is written only where splitting the input cannot change how it is
+    sanitized, which keeps this equivalent to sanitizing the whole input at
+    once:
 
-    * No allowed escape sequence can contain a newline -- SGR is composed
-      solely of digits, semicolons, colons and the 'm' terminator -- so a line
-      boundary can never fall inside one. This is the same reasoning that lets
-      stcat/stcatn/sttee stream; see agents/stdisplay-security.md.
-    * Markup may span a line boundary, and a tag split that way is not
-      recognised as a tag. That cannot leak markup, because strip_markup()
-      unconditionally turns every '<', '>' and '&' surviving the parser into
-      an underscore. Such a tag's inert text is retained rather than dropped,
-      which is the only observable difference from whole-input sanitizing.
+    * A line boundary can never fall inside an escape sequence, as no allowed
+      sequence can contain a newline -- SGR is composed solely of digits,
+      semicolons, colons and the 'm' terminator. This is the same reasoning
+      that lets stcat/stcatn/sttee stream; see agents/stdisplay-security.md.
+    * Markup can span a line boundary, so lines are held back while a markup
+      construct is still open. Otherwise a construct split across lines would
+      not be recognised as markup, and content the parser would have consumed
+      -- the body of a multi-line comment, say -- would be emitted as text.
     """
 
     sys.stdin.reconfigure(  # type: ignore
         encoding="utf-8", errors="replace", newline="\n"
     )
     sys.stdout.reconfigure(  # type: ignore
-        encoding="ascii", errors="replace", newline="\n", line_buffering=True
+        encoding="ascii", errors="replace", newline="\n"
     )
 
     remaining: int | None = max_string_length
+    if remaining is not None and remaining <= 0:
+        return 0
+
+    pending_string: str = ""
     for untrusted_line in sys.stdin:
+        pending_string += untrusted_line
+        if len(pending_string) < STDIN_MAX_PENDING_CHARS and markup_incomplete(
+            pending_string
+        ):
+            continue
+        remaining = write_sanitized(pending_string, remaining)
+        pending_string = ""
+        ## Stop before reading another line, which would otherwise block on a
+        ## producer still running with nothing left for us to emit.
         if remaining is not None and remaining <= 0:
-            break
-        sanitized_line: str = sanitize_string(untrusted_line)
-        if remaining is not None:
-            sanitized_line = sanitized_line[:remaining]
-            remaining -= len(sanitized_line)
-        sys.stdout.write(sanitized_line)
+            return 0
+    if pending_string:
+        write_sanitized(pending_string, remaining)
     return 0
 
 
