@@ -135,11 +135,24 @@ def sanitize_stdin(max_string_length: int | None) -> int:
         ## Downstream closed early, e.g. piped into head. Exit quietly like any
         ## other filter instead of reporting a traceback, and redirect stdout
         ## to the null device so the interpreter's shutdown flush cannot raise
-        ## again. stdout need not be a real file, so tolerate a missing fileno.
+        ## again.
         try:
-            os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+            devnull_fd: int = os.open(os.devnull, os.O_WRONLY)
+        except OSError:
+            ## No null device to redirect onto. Exiting quietly is still the
+            ## right outcome; only the shutdown flush is left unguarded.
+            return 0
+        try:
+            os.dup2(devnull_fd, sys.stdout.fileno())
         except (OSError, ValueError):
+            ## stdout has no real file descriptor, as when it is a StringIO
+            ## under test, so there is nothing to redirect and nothing for the
+            ## shutdown flush to fail on either.
             pass
+        finally:
+            ## dup2 duplicated it onto stdout, so this descriptor is now
+            ## redundant either way and would otherwise leak.
+            os.close(devnull_fd)
         return 0
 
 
