@@ -73,7 +73,7 @@ check_ref_names_for_unicode() {
       printf '%s\n' "${unicode_report}" | stcat || true
       found_malicious_unicode='true'
     else
-      log info "No unicode in ref name '${ref}'."
+      true "INFO: No unicode in ref name '${ref}'."
     fi
   done
 
