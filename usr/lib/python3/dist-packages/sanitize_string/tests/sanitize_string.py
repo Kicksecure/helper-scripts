@@ -6,6 +6,7 @@
 # pylint: disable=missing-module-docstring,fixme,unknown-option-value
 
 import io
+import os
 import sys
 from io import BytesIO, TextIOWrapper
 from unittest import mock
@@ -214,6 +215,110 @@ sanitize-string: Usage: sanitize-string [--help] max_length [string]
             mock.patch.object(sys, "argv", [self.argv0, "nolimit"]),
             mock.patch.object(sys, "stdin", stdin_buf),
             mock.patch.object(sys, "stdout", closed_stdout),
+        ):
+            exit_code: int = sanitize_string_main()
+
+        self.assertEqual(exit_code, 0)
+
+    def test_stdin_probe_is_throttled(self) -> None:
+        """
+        The markup probe runs at most once per STDIN_PROBE_INTERVAL_CHARS of
+        growth; between probes the buffer is HELD rather than flushed, because
+        flushing unasked could split a construct. Drives the hold path, which
+        no other test reaches.
+        """
+
+        ## A comment that stays open well past the probe interval and only
+        ## then closes, with text after it. Splitting anywhere inside would
+        ## stop the comment being recognised and leak its body; holding to the
+        ## end reproduces whole-input sanitizing exactly.
+        held_input: str = "<!--\n" + ("pad\n" * 2000) + "-->\nvisible\n"
+        exit_code, output = self._run_stdin(
+            args=["nolimit"], stdin_string=held_input
+        )
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("visible", output)
+        self.assertNotIn("pad", output)
+
+    def test_probe_flushes_once_the_construct_closes(self) -> None:
+        """
+        The other side of the throttle: when a probe DOES fire and finds the
+        construct closed, the buffer is written out rather than held. Needs a
+        second interval's worth of input after the close, since the probe only
+        runs once per interval.
+        """
+
+        closed_input: str = (
+            "<!--\n" + ("pad\n" * 2000) + "-->\n" + ("tail\n" * 1500)
+        )
+        exit_code, output = self._run_stdin(
+            args=["nolimit"], stdin_string=closed_input
+        )
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("tail", output)
+        self.assertNotIn("pad", output)
+
+    def test_bare_double_dash_is_a_usage_error(self) -> None:
+        """
+        '--' with nothing after it leaves no positional argument at all, so the
+        option loop ends with an empty list. That is a usage error, not a
+        successful no-op.
+        """
+
+        self._test_args(
+            main_func=sanitize_string_main,
+            argv0=self.argv0,
+            stdout_string="",
+            stderr_string=self.help_str,
+            exit_code=1,
+            args=["--"],
+        )
+
+    def test_exits_quietly_when_the_null_device_cannot_be_opened(self) -> None:
+        """
+        The BrokenPipe handler redirects stdout to the null device so the
+        interpreter's shutdown flush cannot raise again. If opening it fails
+        there is nothing to redirect onto, and exiting quietly is still the
+        right outcome -- exercised here because a missing /dev/null is not
+        something a test can arrange for real.
+        """
+
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=BytesIO(), encoding="utf-8", newline="\n"
+        )
+        stdin_buf.write("first\n")
+        stdin_buf.seek(0, 0)
+
+        class BrokenPipeStdout(io.StringIO):
+            """A stdout whose every write reports the reader is gone."""
+
+            def reconfigure(self, **kwargs: object) -> None:
+                """Accept the encoding setup main() performs on stdout."""
+
+            def write(self, *args: object, **kwargs: object) -> int:
+                raise BrokenPipeError()
+
+        with (
+            mock.patch.object(sys, "argv", [self.argv0, "nolimit"]),
+            mock.patch.object(sys, "stdin", stdin_buf),
+            mock.patch.object(sys, "stdout", BrokenPipeStdout()),
+            mock.patch.object(os, "open", side_effect=OSError()),
+        ):
+            exit_code: int = sanitize_string_main()
+
+        self.assertEqual(exit_code, 0)
+
+    def test_no_argument_and_no_stdin_exits_successfully(self) -> None:
+        """
+        With neither an argument nor a stdin there is no untrusted string to
+        sanitize; that is success with no output, not an error.
+        """
+
+        with (
+            mock.patch.object(sys, "argv", [self.argv0, "nolimit"]),
+            mock.patch.object(sys, "stdin", None),
         ):
             exit_code: int = sanitize_string_main()
 

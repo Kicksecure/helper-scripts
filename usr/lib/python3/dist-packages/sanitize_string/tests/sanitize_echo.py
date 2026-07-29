@@ -194,6 +194,27 @@ sanitize-echo: Usage: sanitize-echo [--help] [--max-length LENGTH] [--] [string 
         self.assertEqual(exit_code, 0)
         self.assertEqual(output, "abcd\n")
 
+    def test_no_argument_and_no_stdin_still_prints_a_newline(self) -> None:
+        """
+        sys.stdin can be None (pythonw, a detached service). echo still emits
+        its newline rather than failing.
+        """
+
+        stdout_internal: BytesIO = BytesIO()
+        stdout_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdout_internal, encoding="utf-8", newline="\n"
+        )
+        with (
+            mock.patch.object(sys, "argv", [self.argv0]),
+            mock.patch.object(sys, "stdin", None),
+            mock.patch.object(sys, "stdout", stdout_buf),
+        ):
+            exit_code: int = sanitize_echo_main()
+        stdout_buf.flush()
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stdout_internal.getvalue().decode("utf-8"), "\n")
+
     def test_bad_max_length_is_rejected(self) -> None:
         """
         A non-numeric, negative, or missing cap is a usage error, not a
