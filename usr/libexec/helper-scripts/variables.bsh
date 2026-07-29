@@ -1,0 +1,93 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+# shellcheck source=./check_runtime.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
+
+## Set a variable at its SOURCE when it is unset OR empty.
+##
+##   default_if_empty TMP /tmp
+##
+## The variable is named BARE, without '$'. Nothing in the caller is
+## dereferenced, so the call is safe under 'set -o nounset' -- the same
+## property that makes '[ -v VAR ] || VAR=value' the house idiom.
+##
+## Which of the two to use is a semantic choice, not a preference:
+##
+##   [ -v VAR ] || VAR=value    empty is a MEANINGFUL value and must survive
+##   default_if_empty VAR value empty is not a usable value for this variable
+##
+## '-v' alone reports an explicitly-empty variable as set, so it keeps an
+## intentional empty. That is right for a flag or an optional string, and wrong
+## for a PATH: an empty path silently turns "${VAR}/file" into "/file", i.e. a
+## root-relative path, which fails late and far from the cause (or, as root,
+## succeeds and writes to the wrong place).
+##
+## Both forms set the variable ONCE, where it is defined. Neither is a
+## '${VAR:-value}' guard at each consumer: those defeat nounset, because a
+## consumer that defaults the value away can no longer report a genuinely
+## missing one as the bug it is.
+default_if_empty() {
+  local var_name default_value
+
+  var_name="${1:-}"
+  default_value="${2:-}"
+
+  ## The name reaches 'printf -v', which evaluates an array subscript: a name
+  ## like 'arr[$(command)]' would run the command. Accept a plain identifier
+  ## only. 'case' rather than '[[ =~ ]]' keeps to '[ ]'-style tests.
+  case "${var_name}" in
+    ''|[0-9]*|*[!A-Za-z0-9_]*)
+      printf '%s\n' "ERROR: default_if_empty: not a variable name: '${var_name}'!" >&2
+      return 1
+      ;;
+  esac
+
+  ## '-v' tests without dereferencing. The '&&' short-circuit is load-bearing:
+  ## it stops the indirect expansion below from firing on an unset name, which
+  ## 'set -o nounset' would abort on.
+  if [ -v "${var_name}" ] && [ -n "${!var_name}" ]; then
+    return 0
+  fi
+
+  printf -v "${var_name}" '%s' "${default_value}"
+}
+
+default_if_empty_self_test() {
+  local result
+
+  unset -v default_if_empty_probe
+  default_if_empty default_if_empty_probe 'fallback'
+  [ "${default_if_empty_probe}" = 'fallback' ] || return 1
+
+  default_if_empty_probe=''
+  default_if_empty default_if_empty_probe 'fallback'
+  [ "${default_if_empty_probe}" = 'fallback' ] || return 1
+
+  default_if_empty_probe='kept value'
+  default_if_empty default_if_empty_probe 'fallback'
+  [ "${default_if_empty_probe}" = 'kept value' ] || return 1
+
+  ## A non-identifier must be refused, not evaluated.
+  result=0
+  # shellcheck disable=SC2016  # single quotes are the point: the '$(...)' must stay literal
+  default_if_empty 'probe[$(exit 7)]' 'fallback' 2>/dev/null || result="$?"
+  [ "${result}" = '1' ] || return 1
+
+  unset -v default_if_empty_probe
+  return 0
+}
+
+if was_executed "${BASH_SOURCE[0]}"; then
+  true "$0: START"
+  set -o errexit
+  set -o nounset
+  set -o errtrace
+  set -o pipefail
+  default_if_empty_self_test
+  true "$0: END"
+fi
