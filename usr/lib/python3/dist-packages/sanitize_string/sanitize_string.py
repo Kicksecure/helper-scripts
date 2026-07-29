@@ -23,6 +23,9 @@ from .sanitize_string_lib import sanitize_string
 ## whole, so input containing no newline is still accumulated without limit,
 ## exactly as reading all of standard input always did.
 STDIN_MAX_PENDING_CHARS: int = 65536
+## How much the pending buffer may grow between markup probes. See the loop in
+## sanitize_stdin_loop for why probing every line is quadratic.
+STDIN_PROBE_INTERVAL_CHARS: int = 4096
 
 
 def print_usage() -> None:
@@ -67,19 +70,34 @@ def sanitize_stdin_loop(remaining: int | None) -> int:
     """
 
     pending_string: str = ""
+    probed_at_length: int = 0
     for untrusted_line in sys.stdin:
         pending_string += untrusted_line
         ## Only a markup character can leave a construct open, so skip the
-        ## parse entirely for input containing none. Without this, re-parsing
-        ## the whole pending buffer once per line is quadratic in its length.
-        if (
-            ("<" in pending_string or "&" in pending_string)
-            and len(pending_string) < STDIN_MAX_PENDING_CHARS
-            and markup_incomplete(pending_string)
-        ):
-            continue
+        ## parse entirely for input containing none.
+        if ("<" in pending_string or "&" in pending_string) and len(
+            pending_string
+        ) < STDIN_MAX_PENDING_CHARS:
+            ## Re-parsing costs O(len(pending)) and an unterminated construct
+            ## makes HTMLParser re-scan its whole rawdata buffer on every feed,
+            ## so asking once per LINE is quadratic -- measured at 79s for 40k
+            ## short lines each opening a construct, against 0.8s without
+            ## markup. Reusing one parser does not help: the quadratic part is
+            ## inside HTMLParser, not the construction. So ask at most once per
+            ## STDIN_PROBE_INTERVAL_CHARS of growth and HOLD in between, which
+            ## is the safe direction: holding can only delay output, whereas
+            ## flushing unasked could split a construct and change the result.
+            if (
+                len(pending_string) - probed_at_length
+                < STDIN_PROBE_INTERVAL_CHARS
+            ):
+                continue
+            probed_at_length = len(pending_string)
+            if markup_incomplete(pending_string):
+                continue
         remaining = write_sanitized(pending_string, remaining)
         pending_string = ""
+        probed_at_length = 0
         ## Stop before reading another line, which would otherwise block on a
         ## producer still running with nothing left for us to emit.
         if remaining is not None and remaining <= 0:
