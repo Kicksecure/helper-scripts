@@ -18,4 +18,9 @@ coverity:
   canonical-repos: "org-ai-assisted/helper-scripts"
 
 dist-ai-tests:
-  apt-packages: "python3 python3-pytest python3-hypothesis python3-pyqt5"
+  ## safe-rm is a hard runtime dependency of this package (debian/control) that
+  ## the git review tools require: git-review-scan.sh probes it with 'has
+  ## safe-rm' under errexit, so an absent safe-rm kills the external-diff
+  ## driver silently (empty output, rc 1) and git-meld-tests reports every
+  ## adversarial case as a hidden change.
+  apt-packages: "python3 python3-pytest python3-hypothesis python3-pyqt5 safe-rm"
