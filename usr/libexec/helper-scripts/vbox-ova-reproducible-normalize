@@ -56,7 +56,6 @@ import hashlib
 import os
 import re
 import struct
-import sys
 import tarfile
 import tempfile
 import uuid
@@ -276,6 +275,29 @@ def repack(ova_path, workdir, member_names, epoch):
     os.replace(tmp_path, ova_path)
 
 
+def safe_tar_members(tar, dest):
+    """
+    Yield members that stay inside dest, for interpreters without
+    tarfile's 'filter' argument. An OVA is a flat archive of .ovf/.vmdk/.mf
+    files, so a link member is never legitimate and is refused outright
+    rather than resolved.
+    """
+
+    dest_real = os.path.realpath(dest)
+    for info in tar.getmembers():
+        if info.issym() or info.islnk():
+            raise SystemExit(
+                "ERROR: refusing link member in the OVA: %r" % info.name
+            )
+        target = os.path.realpath(os.path.join(dest_real, info.name))
+        if target != dest_real and not target.startswith(dest_real + os.sep):
+            raise SystemExit(
+                "ERROR: refusing tar member outside the destination: %r"
+                % info.name
+            )
+        yield info
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ova", required=True)
@@ -293,12 +315,15 @@ def main():
             for info in tar.getmembers():
                 member_names.append(info.name)
             ## 'filter="data"' guards against path-traversal members and is the
-            ## future default (Python 3.14); fall back for interpreters that
-            ## predate the argument.
+            ## future default (Python 3.14). On an interpreter predating the
+            ## argument the call raises TypeError, and the old fallback then
+            ## extracted with NO validation -- a tar slip: a member named
+            ## '../../x' or an absolute path escapes the temporary directory.
+            ## Validate every member ourselves in that case.
             try:
                 tar.extractall(workdir, filter="data")
             except TypeError:
-                tar.extractall(workdir)
+                tar.extractall(workdir, members=safe_tar_members(tar, workdir))
 
         ovf_names = [n for n in member_names if n.endswith(".ovf")]
         vmdk_names = [n for n in member_names if n.endswith(".vmdk")]
