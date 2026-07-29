@@ -7,6 +7,10 @@
 ## would silently impose them on every caller's shell; the caller owns that choice, and the
 ## expectation is documented immediately below.
 
+## Cap for a rejected value echoed back in a diagnostic. Long enough to identify what was
+## rejected, short enough that a multi-megabyte value cannot flood the terminal.
+STRINGS_BSH_REPORT_MAX=200
+
 ## Scripts that source this file are expected to set at minimum:
 ##   set -o errexit
 ## Modern scripts should use:
@@ -127,9 +131,9 @@ check_is_alpha_numeric() {
   value="${!varname}"
 
   if ! [[ "$value" =~ ^[0-9a-zA-Z_-]+$ ]]; then
-    stecho "$0:
+    printf '%s\n' "$0:
 \$1 (variable name): '$varname'
-\$2 (variable content): '$value'
+\$2 (variable content): '$(sanitize-string "$STRINGS_BSH_REPORT_MAX" "$value")'
 Invalid character!" >&2
     return 1
   fi
@@ -179,9 +183,9 @@ validate_safe_filename() {
   printf 'RAW: <%q>\n' "$value"
   LC_ALL=C od -An -tx1 <<<"$value"
 
-  stecho "$0: ${FUNCNAME[0]}
+  printf '%s\n' "$0: ${FUNCNAME[0]}
 \$1 (variable name): '$varname'
-\$2 (variable content): '$value'
+\$2 (variable content): '$(sanitize-string "$STRINGS_BSH_REPORT_MAX" "$value")'
 $reason" >&2
 
   return 1
@@ -218,14 +222,8 @@ check_is_not_empty_and_only_one_line() {
   number_of_lines="${#lines[@]}"
 
   if [ "$number_of_lines" -ne 1 ]; then
-    ## stecho, not printf: this is the only place in this file that echoed a REJECTED value
-    ## back to the terminal unescaped. Callers reach here with exactly the input they could
-    ## not vouch for -- an api reply, a config field, a filename -- so the value may carry
-    ## ANSI escapes or a U+202E right-to-left override and spoof what the operator reads
-    ## about why it was rejected. check_is_alpha_numeric above already reports through
-    ## stecho for this reason; this is the same value, on the same failure path.
-    stecho "$0: ERROR: Variable '$varname' contains more than one line. Content:
-'$value'" >&2
+    printf '%s\n' "$0: ERROR: Variable '$varname' contains more than one line. Content:
+'$(sanitize-string "$STRINGS_BSH_REPORT_MAX" "$value")'" >&2
     return 1
   fi
 
@@ -309,12 +307,8 @@ random_alpha_numeric() {
     printf '%s\n' "$0: ERROR: random_alpha_numeric: non-numeric byte count: '$n'" >&2
     return 1
   fi
-  ## Captured and printed in ONE statement rather than emitting the bytes and then a bare
-  ## newline. 'head --bytes' produces no trailing newline, so the old spelling needed a
-  ## separate printf whose only content was that newline -- which reads as a decorative
-  ## blank-line separator (R-042) while R-030/R-031 governs how a newline may be spelled,
-  ## and the one form satisfying both is rejected by shellcheck SC2182. Emitting value and
-  ## terminator together sidesteps the whole knot and is clearer.
+  ## 'head --bytes' emits no trailing newline, so the value and its terminator are printed
+  ## together in one statement.
   local value
   value="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="$n")" || true
   printf '%s\n' "${value}"
