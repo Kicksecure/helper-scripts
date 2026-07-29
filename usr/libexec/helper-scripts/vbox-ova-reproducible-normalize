@@ -275,6 +275,24 @@ def repack(ova_path, workdir, member_names, epoch):
     os.replace(tmp_path, ova_path)
 
 
+def check_tar_member_name(name):
+    """
+    Reject a member name that would escape the working directory.
+
+    'filter="data"' sanitizes the EXTRACTION, but the raw names are kept and
+    later joined with the workdir to read each member back. os.path.join
+    DISCARDS the base when the second part is absolute, so a member named
+    '/etc/shadow' would resolve to the host file and be read into the repacked
+    OVA. Validating the names once, where they are collected, covers every
+    later use.
+    """
+
+    if not name or os.path.isabs(name) or name.startswith("/"):
+        raise SystemExit("ERROR: refusing absolute tar member name: %r" % name)
+    if os.path.normpath(name).startswith(".."):
+        raise SystemExit("ERROR: refusing tar member name escaping the archive: %r" % name)
+
+
 def safe_tar_members(tar, dest):
     """
     Yield members that stay inside dest, for interpreters without
@@ -289,6 +307,7 @@ def safe_tar_members(tar, dest):
             raise SystemExit(
                 "ERROR: refusing link member in the OVA: %r" % info.name
             )
+        check_tar_member_name(info.name)
         target = os.path.realpath(os.path.join(dest_real, info.name))
         if target != dest_real and not target.startswith(dest_real + os.sep):
             raise SystemExit(
@@ -313,6 +332,7 @@ def main():
         member_names = []
         with tarfile.open(args.ova, "r") as tar:
             for info in tar.getmembers():
+                check_tar_member_name(info.name)
                 member_names.append(info.name)
             ## 'filter="data"' guards against path-traversal members and is the
             ## future default (Python 3.14). On an interpreter predating the

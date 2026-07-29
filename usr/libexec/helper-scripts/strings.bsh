@@ -639,6 +639,11 @@ string_bsh_tests() {
     error "default_if_empty: caller variable named 'default_value' was shadowed!"
   fi
 
+  ## shellcheck cannot see an indirect expansion, so these three assignments
+  ## look unused to it. SC2034 is not cosmetic here: string_bsh_tests runs
+  ## 'shellcheck "${BASH_SOURCE[0]}"' under errexit, so a warning aborts the
+  ## suite BEFORE any test runs -- the tests would silently stop existing.
+  # shellcheck disable=SC2034  # consumed by name, via ${!varname} in the callee
   varname='!@#'
   if check_is_alpha_numeric varname 2>/dev/null; then
     error "check_is_alpha_numeric: bypassed by a caller variable named 'varname'!"
@@ -649,6 +654,7 @@ string_bsh_tests() {
     error "validate_safe_filename: bypassed by a caller variable named 'varname'!"
   fi
 
+  # shellcheck disable=SC2034  # consumed by name, via ${!varname} in the callee
   varname=$'multi\nline'
   if check_is_not_empty_and_only_one_line varname 2>/dev/null; then
     error "check_is_not_empty_and_only_one_line: bypassed by 'varname'!"
