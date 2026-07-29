@@ -195,7 +195,7 @@ check_is_alpha_numeric() {
   strings_bsh_value="${!strings_bsh_varname}"
 
   if [ "${strings_bsh_value}" = "" ]; then
-    stecho "$0: ${FUNCNAME[0]}: variable content is empty!
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ${FUNCNAME[0]}: variable content is empty!
 \$1 (variable name): '${strings_bsh_varname}'" >&2
     return 1
   fi
