@@ -1,0 +1,56 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## style-ok: no-strict
+## Sourced-only function library: top-level strict-mode would leak into the
+## sourcing shell (see R-010 waiver rationale).
+
+## Re-derive the graphical-session environment for a GUI askpass helper.
+##
+## sudo runs SUDO_ASKPASS helpers as the invoking user with the process
+## environment inherited unchanged (see sudo src/tgetpass.c). A .desktop
+## launcher on a minimal Wayland compositor may not export the variables the
+## GUI toolkit needs to reach the display, and sudo's env_keep cannot help:
+## env_keep governs the eventual root command's environment, not this askpass
+## helper, and it cannot conjure a variable that is not already present.
+## Because this helper runs AS THE USER, it can safely rederive the values
+## from the user-owned (0700) runtime directory. An already-set WAYLAND_DISPLAY
+## or X11 DISPLAY is left untouched, so the launcher's own choice always wins.
+
+askpass_gui_env() {
+   local user_id wl_socket_path
+
+   user_id="$(id --user)"
+   export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/${user_id}}"
+
+   ## An already-advertised display (Wayland or X11) is authoritative; only
+   ## autodetect when neither is set.
+   if [ -n "${WAYLAND_DISPLAY:-}" ] || [ -n "${DISPLAY:-}" ]; then
+      return 0
+   fi
+
+   ## The active-VT compositor detector connects to each candidate socket and
+   ## matches the listening PID, so a stale socket left by a crashed compositor
+   ## is skipped in favour of the live one. It prints the absolute socket path,
+   ## or fails (e.g. on Qubes, which has no Wayland session, or when fgconsole
+   ## is unavailable). A blind socket-name glob is deliberately not used as a
+   ## fallback: it cannot tell a live socket from a stale inode.
+   wl_socket_path="$(/usr/libexec/helper-scripts/find_wl_compositor 2>/dev/null)" \
+      || wl_socket_path=''
+   if [ -n "${wl_socket_path}" ] && [ -S "${wl_socket_path}" ]; then
+      export XDG_RUNTIME_DIR="${wl_socket_path%/*}"
+      export WAYLAND_DISPLAY="${wl_socket_path##*/}"
+      return 0
+   fi
+
+   ## Last resort when the detector cannot run: assume the conventional default
+   ## socket so a single-compositor session that merely failed to export
+   ## WAYLAND_DISPLAY is still reachable. Harmless when absent -- the GUI toolkit
+   ## then finds no display and the caller's error path reports the failure
+   ## instead of it vanishing silently.
+   export WAYLAND_DISPLAY='wayland-0'
+}
