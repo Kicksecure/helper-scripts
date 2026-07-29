@@ -29,7 +29,7 @@ if test -f "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.b
   ## /usr/share/usability-misc/build-dist-installer-cli
   ## from in-lining the source code.
   source_encoded=source
-  "$source_encoded" "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
+  "${source_encoded}" "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 fi
 
 ## NOTE: br_add and br_add_to_file are not HTML sanitization functions.
@@ -51,7 +51,7 @@ br_add() {
   fi
 
   out="${in//$'\n'/'<br />'$'\n'}"
-  printf '%s\n' "$out"
+  printf '%s\n' "${out}"
 }
 
 br_add_to_file() {
@@ -66,8 +66,8 @@ br_add_to_file() {
   ## with the line already in hand but unwritten, silently losing it -- br_add, which
   ## does the same transform in memory, keeps it.
   local line
-  while IFS= read -r line || [ -n "$line" ]; do
-    printf '%s\n' "$line<br />" | tee -a -- "${file_name}_br" >/dev/null
+  while IFS= read -r line || [ -n "${line}" ]; do
+    printf '%s\n' "${line}<br />" | tee -a -- "${file_name}_br" >/dev/null
   done <"${file_name}"
 }
 
@@ -77,51 +77,51 @@ read_integer_file() {
   target_file="${1:-}"
   lower_bound="${2:-}"
   upper_bound="${3:-}"
-  if [ -z "$target_file" ]; then
+  if [ -z "${target_file}" ]; then
     printf '%s\n' "$0: ERROR: No target file specified!" >&2
     return 1
   fi
-  if [ -n "$lower_bound" ] && ! [[ "$lower_bound" =~ ^[0-9]+$ ]]; then
+  if [ -n "${lower_bound}" ] && ! [[ "${lower_bound}" =~ ^[0-9]+$ ]]; then
     printf '%s\n' "$0: ERROR: Non-numeric lower bound specified!" >&2
     return 1
   fi
-  if [ -n "$upper_bound" ] && ! [[ "$upper_bound" =~ ^[0-9]+$ ]]; then
+  if [ -n "${upper_bound}" ] && ! [[ "${upper_bound}" =~ ^[0-9]+$ ]]; then
     printf '%s\n' "$0: ERROR: Non-numeric upper bound specified!" >&2
     return 1
   fi
 
-  if ! test -f "$target_file"; then
-    printf '%s\n' "$0: ERROR: Target file '$target_file' does not exist!" >&2
+  if ! test -f "${target_file}"; then
+    printf '%s\n' "$0: ERROR: Target file '${target_file}' does not exist!" >&2
     return 1
   fi
-  if ! test -r "$target_file"; then
-    printf '%s\n' "$0: ERROR: Target file '$target_file' not readable!" >&2
+  if ! test -r "${target_file}"; then
+    printf '%s\n' "$0: ERROR: Target file '${target_file}' not readable!" >&2
     return 1
   fi
-  if ! file_contents="$(stcat -- "$target_file")"; then
-    printf '%s\n' "$0: ERROR: Cannot stcat target file '$target_file'!" >&2
+  if ! file_contents="$(stcat -- "${target_file}")"; then
+    printf '%s\n' "$0: ERROR: Cannot stcat target file '${target_file}'!" >&2
     return 1
   fi
-  if [ -z "$file_contents" ]; then
-    printf '%s\n' "$0: ERROR: Empty target file '$target_file'!" >&2
+  if [ -z "${file_contents}" ]; then
+    printf '%s\n' "$0: ERROR: Empty target file '${target_file}'!" >&2
     return 1
   fi
-  if ! [[ "$file_contents" =~ ^[0-9]+$ ]]; then
-    printf '%s\n' "$0: ERROR: Non-numeric value in target file '$target_file'!" >&2
+  if ! [[ "${file_contents}" =~ ^[0-9]+$ ]]; then
+    printf '%s\n' "$0: ERROR: Non-numeric value in target file '${target_file}'!" >&2
     return 1
   fi
   ## 10# forces base 10. Bare '((08 < 7))' is an invalid octal literal, so the comparison
   ## errors, the 'if' is false, and an out-of-range value passes unrejected.
-  if [ -n "$lower_bound" ] && ((10#$file_contents < 10#$lower_bound)); then
-    printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is below the lower bound '$lower_bound'!" >&2
+  if [ -n "${lower_bound}" ] && ((10#${file_contents} < 10#${lower_bound})); then
+    printf '%s\n' "$0: ERROR: Target file's '${target_file}' value '${file_contents}' is below the lower bound '${lower_bound}'!" >&2
     return 1
   fi
-  if [ -n "$upper_bound" ] && ((10#$file_contents > 10#$upper_bound)); then
-    printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is above the upper bound '$upper_bound'!" >&2
+  if [ -n "${upper_bound}" ] && ((10#${file_contents} > 10#${upper_bound})); then
+    printf '%s\n' "$0: ERROR: Target file's '${target_file}' value '${file_contents}' is above the upper bound '${upper_bound}'!" >&2
     return 1
   fi
-  printf '%s\n' "$0: INFO: Target file '$target_file' file_contents: '$file_contents'" >/dev/null
-  printf '%s\n' "$file_contents"
+  printf '%s\n' "$0: INFO: Target file '${target_file}' file_contents: '${file_contents}'" >/dev/null
+  printf '%s\n' "${file_contents}"
 }
 
 check_is_alpha_numeric() {
@@ -139,16 +139,16 @@ check_is_alpha_numeric() {
   check_variable_name "${varname}" || return 1
   value="${!varname}"
 
-  if [ "$value" = "" ]; then
+  if [ "${value}" = "" ]; then
     printf '%s\n' "$0:
-\$1 (variable name): '$varname'
+\$1 (variable name): '${varname}'
 \$2 (variable content): empty!" >&2
     return 1
   fi
-  if ! [[ "$value" =~ ^[0-9a-zA-Z_-]+$ ]]; then
+  if ! [[ "${value}" =~ ^[0-9a-zA-Z_-]+$ ]]; then
     printf '%s\n' "$0:
-\$1 (variable name): '$varname'
-\$2 (variable content): '$(sanitize-string "$STRINGS_BSH_REPORT_MAX" "$value")'
+\$1 (variable name): '${varname}'
+\$2 (variable content): '$(sanitize-string "${STRINGS_BSH_REPORT_MAX}" "${value}")'
 Invalid character!" >&2
     return 1
   fi
@@ -162,21 +162,21 @@ validate_safe_filename() {
   check_variable_name "${varname}" || return 1
   value="${!varname}"
 
-  if [[ -z "$value" ]]; then
+  if [[ -z "${value}" ]]; then
     reason="Empty value!"
-  elif [[ "$value" == *"/"* || "$value" == *\\* ]]; then
+  elif [[ "${value}" == *"/"* || "${value}" == *\\* ]]; then
     reason="Path separator not allowed!"
-  elif [[ "$value" == "." ]]; then
+  elif [[ "${value}" == "." ]]; then
     reason="Dot path not allowed!"
-  elif [[ "$value" == ".." ]]; then
+  elif [[ "${value}" == ".." ]]; then
     reason="Double dot path not allowed!"
-  elif [[ "$value" == *".."* ]]; then
+  elif [[ "${value}" == *".."* ]]; then
     reason="Contains '..'!"
-  elif [[ "$value" =~ [[:cntrl:]] ]]; then
+  elif [[ "${value}" =~ [[:cntrl:]] ]]; then
     reason="Control character not allowed!"
-  elif [[ "$value" == -* ]]; then
+  elif [[ "${value}" == -* ]]; then
     reason="Leading '-' not allowed!"
-  elif (($(LC_ALL=C printf '%s' "$value" | wc -c) > 255)); then
+  elif (($(LC_ALL=C printf '%s' "${value}" | wc -c) > 255)); then
     ## NAME_MAX is 255 BYTES. '${#value}' counts characters, so under a UTF-8 locale a
     ## 200-character name of multibyte letters measures 200 here and 600 on the
     ## filesystem, passing a check meant to guarantee the name is storable.
@@ -185,7 +185,7 @@ validate_safe_filename() {
     ## Allow: letters/digits (locale-aware), underscore, dash, dot, space,
     ## plus, comma, equals, @, parentheses, percent, braces, square brackets
     re='^[][:alnum:]_.:@+=,(){}%\[ -]+$'
-    if [[ "$value" =~ $re ]]; then
+    if [[ "${value}" =~ ${re} ]]; then
       return 0
     fi
     reason="Invalid character!"
@@ -193,12 +193,12 @@ validate_safe_filename() {
 
   ## Byte detail on stderr like every other diagnostic here, and capped: od expands its
   ## input several-fold, and hex digits are the only safe way to show a rejected value.
-  LC_ALL=C od -An -tx1 <<<"$value" | head --bytes="$STRINGS_BSH_REPORT_MAX" >&2
+  LC_ALL=C od -An -tx1 <<<"${value}" | head --bytes="${STRINGS_BSH_REPORT_MAX}" >&2
 
   printf '%s\n' "$0: ${FUNCNAME[0]}
-\$1 (variable name): '$varname'
-\$2 (variable content): '$(sanitize-string "$STRINGS_BSH_REPORT_MAX" "$value")'
-$reason" >&2
+\$1 (variable name): '${varname}'
+\$2 (variable content): '$(sanitize-string "${STRINGS_BSH_REPORT_MAX}" "${value}")'
+${reason}" >&2
 
   return 1
 }
@@ -226,29 +226,29 @@ check_is_not_empty_and_only_one_line() {
 
   ## Takes the FIRST line, used below only as an is-there-any-content probe. With 'IFS='
   ## nothing is trimmed.
-  IFS= read -r trimmed_value <<<"$value"
+  IFS= read -r trimmed_value <<<"${value}"
 
   ## Check if value is empty or only contains spaces/newlines.
-  if [[ -z "$trimmed_value" || -z "${value//[[:space:]]/}" ]]; then
-    printf '%s\n' "$0: ERROR: Variable '$varname' is empty or contains only whitespace/newlines." >&2
+  if [[ -z "${trimmed_value}" || -z "${value//[[:space:]]/}" ]]; then
+    printf '%s\n' "$0: ERROR: Variable '${varname}' is empty or contains only whitespace/newlines." >&2
     return 1
   fi
 
   ## A carriage return ends a line as surely as a newline, and rewrites the current one
   ## on a terminal. mapfile splits on \n alone, so without this a CR-bearing value passes
   ## as "one line" through a gate whose whole job is to reject multi-line input.
-  if [[ "$value" == *$'\r'* ]]; then
-    printf '%s\n' "$0: ERROR: Variable '$varname' contains a carriage return. Content:
-'$(sanitize-string "$STRINGS_BSH_REPORT_MAX" "$value")'" >&2
+  if [[ "${value}" == *$'\r'* ]]; then
+    printf '%s\n' "$0: ERROR: Variable '${varname}' contains a carriage return. Content:
+'$(sanitize-string "${STRINGS_BSH_REPORT_MAX}" "${value}")'" >&2
     return 1
   fi
 
-  mapfile -t lines <<<"$value"
+  mapfile -t lines <<<"${value}"
   number_of_lines="${#lines[@]}"
 
-  if [ "$number_of_lines" -ne 1 ]; then
-    printf '%s\n' "$0: ERROR: Variable '$varname' contains more than one line. Content:
-'$(sanitize-string "$STRINGS_BSH_REPORT_MAX" "$value")'" >&2
+  if [ "${number_of_lines}" -ne 1 ]; then
+    printf '%s\n' "$0: ERROR: Variable '${varname}' contains more than one line. Content:
+'$(sanitize-string "${STRINGS_BSH_REPORT_MAX}" "${value}")'" >&2
     return 1
   fi
 
@@ -264,15 +264,15 @@ trim_collapse_split() {
   local trimmed_list cleaned_list formatted_list
 
   ## Step 1: Trim leading and trailing spaces.
-  trimmed_list="$(printf '%s\n' "$input_list" | sed 's/^\s\+//g; s/\s\+$//g')"
+  trimmed_list="$(printf '%s\n' "${input_list}" | sed 's/^\s\+//g; s/\s\+$//g')"
 
   ## Step 2: Replace multiple spaces with a single space.
-  cleaned_list="$(printf '%s\n' "$trimmed_list" | sed 's/\s\+/ /g')"
+  cleaned_list="$(printf '%s\n' "${trimmed_list}" | sed 's/\s\+/ /g')"
 
   ## Step 3: Replace spaces with ' \n' (newline prefixed by space).
-  formatted_list="$(printf '%s\n' "$cleaned_list" | sed 's/\s/ \\\n/g')"
+  formatted_list="$(printf '%s\n' "${cleaned_list}" | sed 's/\s/ \\\n/g')"
 
-  printf '%s\n' "$formatted_list"
+  printf '%s\n' "${formatted_list}"
 }
 
 ## Print a string quoted to prevent special characters in the string from being
@@ -328,18 +328,18 @@ is_integer(){
 ## reason: https://www.kicksecure.com/wiki/Dev/Entropy
 random_alpha_numeric() {
   local n="${1:-43}"
-  if ! is_whole_number "$n"; then
-    printf '%s\n' "$0: ERROR: random_alpha_numeric: non-numeric byte count: '$n'" >&2
+  if ! is_whole_number "${n}"; then
+    printf '%s\n' "$0: ERROR: random_alpha_numeric: non-numeric byte count: '${n}'" >&2
     return 1
   fi
   ## 'head --bytes' emits no trailing newline, so the value and its terminator are printed
   ## together in one statement.
   local value
-  value="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="$n")" || true
+  value="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="${n}")" || true
   ## Callers use this for secrets, so a short read must fail loudly rather than return
   ## fewer bytes of entropy than asked for, or none.
-  if [ "${#value}" -ne "$n" ]; then
-    printf '%s\n' "$0: ERROR: random_alpha_numeric: got ${#value} of $n bytes" >&2
+  if [ "${#value}" -ne "${n}" ]; then
+    printf '%s\n' "$0: ERROR: random_alpha_numeric: got ${#value} of ${n} bytes" >&2
     return 1
   fi
   printf '%s\n' "${value}"
@@ -365,27 +365,27 @@ gpg_bash_lib_function_displaytime() {
   sep=''
 
   if (( Y > 0 )); then
-    printf '%s%d years' "$sep" "$Y"
+    printf '%s%d years' "${sep}" "${Y}"
     sep=' '
   fi
 
   if (( D > 0 )); then
-    printf '%s%d days' "$sep" "$D"
+    printf '%s%d days' "${sep}" "${D}"
     sep=' '
   fi
 
   if (( H > 0 )); then
-    printf '%s%d hours' "$sep" "$H"
+    printf '%s%d hours' "${sep}" "${H}"
     sep=' '
   fi
 
   if (( M > 0 )); then
-    printf '%s%d minutes' "$sep" "$M"
+    printf '%s%d minutes' "${sep}" "${M}"
     sep=' '
   fi
 
   if (( S > 0 )); then
-    printf '%s%d seconds' "$sep" "$S"
+    printf '%s%d seconds' "${sep}" "${S}"
     sep=' '
   fi
 
@@ -406,12 +406,12 @@ check_variable_name() {
 ## $1 = test id, $2 = seconds, $3 = expected output.
 run_display_test() {
   local test_id="$1" seconds="$2" expected="$3" actual
-  actual="$(gpg_bash_lib_function_displaytime "$seconds")"
-  printf '%s\n' "$0: Running test $test_id: gpg_bash_lib_function_displaytime"
-  if [ "$actual" = "$expected" ]; then
+  actual="$(gpg_bash_lib_function_displaytime "${seconds}")"
+  printf '%s\n' "$0: Running test ${test_id}: gpg_bash_lib_function_displaytime"
+  if [ "${actual}" = "${expected}" ]; then
     printf '%s\n' "$0: Test Passed"
   else
-    printf '%s\n' "$0: Test Failed (Expected: '$expected', Got: '$actual')" >&2
+    printf '%s\n' "$0: Test Failed (Expected: '${expected}', Got: '${actual}')" >&2
     return 1
   fi
   printf '%s\n' "---------------------------------"
@@ -436,17 +436,17 @@ run_test() {
   input_value="${input_parts[*]}"
 
   # Assign without eval (works for simple variable names like testvar/a/etc.)
-  check_variable_name "$var_name" || return 1
-  printf -v "$var_name" '%s' "$input_value"
+  check_variable_name "${var_name}" || return 1
+  printf -v "${var_name}" '%s' "${input_value}"
 
-  printf '%s\n' "$0: Running test $test_id: $function_name ($var_name)"
+  printf '%s\n' "$0: Running test ${test_id}: ${function_name} (${var_name})"
 
-  "$function_name" "$var_name" || actual_exit_code=$?
+  "${function_name}" "${var_name}" || actual_exit_code=$?
 
-  if [[ "$actual_exit_code" -eq "$expected_exit_code" ]]; then
+  if [[ "${actual_exit_code}" -eq "${expected_exit_code}" ]]; then
     printf '%s\n' "$0: Test Passed"
   else
-    printf '%s\n' "$0: Test Failed (Expected: $expected_exit_code, Got: $actual_exit_code)" >&2
+    printf '%s\n' "$0: Test Failed (Expected: ${expected_exit_code}, Got: ${actual_exit_code})" >&2
     return 1
   fi
 
@@ -532,13 +532,13 @@ string_bsh_tests() {
   input_string=$'test1\ntest2'
   expected_result=$'test1<br />\ntest2'
 
-  actual_result="$(br_add "$input_string")"
-  if ! [ "$expected_result" = "$actual_result" ]; then
+  actual_result="$(br_add "${input_string}")"
+  if ! [ "${expected_result}" = "${actual_result}" ]; then
     error "br_add command failed!"
   fi
 
-  actual_result="$(printf '%s\n' "$input_string" | br_add)"
-  if ! [ "$expected_result" = "$actual_result" ]; then
+  actual_result="$(printf '%s\n' "${input_string}" | br_add)"
+  if ! [ "${expected_result}" = "${actual_result}" ]; then
     error "br_add pipe failed!"
   fi
 
@@ -547,7 +547,7 @@ string_bsh_tests() {
 
 strings_bsh_error_trap() {
   local last_exit_code="$?"
-  printf '%s\n' "$0: ERROR: failed: '$BASH_COMMAND' | exit code: '$last_exit_code'"
+  printf '%s\n' "$0: ERROR: failed: '${BASH_COMMAND}' | exit code: '${last_exit_code}'"
   exit 1
 }
 
