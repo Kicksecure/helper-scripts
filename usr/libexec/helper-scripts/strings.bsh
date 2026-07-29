@@ -3,6 +3,10 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- a SOURCED library, not a script. Setting 'set -o errexit' etc here
+## would silently impose them on every caller's shell; the caller owns that choice, and the
+## expectation is documented immediately below.
+
 ## Scripts that source this file are expected to set at minimum:
 ##   set -o errexit
 ## Modern scripts should use:
@@ -305,8 +309,15 @@ random_alpha_numeric() {
     printf '%s\n' "$0: ERROR: random_alpha_numeric: non-numeric byte count: '$n'" >&2
     return 1
   fi
-  LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="$n" || true
-  printf '%s\n' ""
+  ## Captured and printed in ONE statement rather than emitting the bytes and then a bare
+  ## newline. 'head --bytes' produces no trailing newline, so the old spelling needed a
+  ## separate printf whose only content was that newline -- which reads as a decorative
+  ## blank-line separator (R-042) while R-030/R-031 governs how a newline may be spelled,
+  ## and the one form satisfying both is rejected by shellcheck SC2182. Emitting value and
+  ## terminator together sidesteps the whole knot and is clearer.
+  local value
+  value="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="$n")" || true
+  printf '%s\n' "${value}"
 }
 
 gpg_bash_lib_function_displaytime() {
@@ -482,7 +493,7 @@ string_bsh_tests() {
 
 strings_bsh_error_trap() {
   local last_exit_code="$?"
-  echo "$0: ERROR: failed: '$BASH_COMMAND' | exit code: '$last_exit_code'"
+  printf '%s\n' "$0: ERROR: failed: '$BASH_COMMAND' | exit code: '$last_exit_code'"
   exit 1
 }
 
