@@ -66,6 +66,10 @@ from datetime import datetime, timezone
 NAMESPACE = uuid.UUID("6f9619ff-8b86-d011-b42d-00cf4fc964ff")
 
 
+## USTAR stores the member size in 11 octal digits: 8 GiB - 1.
+USTAR_MAX_MEMBER_SIZE: int = 8 * 1024 * 1024 * 1024 - 1
+
+
 def derive_uuid(salt, role, index):
     ## Deterministic RFC 4122 UUIDv5 (version and variant bits set by
     ## uuid.uuid5), stable for a given (salt, role, index).
@@ -275,6 +279,26 @@ def repack(ova_path, workdir, member_names, epoch):
     os.replace(tmp_path, ova_path)
 
 
+def check_tar_member_size(info):
+    """
+    Refuse a member too large for USTAR.
+
+    repack() writes tarfile.USTAR_FORMAT because an OVA is required to be a
+    POSIX USTAR archive. USTAR encodes the size in 11 octal digits, so it caps
+    a member at 8 GiB - 1. A larger VMDK would fail deep inside the repack with
+    a format error rather than at the point the input was read, so reject it
+    here and say why. Switching to a non-USTAR format instead would produce an
+    archive that is no longer a valid OVA.
+    """
+
+    if info.size > USTAR_MAX_MEMBER_SIZE:
+        raise SystemExit(
+            "ERROR: OVA member %r is %d bytes, above the USTAR limit of %d; "
+            "an OVA must be a POSIX USTAR archive, so it cannot be normalized."
+            % (info.name, info.size, USTAR_MAX_MEMBER_SIZE)
+        )
+
+
 def check_tar_member_name(name):
     """
     Reject a member name that would escape the working directory.
@@ -333,6 +357,7 @@ def main():
         with tarfile.open(args.ova, "r") as tar:
             for info in tar.getmembers():
                 check_tar_member_name(info.name)
+                check_tar_member_size(info)
                 member_names.append(info.name)
             ## 'filter="data"' guards against path-traversal members and is the
             ## future default (Python 3.14). On an interpreter predating the

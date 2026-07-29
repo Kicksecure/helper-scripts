@@ -5,6 +5,7 @@
 
 # pylint: disable=missing-module-docstring,fixme,unknown-option-value
 
+import io
 import sys
 from io import BytesIO, TextIOWrapper
 from unittest import mock
@@ -190,8 +191,24 @@ sanitize-string: Usage: sanitize-string [--help] max_length [string]
         )
         stdin_buf.write("first\nsecond\n")
         stdin_buf.seek(0, 0)
-        closed_stdout = mock.MagicMock()
-        closed_stdout.write.side_effect = BrokenPipeError()
+
+        ## A real StringIO subclass, NOT a MagicMock. MagicMock.fileno()
+        ## resolves through __index__ to 1, so os.dup2(devnull, 1) would
+        ## redirect the REAL process stdout to the null device for the rest of
+        ## the run, and the branch under test would never be the one taken.
+        ## StringIO.fileno() raises io.UnsupportedOperation, which derives from
+        ## both OSError and ValueError -- exactly the "stdout has no real file
+        ## descriptor" case the handler catches.
+        class BrokenPipeStdout(io.StringIO):
+            """A stdout whose every write reports the reader is gone."""
+
+            def reconfigure(self, **kwargs: object) -> None:
+                """Accept the encoding setup main() performs on stdout."""
+
+            def write(self, *args: object, **kwargs: object) -> int:
+                raise BrokenPipeError()
+
+        closed_stdout = BrokenPipeStdout()
 
         with (
             mock.patch.object(sys, "argv", [self.argv0, "nolimit"]),
