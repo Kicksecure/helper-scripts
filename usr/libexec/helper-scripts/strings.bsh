@@ -93,33 +93,33 @@ read_integer_file() {
   fi
 
   if ! test -f "${target_file}"; then
-    printf '%s\n' "$0: ERROR: Target file '${target_file}' does not exist!" >&2
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Target file '${target_file}' does not exist!" >&2
     return 1
   fi
   if ! test -r "${target_file}"; then
-    printf '%s\n' "$0: ERROR: Target file '${target_file}' not readable!" >&2
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Target file '${target_file}' not readable!" >&2
     return 1
   fi
   if ! file_contents="$(stcat -- "${target_file}")"; then
-    printf '%s\n' "$0: ERROR: Cannot stcat target file '${target_file}'!" >&2
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Cannot stcat target file '${target_file}'!" >&2
     return 1
   fi
   if [ -z "${file_contents}" ]; then
-    printf '%s\n' "$0: ERROR: Empty target file '${target_file}'!" >&2
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Empty target file '${target_file}'!" >&2
     return 1
   fi
   if ! [[ "${file_contents}" =~ ^[0-9]+$ ]]; then
-    printf '%s\n' "$0: ERROR: Non-numeric value in target file '${target_file}'!" >&2
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Non-numeric value in target file '${target_file}'!" >&2
     return 1
   fi
   ## 10# forces base 10. Bare '((08 < 7))' is an invalid octal literal, so the comparison
   ## errors, the 'if' is false, and an out-of-range value passes unrejected.
   if [ -n "${lower_bound}" ] && ((10#${file_contents} < 10#${lower_bound})); then
-    printf '%s\n' "$0: ERROR: Target file's '${target_file}' value '${file_contents}' is below the lower bound '${lower_bound}'!" >&2
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Target file's '${target_file}' value '${file_contents}' is below the lower bound '${lower_bound}'!" >&2
     return 1
   fi
   if [ -n "${upper_bound}" ] && ((10#${file_contents} > 10#${upper_bound})); then
-    printf '%s\n' "$0: ERROR: Target file's '${target_file}' value '${file_contents}' is above the upper bound '${upper_bound}'!" >&2
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Target file's '${target_file}' value '${file_contents}' is above the upper bound '${upper_bound}'!" >&2
     return 1
   fi
   printf '%s\n' "$0: INFO: Target file '${target_file}' file_contents: '${file_contents}'" >/dev/null
@@ -165,7 +165,10 @@ default_if_empty() {
   ## The name reaches 'printf -v', which evaluates an array subscript: a name
   ## like 'arr[$(command)]' would run the command.
   if ! check_variable_name "${strings_bsh_var_name}"; then
-    printf '%s\n' "${0}: ERROR: ${FUNCNAME[0]}: not a variable name: '${strings_bsh_var_name}'!" >&2
+    ## The value printed here IS the rejected name -- the hostile input that
+    ## just failed validation -- so it goes through sanitize-echo like every
+    ## other diagnostic in this file, not plain printf.
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "${0}: ERROR: ${FUNCNAME[0]}: not a variable name: '${strings_bsh_var_name}'!" >&2
     return 1
   fi
 
@@ -288,7 +291,7 @@ check_is_not_empty_and_only_one_line() {
 
   ## Check if strings_bsh_value is empty or only contains spaces/newlines.
   if [[ -z "${strings_bsh_trimmed_value}" || -z "${strings_bsh_value//[[:space:]]/}" ]]; then
-    printf '%s\n' "$0: ERROR: Variable '${strings_bsh_varname}' is empty or contains only whitespace/newlines." >&2
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Variable '${strings_bsh_varname}' is empty or contains only whitespace/newlines." >&2
     return 1
   fi
 
@@ -387,7 +390,7 @@ is_integer(){
 random_alpha_numeric() {
   local n="${1:-43}"
   if ! is_whole_number "${n}"; then
-    printf '%s\n' "$0: ERROR: random_alpha_numeric: non-numeric byte count: '${n}'" >&2
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: random_alpha_numeric: non-numeric byte count: '${n}'" >&2
     return 1
   fi
   ## 'head --bytes' emits no trailing newline, so the value and its terminator are printed
