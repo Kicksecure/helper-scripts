@@ -124,6 +124,52 @@ read_integer_file() {
   printf '%s\n' "${file_contents}"
 }
 
+## Set a variable at its SOURCE when it is unset OR empty.
+##
+##   default_if_empty TMP /tmp
+##
+## The variable is named BARE, without '$'. Nothing in the caller is
+## dereferenced, so the call is safe under 'set -o nounset' -- the same
+## property that makes '[ -v VAR ] || VAR=value' the house idiom.
+##
+## Which of the two to use is a semantic choice, not a preference:
+##
+##   [ -v VAR ] || VAR=value    empty is a MEANINGFUL value and must survive
+##   default_if_empty VAR value empty is not a usable value for this variable
+##
+## '-v' alone reports an explicitly-empty variable as set, so it keeps an
+## intentional empty. That is right for a flag or an optional string, and wrong
+## for a PATH: an empty path silently turns "${VAR}/file" into "/file", i.e. a
+## root-relative path, which fails late and far from the cause (or, as root,
+## succeeds and writes to the wrong place).
+##
+## Both forms set the variable ONCE, where it is defined. Neither is a
+## '${VAR:-value}' guard at each consumer: those defeat nounset, because a
+## consumer that defaults the value away can no longer report a genuinely
+## missing one as the bug it is.
+default_if_empty() {
+  local var_name default_value
+
+  var_name="${1:-}"
+  default_value="${2:-}"
+
+  ## The name reaches 'printf -v', which evaluates an array subscript: a name
+  ## like 'arr[$(command)]' would run the command.
+  if ! check_variable_name "${var_name}"; then
+    printf '%s\n' "${0}: ERROR: ${FUNCNAME[0]}: not a variable name: '${var_name}'!" >&2
+    return 1
+  fi
+
+  ## '-v' tests without dereferencing. The '&&' short-circuit is load-bearing:
+  ## it stops the indirect expansion below from firing on an unset name, which
+  ## 'set -o nounset' would abort on.
+  if [ -v "${var_name}" ] && [ -n "${!var_name}" ]; then
+    return 0
+  fi
+
+  printf -v "${var_name}" '%s' "${default_value}"
+}
+
 check_is_alpha_numeric() {
   ## LC_ALL=C makes the range below BYTE-based. Under a collating locale 'a-z' is resolved
   ## by collation order, so accented Latin letters fall inside it and 'cafe' with an acute
@@ -541,6 +587,35 @@ string_bsh_tests() {
   if ! [ "${expected_result}" = "${actual_result}" ]; then
     error "br_add pipe failed!"
   fi
+
+  ## default_if_empty: unset and empty both take the default; a set value survives.
+  unset -v default_if_empty_probe
+  default_if_empty default_if_empty_probe 'fallback'
+  if ! [ "${default_if_empty_probe}" = 'fallback' ]; then
+    error "default_if_empty: an unset variable did not take the default!"
+  fi
+
+  default_if_empty_probe=''
+  default_if_empty default_if_empty_probe 'fallback'
+  if ! [ "${default_if_empty_probe}" = 'fallback' ]; then
+    error "default_if_empty: an empty variable did not take the default!"
+  fi
+
+  default_if_empty_probe='kept value'
+  default_if_empty default_if_empty_probe 'fallback'
+  if ! [ "${default_if_empty_probe}" = 'kept value' ]; then
+    error "default_if_empty: a set value was overwritten!"
+  fi
+
+  ## A non-identifier must be REFUSED, not evaluated: 'printf -v' evaluates an array
+  ## subscript, so an unchecked name would run the command inside it.
+  default_if_empty_rc=0
+  # shellcheck disable=SC2016  # single quotes are the point: the '$(...)' must stay literal
+  default_if_empty 'probe[$(exit 7)]' 'fallback' 2>/dev/null || default_if_empty_rc="$?"
+  if ! [ "${default_if_empty_rc}" = '1' ]; then
+    error "default_if_empty: a non-identifier name was not refused!"
+  fi
+  unset -v default_if_empty_probe default_if_empty_rc
 
   printf '%s\n' "$0: All Tests Passed"
 }
