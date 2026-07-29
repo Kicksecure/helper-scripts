@@ -214,7 +214,13 @@ check_is_not_empty_and_only_one_line() {
   number_of_lines="${#lines[@]}"
 
   if [ "$number_of_lines" -ne 1 ]; then
-    printf '%s\n' "$0: ERROR: Variable '$varname' contains more than one line. Content:
+    ## stecho, not printf: this is the only place in this file that echoed a REJECTED value
+    ## back to the terminal unescaped. Callers reach here with exactly the input they could
+    ## not vouch for -- an api reply, a config field, a filename -- so the value may carry
+    ## ANSI escapes or a U+202E right-to-left override and spoof what the operator reads
+    ## about why it was rejected. check_is_alpha_numeric above already reports through
+    ## stecho for this reason; this is the same value, on the same failure path.
+    stecho "$0: ERROR: Variable '$varname' contains more than one line. Content:
 '$value'" >&2
     return 1
   fi
