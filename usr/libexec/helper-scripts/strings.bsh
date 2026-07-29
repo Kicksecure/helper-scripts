@@ -211,6 +211,11 @@ check_is_alpha_numeric() {
 validate_safe_filename() {
   local strings_bsh_varname strings_bsh_value strings_bsh_reason strings_bsh_re
 
+  if [ -z "${1:-}" ]; then
+    printf '%s\n' "$0: ERROR: No variable name provided to validate_safe_filename." >&2
+    return 1
+  fi
+
   strings_bsh_varname="$1"
   check_variable_name "${strings_bsh_varname}" || return 1
   strings_bsh_value="${!strings_bsh_varname}"
@@ -244,13 +249,14 @@ validate_safe_filename() {
     strings_bsh_reason="Invalid character!"
   fi
 
-  ## Byte detail on stderr like every other diagnostic here, and capped: od expands its
-  ## input several-fold, and hex digits are the only safe way to show a rejected value.
-  LC_ALL=C od -An -tx1 <<<"${strings_bsh_value}" | head --bytes="${STRINGS_BSH_REPORT_MAX}" >&2
-
   sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ${FUNCNAME[0]}: ${strings_bsh_reason}
 \$1 (variable name): '${strings_bsh_varname}'
 \$2 (variable content): '${strings_bsh_value}'" >&2
+
+  ## Byte detail AFTER the reason: hex digits are the only safe way to show a rejected
+  ## value, but they are the least readable part, and emitting them first buried the
+  ## explanation. od expands its input several-fold, hence the same cap.
+  LC_ALL=C od -An -tx1 <<<"${strings_bsh_value}" | head --bytes="${STRINGS_BSH_REPORT_MAX}" >&2
 
   return 1
 }
