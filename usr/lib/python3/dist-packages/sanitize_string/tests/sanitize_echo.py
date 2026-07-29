@@ -5,6 +5,10 @@
 
 # pylint: disable=missing-module-docstring,unknown-option-value
 
+import sys
+from io import BytesIO, TextIOWrapper
+from unittest import mock
+
 from strip_markup.tests.strip_markup import TestStripMarkupBase
 
 from sanitize_string.sanitize_echo import main as sanitize_echo_main
@@ -136,6 +140,59 @@ sanitize-echo: Usage: sanitize-echo [--help] [--max-length LENGTH] [--] [string 
         """
 
         self._expect(args=["--", "-n"], stdout_string="-n\n")
+
+    def _run_stdin(
+        self, args: list[str], stdin_string: str
+    ) -> tuple[int, str]:
+        """
+        Run main() with the given stdin and NO message argument, returning its
+        exit code and stdout.
+        """
+
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=BytesIO(), encoding="utf-8", newline="\n"
+        )
+        stdout_internal: BytesIO = BytesIO()
+        stdout_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdout_internal, encoding="utf-8", newline="\n"
+        )
+        stdin_buf.write(stdin_string)
+        stdin_buf.seek(0, 0)
+        with (
+            mock.patch.object(sys, "argv", [self.argv0, *args]),
+            mock.patch.object(sys, "stdin", stdin_buf),
+            mock.patch.object(sys, "stdout", stdout_buf),
+        ):
+            exit_code: int = sanitize_echo_main()
+        stdout_buf.flush()
+        return exit_code, stdout_internal.getvalue().decode("utf-8")
+
+    def test_reads_stdin_when_no_argument_is_given(self) -> None:
+        """
+        The stdin fallback is part of the documented contract but every other
+        test here passes the message as an argument, so this path was never
+        executed. Coverage put it at lines 96-103, unreached.
+        """
+
+        exit_code, output = self._run_stdin(
+            args=[], stdin_string="from\x1b[31m stdin<b>x</b>\n"
+        )
+
+        self.assertEqual(exit_code, 0)
+        ## sanitized, and the trailing newline is echo's, not the input's
+        self.assertEqual(output, "from_[31m stdinx\n\n")
+
+    def test_stdin_respects_the_cap(self) -> None:
+        """
+        --max-length applies to stdin input as it does to an argument.
+        """
+
+        exit_code, output = self._run_stdin(
+            args=["--max-length", "4"], stdin_string="abcdefghij\n"
+        )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(output, "abcd\n")
 
     def test_bad_max_length_is_rejected(self) -> None:
         """
