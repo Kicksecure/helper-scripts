@@ -106,11 +106,13 @@ read_integer_file() {
     printf '%s\n' "$0: ERROR: Non-numeric value in target file '$target_file'!" >&2
     return 1
   fi
-  if [ -n "$lower_bound" ] && ((file_contents < lower_bound)); then
+  ## 10# forces base 10. Bare '((08 < 7))' is an invalid octal literal, so the comparison
+  ## errors, the 'if' is false, and an out-of-range value passes unrejected.
+  if [ -n "$lower_bound" ] && ((10#$file_contents < 10#$lower_bound)); then
     printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is below the lower bound '$lower_bound'!" >&2
     return 1
   fi
-  if [ -n "$upper_bound" ] && ((file_contents > upper_bound)); then
+  if [ -n "$upper_bound" ] && ((10#$file_contents > 10#$upper_bound)); then
     printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is above the upper bound '$upper_bound'!" >&2
     return 1
   fi
@@ -180,8 +182,9 @@ validate_safe_filename() {
     reason="Invalid character!"
   fi
 
-  printf 'RAW: <%q>\n' "$value"
-  LC_ALL=C od -An -tx1 <<<"$value"
+  ## Byte detail on stderr like every other diagnostic here, and capped: od expands its
+  ## input several-fold, and hex digits are the only safe way to show a rejected value.
+  LC_ALL=C od -An -tx1 <<<"$value" | head --bytes="$STRINGS_BSH_REPORT_MAX" >&2
 
   printf '%s\n' "$0: ${FUNCNAME[0]}
 \$1 (variable name): '$varname'
@@ -311,6 +314,12 @@ random_alpha_numeric() {
   ## together in one statement.
   local value
   value="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="$n")" || true
+  ## Callers use this for secrets, so a short read must fail loudly rather than return
+  ## fewer bytes of entropy than asked for, or none.
+  if [ "${#value}" -ne "$n" ]; then
+    printf '%s\n' "$0: ERROR: random_alpha_numeric: got ${#value} of $n bytes" >&2
+    return 1
+  fi
   printf '%s\n' "${value}"
 }
 
