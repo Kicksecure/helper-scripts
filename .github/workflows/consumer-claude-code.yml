@@ -33,10 +33,14 @@ on:
 permissions:
   contents: read
 
-## Comment events fire with github.ref = default branch (NOT the PR
-## head ref). Plain ${{ github.ref }} would queue unrelated PRs'
+## The two comment events differ: issue_comment fires with
+## github.ref = the default branch, pull_request_review_comment with
+## the PR merge ref (refs/pull/<number>/merge). Neither is the PR head
+## ref, and plain ${{ github.ref }} would queue unrelated PRs'
 ## comment-triggered runs into the same group. The PR/issue-number
-## fallback chain isolates per-PR.
+## chain below is what actually applies: one of those two number
+## fields is populated for every event this workflow accepts, so
+## github.ref is a fallback that is never reached here.
 ##
 ## Bot-vs-human split via the trailing actor-class suffix: when the
 ## Claude action posts a review comment, it does so as claude[bot],
@@ -52,11 +56,7 @@ permissions:
 ## endsWith() check isolate all bot-authored events into a separate
 ## group so they only cancel each other.
 concurrency:
-  ## The '@claude' term is load-bearing: concurrency is evaluated BEFORE the
-  ## job-level 'if:', so without it an unrelated comment ("thanks!") on the
-  ## same PR joins the group of an in-flight review and cancels it, even
-  ## though its own job is then skipped.
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}-${{ endsWith(github.actor, '[bot]') && 'bot' || 'human' }}-${{ contains(github.event.comment.body, '@claude') && 'claude' || 'other' }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}-${{ endsWith(github.actor, '[bot]') && 'bot' || 'human' }}
   cancel-in-progress: true
 
 jobs:
@@ -66,15 +66,7 @@ jobs:
     ## the allowed-users roster check, but doing the cheap substring
     ## test here too prevents a runner from starting (and stopping
     ## seconds later) for every unrelated comment on every issue/PR.
-    ## 'issue_comment' fires for ISSUES as well as pull requests, and an issue
-    ## carries no PR context for the reviewer to check out. github.event.issue
-    ## .pull_request is present only on a PR comment, and is absent for the
-    ## pull_request_review_comment event, which is always a PR -- hence the
-    ## alternation rather than a bare check.
-    if: >-
-      contains(github.event.comment.body, '@claude')
-      && (github.event_name == 'pull_request_review_comment'
-          || github.event.issue.pull_request)
+    if: contains(github.event.comment.body, '@claude')
     uses: org-ai-assisted/developer-meta-files/.github/workflows/reusable-claude-code-review.yml@master
     ## Explicit secret forwarding (NOT 'secrets: inherit'). With
     ## inherit, every caller-side secret would flow into the
