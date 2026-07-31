@@ -146,10 +146,9 @@ git_review_gitattributes_gate() {
 
 ## Interactively ask the operator whether to continue a review despite content
 ## a scan flagged. Requires that the review tool be able to handle text that
-## triggers unicode-show fatal errors. The prompt itself (log question +
-## /dev/tty read + [y/N] default-no) is prompt_yes_no_tty (log_run_die.sh).
-## Consent is not cached; a file that trips the scan more than once has multiple
-## issues, each of which should require separate acknowledgement.
+## triggers unicode-show fatal errors. Consent is not cached; a file that trips
+## the scan more than once has multiple issues, each of which should require
+## separate acknowledgement.
 ##
 ## Returns: 0 = proceed (operator said yes); 1 = operator explicitly declined;
 ## 2 = could not ask (not a terminal-safe reviewer, or no usable controlling
@@ -160,9 +159,7 @@ git_review_prompt_continue() {
   if [ "${git_review_display_fatal_content:-}" != 'true' ]; then
     return 2
   fi
-  ## The tty probe + /dev/tty read + [y/N] default-no live in prompt_yes_no_tty
-  ## (log_run_die.sh); its 0/1/2 return maps exactly onto ours. This wrapper adds
-  ## only the terminal-safe-reviewer gate above.
+
   prompt_rc=0
   prompt_yes_no_tty "Continue the review anyway?" || prompt_rc="$?"
   return "${prompt_rc}"

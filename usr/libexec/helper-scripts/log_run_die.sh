@@ -213,7 +213,7 @@ prompt_yes_no_tty() {
   reply=""
   read -r reply < /dev/tty 2>/dev/null || return 2
   case "${reply,,}" in
-    y | yes)
+    y|yes)
       return 0
       ;;
   esac

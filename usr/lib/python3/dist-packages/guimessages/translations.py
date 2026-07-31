@@ -13,12 +13,6 @@ class _translations():
       with open(self.path) as stream:
          data = yaml.safe_load(stream)
          self.xxx = data[self.section]
-         ## Fall back to the DEFAULT_LANG translation MAPPING (not the literal
-         ## string DEFAULT_LANG) when the current language is absent, so an
-         ## unknown locale (e.g. a non-English LANG, or an unset C locale)
-         ## resolves cleanly to English instead of tripping gettext's
-         ## AttributeError-and-recover path, which prints a spurious ERROR line
-         ## per translator on its first lookup.
          self.result = self.xxx.get(self.language, self.xxx.get(DEFAULT_LANG))
 
    def gettext(self, key):
