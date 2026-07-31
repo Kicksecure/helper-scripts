@@ -3,6 +3,16 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- a SOURCED library, not a script. Setting 'set -o errexit' etc here
+## would silently impose them on every caller's shell; the caller owns that choice, and the
+## expectation is documented immediately below.
+
+## Cap for a diagnostic echoed back through sanitize-echo. Long enough to identify what
+## was rejected, short enough that a multi-megabyte value cannot flood the terminal. Each
+## diagnostic puts the reason FIRST and the untrusted value LAST, so hitting the cap
+## truncates the value rather than the explanation.
+STRINGS_BSH_REPORT_MAX=200
+
 ## Scripts that source this file are expected to set at minimum:
 ##   set -o errexit
 ## Modern scripts should use:
@@ -21,7 +31,7 @@ if test -f "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.b
   ## /usr/share/usability-misc/build-dist-installer-cli
   ## from in-lining the source code.
   source_encoded=source
-  "$source_encoded" "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
+  "${source_encoded}" "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 fi
 
 ## NOTE: br_add and br_add_to_file are not HTML sanitization functions.
@@ -43,7 +53,7 @@ br_add() {
   fi
 
   out="${in//$'\n'/'<br />'$'\n'}"
-  printf '%s\n' "$out"
+  printf '%s\n' "${out}"
 }
 
 br_add_to_file() {
@@ -53,9 +63,13 @@ br_add_to_file() {
   safe-rm -f -- "${file_name}_br"
   touch -- "${file_name}_br"
 
+  ## '|| [ -n "$line" ]' keeps the last line when the file does not end in a newline.
+  ## Without it 'read' returns non-zero on that final partial line and the loop exits
+  ## with the line already in hand but unwritten, silently losing it -- br_add, which
+  ## does the same transform in memory, keeps it.
   local line
-  while IFS= read -r line; do
-    printf '%s\n' "$line<br />" | tee -a -- "${file_name}_br" >/dev/null
+  while IFS= read -r line || [ -n "${line}" ]; do
+    printf '%s\n' "${line}<br />" | tee -a -- "${file_name}_br" >/dev/null
   done <"${file_name}"
 }
 
@@ -65,120 +79,187 @@ read_integer_file() {
   target_file="${1:-}"
   lower_bound="${2:-}"
   upper_bound="${3:-}"
-  if [ -z "$target_file" ]; then
+  if [ -z "${target_file}" ]; then
     printf '%s\n' "$0: ERROR: No target file specified!" >&2
     return 1
   fi
-  if [ -n "$lower_bound" ] && ! [[ "$lower_bound" =~ ^[0-9]+$ ]]; then
+  if [ -n "${lower_bound}" ] && ! [[ "${lower_bound}" =~ ^[0-9]+$ ]]; then
     printf '%s\n' "$0: ERROR: Non-numeric lower bound specified!" >&2
     return 1
   fi
-  if [ -n "$upper_bound" ] && ! [[ "$upper_bound" =~ ^[0-9]+$ ]]; then
+  if [ -n "${upper_bound}" ] && ! [[ "${upper_bound}" =~ ^[0-9]+$ ]]; then
     printf '%s\n' "$0: ERROR: Non-numeric upper bound specified!" >&2
     return 1
   fi
 
-  if ! test -f "$target_file"; then
-    printf '%s\n' "$0: ERROR: Target file '$target_file' does not exist!" >&2
+  if ! test -f "${target_file}"; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Target file '${target_file}' does not exist!" >&2
     return 1
   fi
-  if ! test -r "$target_file"; then
-    printf '%s\n' "$0: ERROR: Target file '$target_file' not readable!" >&2
+  if ! test -r "${target_file}"; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Target file '${target_file}' not readable!" >&2
     return 1
   fi
-  if ! file_contents="$(stcat "$target_file")"; then
-    printf '%s\n' "$0: ERROR: Cannot stcat target file '$target_file'!" >&2
+  if ! file_contents="$(stcat -- "${target_file}")"; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Cannot stcat target file '${target_file}'!" >&2
     return 1
   fi
-  if [ -z "$file_contents" ]; then
-    printf '%s\n' "$0: ERROR: Empty target file '$target_file'!" >&2
+  if [ -z "${file_contents}" ]; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Empty target file '${target_file}'!" >&2
     return 1
   fi
-  if ! [[ "$file_contents" =~ ^[0-9]+$ ]]; then
-    printf '%s\n' "$0: ERROR: Non-numeric value in target file '$target_file'!" >&2
+  if ! [[ "${file_contents}" =~ ^[0-9]+$ ]]; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Non-numeric value in target file '${target_file}'!" >&2
     return 1
   fi
-  if [ -n "$lower_bound" ] && ((file_contents < lower_bound)); then
-    printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is below the lower bound '$lower_bound'!" >&2
+  ## 10# forces base 10. Bare '((08 < 7))' is an invalid octal literal, so the comparison
+  ## errors, the 'if' is false, and an out-of-range value passes unrejected.
+  if [ -n "${lower_bound}" ] && ((10#${file_contents} < 10#${lower_bound})); then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Target file's '${target_file}' value '${file_contents}' is below the lower bound '${lower_bound}'!" >&2
     return 1
   fi
-  if [ -n "$upper_bound" ] && ((file_contents > upper_bound)); then
-    printf '%s\n' "$0: ERROR: Target file's '$target_file' value '$file_contents' is above the upper bound '$upper_bound'!" >&2
+  if [ -n "${upper_bound}" ] && ((10#${file_contents} > 10#${upper_bound})); then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Target file's '${target_file}' value '${file_contents}' is above the upper bound '${upper_bound}'!" >&2
     return 1
   fi
-  printf '%s\n' "$0: INFO: Target file '$target_file' file_contents: '$file_contents'" >/dev/null
-  printf '%s\n' "$file_contents"
+  printf '%s\n' "$0: INFO: Target file '${target_file}' file_contents: '${file_contents}'" >/dev/null
+  printf '%s\n' "${file_contents}"
+}
+
+## Set a variable at its SOURCE when it is unset OR empty.
+##
+##   default_if_empty TMP /tmp
+##
+## The variable is named BARE, without '$'. Nothing in the caller is
+## dereferenced, so the call is safe under 'set -o nounset' -- the same
+## property that makes '[ -v VAR ] || VAR=value' the house idiom.
+##
+## Which of the two to use is a semantic choice, not a preference:
+##
+##   [ -v VAR ] || VAR=value    empty is a MEANINGFUL value and must survive
+##   default_if_empty VAR value empty is not a usable value for this variable
+##
+## '-v' alone reports an explicitly-empty variable as set, so it keeps an
+## intentional empty. That is right for a flag or an optional string, and wrong
+## for a PATH: an empty path silently turns "${VAR}/file" into "/file", i.e. a
+## root-relative path, which fails late and far from the cause (or, as root,
+## succeeds and writes to the wrong place).
+##
+## Both forms set the variable ONCE, where it is defined. Neither is a
+## '${VAR:-value}' guard at each consumer: those defeat nounset, because a
+## consumer that defaults the value away can no longer report a genuinely
+## missing one as the bug it is.
+## The locals below are prefixed. These functions take the NAME of a caller's
+## variable and read it back with '${!name}', but bash scoping is DYNAMIC: a
+## local here SHADOWS a caller variable of the same name. A caller passing
+## 'varname' or 'value' would therefore have this function inspect its OWN
+## local instead of the caller's data -- silently validating the literal
+## string "varname" and returning success for input that should be rejected.
+## The prefix makes a collision implausible rather than merely unlikely.
+default_if_empty() {
+  local strings_bsh_var_name strings_bsh_default_value
+
+  strings_bsh_var_name="${1:-}"
+  strings_bsh_default_value="${2:-}"
+
+  ## The name reaches 'printf -v', which evaluates an array subscript: a name
+  ## like 'arr[$(command)]' would run the command.
+  if ! check_variable_name "${strings_bsh_var_name}"; then
+    ## The value printed here IS the rejected name -- the hostile input that
+    ## just failed validation -- so it goes through sanitize-echo like every
+    ## other diagnostic in this file, not plain printf.
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "${0}: ERROR: ${FUNCNAME[0]}: not a variable name: '${strings_bsh_var_name}'!" >&2
+    return 1
+  fi
+
+  ## '-v' tests without dereferencing. The '&&' short-circuit is load-bearing:
+  ## it stops the indirect expansion below from firing on an unset name, which
+  ## 'set -o nounset' would abort on.
+  if [ -v "${strings_bsh_var_name}" ] && [ -n "${!strings_bsh_var_name}" ]; then
+    return 0
+  fi
+
+  printf -v "${strings_bsh_var_name}" '%s' "${strings_bsh_default_value}"
 }
 
 check_is_alpha_numeric() {
-  local varname value
+  ## LC_ALL=C makes the range below BYTE-based. Under a collating locale 'a-z' is resolved
+  ## by collation order, so accented Latin letters fall inside it and 'cafe' with an acute
+  ## accent passes a function named is_alpha_numeric.
+  local strings_bsh_varname strings_bsh_value LC_ALL=C
 
-  if [ -z "$1" ]; then
+  if [ -z "${1:-}" ]; then
     printf '%s\n' "$0: ERROR: No variable name provided to check_is_alpha_numeric." >&2
     return 1
   fi
 
-  varname="$1"
-  check_variable_name "${varname}" || return 1
-  value="${!varname}"
+  strings_bsh_varname="$1"
+  check_variable_name "${strings_bsh_varname}" || return 1
+  strings_bsh_value="${!strings_bsh_varname}"
 
-  if ! [[ "$value" =~ ^[0-9a-zA-Z_-]+$ ]]; then
-    stecho "$0:
-\$1 (variable name): '$varname'
-\$2 (variable content): '$value'
-Invalid character!" >&2
+  if [ "${strings_bsh_value}" = "" ]; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ${FUNCNAME[0]}: variable content is empty!
+\$1 (variable name): '${strings_bsh_varname}'" >&2
     return 1
   fi
-  if [ "$value" = "" ]; then
-    stecho "$0:
-\$1 (variable name): '$varname'
-\$2 (variable content): empty!" >&2
+  if ! [[ "${strings_bsh_value}" =~ ^[0-9a-zA-Z_-]+$ ]]; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ${FUNCNAME[0]}: invalid character!
+\$1 (variable name): '${strings_bsh_varname}'
+\$2 (variable content): '${strings_bsh_value}'" >&2
     return 1
   fi
-
   return 0
 }
 
 validate_safe_filename() {
-  local varname value reason re
+  local strings_bsh_varname strings_bsh_value strings_bsh_reason strings_bsh_re
 
-  varname="$1"
-  check_variable_name "${varname}" || return 1
-  value="${!varname}"
+  if [ -z "${1:-}" ]; then
+    printf '%s\n' "$0: ERROR: No variable name provided to validate_safe_filename." >&2
+    return 1
+  fi
 
-  if [[ -z "$value" ]]; then
-    reason="Empty value!"
-  elif [[ "$value" == *"/"* || "$value" == *\\* ]]; then
-    reason="Path separator not allowed!"
-  elif [[ "$value" == "." ]]; then
-    reason="Dot path not allowed!"
-  elif [[ "$value" == ".." ]]; then
-    reason="Double dot path not allowed!"
-  elif [[ "$value" == *".."* ]]; then
-    reason="Contains '..'!"
-  elif [[ "$value" =~ [[:cntrl:]] ]]; then
-    reason="Control character not allowed!"
-  elif [[ "$value" == -* ]]; then
-    reason="Leading '-' not allowed!"
-  elif ((${#value} > 255)); then
-    reason="Too long (>255 chars)!"
+  strings_bsh_varname="$1"
+  check_variable_name "${strings_bsh_varname}" || return 1
+  strings_bsh_value="${!strings_bsh_varname}"
+
+  if [[ -z "${strings_bsh_value}" ]]; then
+    strings_bsh_reason="Empty strings_bsh_value!"
+  elif [[ "${strings_bsh_value}" == *"/"* || "${strings_bsh_value}" == *\\* ]]; then
+    strings_bsh_reason="Path separator not allowed!"
+  elif [[ "${strings_bsh_value}" == "." ]]; then
+    strings_bsh_reason="Dot path not allowed!"
+  elif [[ "${strings_bsh_value}" == ".." ]]; then
+    strings_bsh_reason="Double dot path not allowed!"
+  elif [[ "${strings_bsh_value}" == *".."* ]]; then
+    strings_bsh_reason="Contains '..'!"
+  elif [[ "${strings_bsh_value}" =~ [[:cntrl:]] ]]; then
+    strings_bsh_reason="Control character not allowed!"
+  elif [[ "${strings_bsh_value}" == -* ]]; then
+    strings_bsh_reason="Leading '-' not allowed!"
+  elif (($(LC_ALL=C printf '%s' "${strings_bsh_value}" | wc -c) > 255)); then
+    ## NAME_MAX is 255 BYTES. '${#strings_bsh_value}' counts characters, so under a UTF-8 locale a
+    ## 200-character name of multibyte letters measures 200 here and 600 on the
+    ## filesystem, passing a check meant to guarantee the name is storable.
+    strings_bsh_reason="Too long (>255 bytes)!"
   else
     ## Allow: letters/digits (locale-aware), underscore, dash, dot, space,
     ## plus, comma, equals, @, parentheses, percent, braces, square brackets
-    re='^[][:alnum:]_.:@+=,(){}%\[ -]+$'
-    if [[ "$value" =~ $re ]]; then
+    strings_bsh_re='^[][:alnum:]_.:@+=,(){}%\[ -]+$'
+    if [[ "${strings_bsh_value}" =~ ${strings_bsh_re} ]]; then
       return 0
     fi
-    reason="Invalid character!"
+    strings_bsh_reason="Invalid character!"
   fi
 
-  printf 'RAW: <%q>\n' "$value"
-  LC_ALL=C od -An -tx1 <<<"$value"
+  sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ${FUNCNAME[0]}: ${strings_bsh_reason}
+\$1 (variable name): '${strings_bsh_varname}'
+\$2 (variable content): '${strings_bsh_value}'" >&2
 
-  stecho "$0: ${FUNCNAME[0]}
-\$1 (variable name): '$varname'
-\$2 (variable content): '$value'
-$reason" >&2
+  ## Byte detail AFTER the reason: hex digits are the only safe way to show a rejected
+  ## value, but they are the least readable part, and emitting them first buried the
+  ## explanation. od expands its input several-fold, hence the same cap.
+  LC_ALL=C od -An -tx1 <<<"${strings_bsh_value}" | head --bytes="${STRINGS_BSH_REPORT_MAX}" >&2
 
   return 1
 }
@@ -186,36 +267,49 @@ $reason" >&2
 check_valid_linux_user_account_name() {
   ## Validates per /etc/adduser.conf SYS_NAME_REGEX
   ## Return: 0 valid, 1 invalid. Prints nothing.
+  ## LC_ALL=C for the same reason as check_is_alpha_numeric: SYS_NAME_REGEX is meant
+  ## byte-for-byte, and a collating locale would widen the ranges.
+  local LC_ALL=C
   [[ "${1:-}" =~ ^[a-zA-Z_][a-zA-Z0-9_-]*\$?$ ]]
 }
 
 check_is_not_empty_and_only_one_line() {
-  local varname value number_of_lines trimmed_value lines
+  local strings_bsh_varname strings_bsh_value strings_bsh_number_of_lines strings_bsh_trimmed_value strings_bsh_lines
 
-  if [ -z "$1" ]; then
+  if [ -z "${1:-}" ]; then
     printf '%s\n' "$0: ERROR: No variable name provided to check_is_not_empty_and_only_one_line." >&2
     return 1
   fi
 
-  varname="$1"
-  check_variable_name "${varname}" || return 1
-  value="${!varname}"
+  strings_bsh_varname="$1"
+  check_variable_name "${strings_bsh_varname}" || return 1
+  strings_bsh_value="${!strings_bsh_varname}"
 
-  ## Trim leading/trailing spaces while preserving newlines.
-  IFS= read -r trimmed_value <<<"$value"
+  ## Takes the FIRST line, used below only as an is-there-any-content probe. With 'IFS='
+  ## nothing is trimmed.
+  IFS= read -r strings_bsh_trimmed_value <<<"${strings_bsh_value}"
 
-  ## Check if value is empty or only contains spaces/newlines.
-  if [[ -z "$trimmed_value" || -z "${value//[[:space:]]/}" ]]; then
-    printf '%s\n' "$0: ERROR: Variable '$varname' is empty or contains only whitespace/newlines." >&2
+  ## Check if strings_bsh_value is empty or only contains spaces/newlines.
+  if [[ -z "${strings_bsh_trimmed_value}" || -z "${strings_bsh_value//[[:space:]]/}" ]]; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Variable '${strings_bsh_varname}' is empty or contains only whitespace/newlines." >&2
     return 1
   fi
 
-  mapfile -t lines <<<"$value"
-  number_of_lines="${#lines[@]}"
+  ## A carriage return ends a line as surely as a newline, and rewrites the current one
+  ## on a terminal. mapfile splits on \n alone, so without this a CR-bearing value passes
+  ## as "one line" through a gate whose whole job is to reject multi-line input.
+  if [[ "${strings_bsh_value}" == *$'\r'* ]]; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Variable '${strings_bsh_varname}' contains a carriage return. Content:
+'${strings_bsh_value}'" >&2
+    return 1
+  fi
 
-  if [ "$number_of_lines" -ne 1 ]; then
-    printf '%s\n' "$0: ERROR: Variable '$varname' contains more than one line. Content:
-'$value'" >&2
+  mapfile -t strings_bsh_lines <<<"${strings_bsh_value}"
+  strings_bsh_number_of_lines="${#strings_bsh_lines[@]}"
+
+  if [ "${strings_bsh_number_of_lines}" -ne 1 ]; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: Variable '${strings_bsh_varname}' contains more than one line. Content:
+'${strings_bsh_value}'" >&2
     return 1
   fi
 
@@ -231,15 +325,15 @@ trim_collapse_split() {
   local trimmed_list cleaned_list formatted_list
 
   ## Step 1: Trim leading and trailing spaces.
-  trimmed_list="$(printf '%s\n' "$input_list" | sed 's/^\s\+//g; s/\s\+$//g')"
+  trimmed_list="$(printf '%s\n' "${input_list}" | sed 's/^\s\+//g; s/\s\+$//g')"
 
   ## Step 2: Replace multiple spaces with a single space.
-  cleaned_list="$(printf '%s\n' "$trimmed_list" | sed 's/\s\+/ /g')"
+  cleaned_list="$(printf '%s\n' "${trimmed_list}" | sed 's/\s\+/ /g')"
 
   ## Step 3: Replace spaces with ' \n' (newline prefixed by space).
-  formatted_list="$(printf '%s\n' "$cleaned_list" | sed 's/\s/ \\\n/g')"
+  formatted_list="$(printf '%s\n' "${cleaned_list}" | sed 's/\s/ \\\n/g')"
 
-  printf '%s\n' "$formatted_list"
+  printf '%s\n' "${formatted_list}"
 }
 
 ## Print a string quoted to prevent special characters in the string from being
@@ -295,12 +389,21 @@ is_integer(){
 ## reason: https://www.kicksecure.com/wiki/Dev/Entropy
 random_alpha_numeric() {
   local n="${1:-43}"
-  if ! is_whole_number "$n"; then
-    printf '%s\n' "$0: ERROR: random_alpha_numeric: non-numeric byte count: '$n'" >&2
+  if ! is_whole_number "${n}"; then
+    sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- "$0: ERROR: random_alpha_numeric: non-numeric byte count: '${n}'" >&2
     return 1
   fi
-  LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="$n" || true
-  printf '%s\n' ""
+  ## 'head --bytes' emits no trailing newline, so the value and its terminator are printed
+  ## together in one statement.
+  local value
+  value="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/random | head --bytes="${n}")" || true
+  ## Callers use this for secrets, so a short read must fail loudly rather than return
+  ## fewer bytes of entropy than asked for, or none.
+  if [ "${#value}" -ne "${n}" ]; then
+    printf '%s\n' "$0: ERROR: random_alpha_numeric: got ${#value} of ${n} bytes" >&2
+    return 1
+  fi
+  printf '%s\n' "${value}"
 }
 
 gpg_bash_lib_function_displaytime() {
@@ -323,27 +426,27 @@ gpg_bash_lib_function_displaytime() {
   sep=''
 
   if (( Y > 0 )); then
-    printf '%s%d years' "$sep" "$Y"
+    printf '%s%d years' "${sep}" "${Y}"
     sep=' '
   fi
 
   if (( D > 0 )); then
-    printf '%s%d days' "$sep" "$D"
+    printf '%s%d days' "${sep}" "${D}"
     sep=' '
   fi
 
   if (( H > 0 )); then
-    printf '%s%d hours' "$sep" "$H"
+    printf '%s%d hours' "${sep}" "${H}"
     sep=' '
   fi
 
   if (( M > 0 )); then
-    printf '%s%d minutes' "$sep" "$M"
+    printf '%s%d minutes' "${sep}" "${M}"
     sep=' '
   fi
 
   if (( S > 0 )); then
-    printf '%s%d seconds' "$sep" "$S"
+    printf '%s%d seconds' "${sep}" "${S}"
     sep=' '
   fi
 
@@ -357,6 +460,22 @@ gpg_bash_lib_function_displaytime() {
 check_variable_name() {
   ## Ensures a string is a valid Bash variable name.
   [[ "$1" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]
+}
+
+## Value-based counterpart to run_test, for functions that take a VALUE rather than the
+## name of a variable holding one.
+## $1 = test id, $2 = seconds, $3 = expected output.
+run_display_test() {
+  local test_id="$1" seconds="$2" expected="$3" actual
+  actual="$(gpg_bash_lib_function_displaytime "${seconds}")"
+  printf '%s\n' "$0: Running test ${test_id}: gpg_bash_lib_function_displaytime"
+  if [ "${actual}" = "${expected}" ]; then
+    printf '%s\n' "$0: Test Passed"
+  else
+    printf '%s\n' "$0: Test Failed (Expected: '${expected}', Got: '${actual}')" >&2
+    return 1
+  fi
+  printf '%s\n' "---------------------------------"
 }
 
 run_test() {
@@ -378,17 +497,17 @@ run_test() {
   input_value="${input_parts[*]}"
 
   # Assign without eval (works for simple variable names like testvar/a/etc.)
-  check_variable_name "$var_name" || return 1
-  printf -v "$var_name" '%s' "$input_value"
+  check_variable_name "${var_name}" || return 1
+  printf -v "${var_name}" '%s' "${input_value}"
 
-  printf '%s\n' "$0: Running test $test_id: $function_name ($var_name)"
+  printf '%s\n' "$0: Running test ${test_id}: ${function_name} (${var_name})"
 
-  "$function_name" "$var_name" || actual_exit_code=$?
+  "${function_name}" "${var_name}" || actual_exit_code=$?
 
-  if [[ "$actual_exit_code" -eq "$expected_exit_code" ]]; then
+  if [[ "${actual_exit_code}" -eq "${expected_exit_code}" ]]; then
     printf '%s\n' "$0: Test Passed"
   else
-    printf '%s\n' "$0: Test Failed (Expected: $expected_exit_code, Got: $actual_exit_code)" >&2
+    printf '%s\n' "$0: Test Failed (Expected: ${expected_exit_code}, Got: ${actual_exit_code})" >&2
     return 1
   fi
 
@@ -405,7 +524,15 @@ string_bsh_tests() {
   set -o nounset
   trap strings_bsh_error_trap ERR
 
-  shellcheck "$0"
+  ## BASH_SOURCE, not $0: sourced -- which is how this library is used -- $0 is the
+  ## CALLER, so this linted whatever invoked it, and aborted the whole suite under the ERR
+  ## trap when that was not a file. Skipped when shellcheck is absent rather than fatal;
+  ## the tests below are the point of this function.
+  if type -P shellcheck >/dev/null 2>&1; then
+    shellcheck "${BASH_SOURCE[0]}"
+  else
+    printf '%s\n' "$0: NOTICE: shellcheck not installed; skipping the lint step." >&2
+  fi
 
   ## run_test <test_name> <function> <expected_exit_code> <var_name> <value...>
 
@@ -413,8 +540,7 @@ string_bsh_tests() {
   run_test "alpha_numeric: rejects dot" check_is_alpha_numeric 1 test_value "."
   run_test "alpha_numeric: rejects space" check_is_alpha_numeric 1 test_value "plain text"
   run_test "alpha_numeric: accepts dash/underscore" check_is_alpha_numeric 0 test_value "test_123-OK"
-  ## TODO: unclear if this is possible without unicode-show
-  #run_test "alpha_numeric: rejects unicode"                 check_is_alpha_numeric 1 test_value $'caf\xC3\xA9'
+  run_test "alpha_numeric: rejects unicode" check_is_alpha_numeric 1 test_value $'caf\xC3\xA9'
 
   run_test "safe_filename: accepts simple name" validate_safe_filename 0 test_value "test"
   run_test "safe_filename: accepts spaces and punctuation" validate_safe_filename 0 test_value "plain text (v1) [ok].txt"
@@ -451,32 +577,105 @@ string_bsh_tests() {
   check_valid_linux_user_account_name "user@host" && error "linux_user_account_name: 'user@host' should be invalid"
   check_valid_linux_user_account_name "user\$bad" && error "linux_user_account_name: 'user\$bad' should be invalid"
 
-  run_test "time: 0" gpg_bash_lib_function_displaytime 0 test_value 0
-  run_test "time: 500" gpg_bash_lib_function_displaytime 0 test_value 500
-  run_test "time: 10000" gpg_bash_lib_function_displaytime 0 test_value 10000
-  run_test "time: 100000" gpg_bash_lib_function_displaytime 0 test_value 100000
-  run_test "time: 500000" gpg_bash_lib_function_displaytime 0 test_value 500000
-  run_test "time: 50000000" gpg_bash_lib_function_displaytime 0 test_value 50000000
+  ## Asserted on OUTPUT, not through run_test. run_test hands the function a variable
+  ## NAME, which is right for the name-based validators but not for displaytime, which
+  ## takes a value: it received the literal 'test_value', failed is_whole_number, and was
+  ## forced to T=0, so every case exercised the zero path and would have passed with the
+  ## arithmetic entirely wrong.
+  run_display_test "time: 0" 0 "0 seconds"
+  run_display_test "time: 500" 500 "8 minutes 20 seconds"
+  run_display_test "time: 10000" 10000 "2 hours 46 minutes 40 seconds"
+  run_display_test "time: 100000" 100000 "1 days 3 hours 46 minutes 40 seconds"
+  run_display_test "time: 500000" 500000 "5 days 18 hours 53 minutes 20 seconds"
+  run_display_test "time: 50000000" 50000000 "1 years 213 days 16 hours 53 minutes 20 seconds"
+  run_display_test "time: non-numeric" "not_a_number" "0 seconds"
 
   input_string=$'test1\ntest2'
   expected_result=$'test1<br />\ntest2'
 
-  actual_result="$(br_add "$input_string")"
-  if ! [ "$expected_result" = "$actual_result" ]; then
+  actual_result="$(br_add "${input_string}")"
+  if ! [ "${expected_result}" = "${actual_result}" ]; then
     error "br_add command failed!"
   fi
 
-  actual_result="$(printf '%s\n' "$input_string" | br_add)"
-  if ! [ "$expected_result" = "$actual_result" ]; then
+  actual_result="$(printf '%s\n' "${input_string}" | br_add)"
+  if ! [ "${expected_result}" = "${actual_result}" ]; then
     error "br_add pipe failed!"
   fi
+
+  ## default_if_empty: unset and empty both take the default; a set value survives.
+  unset -v default_if_empty_probe
+  default_if_empty default_if_empty_probe 'fallback'
+  if ! [ "${default_if_empty_probe}" = 'fallback' ]; then
+    error "default_if_empty: an unset variable did not take the default!"
+  fi
+
+  default_if_empty_probe=''
+  default_if_empty default_if_empty_probe 'fallback'
+  if ! [ "${default_if_empty_probe}" = 'fallback' ]; then
+    error "default_if_empty: an empty variable did not take the default!"
+  fi
+
+  default_if_empty_probe='kept value'
+  default_if_empty default_if_empty_probe 'fallback'
+  if ! [ "${default_if_empty_probe}" = 'kept value' ]; then
+    error "default_if_empty: a set value was overwritten!"
+  fi
+
+  ## A non-identifier must be REFUSED, not evaluated: 'printf -v' evaluates an array
+  ## subscript, so an unchecked name would run the command inside it.
+  default_if_empty_rc=0
+  # shellcheck disable=SC2016  # single quotes are the point: the '$(...)' must stay literal
+  default_if_empty 'probe[$(exit 7)]' 'fallback' 2>/dev/null || default_if_empty_rc="$?"
+  if ! [ "${default_if_empty_rc}" = '1' ]; then
+    error "default_if_empty: a non-identifier name was not refused!"
+  fi
+  unset -v default_if_empty_probe default_if_empty_rc
+
+  ## Dynamic-scope shadowing: a caller variable named like one of these
+  ## functions' own locals must still be read from the CALLER. Before the
+  ## locals were prefixed, the three validators below inspected the literal
+  ## string "varname" and returned SUCCESS for input that must be rejected.
+  var_name=''
+  default_if_empty var_name 'fallback'
+  if ! [ "${var_name}" = 'fallback' ]; then
+    error "default_if_empty: caller variable named 'var_name' was shadowed!"
+  fi
+
+  default_value=''
+  default_if_empty default_value 'fallback'
+  if ! [ "${default_value}" = 'fallback' ]; then
+    error "default_if_empty: caller variable named 'default_value' was shadowed!"
+  fi
+
+  ## shellcheck cannot see an indirect expansion, so these three assignments
+  ## look unused to it. SC2034 is not cosmetic here: string_bsh_tests runs
+  ## 'shellcheck "${BASH_SOURCE[0]}"' under errexit, so a warning aborts the
+  ## suite BEFORE any test runs -- the tests would silently stop existing.
+  # shellcheck disable=SC2034  # consumed by name, via ${!varname} in the callee
+  varname='!@#'
+  if check_is_alpha_numeric varname 2>/dev/null; then
+    error "check_is_alpha_numeric: bypassed by a caller variable named 'varname'!"
+  fi
+
+  varname='../../../etc/passwd'
+  if validate_safe_filename varname 2>/dev/null; then
+    error "validate_safe_filename: bypassed by a caller variable named 'varname'!"
+  fi
+
+  # shellcheck disable=SC2034  # consumed by name, via ${!varname} in the callee
+  varname=$'multi\nline'
+  if check_is_not_empty_and_only_one_line varname 2>/dev/null; then
+    error "check_is_not_empty_and_only_one_line: bypassed by 'varname'!"
+  fi
+  unset -v var_name default_value varname
 
   printf '%s\n' "$0: All Tests Passed"
 }
 
 strings_bsh_error_trap() {
   local last_exit_code="$?"
-  echo "$0: ERROR: failed: '$BASH_COMMAND' | exit code: '$last_exit_code'"
+  printf '%s\n' "$0: ERROR: failed: '${BASH_COMMAND}' | exit code: '${last_exit_code}'"
   exit 1
 }
 

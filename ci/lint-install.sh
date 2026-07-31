@@ -22,6 +22,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 ## CI guard. This script runs apt-get install and is intended to run
 ## inside the lint workflow's container. Refuse to run on a developer
@@ -33,10 +35,12 @@ fi
 
 apt-get update --error-on=any
 apt-get dist-upgrade -y
+## safe-rm is a runtime dependency of this package (debian/control) and is used
+## by the shell tests in ./run-tests, which never call plain 'rm'.
 apt-get install -y --no-install-recommends \
   git python3-pytest python3-pip ncurses-term \
   build-essential debhelper dh-python dh-apparmor \
-  python3-hypothesis
+  python3-hypothesis safe-rm
 
 ## Pin the style/type linters (black, pylint, mypy) to the trixie (Debian 13
 ## stable) versions instead of each container's own archive linters.
@@ -52,4 +56,4 @@ apt-get install -y --no-install-recommends \
 pip install --break-system-packages \
   'black==25.1.0' 'pylint==3.3.4' 'mypy==1.15.0'
 
-git config --global --add safe.directory "${GITHUB_WORKSPACE:-$PWD}"
+git config --global --add safe.directory "${GITHUB_WORKSPACE:-${PWD}}"
