@@ -5,6 +5,7 @@
 
 ## style-ok: no-strict -- sourced library; a top-level strict-mode block
 ## would leak 'set -o errexit'/'nounset' into the sourcing shell.
+##
 ## style-ok: no-has -- root_cmd() below uses 'command -v' to RESOLVE a
 ## command's path (has returns only a boolean); has is used elsewhere.
 

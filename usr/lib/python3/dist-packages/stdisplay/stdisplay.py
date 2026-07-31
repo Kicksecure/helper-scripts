@@ -67,7 +67,10 @@ def get_sgr_support() -> int:
     >>> get_sgr_support()
     -1
     """
-    if environ.get("NO_COLOR") or environ.get("TERM") == "dumb":
+
+    ## No need to explicitly check for TERM=dumb, tigetnum("colors") returns
+    ## -1 in this case. COLORTERM=truecolor overrides TERM=dumb by design.
+    if environ.get("NO_COLOR"):
         return -1
     colorterm: str | None = environ.get("COLORTERM")
     if colorterm and colorterm.lower() in ("truecolor", "24bit"):
