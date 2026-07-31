@@ -80,14 +80,22 @@ def derive_mac(salt, index):
     ## Deterministic unicast MAC keeping VirtualBox's Oracle OUI (08:00:27).
     ## The suffix is 6 hex chars derived from the salt; the OUI's low bits keep
     ## it a globally-administered unicast address.
-    digest = hashlib.sha1(("%s:mac:%d" % (salt, index)).encode()).hexdigest()
+    ## Not a security hash: a deterministic function to derive a stable MAC
+    ## suffix from the salt. Collision resistance is irrelevant here.
+    digest = hashlib.sha1(
+        ("%s:mac:%d" % (salt, index)).encode(), usedforsecurity=False
+    ).hexdigest()
     return "080027" + digest[:6].upper()
 
 
 def derive_cid(salt, role, index):
     ## Deterministic 32-bit content id as 8 lowercase hex chars. Avoid the
     ## 0xffffffff sentinel (VMDK "no parent" / null CID).
-    digest = hashlib.sha1(("%s:%s:%d" % (salt, role, index)).encode()).hexdigest()
+    ## Not a security hash: a deterministic function to derive a stable content
+    ## id from the salt. Collision resistance is irrelevant here.
+    digest = hashlib.sha1(
+        ("%s:%s:%d" % (salt, role, index)).encode(), usedforsecurity=False
+    ).hexdigest()
     cid = digest[:8]
     if cid == "ffffffff":
         cid = "fffffffe"
