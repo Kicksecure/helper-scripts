@@ -13,34 +13,34 @@ set -e errtrace
 
 output_cmd() {
    msg="$*"
-   printf '%s\n' "__ $msg"
+   printf '%s\n' "__ ${msg}"
 }
 
 error_handler() {
    exit_code="$?"
    printf '%s\n' "\
-BASH_COMMAND: $BASH_COMMAND
-exit_code: $exit_code"
+BASH_COMMAND: ${BASH_COMMAND}
+exit_code: ${exit_code}"
 }
 
 trap "error_handler" ERR
 
 exit_handler() {
-   if [ "$exit_code" = "" ]; then
+   if [ "${exit_code}" = "" ]; then
       output_cmd "$0: No exit code set yet. Setting to 1."
       exit_code=1
    fi
-   if [ "$exit_code" = "0" ]; then
+   if [ "${exit_code}" = "0" ]; then
       meaning="success"
-   elif [ "$exit_code" = "1" ]; then
+   elif [ "${exit_code}" = "1" ]; then
       meaning="wait, show error icon and retry."
-   elif [ "$exit_code" = "2" ]; then
+   elif [ "${exit_code}" = "2" ]; then
       meaning="wait, show busy icon and retry."
    else
       meaning="Unknown."
    fi
-   output_cmd "### END: ### Exiting with exit_code '$exit_code' indicating '$meaning'."
-   exit "$exit_code"
+   output_cmd "### END: ### Exiting with exit_code '${exit_code}' indicating '${meaning}'."
+   exit "${exit_code}"
 }
 
 trap "exit_handler" EXIT
@@ -68,33 +68,33 @@ detect_vm_type() {
 }
 
 anondate_folder() {
-   true "user: $USER"
+   true "user: ${USER}"
 
-   if [ "$USER" = "sdwdate" ]; then
+   if [ "${USER}" = "sdwdate" ]; then
       anondate_state_folder=/run/sdwdate
    elif [ "$(id -u)" = "0" ]; then
       anondate_state_folder=/run/anondate
    else
-      output_cmd "ERROR: running under user '$USER' is not yet implemented. Run:
+      output_cmd "ERROR: running under user '${USER}' is not yet implemented. Run:
 sudo -u sdwdate $0"
 
       anondate_state_folder=/run/anondate
 
       exit_code=1
-      exit "$exit_code"
+      exit "${exit_code}"
    fi
 
-   true "anondate_state_folder: $anondate_state_folder"
+   true "anondate_state_folder: ${anondate_state_folder}"
 }
 
 onion_time_script_status() {
-   if [ -f "$anondate_state_folder/onion-time-script-after-boot" ]; then
+   if [ -f "${anondate_state_folder}/onion-time-script-after-boot" ]; then
       output_cmd "Status: Subsequent run after boot."
       onion_time_script_status_boot=true
    else
-      output_cmd "Status: First run after boot. (Creating file '$anondate_state_folder/onion-time-script-after-boot'.)"
+      output_cmd "Status: First run after boot. (Creating file '${anondate_state_folder}/onion-time-script-after-boot'.)"
       onion_time_script_status_boot=false
-      touch "$anondate_state_folder/onion-time-script-after-boot"
+      touch "${anondate_state_folder}/onion-time-script-after-boot"
    fi
 }
 
@@ -106,7 +106,7 @@ exit_if_tor_not_yet_enabled() {
    ## Sets: TOR_ENABLED
    check_tor_enabled_do
 
-   if [ "$TOR_ENABLED" = "1" ]; then
+   if [ "${TOR_ENABLED}" = "1" ]; then
       true "Tor enabled check: Tor already enabled, ok."
    else
       if [ -f /usr/share/whonix/marker ]; then
@@ -117,7 +117,7 @@ Start Menu -> System -> Anon Connection Wizard or in Terminal: sudo setup-dist"
       fi
 
       exit_code=1
-      exit "$exit_code"
+      exit "${exit_code}"
    fi
 }
 
@@ -125,10 +125,10 @@ tor_dormant_status() {
    ## sets: tor_dormant_status
    check_tor_dormant_status ## tor_bootstrap_check.bsh
 
-   if [ "$tor_dormant_status" = "0" ]; then
-      output_cmd "Tor Dormant Result: No, not dormant, good. (tor_dormant_type: '$tor_dormant_type')"
-   elif [ "$tor_dormant_status" = "1" ]; then
-      output_cmd "Tor Dormant Result: Yes, dormant. (tor_dormant_type: '$tor_dormant_type') Sending 'SIGNAL active' and 'SIGNAL newnym' to wake up Tor..."
+   if [ "${tor_dormant_status}" = "0" ]; then
+      output_cmd "Tor Dormant Result: No, not dormant, good. (tor_dormant_type: '${tor_dormant_type}')"
+   elif [ "${tor_dormant_status}" = "1" ]; then
+      output_cmd "Tor Dormant Result: Yes, dormant. (tor_dormant_type: '${tor_dormant_type}') Sending 'SIGNAL active' and 'SIGNAL newnym' to wake up Tor..."
       ## https://stackoverflow.com/questions/37135213/check-tor-connection-is-established-before-running-scrapy
       run_signal_newnym
    else
@@ -148,21 +148,21 @@ check_tor_circuit_established_yet() {
    ## - 137 if needed to use kill.
 
    for invalid_exit_code in "124" "137" "254" ; do
-      if [ "$tor_circuit_established_check_exit_code" = "$invalid_exit_code" ]; then
+      if [ "${tor_circuit_established_check_exit_code}" = "${invalid_exit_code}" ]; then
          output_cmd "Tor Bootstrap Result:
-check_bootstrap_privleap_action: $check_bootstrap_privleap_action
-tor_bootstrap_timeout_type: $tor_bootstrap_timeout_type
-tor_circuit_established_check_exit_code: $tor_circuit_established_check_exit_code"
+check_bootstrap_privleap_action: ${check_bootstrap_privleap_action}
+tor_bootstrap_timeout_type: ${tor_bootstrap_timeout_type}
+tor_circuit_established_check_exit_code: ${tor_circuit_established_check_exit_code}"
          exit_code=1
-         exit "$exit_code"
+         exit "${exit_code}"
       fi
    done
 
-   if [ "$tor_circuit_established_check_exit_code" = "255" ]; then
-      if [ "$VM" = "Gateway" ]; then
+   if [ "${tor_circuit_established_check_exit_code}" = "255" ]; then
+      if [ "${VM}" = "Gateway" ]; then
          output_cmd "Tor Bootstrap Result: \
 Tor's Control Port could not be reached."
-      elif [ "$VM" = "Workstation" ]; then
+      elif [ "${VM}" = "Workstation" ]; then
          if [ -f /usr/share/whonix/marker ]; then
             output_cmd "Tor Bootstrap Result: \
 Tor's Control Port could not be reached.\
@@ -187,12 +187,12 @@ Tor's Control Port could not be reached."
       fi
 
       exit_code=1
-      exit "$exit_code"
+      exit "${exit_code}"
    fi
 }
 
 tor_bootstrap_check() {
-   if [ "$VM" = "Workstation" ]; then
+   if [ "${VM}" = "Workstation" ]; then
       true "${FUNCNAME[0]}: INFO: skipping check_tor_bootstrap_status because workstation has no access to it."
    else
       check_tor_bootstrap_status
@@ -206,13 +206,13 @@ tor_bootstrap_check() {
 
    ## Could be 100% bootstrap process but still no Tor circuit established yet.
 
-   if [ "$VM" = "Workstation" ]; then
-      output_cmd "Tor circuit: $tor_circuit_established_word"
+   if [ "${VM}" = "Workstation" ]; then
+      output_cmd "Tor circuit: ${tor_circuit_established_word}"
    else
-      output_cmd "Tor reports: $tor_bootstrap_status"
-      output_cmd "Tor circuit: $tor_circuit_established_word"
+      output_cmd "Tor reports: ${tor_bootstrap_status}"
+      output_cmd "Tor circuit: ${tor_circuit_established_word}"
 
-      if printf '%s\n' "$tor_bootstrap_status" | grep -- "REASON=TIMEOUT" &>/dev/null; then
+      if printf '%s\n' "${tor_bootstrap_status}" | grep -- "REASON=TIMEOUT" &>/dev/null; then
          output_cmd "Tor reports: REASON=TIMEOUT"
       fi
    fi
@@ -222,7 +222,7 @@ tor_consensus_time_sanity_check() {
    ## If the static timestamp based time sanity check failed, there is no
    ## need to run the Tor consensus based time sanity check. Avoiding
    ## duplicate output.
-   if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
+   if [ "${timesanitycheck_static_timestamp_based_failed}" = "true" ]; then
       return 0
    fi
 
@@ -238,26 +238,26 @@ tor_consensus_time_sanity_check() {
 
    current_unixtime="$(date --utc +"%s")"
 
-   if [ ! "$tor_consensus_valid_after_unixtime" = "" ] && [ ! "$tor_consensus_valid_until_unixtime" = "" ]; then
+   if [ ! "${tor_consensus_valid_after_unixtime}" = "" ] && [ ! "${tor_consensus_valid_until_unixtime}" = "" ]; then
       clock_tor_consensus_check_result="ok"
-      if [ "$current_unixtime" -ge "$tor_consensus_valid_after_unixtime" ]; then
+      if [ "${current_unixtime}" -ge "${tor_consensus_valid_after_unixtime}" ]; then
          true
       else
          clock_tor_consensus_check_result="slow"
-         clock_tor_consensus_check_msg="The clock might be too slow. Clock is slower than consensus/valid-after $tor_consensus_valid_after_output."
+         clock_tor_consensus_check_msg="The clock might be too slow. Clock is slower than consensus/valid-after ${tor_consensus_valid_after_output}."
       fi
-      if [ "$current_unixtime" -ge "$tor_consensus_valid_until_unixtime" ]; then
+      if [ "${current_unixtime}" -ge "${tor_consensus_valid_until_unixtime}" ]; then
          clock_tor_consensus_check_result="fast"
-         if [ "$onion_time_script_status_boot" = "true" ]; then
-            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. \
+         if [ "${onion_time_script_status_boot}" = "true" ]; then
+            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until ${tor_consensus_valid_until_output}. \
 extra guess: Tor consensus might be outdated and download might still be in progress since this is the first run after boot."
          else
-            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until $tor_consensus_valid_until_output. extra guess: None."
+            clock_tor_consensus_check_msg="The clock might be too fast. Clock is faster than consensus/valid-until ${tor_consensus_valid_until_output}. extra guess: None."
          fi
       else
          true
       fi
-   elif [ "$tor_consensus_valid_after_exit_code" = "277" ] && [ "$tor_consensus_valid_until_exit_code" = "277" ]; then
+   elif [ "${tor_consensus_valid_after_exit_code}" = "277" ] && [ "${tor_consensus_valid_until_exit_code}" = "277" ]; then
       clock_tor_consensus_check_result="noneyet"
       clock_tor_consensus_check_msg="Might not have downloaded a Tor consensus yet."
    else
@@ -265,15 +265,15 @@ extra guess: Tor consensus might be outdated and download might still be in prog
       clock_tor_consensus_check_msg="Consensus time sanity check failed."
    fi
 
-   if [ "$clock_tor_consensus_check_result" = "ok" ]; then
+   if [ "${clock_tor_consensus_check_result}" = "ok" ]; then
       clock_tor_consensus_check_result="ok"
-      clock_tor_consensus_check_msg="Clock within consensus parameters consensus/valid-after '$tor_consensus_valid_after_output' and consensus/valid-until '$tor_consensus_valid_until_output'."
+      clock_tor_consensus_check_msg="Clock within consensus parameters consensus/valid-after '${tor_consensus_valid_after_output}' and consensus/valid-until '${tor_consensus_valid_until_output}'."
    fi
 
-   if [ "$clock_tor_consensus_check_result" = "ok" ]; then
-      output_cmd "Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg"
+   if [ "${clock_tor_consensus_check_result}" = "ok" ]; then
+      output_cmd "Tor Consensus Time Sanity Check: ${clock_tor_consensus_check_msg}"
    else
-      output_cmd "Tor Consensus Time Sanity Check: $clock_tor_consensus_check_msg"
+      output_cmd "Tor Consensus Time Sanity Check: ${clock_tor_consensus_check_msg}"
    fi
 
    ## TODO
@@ -296,19 +296,19 @@ connectivity_test() {
 }
 
 exit_success_if_tor_circuit_already_established() {
-   if [ "$tor_circuit_established" = "1" ]; then
+   if [ "${tor_circuit_established}" = "1" ]; then
       output_cmd "Conclusion: Tor already reports circuit established."
       exit_code=0
-      exit "$exit_code"
+      exit "${exit_code}"
    fi
 
    ## https://stackoverflow.com/questions/37135213/check-tor-connection-is-established-before-running-scrapy
 
-   if [ "$tor_bootstrap_percent" = "100" ]; then
+   if [ "${tor_bootstrap_percent}" = "100" ]; then
       output_cmd "Conclusion:  No Tor circuit established yet, but Tor bootstrap progress (tor_bootstrap_percent) is 100."
 
       exit_code=0
-      exit "$exit_code"
+      exit "${exit_code}"
    fi
 
    ## Happened that Tor bootstrap was 100% done but not circuit established.
@@ -369,7 +369,7 @@ anondate_request_rate_limited() {
 }
 
 anondate_use() {
-   if [ "$VM" = "Workstation" ]; then
+   if [ "${VM}" = "Workstation" ]; then
       output_cmd "anondate_use: Skipping 'anondate-set' since this is a workstation, ok."
       return 0
    fi
@@ -377,21 +377,21 @@ anondate_use() {
    if anondate_request_rate_limited; then
       output_cmd "anondate_use: Skipping 'anondate-set' request, the previous request is less than ${anondate_request_min_interval_seconds} seconds old, ok."
       exit_code=2
-      exit "$exit_code"
+      exit "${exit_code}"
    fi
 
    ## https://gitlab.com/apparmor/apparmor/-/wikis/AppArmorStacking#seccomp-and-no_new_privs
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
    ## /usr/libexec/sdwdate/sdwdate-start-anondate-set-file-watcher
-   output_cmd "anondate_use: Running 'anondate-set' (by creating file '$anondate_state_folder/request_anondate-set')..."
+   output_cmd "anondate_use: Running 'anondate-set' (by creating file '${anondate_state_folder}/request_anondate-set')..."
 
    ## Stamp before request: if this script dies between the two, the next call
    ## is still rate limited. The reverse order would leave the limit unarmed.
    touch "${anondate_state_folder}/request_anondate-set.stamp"
-   touch "$anondate_state_folder/request_anondate-set"
+   touch "${anondate_state_folder}/request_anondate-set"
 
    exit_code=2
-   exit "$exit_code"
+   exit "${exit_code}"
 }
 
 determine_circuit_confirmed() {
@@ -399,16 +399,16 @@ determine_circuit_confirmed() {
    ## actively build a fresh circuit (non-stale, unlike the sticky
    ## status/circuit-established flag). Workstation: onion-grater forbids
    ## EXTENDCIRCUIT and it defers to the gateway, so fall back to the flag.
-   if [ "$VM" = "Workstation" ]; then
-      circuit_confirmed="$tor_circuit_established"
-      output_cmd "Circuit confirmation (workstation): status/circuit-established = '$tor_circuit_established'."
+   if [ "${VM}" = "Workstation" ]; then
+      circuit_confirmed="${tor_circuit_established}"
+      output_cmd "Circuit confirmation (workstation): status/circuit-established = '${tor_circuit_established}'."
       return 0
    fi
 
    check_tor_circuit_built ## tor_bootstrap_check.bsh
 
    ## Not outputting $tor_circuit_built_output to avoid minor information leak.
-   if [ "$tor_circuit_built_check_exit_code" = "0" ]; then
+   if [ "${tor_circuit_built_check_exit_code}" = "0" ]; then
       circuit_confirmed="1"
       output_cmd "Circuit confirmation: yes"
    else
@@ -423,14 +423,11 @@ circuit_confirmed_backward_proceed() {
    ## consensus verdict. A false positive is safe: sdwdate's fetch is the
    ## real probe (pool median, replay-floor gated) and just retries on bad
    ## times. anondate stays forward-only. Pure function for unit-testing.
-   [ "$circuit_confirmed" = "1" ] || return 1
+   [ "${circuit_confirmed}" = "1" ] || return 1
    return 0
 }
 
 te_pe_tb_check() {
-   ## For better look inside sdwdate log viewer.
-   printf '\n'
-
    output_cmd "### START: ### $0"
 
    anondate_folder
@@ -474,7 +471,7 @@ te_pe_tb_check() {
    ## too fast, while these where actually correct.
    #exit_success_if_tor_circuit_already_established
 
-   if [ "$timesanitycheck_static_timestamp_based_failed" = "true" ]; then
+   if [ "${timesanitycheck_static_timestamp_based_failed}" = "true" ]; then
       anondate_use
       ## Time incorrect by a lot. Indicate error.
       ## [1] Since anondate_use has it's own `exit`, no need to use `exit` here.
@@ -491,10 +488,10 @@ te_pe_tb_check() {
       ## Proceeding so sdwdate can fetch the time and correct it.
       output_cmd "Conclusion: Tor already reports circuit confirmed."
       exit_code=0
-      exit "$exit_code"
+      exit "${exit_code}"
    fi
 
-   if [ ! "$clock_tor_consensus_check_result" = "ok" ]; then
+   if [ ! "${clock_tor_consensus_check_result}" = "ok" ]; then
       anondate_use
       ## Time incorrect but not by giant amounts.
       ## Probably non-fatal issue. Indicate wait.
@@ -507,7 +504,7 @@ te_pe_tb_check() {
    exit_success_if_tor_circuit_already_established
 
    exit_code=2
-   exit "$exit_code"
+   exit "${exit_code}"
 }
 
 ## Only auto-run when executed, not when sourced (unit tests source it).

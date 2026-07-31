@@ -22,6 +22,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 ## CI guard. This script runs apt-get install and is intended to run
 ## inside the lint workflow's container. Refuse to run on a developer
@@ -54,4 +56,4 @@ apt-get install -y --no-install-recommends \
 pip install --break-system-packages \
   'black==25.1.0' 'pylint==3.3.4' 'mypy==1.15.0'
 
-git config --global --add safe.directory "${GITHUB_WORKSPACE:-$PWD}"
+git config --global --add safe.directory "${GITHUB_WORKSPACE:-${PWD}}"
