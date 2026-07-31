@@ -1,0 +1,190 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Regression tests for the 'anondate-set' request rate limit in
+## usr/libexec/helper-scripts/onion-time-pre-script.
+##
+## Without the limit, sdwdate's preparation loop creates one
+## '/run/sdwdate/request_anondate-set' per iteration (about one per second
+## while Tor is unreachable), and the inotify watcher that consumes it turns
+## every one of those into a full 'anondate-set' run.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+[ -v TMP ] || TMP=/tmp
+
+repo_root=""
+state_folder=""
+request_file=""
+stamp_file=""
+interval_seconds=""
+current_unixtime=""
+use_rc=""
+test_total="0"
+test_failed="0"
+
+repo_root="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
+
+HELPER_SCRIPTS_PATH="${repo_root}"
+export HELPER_SCRIPTS_PATH
+
+cleanup() {
+   if [ -z "${state_folder}" ]; then
+      return 0
+   fi
+   if [ ! -d "${state_folder}" ]; then
+      return 0
+   fi
+   safe-rm --recursive --force -- "${state_folder}"
+}
+
+trap cleanup EXIT
+
+check() {
+   ## check <description> <command...>
+   ##
+   ## The command is run by this function rather than by the caller so that a
+   ## failing assertion reports FAIL instead of aborting the script under
+   ## errexit.
+   local description
+
+   description="$1"
+   shift
+
+   test_total="$((test_total + 1))"
+
+   if "$@"; then
+      printf '%s\n' "PASS: ${description}"
+      return 0
+   fi
+
+   test_failed="$((test_failed + 1))"
+   printf '%s\n' "FAIL: ${description}" >&2
+}
+
+run_anondate_use() {
+   ## Run anondate_use in a subshell so its 'exit' does not end this script,
+   ## and report its exit code. The sourced script installs EXIT and ERR traps
+   ## and enables errexit; the traps are dropped because they would fire on the
+   ## subshell's own exit and print a misleading verdict.
+   ##
+   ## nounset is switched off to match how the script actually runs: it does
+   ## not set nounset itself and relies on unset variables expanding to empty.
+   local vm_type rc
+
+   vm_type="$1"
+   rc=0
+
+   (
+      set +o nounset
+      # shellcheck source=./usr/libexec/helper-scripts/onion-time-pre-script
+      source "${repo_root}/usr/libexec/helper-scripts/onion-time-pre-script"
+      trap - EXIT ERR
+      VM="${vm_type}"
+      anondate_state_folder="${state_folder}"
+      anondate_use
+   ) >/dev/null 2>&1 || rc="$?"
+
+   printf '%s\n' "${rc}"
+}
+
+read_interval_seconds() {
+   ## Read the limit out of the script under test rather than restating it, so
+   ## the test keeps testing the real value if it is ever retuned.
+   (
+      set +o nounset
+      # shellcheck source=./usr/libexec/helper-scripts/onion-time-pre-script
+      source "${repo_root}/usr/libexec/helper-scripts/onion-time-pre-script"
+      trap - EXIT ERR
+      printf '%s\n' "${anondate_request_min_interval_seconds}"
+   )
+}
+
+reset_state() {
+   safe-rm --recursive --force -- "${state_folder}"
+   mkdir --parents -- "${state_folder}"
+}
+
+consume_request() {
+   ## Simulate the watcher servicing a request: it deletes the request file
+   ## once it has run 'anondate-set'.
+   safe-rm --force -- "${request_file}"
+}
+
+state_folder="$(mktemp --directory -- "${TMP}/onion-time-pre-script-testscript.XXXXXX")"
+request_file="${state_folder}/request_anondate-set"
+stamp_file="${state_folder}/request_anondate-set.stamp"
+
+interval_seconds="$(read_interval_seconds)"
+
+if [ -z "${interval_seconds}" ]; then
+   ## The constant is absent, so the script under test has no rate limit at
+   ## all. Fall back to a value and keep going: the behaviour assertions below
+   ## then report which specific guarantee is missing, which is more useful
+   ## than aborting here.
+   interval_seconds="60"
+   printf '%s\n' "WARNING: 'anondate_request_min_interval_seconds' not found in the script under test, assuming '${interval_seconds}'." >&2
+fi
+
+printf '%s\n' "rate limit interval: '${interval_seconds}' seconds"
+
+## Test 1: the first request after boot is not delayed. /run is empty on every
+## boot, so no stamp exists and the clock must be fixed as early as possible.
+reset_state
+use_rc="$(run_anondate_use Gateway)"
+check "first request creates the request file" test -f "${request_file}"
+check "first request creates the stamp file" test -f "${stamp_file}"
+check "first request exits 2 (wait, busy icon, retry)" test "${use_rc}" = "2"
+
+## Test 2: THE REGRESSION. A second request inside the interval must not
+## re-create the request file. Before the rate limit existed this recreated it
+## every time, so the watcher ran a full 'anondate-set' per call.
+consume_request
+use_rc="$(run_anondate_use Gateway)"
+check "second request within the interval does not re-create the request file" \
+   test ! -f "${request_file}"
+check "rate limited request still exits 2" test "${use_rc}" = "2"
+
+## Test 3: once the interval has elapsed, requests resume. Backdate the stamp
+## rather than sleeping for the whole interval.
+current_unixtime="$(date --utc +"%s")"
+touch --date="@$((current_unixtime - interval_seconds - 5))" -- "${stamp_file}"
+use_rc="$(run_anondate_use Gateway)"
+check "request after the interval elapsed re-creates the request file" \
+   test -f "${request_file}"
+check "request after the interval exits 2" test "${use_rc}" = "2"
+
+## Test 4: a stamp dated in the future means the clock moved backwards, which
+## is expected here because 'anondate-set' and sdwdate both set the clock. Fail
+## open rather than suppressing requests until the clock catches up.
+consume_request
+current_unixtime="$(date --utc +"%s")"
+touch --date="@$((current_unixtime + 3600))" -- "${stamp_file}"
+use_rc="$(run_anondate_use Gateway)"
+check "a stamp dated in the future does not suppress requests" \
+   test -f "${request_file}"
+
+## Test 5: the limit must not change the workstation behaviour. There
+## 'anondate-set' is never requested at all and anondate_use returns instead of
+## exiting.
+reset_state
+use_rc="$(run_anondate_use Workstation)"
+check "workstation creates no request file" test ! -f "${request_file}"
+check "workstation creates no stamp file" test ! -f "${stamp_file}"
+check "workstation returns 0 without exiting" test "${use_rc}" = "0"
+
+printf '%s\n' "
+${BASH_SOURCE[0]}: ${test_total} test(s), $((test_total - test_failed)) passed, ${test_failed} failed."
+
+if [ "${test_failed}" != "0" ]; then
+   exit 1
+fi

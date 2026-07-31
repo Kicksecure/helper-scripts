@@ -12,7 +12,7 @@ set -o pipefail
 set -e errtrace
 
 output_cmd() {
-   msg="$@"
+   msg="$*"
    printf '%s\n' "__ $msg"
 }
 
@@ -27,7 +27,8 @@ trap "error_handler" ERR
 
 exit_handler() {
    if [ "$exit_code" = "" ]; then
-      "$0: No exit code set yet. Setting to 1."
+      output_cmd "$0: No exit code set yet. Setting to 1."
+      exit_code=1
    fi
    if [ "$exit_code" = "0" ]; then
       meaning="success"
@@ -178,7 +179,7 @@ Did you start Gateway beforehand?"
 Tor's Control Port could not be reached.\
 Did you start Gateway beforehand? \
 Please run systemcheck on Gateway.
-$FUNCNAME: This is neither a gateway nor a workstation. Please report this bug!"
+${FUNCNAME[0]}: This is neither a gateway nor a workstation. Please report this bug!"
          else
             output_cmd "Tor Bootstrap Result: \
 Tor's Control Port could not be reached."
@@ -192,7 +193,7 @@ Tor's Control Port could not be reached."
 
 tor_bootstrap_check() {
    if [ "$VM" = "Workstation" ]; then
-      true "$FUNCNAME: INFO: skipping check_tor_bootstrap_status because workstation has no access to it."
+      true "${FUNCNAME[0]}: INFO: skipping check_tor_bootstrap_status because workstation has no access to it."
    else
       check_tor_bootstrap_status
    fi
@@ -317,16 +318,76 @@ exit_success_if_tor_circuit_already_established() {
    output_cmd "Conclusion: No Tor circuit established yet."
 }
 
+## Minimum spacing between two 'anondate-set' requests.
+##
+## Nothing 'anondate-set' consumes moves faster than this. It derives the time
+## from the Tor consensus (published hourly, valid three hours) or from the Tor
+## certificate lifetime, so re-requesting more often cannot produce a different
+## answer.
+##
+## An unthrottled request is expensive: sdwdate's preparation loop runs this
+## script roughly once per second while Tor is unreachable, and the consumer
+## (/usr/libexec/sdwdate/sdwdate-start-anondate-set-file-watcher) is a bare
+## inotify read loop with no limit of its own, so every request turns into a
+## full 'anondate-set' run.
+anondate_request_min_interval_seconds="60"
+
+anondate_request_rate_limited() {
+   ## Returns 0 when the previous request is younger than
+   ## anondate_request_min_interval_seconds, meaning the caller should not
+   ## create another one.
+   ##
+   ## The timestamp lives in its own file because the consumer deletes the
+   ## request file as soon as it has serviced it, so the request file's own
+   ## mtime cannot carry this state.
+   local stamp_file stamp_unixtime current_unixtime request_age_seconds
+
+   stamp_file="${anondate_state_folder}/request_anondate-set.stamp"
+
+   if [ ! -f "${stamp_file}" ]; then
+      return 1
+   fi
+
+   stamp_unixtime="$(date --utc --reference="${stamp_file}" +"%s")" || return 1
+   current_unixtime="$(date --utc +"%s")" || return 1
+
+   request_age_seconds="$((current_unixtime - stamp_unixtime))"
+
+   ## A negative age means the clock moved backwards since the stamp was
+   ## written. Both 'anondate-set' and sdwdate set the clock, so this is
+   ## expected rather than an anomaly. Treat the stamp as stale instead of
+   ## suppressing requests until the clock has caught up again.
+   if [ "${request_age_seconds}" -lt 0 ]; then
+      return 1
+   fi
+
+   if [ "${request_age_seconds}" -ge "${anondate_request_min_interval_seconds}" ]; then
+      return 1
+   fi
+
+   return 0
+}
+
 anondate_use() {
    if [ "$VM" = "Workstation" ]; then
       output_cmd "anondate_use: Skipping 'anondate-set' since this is a workstation, ok."
       return 0
    fi
 
+   if anondate_request_rate_limited; then
+      output_cmd "anondate_use: Skipping 'anondate-set' request, the previous request is less than ${anondate_request_min_interval_seconds} seconds old, ok."
+      exit_code=2
+      exit "$exit_code"
+   fi
+
    ## https://gitlab.com/apparmor/apparmor/-/wikis/AppArmorStacking#seccomp-and-no_new_privs
    ## https://www.whonix.org/wiki/Dev/TimeSync#Fixing_Time_based_on_Tor_Consensus
    ## /usr/libexec/sdwdate/sdwdate-start-anondate-set-file-watcher
    output_cmd "anondate_use: Running 'anondate-set' (by creating file '$anondate_state_folder/request_anondate-set')..."
+
+   ## Stamp before request: if this script dies between the two, the next call
+   ## is still rate limited. The reverse order would leave the limit unarmed.
+   touch "${anondate_state_folder}/request_anondate-set.stamp"
    touch "$anondate_state_folder/request_anondate-set"
 
    exit_code=2

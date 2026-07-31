@@ -86,6 +86,11 @@ done
 ## string length argument.
 ./sanitize-string -- nolimit <&-
 
+## Shell-level regression tests. Kept ahead of the trojan-source gate below,
+## which exits non-zero when the corpus is absent.
+cd -- "${git_toplevel}"
+./onion-time-pre-script-testscript
+
 if ! [ -d "${HOME}/trojan-source" ]; then
   printf "%s\n" "WARNING: Not running unicode-testscript, ${HOME}/trojan-source does not exist.
 To get it:

@@ -33,10 +33,12 @@ fi
 
 apt-get update --error-on=any
 apt-get dist-upgrade -y
+## safe-rm is a runtime dependency of this package (debian/control) and is used
+## by the shell tests in ./run-tests, which never call plain 'rm'.
 apt-get install -y --no-install-recommends \
   git python3-pytest python3-pip ncurses-term \
   build-essential debhelper dh-python dh-apparmor \
-  python3-hypothesis
+  python3-hypothesis safe-rm
 
 ## Pin the style/type linters (black, pylint, mypy) to the trixie (Debian 13
 ## stable) versions instead of each container's own archive linters.
