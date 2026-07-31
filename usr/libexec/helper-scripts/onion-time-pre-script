@@ -191,6 +191,24 @@ Tor's Control Port could not be reached."
    fi
 }
 
+## sdwdate's preparation loop lengthens its retry interval only for as long as
+## this script's output stays byte-identical between runs. Tor's bootstrap line
+## carries COUNT=, a retry counter incremented on every failed connection
+## attempt, so on a Gateway without network the output never repeats and the
+## retry interval stays pinned at its minimum. Redact the counter so an
+## otherwise unchanged status compares equal.
+##
+## Only the printed copy is redacted. ${tor_bootstrap_status} keeps the counter
+## for callers matching on it, and systemcheck still displays the full line.
+##
+## sets: tor_bootstrap_status_redacted
+redact_bootstrap_retry_count() {
+   tor_bootstrap_status_redacted="$1"
+   while [[ "${tor_bootstrap_status_redacted}" =~ ^(.*)[[:space:]]COUNT=[0-9]+(.*)$ ]]; do
+      tor_bootstrap_status_redacted="${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
+   done
+}
+
 tor_bootstrap_check() {
    if [ "${VM}" = "Workstation" ]; then
       true "${FUNCNAME[0]}: INFO: skipping check_tor_bootstrap_status because workstation has no access to it."
@@ -209,7 +227,9 @@ tor_bootstrap_check() {
    if [ "${VM}" = "Workstation" ]; then
       output_cmd "Tor circuit: ${tor_circuit_established_word}"
    else
-      output_cmd "Tor reports: ${tor_bootstrap_status}"
+      ## sets: tor_bootstrap_status_redacted
+      redact_bootstrap_retry_count "${tor_bootstrap_status}"
+      output_cmd "Tor reports: ${tor_bootstrap_status_redacted}"
       output_cmd "Tor circuit: ${tor_circuit_established_word}"
 
       if printf '%s\n' "${tor_bootstrap_status}" | grep -- "REASON=TIMEOUT" &>/dev/null; then
