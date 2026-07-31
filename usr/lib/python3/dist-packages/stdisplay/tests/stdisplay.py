@@ -4,16 +4,25 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: allow-non-ascii -- this suite asserts that non-ASCII input is
+## stripped, so the fixtures must contain the bytes under test.
+
 """
 Test the stdisplay module.
 """
 
+import io
+import os
 import unittest
+from unittest import mock
 from typing import (
     Any,
 )
+from curses import error as curses_error
+from stdisplay import stcat, stcatn, stsponge, sttee
 from stdisplay.stdisplay import (
     exclude_pattern,
+    get_sgr_support,
     stdisplay,
 )
 
@@ -338,3 +347,164 @@ class TestSTDisplay(unittest.TestCase):
             ("\x1bP2$tight\x1b\\", "_P2$tight_\\"),
         ]
         self.run_stdisplay_cases(cases, sgr=2**24)
+
+
+class TestSTDisplayClis(unittest.TestCase):
+    """
+    Tests for the stcat / stcatn / stsponge / sttee entry points.
+
+    These modules do 'from sys import argv, stdin, stdout', binding at import,
+    so the MODULE attributes are patched rather than sys.*. Nothing drove them
+    before, which is why their stdin and no-stdin branches were unreached.
+    """
+
+    @staticmethod
+    def _text_in(content: str) -> io.TextIOWrapper:
+        """A readable stdin carrying content."""
+
+        buffer: io.TextIOWrapper = io.TextIOWrapper(
+            io.BytesIO(content.encode("utf-8")), encoding="utf-8", newline="\n"
+        )
+        return buffer
+
+    @staticmethod
+    def _text_out() -> tuple[io.TextIOWrapper, io.BytesIO]:
+        """A writable stdout plus the buffer behind it."""
+
+        raw: io.BytesIO = io.BytesIO()
+        return (
+            io.TextIOWrapper(raw, encoding="utf-8", newline="\n"),
+            raw,
+        )
+
+    def _run(
+        self, module: object, args: list[str], stdin_text: str | None
+    ) -> str:
+        """Drive a CLI module's main() and return what it wrote."""
+
+        out_stream, raw = self._text_out()
+        stdin_stream = (
+            None if stdin_text is None else self._text_in(stdin_text)
+        )
+        with (
+            mock.patch.object(module, "argv", ["prog", *args]),
+            mock.patch.object(module, "stdout", out_stream),
+            mock.patch.object(module, "stdin", stdin_stream),
+        ):
+            module.main()  # type: ignore[attr-defined]
+        out_stream.flush()
+        return raw.getvalue().decode("utf-8")
+
+    def test_stcat_reads_stdin_with_no_arguments(self) -> None:
+        """No argument means read stdin, sanitizing as it goes."""
+
+        ## BEL is redacted at every colour depth, unlike an SGR colour code,
+        ## which stdisplay preserves when the terminal supports it.
+        output: str = self._run(stcat, [], "a\x07b\n")
+
+        self.assertEqual(output, "a_b\n")
+
+    def test_stcat_dash_argument_reads_stdin(self) -> None:
+        """'-' names stdin explicitly."""
+
+        output: str = self._run(stcat, ["-"], "x\x07y\n")
+
+        self.assertEqual(output, "x_y\n")
+
+    def test_stcat_without_stdin_writes_nothing(self) -> None:
+        """stdin can be None; that is not a crash."""
+
+        self.assertEqual(self._run(stcat, [], None), "")
+
+    def test_stcatn_trims_and_terminates_each_line(self) -> None:
+        """stcatn trims trailing whitespace and guarantees a final newline."""
+
+        output: str = self._run(stcatn, [], "keep   \nsecond\t\n")
+
+        self.assertEqual(output, "keep\nsecond\n")
+
+    def test_stcatn_dash_argument_reads_stdin(self) -> None:
+        """'-' names stdin for stcatn too."""
+
+        self.assertEqual(self._run(stcatn, ["-"], "v   \n"), "v\n")
+
+    def test_stcatn_without_stdin_writes_nothing(self) -> None:
+        """stdin None is handled rather than dereferenced."""
+
+        self.assertEqual(self._run(stcatn, [], None), "")
+
+    def test_stsponge_and_sttee_read_stdin(self) -> None:
+        """
+        Both soak up stdin; neither had its stdin branch executed before.
+        """
+
+        self.assertIn("a_b", self._run(stsponge, [], "a\x07b\n"))
+        self.assertIn("c_d", self._run(sttee, [], "c\x07d\n"))
+
+    def test_stsponge_and_sttee_without_stdin(self) -> None:
+        """stdin None must be handled, not dereferenced."""
+
+        self.assertEqual(self._run(stsponge, [], None), "")
+        self.assertEqual(self._run(sttee, [], None), "")
+
+    def test_multiple_arguments_are_all_processed(self) -> None:
+        """
+        The argument loop must iterate. With one argument it never takes its
+        back edge, so a second '-' is what proves each argument is handled
+        rather than only the first. The second read sees an exhausted stdin.
+        """
+
+        self.assertEqual(self._run(stcat, ["-", "-"], "p\x07q\n"), "p_q\n")
+        self.assertEqual(self._run(stcatn, ["-", "-"], "r\x07s   \n"), "r_s\n")
+
+    def test_dash_arguments_with_no_stdin_are_skipped(self) -> None:
+        """
+        '-' names stdin, but stdin can be None. Each such argument is then
+        skipped and the loop moves on, rather than dereferencing None.
+        """
+
+        self.assertEqual(self._run(stcat, ["-", "-"], None), "")
+        self.assertEqual(self._run(stcatn, ["-", "-"], None), "")
+
+
+class TestGetSgrSupport(unittest.TestCase):
+    """
+    get_sgr_support() reads the environment to decide how much colour is safe.
+    Its branches are env-dependent, so they are driven explicitly rather than
+    left to whatever the test runner happens to export.
+    """
+
+    def test_no_color_disables_everything(self) -> None:
+        """NO_COLOR set at all means no SGR is permitted."""
+
+        with mock.patch.dict(os.environ, {"NO_COLOR": "1"}, clear=True):
+            self.assertEqual(get_sgr_support(), -1)
+
+    def test_dumb_terminal_disables_everything(self) -> None:
+        """TERM=dumb likewise."""
+
+        with mock.patch.dict(os.environ, {"TERM": "dumb"}, clear=True):
+            self.assertEqual(get_sgr_support(), -1)
+
+    def test_truecolor_is_recognised(self) -> None:
+        """COLORTERM=truecolor short-circuits the terminfo lookup."""
+
+        for value in ("truecolor", "24bit", "TrueColor"):
+            with mock.patch.dict(
+                os.environ, {"COLORTERM": value, "TERM": "xterm"}, clear=True
+            ):
+                self.assertEqual(get_sgr_support(), 2**24)
+
+    def test_terminfo_failure_falls_back(self) -> None:
+        """
+        An unusable terminfo database must not raise out of a display helper;
+        it reports -2 so the caller redacts rather than guesses.
+        """
+
+        with (
+            mock.patch.dict(os.environ, {"TERM": "xterm"}, clear=True),
+            mock.patch(
+                "stdisplay.stdisplay.setupterm", side_effect=curses_error()
+            ),
+        ):
+            self.assertEqual(get_sgr_support(), -2)
