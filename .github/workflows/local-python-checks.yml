@@ -72,17 +72,17 @@ jobs:
       - name: Run tests
         run: ci/lint-tests.sh
 
-      - name: Checkout developer-meta-files (summary script)
+      - name: Checkout dist-ai (shared CI helper binaries)
         if: always()
-        ## Needed for ci/step-summary-emit.sh. helper-scripts does
+        ## Needed for usr/bin/step-summary-emit. helper-scripts does
         ## not vendor a copy; checkout @master keeps the org's
         ## single source of truth. Matches the pattern in
         ## local-python-fuzz.yml.
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          repository: org-ai-assisted/developer-meta-files
+          repository: org-ai-assisted/dist-ai
           ref: master
-          path: .dmf
+          path: .github/dist-ai
           persist-credentials: false
 
       - name: Emit step summary
@@ -95,7 +95,7 @@ jobs:
           JOB_STATUS: ${{ job.status }}
           IMAGE: ${{ matrix.image }}
         run: |
-          ./.dmf/ci/step-summary-emit.sh \
+          ./.github/dist-ai/usr/bin/step-summary-emit \
             --tool 'Lint scripts' \
             --column-header field \
             --row "outcome=${JOB_STATUS}" \
