@@ -65,10 +65,8 @@ case "${viewer}" in
       meld "${local_file}" "${remote_file}"
       ;;
    kdiff3)
-      ## kdiff3 returns exit 1 whenever its inputs differ (diff(1) convention),
-      ## as every reviewed file does; '|| true' stops that from aborting us
-      ## under errexit. A viewer's exit code is not a review verdict. meld
-      ## (above) needs no guard: it returns 0 on close.
+      ## This will always exit non-zero because the input files differ.
+      ## `|| true` keeps this from failing incorrectly.
       kdiff3 "${local_file}" "${remote_file}" || true
       ;;
    diff-review)
