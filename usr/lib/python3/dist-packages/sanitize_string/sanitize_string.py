@@ -9,23 +9,11 @@
 sanitize_string.py: Strips markup and control characters from a string.
 """
 
-import os
 import sys
-from strip_markup.strip_markup_lib import markup_incomplete
 from .sanitize_string_lib import sanitize_string
 
-## Cap on how much COMPLETED input is held back while a markup construct is
-## still open. Past it, sanitize what has accumulated even though more input
-## could still change its parse, which is the one case where sanitizing
-## standard input as it arrives differs from sanitizing it all at once.
-##
-## This bounds the hold-back, not memory in general: a single line is read
-## whole, so input containing no newline is still accumulated without limit,
-## exactly as reading all of standard input always did.
-STDIN_MAX_PENDING_CHARS: int = 65536
-## How much the pending buffer may grow between markup probes. See the loop in
-## sanitize_stdin_loop for why probing every line is quadratic.
-STDIN_PROBE_INTERVAL_CHARS: int = 4096
+
+suppress_usage_info: bool = False
 
 
 def print_usage() -> None:
@@ -33,144 +21,57 @@ def print_usage() -> None:
     Prints usage information.
     """
 
-    print(
-        "sanitize-string: Usage: sanitize-string [--help] max_length "
-        + "[string]\n"
-        + "  If no string is provided as an argument, the string is read from "
-        + "standard input.\n"
-        + "  Set max_length to 'nolimit' to allow arbitrarily long strings.",
+    if suppress_usage_info:
+        return
+    print("""\
+sanitize-string: Strip / sanitize dangerous control characters and markup.
+Usage: sanitize-string [--help|-h] [--no-block] [--no-usage] [--newline] [--] max_length [string]
+
+Arguments:
+  --help|-h   Prints this help message.
+  --no-block  When reading from stdin, sanitize line by line rather than
+              buffering all input first. The string must not be provided as an
+              argument if this option is specified. Note that this option may
+              cause neutralized HTML to appear in sanitize-string's output
+              that would have been stripped otherwise.
+  --no-usage  If an error occurs when parsing arguments, do not print usage
+              information.
+  --newline   Append a new line to the output.
+  --          End-of-options marker.
+  max_length  Maximum allowable number of output characters, input will be
+              truncated past this point. Set to 'nolimit' to allow arbitrarily
+              long strings.
+  string      The string to sanitize. If omitted, the string is read from
+              standard input.""",
         file=sys.stderr,
     )
 
 
-def write_sanitized(
-    untrusted_string: str, remaining: int | None
-) -> int | None:
+def sanitize_stdin(max_string_length: int | None, append_newline: bool) -> int:
     """
-    Sanitize untrusted_string, write it out immediately, and return what is
-    left of the output budget.
+    Sanitize standard input one line at a time.
     """
-
-    sanitized_string: str = sanitize_string(untrusted_string)
-    if remaining is not None:
-        sanitized_string = sanitized_string[:remaining]
-        remaining -= len(sanitized_string)
-    sys.stdout.write(sanitized_string)
-    ## Not relying on line buffering: sanitizing can consume the newline that
-    ## would otherwise have triggered the flush, e.g. one inside a tag.
-    sys.stdout.flush()
-    return remaining
-
-
-def sanitize_stdin_loop(remaining: int | None) -> int:
-    """
-    Read standard input and write sanitized output, holding lines back only
-    while a markup construct is still open. Factored out of sanitize_stdin so
-    the whole loop sits under one BrokenPipeError handler.
-    """
-
-    pending_string: str = ""
-    probed_at_length: int = 0
-    for untrusted_line in sys.stdin:
-        pending_string += untrusted_line
-        ## Only a markup character can leave a construct open, so skip the
-        ## parse entirely for input containing none.
-        if ("<" in pending_string or "&" in pending_string) and len(
-            pending_string
-        ) < STDIN_MAX_PENDING_CHARS:
-            ## Re-parsing costs O(len(pending)) and an unterminated construct
-            ## makes HTMLParser re-scan its whole rawdata buffer on every feed,
-            ## so asking once per LINE is quadratic -- measured at 79s for 40k
-            ## short lines each opening a construct, against 0.8s without
-            ## markup. Reusing one parser does not help: the quadratic part is
-            ## inside HTMLParser, not the construction. So ask at most once per
-            ## STDIN_PROBE_INTERVAL_CHARS of growth and HOLD in between, which
-            ## is the safe direction: holding can only delay output, whereas
-            ## flushing unasked could split a construct and change the result.
-            if (
-                len(pending_string) - probed_at_length
-                < STDIN_PROBE_INTERVAL_CHARS
-            ):
-                continue
-            probed_at_length = len(pending_string)
-            if markup_incomplete(pending_string):
-                continue
-        remaining = write_sanitized(pending_string, remaining)
-        pending_string = ""
-        probed_at_length = 0
-        ## Stop before reading another line, which would otherwise block on a
-        ## producer still running with nothing left for us to emit.
-        if remaining is not None and remaining <= 0:
-            return 0
-    if pending_string:
-        write_sanitized(pending_string, remaining)
-    return 0
-
-
-def sanitize_stdin(max_string_length: int | None) -> int:
-    """
-    Sanitize standard input as it arrives rather than waiting for end of
-    input, so output from a long-running producer appears as it is produced
-    instead of arriving in one burst when the producer exits.
-
-    Output is written only where splitting the input cannot change how it is
-    sanitized, which keeps this equivalent to sanitizing the whole input at
-    once:
-
-    * A line boundary can never fall inside an escape sequence, as no allowed
-      sequence can contain a newline -- SGR is composed solely of digits,
-      semicolons, colons and the 'm' terminator. This is the same reasoning
-      that lets stcat/stcatn/sttee stream; see agents/stdisplay-security.md.
-    * Markup can span a line boundary, so lines are held back while a markup
-      construct is still open. Otherwise a construct split across lines would
-      not be recognised as markup, and content the parser would have consumed
-      -- the body of a multi-line comment, say -- would be emitted as text.
-
-    Two cases still differ from sanitizing the whole input at once. Neither can
-    emit markup or an escape sequence, since every chunk goes through the full
-    sanitizer and strip_markup underscores every surviving '<', '>' and '&':
-
-    * A construct still open at STDIN_MAX_PENDING_CHARS is written anyway, so
-      its text is emitted rather than consumed.
-    * A construct that makes the parser raise is written too, whereas
-      strip_markup would underscore-sanitize the whole input; chunks already
-      written cannot be revisited.
-    """
-
-    sys.stdin.reconfigure(  # type: ignore
-        encoding="utf-8", errors="replace", newline="\n"
-    )
-    sys.stdout.reconfigure(  # type: ignore
-        encoding="ascii", errors="replace", newline="\n"
-    )
-
-    if max_string_length is not None and max_string_length <= 0:
-        return 0
 
     try:
-        return sanitize_stdin_loop(max_string_length)
+        for untrusted_line in sys.stdin:
+            sanitized_string: str = sanitize_string(untrusted_string)
+            if max_string_length is not None:
+                sanitized_string = sanitized_string[:max_string_length]
+                max_string_length -= len(sanitized_string)
+            sys.stdout.write(sanitized_string)
+            sys.stdout.flush()
+            if max_string_length is not None and max_string_length <= 0:
+                break
+        if append_newline:
+            sys.stdout.write("\n")
+        return 0
     except BrokenPipeError:
-        ## Downstream closed early, e.g. piped into head. Exit quietly like any
-        ## other filter instead of reporting a traceback, and redirect stdout
-        ## to the null device so the interpreter's shutdown flush cannot raise
-        ## again.
-        try:
-            devnull_fd: int = os.open(os.devnull, os.O_WRONLY)
-        except OSError:
-            ## No null device to redirect onto. Exiting quietly is still the
-            ## right outcome; only the shutdown flush is left unguarded.
-            return 0
-        try:
-            os.dup2(devnull_fd, sys.stdout.fileno())
-        except (OSError, ValueError):
-            ## stdout has no real file descriptor, as when it is a StringIO
-            ## under test, so there is nothing to redirect and nothing for the
-            ## shutdown flush to fail on either.
-            pass
-        finally:
-            ## dup2 duplicated it onto stdout, so this descriptor is now
-            ## redundant either way and would otherwise leak.
-            os.close(devnull_fd)
+        ## Downstream closed early, e.g. piped into head. Exit without an
+        ## error. This *will* break the pipe of whatever is sending this
+        ## script text to sanitize, mirroring the behavior of coreutils (where
+        ## `cat /dev/zero | tee /dev/null | head -c1` exits when `head` exits,
+        ## rather than running forever with `cat` feeding into a
+        ## "fault-tolerant" `tee`).
         return 0
 
 
@@ -180,32 +81,42 @@ def main() -> int:
     Main function.
     """
 
+    # pylint: disable=global-statement
+    global suppress_usage_info
+
     untrusted_string: str | None = None
     max_string_length: int | None = None
+    no_block: bool = False
+    append_newline: bool = False
+    arg_list: list[str] = sys.argv[1:]
 
     ## Process arguments
-    if len(sys.argv) < 2:
-        print_usage()
-        return 1
-    ## Parse options
-    arg_list: list[str] = sys.argv[1:]
     while len(arg_list) > 0:
-        arg = arg_list[0]
-        # pylint: disable=no-else-return
+        arg: str = arg_list[0]
         if arg in ("--help", "-h"):
             print_usage()
             return 0
-        elif arg == "--":
+        if arg == "--no-block":
+            no_block = True
+            arg_list.pop(0)
+            continue
+        if arg == "--no-usage":
+            suppress_usage_info = True
+            arg_list.pop(0)
+            continue
+        if arg == "--newline":
+            append_newline = True
+            arg_list.pop(0)
+            continue
+        if arg == "--":
             arg_list.pop(0)
             break
-        else:
-            break
+        break
 
-    ## Parse positional arguments
-    if len(arg_list) > 2 or len(arg_list) < 1:
+    if not 1 <= len(arg_list) <= 2:
         print_usage()
         return 1
-    if arg_list[0] != "nolimit":
+    if arg_list[0] != 'nolimit':
         try:
             max_string_length = int(arg_list[0])
             if max_string_length < 0:
@@ -217,21 +128,46 @@ def main() -> int:
     if len(arg_list) == 2:
         untrusted_string = arg_list[1]
 
+    if untrusted_string is not None and no_block:
+        print_usage()
+        return 1
+
+    if max_string_length == 0:
+        return 0
+
+    ## Prepare to print output
+    sys.stdout.reconfigure(  # type: ignore
+        encoding="ascii", errors="replace", newline="\n"
+    )
+
     ## Sanitize standard input if no string was given as an argument
     if untrusted_string is None:
         if sys.stdin is None:
             ## No way to get an untrusted string, print nothing and
             ## exit successfully
             return 0
-        return sanitize_stdin(max_string_length)
+        sys.stdin.reconfigure(  # type: ignore
+            encoding="utf-8", errors="replace", newline="\n"
+        )
+
+        if no_block:
+            ## Dispatch to line-by-line sanitizer, do not run the rest of this
+            ## function
+            return sanitize_stdin(max_string_length, append_newline)
+
+        untrusted_string = sys.stdin.read()
 
     ## Sanitize and print
-    sys.stdout.reconfigure(  # type: ignore
-        encoding="ascii", errors="replace", newline="\n"
-    )
+    assert untrusted_string is not None
     sanitized_string: str = sanitize_string(untrusted_string)
-    if max_string_length is not None:
-        sys.stdout.write(sanitized_string[:max_string_length])
-    else:
-        sys.stdout.write(sanitized_string)
+    try:
+        if max_string_length is not None:
+            sys.stdout.write(sanitized_string[:max_string_length])
+        else:
+            sys.stdout.write(sanitized_string)
+        if newline:
+            sys.stdout.write("\n")
+    except BrokenPipeError:
+        ## Not worth erroring out for.
+        pass
     return 0

@@ -63,6 +63,8 @@ from datetime import datetime, timezone
 
 ## Fixed namespace for the deterministic UUIDv5 derivation. Arbitrary constant;
 ## only needs to be stable so the derived UUIDs are reproducible.
+## FIXME: Regenerate this randomly on a trusted developer machine to make sure
+## there is no chance of the UUID being crafted to cause some sort of harm
 NAMESPACE = uuid.UUID("6f9619ff-8b86-d011-b42d-00cf4fc964ff")
 
 
@@ -130,7 +132,7 @@ def normalize_ovf(text, salt, epoch):
         if not m_uuid:
             continue
         old = m_uuid.group(1)
-        if old not in old_disk_uuids:
+        if old not in old_disk_uuids:f
             old_disk_uuids.append(old)
         new = derive_uuid(salt, "disk", old_disk_uuids.index(old))
         m_ref = re.search(r'\bovf:fileRef="([^"]+)"', tag)
@@ -195,9 +197,16 @@ def patch_vmdk_descriptor(path, salt, index, image_uuid):
         block = handle.read(length)
         ## The descriptor text ends at the first NUL; everything after is
         ## padding to the sector boundary.
+        ## FIXME: The encoding is not necessarily latin-1, VMDK descriptor
+        ## files can use UTF-8 encoding. Assume UTF-8 to begin with, look for
+        ## an `encoding=` field and obey it, default to UTF-8 if missing unless
+        ## something suggests latin-1 is definitely the correct default.
         text = block.split(b"\x00", 1)[0].decode("latin-1")
 
         new_cid = derive_cid(salt, "cid", index)
+        ## FIXME: Fields may have spaces in front of them, capture them and
+        ## include them in the replace string, do this for all field matches
+        ## in this function
         text, n_cid = re.subn(r"(?m)^CID=[0-9a-fA-F]{8}$", "CID=%s" % new_cid, text)
 
         ## Set the descriptor image UUID to the disk's OVF-assigned UUID (the
@@ -237,13 +246,17 @@ def rewrite_manifest(mf_path, workdir):
     line_re = re.compile(r"^(SHA1|SHA256|SHA512|MD5) \((.+)\) = ([0-9a-fA-F]+)$")
     algos = {"SHA1": "sha1", "SHA256": "sha256", "SHA512": "sha512", "MD5": "md5"}
     out_lines = []
+    ## TODO: Is this guaranteed to be latin-1?
     with open(mf_path, "r", encoding="latin-1") as handle:
         for line in handle.read().splitlines():
+            ## FIXME: "match" is a keyword in Python, rename this
             match = line_re.match(line)
             if not match:
                 out_lines.append(line)
                 continue
             algo_name, member, _ = match.groups()
+            ## TODO: Would it be faster to just point a coreutils checksum
+            ## utility at the member and extract the returned hash?
             digest = hashlib.new(algos[algo_name])
             with open(os.path.join(workdir, member), "rb") as member_handle:
                 for chunk in iter(lambda: member_handle.read(1024 * 1024), b""):
@@ -344,6 +357,8 @@ def safe_tar_members(tar, dest):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ova", required=True)
+    ## TODO: Consider reading SOURCE_DATE_EPOCH from the environment for
+    ## consistency with other reproducible-build-supporting tools?
     parser.add_argument("--source-date-epoch", type=int, required=True)
     parser.add_argument("--salt", required=True)
     args = parser.parse_args()
@@ -377,6 +392,7 @@ def main():
             raise SystemExit("ERROR: expected exactly one .ovf, found %r." % ovf_names)
 
         ovf_path = os.path.join(workdir, ovf_names[0])
+        ## TODO: Double-check that latin-1 is right here and elsewhere
         with open(ovf_path, "r", encoding="latin-1") as handle:
             ovf_text = handle.read()
         ovf_text, disk_uuid_by_href = normalize_ovf(ovf_text, salt, epoch)

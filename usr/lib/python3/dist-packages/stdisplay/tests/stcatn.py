@@ -18,6 +18,21 @@ class TestSTCatn(stdisplay.tests.TestSTBase):
         super().setUp()
         self.module = "stcatn"
 
+    def test_stcatn_stdin(self) -> None:
+        """
+        Test passing stdin.
+        """
+
+        self.assertEqual(
+            "keep\nsecond\n", self._test_util(stdin="keep   \nsecond\t\n")
+        )
+        self.assertEqual(
+            "v\n", self._test_util(argv=["-"], stdin="v   \n")
+        )
+        self.assertEqual(
+            "r_s\n", self._test_util(argv=["-", "-"], stdin="r\x07s   \n")
+        )
+
     def test_stcatn_file(self) -> None:
         """
         Test passing files.

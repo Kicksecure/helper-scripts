@@ -26,6 +26,7 @@ class TestSTTee(stdisplay.tests.TestSTBase):
         self.assertEqual("", self._test_util())
         self.assertEqual("", self._test_util(stdin=""))
         self.assertEqual("stdin", self._test_util(stdin="stdin"))
+        self.assertEqual("c_d\n", self._test_util(stdin="c\x07d\n"))
         # Empty stdin with file argument.
         self.assertEqual("", self._test_util(argv=[self.tmpfiles["fill"]]))
         self.assertEqual(

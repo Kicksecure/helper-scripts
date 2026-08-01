@@ -66,28 +66,6 @@ def _strip_once(text: str) -> str:
     return markup_stripper.get_data()
 
 
-def markup_incomplete(untrusted_string: str) -> bool:
-    """
-    Report whether the parser still holds an unfinished markup construct at the
-    end of untrusted_string, i.e. whether more input could change how the text
-    already seen is parsed.
-
-    Lets a streaming caller pick a split point where splitting cannot change
-    the result, so streaming stays equivalent to stripping the whole input at
-    once. Errs toward False: if the parser fails, the caller should strip what
-    it has rather than buffer forever.
-    """
-
-    markup_stripper: StripMarkupEngine = StripMarkupEngine()
-    try:
-        markup_stripper.feed(untrusted_string)
-    except Exception:
-        return False
-    ## rawdata is HTMLParser's own buffer of input it could not consume yet,
-    ## which is exactly the "construct is still open" condition.
-    return bool(markup_stripper.rawdata)
-
-
 def strip_markup(untrusted_string: str) -> str:
     """
     Stripping function.

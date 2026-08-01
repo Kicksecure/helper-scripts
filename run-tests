@@ -77,6 +77,8 @@ done
 for util in "${stdin_file_read_utils[@]}"; do
   ./"${util}" <&-
   ./"${util}" - <&-
+  ## Double dash causes stdin to be read twice
+  ./"${util}" - - <&-
 done
 for util in "${stdin_implicit_read_utils[@]}"; do
   ./"${util}" <&-

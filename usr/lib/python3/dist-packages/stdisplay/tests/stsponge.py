@@ -26,6 +26,7 @@ class TestSTSponge(stdisplay.tests.TestSTBase):
         self.assertEqual("", self._test_util())
         self.assertEqual("", self._test_util(stdin=""))
         self.assertEqual("stdin", self._test_util(stdin="stdin"))
+        self.assertEqual("a_b\n", self._test_util(stdin="a\x07b\n"))
         # Empty stdin with file argument produces empty stdout and file.
         self.assertEqual("", self._test_util(argv=[self.tmpfiles["fill"]]))
         self.assertEqual(

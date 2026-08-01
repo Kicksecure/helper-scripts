@@ -30,6 +30,11 @@ class TestSTCat(stdisplay.tests.TestSTBase):
             "a b",
             self._test_util(argv=["-"], stdin="a b"),
         )
+        self.assertEqual("a_b\n", self._test_util(stdin="a\x07b\n"))
+        self.assertEqual("x_y\n", self._test_util(argv=["-"], stdin="x\x07y\n"))
+        self.assertEqual(
+            "p_q\n", self._test_util(argv=["-", "-"], stdin="p\x07q\n")
+        )
         self.assertEqual(
             self.text_dirty_sanitized,
             self._test_util(stdin=self.text_dirty),
