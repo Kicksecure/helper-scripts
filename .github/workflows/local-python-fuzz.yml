@@ -49,7 +49,11 @@ concurrency:
 jobs:
   pr:
     name: ClusterFuzzLite PR fuzz
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    ## CI runs only where we enabled it; ANDed with the existing guard.
+    ## Unset variable -> skipped, no runner, run stays green.
+    if: >-
+      vars.CI_ENABLED_ORG_AI_ASSISTED == 'true'
+      && (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -83,16 +87,16 @@ jobs:
           sanitizer: address
           output-sarif: true
 
-      - name: Checkout developer-meta-files (summary script)
+      - name: Checkout dist-ai (shared CI helper binaries)
         if: always()
-        ## Needed for ci/step-summary-emit.sh. helper-scripts does
+        ## Needed for usr/bin/step-summary-emit. helper-scripts does
         ## not vendor a copy; checkout @master keeps the org's
         ## single source of truth.
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          repository: org-ai-assisted/developer-meta-files
+          repository: org-ai-assisted/dist-ai
           ref: master
-          path: .dmf
+          path: .github/dist-ai
           persist-credentials: false
 
       - name: Emit step summary
@@ -104,7 +108,7 @@ jobs:
         env:
           JOB_STATUS: ${{ job.status }}
         run: |
-          ./.dmf/ci/step-summary-emit.sh \
+          ./.github/dist-ai/usr/bin/step-summary-emit \
             --tool 'ClusterFuzzLite (code-change)' \
             --column-header field \
             --row "outcome=${JOB_STATUS}" \
@@ -113,7 +117,11 @@ jobs:
 
   batch:
     name: ClusterFuzzLite batch fuzz
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    ## CI runs only where we enabled it; ANDed with the existing guard.
+    ## Unset variable -> skipped, no runner, run stays green.
+    if: >-
+      vars.CI_ENABLED_ORG_AI_ASSISTED == 'true'
+      && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -149,15 +157,15 @@ jobs:
           sanitizer: address
           output-sarif: true
 
-      - name: Checkout developer-meta-files (summary script)
+      - name: Checkout dist-ai (shared CI helper binaries)
         if: always()
-        ## Needed for ci/step-summary-emit.sh. See same step in the
+        ## Needed for usr/bin/step-summary-emit. See same step in the
         ## 'pr' job above for rationale.
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          repository: org-ai-assisted/developer-meta-files
+          repository: org-ai-assisted/dist-ai
           ref: master
-          path: .dmf
+          path: .github/dist-ai
           persist-credentials: false
 
       - name: Emit step summary
@@ -171,7 +179,7 @@ jobs:
           JOB_STATUS: ${{ job.status }}
           FUZZ_SECONDS: ${{ github.event.inputs.fuzz_seconds || '600' }}
         run: |
-          ./.dmf/ci/step-summary-emit.sh \
+          ./.github/dist-ai/usr/bin/step-summary-emit \
             --tool 'ClusterFuzzLite (batch)' \
             --column-header field \
             --row "outcome=${JOB_STATUS}" \

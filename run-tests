@@ -3,7 +3,14 @@
 ## Copyright (C) 2025 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-set -eux
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+set -o xtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 git_toplevel="$(git rev-parse --show-toplevel)"
 pyrc="${git_toplevel}/pyproject.toml"
 pythonpath="${git_toplevel}/usr/lib/python3/dist-packages"
@@ -20,6 +27,12 @@ pytest_ci_tests=(python3 -m pytest --import-mode=importlib)
 black=(black --config="${pyrc}" --color --diff --check)
 pylint=(pylint --rcfile="${pyrc}")
 mypy=(mypy --config-file="${pyrc}")
+
+## Shell-level regression tests. Deliberately FIRST: this script runs under
+## errexit, so anything below that fails would otherwise stop these from
+## running at all and they would silently stop guarding their regressions.
+cd -- "${git_toplevel}"
+./onion-time-pre-script-testscript
 
 py_lib_to_test_list=(
   'stdisplay'

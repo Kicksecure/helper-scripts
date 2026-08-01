@@ -1,3 +1,22 @@
+commit 26121cd8ed06d334c60032720ceddee7ecd52633
+Merge: aef07569 e0ade0e0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 31 06:11:06 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit e0ade0e0a6875afef83c8ac4d12588ee547bfdfd
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Jul 30 21:21:32 2026 -0400
+
+    Comments, minor tweaks, allow curses to determine if TERM=dumb is set in stdisplay
+
+commit aef075694facaafcc9e82e13fe454360bdc87527
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 28 13:11:24 2026 +0000
+
+    bumped changelog version
+
 commit 6f62fc91bfd3808a575c7ec7dfd1424656a30dd6
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Jul 28 08:23:15 2026 -0400
