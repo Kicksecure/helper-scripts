@@ -86,7 +86,7 @@ check_ref_commits_for_unicode() {
       printf '%s\n' "${unicode_report:-'No stdout or stderr from unicode-show!'}"
       found_malicious_unicode='true'
     else
-      log info "No unicode detected in commit '${commit}'."
+      true "INFO: No unicode detected in commit '${commit}'."
     fi
   done
 
