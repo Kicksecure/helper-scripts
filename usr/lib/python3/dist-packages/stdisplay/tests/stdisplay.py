@@ -355,19 +355,25 @@ class TestGetSgrSupport(unittest.TestCase):
     """
 
     def test_no_color_disables_everything(self) -> None:
-        """NO_COLOR set at all means no SGR is permitted."""
+        """
+        NO_COLOR set at all means no SGR is permitted.
+        """
 
         with mock.patch.dict(os.environ, {"NO_COLOR": "1"}, clear=True):
             self.assertEqual(get_sgr_support(), -1)
 
     def test_dumb_terminal_disables_everything(self) -> None:
-        """TERM=dumb likewise."""
+        """
+        TERM=dumb likewise.
+        """
 
         with mock.patch.dict(os.environ, {"TERM": "dumb"}, clear=True):
             self.assertEqual(get_sgr_support(), -1)
 
     def test_truecolor_is_recognised(self) -> None:
-        """COLORTERM=truecolor short-circuits the terminfo lookup."""
+        """
+        COLORTERM=truecolor short-circuits the terminfo lookup.
+        """
 
         for value in ("truecolor", "24bit", "TrueColor"):
             with mock.patch.dict(
@@ -383,8 +389,6 @@ class TestGetSgrSupport(unittest.TestCase):
 
         with (
             mock.patch.dict(os.environ, {"TERM": "xterm"}, clear=True),
-            mock.patch.object(
-                curses, "setupterm", side_effect=curses.error()
-            ),
+            mock.patch.object(curses, "setupterm", side_effect=curses.error()),
         ):
             self.assertEqual(get_sgr_support(), -2)

@@ -429,7 +429,7 @@ input.
             main_func=strip_markup_main,
             argv0=self.argv0,
             stdout_string="",
-            stderr_string=help_str,
+            stderr_string=TestStripMarkup.help_str,
             exit_code=0,
             args=["--help"],
         )
@@ -437,7 +437,7 @@ input.
             main_func=strip_markup_main,
             argv0=self.argv0,
             stdout_string="",
-            stderr_string=help_str,
+            stderr_string=TestStripMarkup.help_str,
             exit_code=0,
             args=["-h"],
         )
@@ -500,7 +500,7 @@ input.
             main_func=strip_markup_main,
             argv0=self.argv0,
             stdout_string="",
-            stderr_string=help_str,
+            stderr_string=TestStripMarkup.help_str,
             exit_code=1,
             args=["one", "two"],
         )
@@ -530,6 +530,6 @@ input.
                 argv0=self.argv0,
                 stdout_string=expect_str,
                 stderr_string="",
-                exit_code=0,
+                args=[],
                 stdin_string=in_str,
             )

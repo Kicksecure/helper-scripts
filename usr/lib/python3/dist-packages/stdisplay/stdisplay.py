@@ -8,7 +8,7 @@
 Sanitize text to be safely printed to the terminal.
 """
 
-from curses import setupterm, tigetnum, error as curses_error
+import curses
 from os import environ
 from re import compile as re_compile, sub as re_sub
 from typing import Optional
@@ -68,17 +68,21 @@ def get_sgr_support() -> int:
     -1
     """
 
-    ## No need to explicitly check for TERM=dumb, tigetnum("colors") returns
-    ## -1 in this case. COLORTERM=truecolor overrides TERM=dumb by design.
     if environ.get("NO_COLOR"):
         return -1
     colorterm: str | None = environ.get("COLORTERM")
     if colorterm and colorterm.lower() in ("truecolor", "24bit"):
         return 2**24
+    ## curses is able to detect the terminal's supported colors from the
+    ## environment, but the unit tests can't detect this because changes made
+    ## to Python's os.environ are not detected reliably by curses. We handle
+    ## TERM=dumb here to work around that.
+    if environ.get("TERM") == "dumb":
+        return -1
     try:
-        setupterm()
-        return tigetnum("colors")
-    except curses_error:
+        curses.setupterm()
+        return curses.tigetnum("colors")
+    except curses.error:
         return -2
 
 

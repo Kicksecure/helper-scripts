@@ -19,7 +19,8 @@ def print_usage() -> None:
     Prints usage information.
     """
 
-    print("""\
+    print(
+        """\
 sanitize-echo: Print a sanitized string.
 Usage: sanitize-echo [--help|-h] [--max-length LENGTH] [--] [string...]
 
@@ -70,7 +71,11 @@ def main() -> int:
         untrusted_string = " ".join(arg_list)
 
     sys.argv = [
-        "sanitize-string", "--no-usage", "--newline", "--", max_length_str
+        "sanitize-string",
+        "--no-usage",
+        "--newline",
+        "--",
+        max_length_str,
     ]
     if untrusted_string is not None:
         sys.argv.append(untrusted_string)

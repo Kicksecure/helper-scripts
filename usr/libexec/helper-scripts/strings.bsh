@@ -6,6 +6,9 @@
 ## style-ok: no-strict
 ## To avoid forcing callers to use strict Bash.
 
+# shellcheck source=./wc-test.sh
+source /usr/libexec/helper-scripts/wc-test.sh
+
 ## Maximum number of bytes output by some error messages. Very long messages
 ## are truncated.
 STRINGS_BSH_REPORT_MAX=200
@@ -135,7 +138,7 @@ default_if_empty() {
 
   if ! check_variable_name "${strings_bsh_var_name}"; then
     sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- \
-      "${0}: ERROR: ${FUNCNAME[0]}: not a variable name: '${strings_bsh_var_name}'!" >&2
+      "$0: ERROR: ${FUNCNAME[0]}: not a variable name: '${strings_bsh_var_name}'!" >&2
     return 1
   fi
 
@@ -326,12 +329,12 @@ string_quote_safe() {
 ## scientific notation such as 1.23e10
 ## negative numbers such as -1
 is_whole_number() {
-  [[ "$1" =~ ^[0-9]+$ ]]
+  [[ "$1" =~ ^(0|[1-9][0-9]*)$ ]]
 }
 
 ## same results as is_whole_number, but also allows negative numbers
 is_integer(){
-  printf '%d' "${1}" >/dev/null 2>&1 || return 1
+  printf '%d' "$1" >/dev/null 2>&1 || return 1
 }
 
 ## NOTE: Duplicated in package 'uwt' file 'curl.anondist'.
@@ -411,8 +414,8 @@ check_variable_name() {
 
 run_function_displaytime_test() {
   local test_id="$1" seconds="$2" expected="$3" actual
-  actual="$(gpg_bash_lib_function_displaytime "${seconds}")"
   printf '%s\n' "$0: Running test ${test_id}: gpg_bash_lib_function_displaytime"
+  actual="$(gpg_bash_lib_function_displaytime "${seconds}")"
   if [ "${actual}" = "${expected}" ]; then
     printf '%s\n' "$0: Test Passed"
   else

@@ -5,6 +5,8 @@
 
 # pylint: disable=missing-module-docstring,fixme,unknown-option-value
 
+import sys
+
 from io import BytesIO, StringIO, TextIOWrapper
 from unittest import mock
 
@@ -118,10 +120,10 @@ Arguments:
         self.assertEqual(exit_code, 0)
         ## TODO: Revert back to this method if the new one doesn't work, or
         ## maybe just bring back the flush
-        #stdout_buf.flush()
-        #self.assertEqual(
+        # stdout_buf.flush()
+        # self.assertEqual(
         #    stdout_buf_internal.getvalue().decode("utf-8"), "12345"
-        #)
+        # )
 
         ## The second line must still be waiting, unread.
         self.assertEqual(stdin_buf.read(), "second line\n")
@@ -138,25 +140,32 @@ Arguments:
         stdin_buf.seek(0, 0)
 
         class BrokenPipeStdout(StringIO):
-            """A stdout whose every write reports the reader is gone."""
+            """
+            A stdout whose every write reports the reader is gone.
+            """
 
             def reconfigure(self, **kwargs: object) -> None:
-                """Accept the encoding setup main() performs on stdout."""
+                """
+                Accept the encoding setup main() performs on stdout.
+                """
 
             def write(self, *args: object, **kwargs: object) -> int:
+                """
+                Cause write attempts to fail.
+                """
+
                 raise BrokenPipeError()
 
         closed_stdout = BrokenPipeStdout()
+        exit_code: int
 
         ## Normal, all-at-end write
         with (
-            mock.patch.object(
-                sys, "argv", [self.argv0, "nolimit"]
-            ),
+            mock.patch.object(sys, "argv", [self.argv0, "nolimit"]),
             mock.patch.object(sys, "stdin", stdin_buf),
             mock.patch.object(sys, "stdout", closed_stdout),
         ):
-            exit_code: int = sanitize_string_main()
+            exit_code = sanitize_string_main()
         self.assertEqual(exit_code, 0)
 
         stdin_buf.seek(0, 0)
@@ -169,7 +178,7 @@ Arguments:
             mock.patch.object(sys, "stdin", stdin_buf),
             mock.patch.object(sys, "stdout", closed_stdout),
         ):
-            exit_code: int = sanitize_string_main()
+            exit_code = sanitize_string_main()
         self.assertEqual(exit_code, 0)
 
     def test_bare_double_dash(self) -> None:

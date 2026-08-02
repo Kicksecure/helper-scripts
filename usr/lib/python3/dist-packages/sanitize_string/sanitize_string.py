@@ -23,7 +23,9 @@ def print_usage() -> None:
 
     if suppress_usage_info:
         return
-    print("""\
+    # pylint: disable=line-too-long
+    print(
+        """\
 sanitize-string: Strip / sanitize dangerous control characters and markup.
 Usage: sanitize-string [--help|-h] [--no-block] [--no-usage] [--newline] [--] max_length [string]
 
@@ -47,14 +49,16 @@ Arguments:
     )
 
 
-def sanitize_stdin(max_string_length: int | None, append_newline: bool) -> int:
+def sanitize_stdin_noblock(
+    max_string_length: int | None, append_newline: bool
+) -> int:
     """
     Sanitize standard input one line at a time.
     """
 
     try:
         for untrusted_line in sys.stdin:
-            sanitized_string: str = sanitize_string(untrusted_string)
+            sanitized_string: str = sanitize_string(untrusted_line)
             if max_string_length is not None:
                 sanitized_string = sanitized_string[:max_string_length]
                 max_string_length -= len(sanitized_string)
@@ -73,6 +77,27 @@ def sanitize_stdin(max_string_length: int | None, append_newline: bool) -> int:
         ## rather than running forever with `cat` feeding into a
         ## "fault-tolerant" `tee`).
         return 0
+
+
+def sanitize_block(
+    untrusted_string: str, max_string_length: int | None, append_newline: bool
+) -> None:
+    """
+    Sanitize the entire provided string at once.
+    """
+
+    assert untrusted_string is not None
+    sanitized_string: str = sanitize_string(untrusted_string)
+    try:
+        if max_string_length is not None:
+            sys.stdout.write(sanitized_string[:max_string_length])
+        else:
+            sys.stdout.write(sanitized_string)
+        if append_newline:
+            sys.stdout.write("\n")
+    except BrokenPipeError:
+        ## Not worth erroring out for.
+        pass
 
 
 # pylint: disable=too-many-branches,too-many-return-statements
@@ -116,7 +141,7 @@ def main() -> int:
     if not 1 <= len(arg_list) <= 2:
         print_usage()
         return 1
-    if arg_list[0] != 'nolimit':
+    if arg_list[0] != "nolimit":
         try:
             max_string_length = int(arg_list[0])
             if max_string_length < 0:
@@ -153,21 +178,9 @@ def main() -> int:
         if no_block:
             ## Dispatch to line-by-line sanitizer, do not run the rest of this
             ## function
-            return sanitize_stdin(max_string_length, append_newline)
+            return sanitize_stdin_noblock(max_string_length, append_newline)
 
         untrusted_string = sys.stdin.read()
 
-    ## Sanitize and print
-    assert untrusted_string is not None
-    sanitized_string: str = sanitize_string(untrusted_string)
-    try:
-        if max_string_length is not None:
-            sys.stdout.write(sanitized_string[:max_string_length])
-        else:
-            sys.stdout.write(sanitized_string)
-        if newline:
-            sys.stdout.write("\n")
-    except BrokenPipeError:
-        ## Not worth erroring out for.
-        pass
+    sanitize_block(untrusted_string, max_string_length, append_newline)
     return 0

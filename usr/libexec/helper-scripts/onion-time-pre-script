@@ -52,10 +52,16 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_enabled_check
 #source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/pkg_manager_running_check
 
 ## provides check_tor_bootstrap_status
+# shellcheck source=./tor_bootstrap_check.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_bootstrap_check.bsh
 
 ## provides was_executed
+# shellcheck source=./check_runtime.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
+
+## provides is_whole_number
+# shellcheck source=./strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 detect_vm_type() {
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
@@ -345,21 +351,16 @@ exit_success_if_tor_circuit_already_established() {
 ## certificate lifetime, so re-requesting more often cannot produce a different
 ## answer.
 ##
-## An unthrottled request is expensive: sdwdate's preparation loop runs this
-## script roughly once per second while Tor is unreachable, and the consumer
-## (/usr/libexec/sdwdate/sdwdate-start-anondate-set-file-watcher) is a bare
-## inotify read loop with no limit of its own, so every request turns into a
-## full 'anondate-set' run.
+## sdwdate's preparation loop runs onion-time-pre-script roughly once per
+## second while Tor is unreachable, and
+## sdwdate-start-anondate-set-file-watcher has no rate limit, so if this script
+## ran anondate-set unconditionally, it would waste a lot of resources.
 anondate_request_min_interval_seconds="60"
 
 anondate_request_rate_limited() {
    ## Returns 0 when the previous request is younger than
    ## anondate_request_min_interval_seconds, meaning the caller should not
    ## create another one.
-   ##
-   ## The timestamp lives in its own file because the consumer deletes the
-   ## request file as soon as it has serviced it, so the request file's own
-   ## mtime cannot carry this state.
    local stamp_file stamp_unixtime current_unixtime request_age_seconds
 
    stamp_file="${anondate_state_folder}/request_anondate-set.stamp"
@@ -368,15 +369,19 @@ anondate_request_rate_limited() {
       return 1
    fi
 
-   stamp_unixtime="$(date --utc --reference="${stamp_file}" +"%s")" || return 1
-   current_unixtime="$(date --utc +"%s")" || return 1
+   stamp_unixtime="$(date --utc --reference="${stamp_file}" "+%s")" || return 1
+   is_whole_number "${stamp_unixtime}" || return 1
+   current_unixtime="$(date --utc "+%s")" || return 1
+   is_whole_number "${current_unixtime}" || return 1
 
    request_age_seconds="$((current_unixtime - stamp_unixtime))"
 
    ## A negative age means the clock moved backwards since the stamp was
-   ## written. Both 'anondate-set' and sdwdate set the clock, so this is
-   ## expected rather than an anomaly. Treat the stamp as stale instead of
-   ## suppressing requests until the clock has caught up again.
+   ## written. Both anondate-set and sdwdate set the clock, so this is
+   ## expected and we should treat the stamp as stale.
+   ##
+   ## TODO: Is anondate-set actually able to set the clock backwards, or was
+   ## that disabled for security reasons?
    if [ "${request_age_seconds}" -lt 0 ]; then
       return 1
    fi
@@ -405,8 +410,6 @@ anondate_use() {
    ## /usr/libexec/sdwdate/sdwdate-start-anondate-set-file-watcher
    output_cmd "anondate_use: Running 'anondate-set' (by creating file '${anondate_state_folder}/request_anondate-set')..."
 
-   ## Stamp before request: if this script dies between the two, the next call
-   ## is still rate limited. The reverse order would leave the limit unarmed.
    touch "${anondate_state_folder}/request_anondate-set.stamp"
    touch "${anondate_state_folder}/request_anondate-set"
 
@@ -448,6 +451,9 @@ circuit_confirmed_backward_proceed() {
 }
 
 te_pe_tb_check() {
+   ## For better look inside sdwdate log viewer.
+   printf '%s\n' ""
+
    output_cmd "### START: ### $0"
 
    anondate_folder

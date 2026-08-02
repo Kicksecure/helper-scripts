@@ -583,11 +583,11 @@ FILENAME_PLACEHOLDER:1: [missing newline at end]
 
         dir_str: str = tempfile.gettempdir()
         self._test_args(
-            main_func=main_func,
-            argv0=argv0,
+            main_func=unicode_show_main,
+            argv0=self.argv0,
             stdout_string="",
             stderr_string=f"""\
-[ERROR] File read error [{dir_str}]: [Errno 21] Is a directory: {dir_str}
+[ERROR] File read error [{dir_str}]: [Errno 21] Is a directory: '{dir_str}'
 """,
             exit_code=2,
             args=[dir_str],
@@ -602,7 +602,7 @@ FILENAME_PLACEHOLDER:1: [missing newline at end]
         self.assertEqual(
             describe_char("a"), "a (U+0061, LATIN SMALL LETTER A, Ll)"
         )
-        self.assertEqual(describe_char("-"), "- (U+002D, HYPHEN-MINUS, Pd)"f)
+        self.assertEqual(describe_char("-"), "- (U+002D, HYPHEN-MINUS, Pd)")
 
     def test_no_input(self) -> None:
         """
