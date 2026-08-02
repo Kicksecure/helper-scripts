@@ -101,7 +101,7 @@ log() {
   local -
   set +x
 
-  local log_type log_type_up log_color log_source_script log_level_colorized log_content log_full
+  local log_type log_type_up log_color log_source_script log_level_colorized log_content log_full log_who_ami_maybe
   local should_print=0
   local caller_level_num msg_level_num
 
@@ -221,7 +221,7 @@ prompt_yes_no_tty() {
 }
 
 
-## For one liners 'log error; die'
+## For one-liners 'log error; die'
 ## 'log' should not handle exits, because then it would not be possible
 ## to log consecutive errors on multiple lines, making die more suitable
 ## usage: die # "msg"
@@ -297,7 +297,7 @@ log_run_silent_if_success() {
 }
 
 
-## Useful to get runtime mid run to log easily
+## Useful to get runtime mid-run to log easily
 ## Variable to define outside: start_time
 # shellcheck disable=SC2154
 get_elapsed_time() {

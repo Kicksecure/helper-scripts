@@ -421,7 +421,7 @@ determine_circuit_confirmed() {
    ## Sets circuit_confirmed=1 when a real circuit is confirmed. Gateway:
    ## actively build a fresh circuit (non-stale, unlike the sticky
    ## status/circuit-established flag). Workstation: onion-grater forbids
-   ## EXTENDCIRCUIT and it defers to the gateway, so fall back to the flag.
+   ## EXTENDCIRCUIT, and it defers to the gateway, so fall back to the flag.
    if [ "${VM}" = "Workstation" ]; then
       circuit_confirmed="${tor_circuit_established}"
       output_cmd "Circuit confirmation (workstation): status/circuit-established = '${tor_circuit_established}'."
@@ -500,7 +500,7 @@ te_pe_tb_check() {
    if [ "${timesanitycheck_static_timestamp_based_failed}" = "true" ]; then
       anondate_use
       ## Time incorrect by a lot. Indicate error.
-      ## [1] Since anondate_use has it's own `exit`, no need to use `exit` here.
+      ## [1] Since anondate_use has its own `exit`, no need to use `exit` here.
       ## [2] Do not use `anondate-set` on Whonix-Workstation.
       ##     Since sdwdate can establish onion connections irrespective of Whonix-Workstation system clock,
       ##     as long as Whonix-Gateway Tor is functional.

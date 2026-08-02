@@ -545,6 +545,7 @@ string_bsh_tests() {
     error "default_if_empty: an unset variable did not take the default!"
   fi
 
+  local default_if_empty_probe default_if_empty_rc
   default_if_empty_probe=''
   default_if_empty default_if_empty_probe 'fallback'
   if ! [ "${default_if_empty_probe}" = 'fallback' ]; then
