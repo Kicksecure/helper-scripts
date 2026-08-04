@@ -82,7 +82,10 @@ def derive_mac(salt, index):
     ## it a globally-administered unicast address.
     ## Not a security hash: a deterministic function to derive a stable MAC
     ## suffix from the salt. Collision resistance is irrelevant here.
-    digest = hashlib.sha1(
+    ## nosec B303: usedforsecurity=False already states the intent, but the
+    ## bandit CI runs (1.6.2, ubuntu-24.04 apt) predates that keyword and
+    ## blacklists sha1 unconditionally.
+    digest = hashlib.sha1(  # nosec B303
         ("%s:mac:%d" % (salt, index)).encode(), usedforsecurity=False
     ).hexdigest()
     return "080027" + digest[:6].upper()
@@ -93,7 +96,9 @@ def derive_cid(salt, role, index):
     ## 0xffffffff sentinel (VMDK "no parent" / null CID).
     ## Not a security hash: a deterministic function to derive a stable content
     ## id from the salt. Collision resistance is irrelevant here.
-    digest = hashlib.sha1(
+    ## nosec B303: see derive_mac -- same non-security derivation, same
+    ## bandit-version limitation.
+    digest = hashlib.sha1(  # nosec B303
         ("%s:%s:%d" % (salt, role, index)).encode(), usedforsecurity=False
     ).hexdigest()
     cid = digest[:8]
@@ -243,7 +248,20 @@ def rewrite_manifest(mf_path, workdir):
     ## Recompute each 'ALGO (name) = hash' line against the patched member,
     ## preserving the original order, member names and formatting.
     line_re = re.compile(r"^(SHA1|SHA256|SHA512|MD5) \((.+)\) = ([0-9a-fA-F]+)$")
-    algos = {"SHA1": "sha1", "SHA256": "sha256", "SHA512": "sha512", "MD5": "md5"}
+    ## Bind the constructors directly instead of hashlib.new(<name>). The
+    ## manifest algorithm set is closed and known at import time, so the
+    ## indirection through a name string buys nothing -- and a hashlib.new()
+    ## argument that is not a literal crashes bandit 1.6.2, the apt build CI
+    ## runs on ubuntu-24.04.
+    ## Not security hashes: these recompute the OVA manifest's own digests,
+    ## whose algorithms the manifest dictates. Collision resistance is not a
+    ## property this code relies on.
+    algos = {
+        "SHA1": hashlib.sha1,
+        "SHA256": hashlib.sha256,
+        "SHA512": hashlib.sha512,
+        "MD5": hashlib.md5,
+    }
     out_lines = []
     with open(mf_path, "r", encoding="latin-1") as handle:
         for line in handle.read().splitlines():
@@ -252,7 +270,7 @@ def rewrite_manifest(mf_path, workdir):
                 out_lines.append(line)
                 continue
             algo_name, member, _ = match.groups()
-            digest = hashlib.new(algos[algo_name])
+            digest = algos[algo_name](usedforsecurity=False)
             with open(os.path.join(workdir, member), "rb") as member_handle:
                 for chunk in iter(lambda: member_handle.read(1024 * 1024), b""):
                     digest.update(chunk)
