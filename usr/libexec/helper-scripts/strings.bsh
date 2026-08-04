@@ -7,7 +7,7 @@
 ## To avoid forcing callers to use strict Bash.
 
 # shellcheck source=./wc-test.sh
-source /usr/libexec/helper-scripts/wc-test.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/wc-test.sh
 
 ## Maximum number of bytes output by some error messages. Very long messages
 ## are truncated.

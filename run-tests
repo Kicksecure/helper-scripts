@@ -95,6 +95,18 @@ done
 ## string length argument.
 ./sanitize-string -- nolimit <&-
 
+## Regression guard: a library must source a sibling via "${HELPER_SCRIPTS_PATH:-}",
+## never a hardcoded absolute /usr/libexec/helper-scripts/ path. The absolute form
+## works only once installed and breaks every source-tree build (e.g. the image
+## build, which runs the checkout, not the package) with "No such file or
+## directory". strings.bsh regressed exactly this way.
+if grep --recursive --line-number --extended-regexp \
+   '^[[:space:]]*source[[:space:]]+/usr/libexec/helper-scripts/' \
+   "${git_toplevel}/usr/libexec/helper-scripts/" 2>/dev/null; then
+  printf '%s\n' "FAIL: a helper-scripts library sources a sibling via a hardcoded absolute path (see above); use \"\${HELPER_SCRIPTS_PATH:-}\"/usr/libexec/helper-scripts/<file>." >&2
+  exit 1
+fi
+
 if ! [ -d "${HOME}/trojan-source" ]; then
   printf "%s\n" "WARNING: Not running unicode-testscript, ${HOME}/trojan-source does not exist.
 To get it:
