@@ -95,15 +95,23 @@ done
 ## string length argument.
 ./sanitize-string -- nolimit <&-
 
-## Regression guard: a library must source a sibling via "${HELPER_SCRIPTS_PATH:-}",
-## never a hardcoded absolute /usr/libexec/helper-scripts/ path. The absolute form
-## works only once installed and breaks every source-tree build (e.g. the image
-## build, which runs the checkout, not the package) with "No such file or
-## directory". strings.bsh regressed exactly this way.
+## Regression guard: strings.bsh is a low-level library sourced by tools that do
+## NOT set HELPER_SCRIPTS_PATH (e.g. dm-upload-images) and run from the checkout,
+## not the installed package. It must resolve its sibling wc-test.sh RELATIVE TO
+## ITSELF -- never a hardcoded absolute /usr path (breaks any source-tree build,
+## e.g. the image build) NOR via HELPER_SCRIPTS_PATH (empty or wrong for those
+## callers). It regressed both ways. Static catch for the bare-absolute form:
 if grep --recursive --line-number --extended-regexp \
    '^[[:space:]]*source[[:space:]]+/usr/libexec/helper-scripts/' \
    "${git_toplevel}/usr/libexec/helper-scripts/" 2>/dev/null; then
-  printf '%s\n' "FAIL: a helper-scripts library sources a sibling via a hardcoded absolute path (see above); use \"\${HELPER_SCRIPTS_PATH:-}\"/usr/libexec/helper-scripts/<file>." >&2
+  printf '%s\n' "FAIL: a helper-scripts library sources a sibling via a hardcoded absolute /usr path (see above); source it relative to \${BASH_SOURCE[0]}." >&2
+  exit 1
+fi
+## Behavioral catch for the HELPER_SCRIPTS_PATH-dependent form: strings.bsh must
+## still load when HELPER_SCRIPTS_PATH is set to a path that does not exist.
+if ! HELPER_SCRIPTS_PATH='/nonexistent-helper-scripts-path' \
+   bash -c "source -- \"${git_toplevel}/usr/libexec/helper-scripts/strings.bsh\"" 2>/dev/null; then
+  printf '%s\n' "FAIL: strings.bsh does not load when HELPER_SCRIPTS_PATH is unset/wrong; it must source wc-test.sh relative to \${BASH_SOURCE[0]}, not via HELPER_SCRIPTS_PATH or a hardcoded /usr path." >&2
   exit 1
 fi
 
