@@ -200,6 +200,38 @@ Arguments:
         self.assertEqual(outbuf.getvalue(), b"\n")
         self.assertEqual(exit_code, 0)
 
+    def test_zero_limit_newline_does_not_read_stdin(self) -> None:
+        """
+        With '--no-block --newline' and a zero limit and no string argument,
+        the newline must be emitted WITHOUT consuming stdin: a zero limit reads
+        nothing.
+        """
+
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=BytesIO(), encoding="utf-8", newline="\n"
+        )
+        stdin_buf.write("unread line\n")
+        stdin_buf.seek(0, 0)
+        outbuf: BytesIO = BytesIO()
+        stdout_buf: TextIOWrapper = TextIOWrapper(
+            buffer=outbuf, encoding="utf-8", newline="\n"
+        )
+        with (
+            mock.patch.object(
+                sys,
+                "argv",
+                [self.argv0, "--no-block", "--newline", "--", "0"],
+            ),
+            mock.patch.object(sys, "stdin", stdin_buf),
+            mock.patch.object(sys, "stdout", stdout_buf),
+        ):
+            exit_code: int = sanitize_string_main()
+        stdout_buf.flush()
+        self.assertEqual(outbuf.getvalue(), b"\n")
+        self.assertEqual(exit_code, 0)
+        ## stdin must be untouched -- a zero limit consumes nothing.
+        self.assertEqual(stdin_buf.read(), "unread line\n")
+
     def test_broken_pipe_no_shutdown_traceback(self) -> None:
         """
         A downstream that closes early must not leave a BrokenPipeError

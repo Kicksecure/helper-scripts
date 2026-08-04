@@ -176,16 +176,18 @@ def main() -> int:
         print_usage()
         return 1
 
-    ## A zero limit emits no sanitized content, but '--newline' must still
-    ## append its newline (as it does for every other limit), so only take the
-    ## fast path when no newline is requested.
-    if max_string_length == 0 and not append_newline:
-        return 0
-
     ## Prepare to print output
     sys.stdout.reconfigure(  # type: ignore
         encoding="ascii", errors="replace", newline="\n"
     )
+
+    ## A zero limit emits no sanitized content and must return without reading
+    ## stdin, but '--newline' still has to append its newline (as it does for
+    ## every other limit), so emit just that and stop.
+    if max_string_length == 0:
+        if append_newline:
+            sanitize_block("", max_string_length, append_newline)
+        return 0
 
     ## Sanitize standard input if no string was given as an argument
     if untrusted_string is None:
