@@ -61,10 +61,7 @@ if [ -z "${GIT_DIFF_PATH_TOTAL:-}" ]; then
   trap git_review_cleanup EXIT
 
   ## Display a diffstat and file change summary to the user first, since this
-  ## may display changes that Git won't use a diff driver to display. Always
-  ## disable the pager (see the per-file diffs below): on a terminal git would
-  ## page this summary and wait for a keypress, which wedges every
-  ## non-interactive consumer.
+  ## may display changes that Git won't use a diff driver to display.
   printf '%s\n' "===== ${review_tool}: diffstat and summary of full change set ====="
   git --no-pager diff --no-ext-diff --stat --summary --find-renames --color=always "$@" || true
 

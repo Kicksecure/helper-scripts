@@ -63,6 +63,8 @@ from datetime import datetime, timezone
 
 ## Fixed namespace for the deterministic UUIDv5 derivation. Arbitrary constant;
 ## only needs to be stable so the derived UUIDs are reproducible.
+## FIXME: Regenerate this randomly on a trusted developer machine to make sure
+## there is no chance of the UUID being crafted to cause some sort of harm
 NAMESPACE = uuid.UUID("6f9619ff-8b86-d011-b42d-00cf4fc964ff")
 
 
@@ -82,10 +84,7 @@ def derive_mac(salt, index):
     ## it a globally-administered unicast address.
     ## Not a security hash: a deterministic function to derive a stable MAC
     ## suffix from the salt. Collision resistance is irrelevant here.
-    ## nosec B303: usedforsecurity=False already states the intent, but the
-    ## bandit CI runs (1.6.2, ubuntu-24.04 apt) predates that keyword and
-    ## blacklists sha1 unconditionally.
-    digest = hashlib.sha1(  # nosec B303
+    digest = hashlib.sha1(
         ("%s:mac:%d" % (salt, index)).encode(), usedforsecurity=False
     ).hexdigest()
     return "080027" + digest[:6].upper()
@@ -96,9 +95,7 @@ def derive_cid(salt, role, index):
     ## 0xffffffff sentinel (VMDK "no parent" / null CID).
     ## Not a security hash: a deterministic function to derive a stable content
     ## id from the salt. Collision resistance is irrelevant here.
-    ## nosec B303: see derive_mac -- same non-security derivation, same
-    ## bandit-version limitation.
-    digest = hashlib.sha1(  # nosec B303
+    digest = hashlib.sha1(
         ("%s:%s:%d" % (salt, role, index)).encode(), usedforsecurity=False
     ).hexdigest()
     cid = digest[:8]
@@ -150,7 +147,9 @@ def normalize_ovf(text, salt, epoch):
         if m_ref and m_ref.group(1) in id_to_href:
             ## Key by bare filename; the lookup below uses the member's
             ## basename too, so the two agree regardless of any path prefix.
-            disk_uuid_by_href[os.path.basename(id_to_href[m_ref.group(1)])] = new
+            disk_uuid_by_href[os.path.basename(id_to_href[m_ref.group(1)])] = (
+                new
+            )
 
     ## Disk UUID (also appears without braces inside <Image uuid="{...}"/>).
     text = replace_unique(
@@ -164,7 +163,9 @@ def normalize_ovf(text, salt, epoch):
     ## pass, so both machine identity and MACs are normalized here in one place.
     text = replace_unique(
         text,
-        re.findall(r'<vbox:Machine\b[^>]*\buuid="(\{[0-9a-fA-F-]{36}\})"', text),
+        re.findall(
+            r'<vbox:Machine\b[^>]*\buuid="(\{[0-9a-fA-F-]{36}\})"', text
+        ),
         lambda i: "{%s}" % derive_uuid(salt, "machine", i),
     )
 
@@ -179,8 +180,12 @@ def normalize_ovf(text, salt, epoch):
 
     ## Replace every wall-clock lastStateChange with the deterministic
     ## SOURCE_DATE_EPOCH-derived UTC timestamp (VBox format: 2026-07-19T14:40:39Z).
-    stamp = datetime.fromtimestamp(epoch, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    text = re.sub(r'lastStateChange="[^"]*"', 'lastStateChange="%s"' % stamp, text)
+    stamp = datetime.fromtimestamp(epoch, timezone.utc).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+    text = re.sub(
+        r'lastStateChange="[^"]*"', 'lastStateChange="%s"' % stamp, text
+    )
     return text, disk_uuid_by_href
 
 
@@ -195,7 +200,9 @@ def patch_vmdk_descriptor(path, salt, index, image_uuid):
     with open(path, "r+b") as handle:
         header = handle.read(512)
         if header[:4] != b"KDMV":
-            raise SystemExit("ERROR: %s is not a stream-optimized (KDMV) VMDK." % path)
+            raise SystemExit(
+                "ERROR: %s is not a stream-optimized (KDMV) VMDK." % path
+            )
         ## SparseExtentHeader: descriptorOffset at 0x1C, descriptorSize at 0x24
         ## (both uint64 little-endian, in sectors).
         desc_offset = struct.unpack_from("<Q", header, 0x1C)[0]
@@ -208,10 +215,19 @@ def patch_vmdk_descriptor(path, salt, index, image_uuid):
         block = handle.read(length)
         ## The descriptor text ends at the first NUL; everything after is
         ## padding to the sector boundary.
+        ## FIXME: The encoding is not necessarily latin-1, VMDK descriptor
+        ## files can use UTF-8 encoding. Assume UTF-8 to begin with, look for
+        ## an `encoding=` field and obey it, default to UTF-8 if missing unless
+        ## something suggests latin-1 is definitely the correct default.
         text = block.split(b"\x00", 1)[0].decode("latin-1")
 
         new_cid = derive_cid(salt, "cid", index)
-        text, n_cid = re.subn(r"(?m)^CID=[0-9a-fA-F]{8}$", "CID=%s" % new_cid, text)
+        ## FIXME: Fields may have spaces in front of them, capture them and
+        ## include them in the replace string, do this for all field matches
+        ## in this function
+        text, n_cid = re.subn(
+            r"(?m)^CID=[0-9a-fA-F]{8}$", "CID=%s" % new_cid, text
+        )
 
         ## Set the descriptor image UUID to the disk's OVF-assigned UUID (the
         ## OVF <Disk> and this VMDK are the same medium; VBox stores that UUID
@@ -247,34 +263,36 @@ def patch_vmdk_descriptor(path, salt, index, image_uuid):
 def rewrite_manifest(mf_path, workdir):
     ## Recompute each 'ALGO (name) = hash' line against the patched member,
     ## preserving the original order, member names and formatting.
-    line_re = re.compile(r"^(SHA1|SHA256|SHA512|MD5) \((.+)\) = ([0-9a-fA-F]+)$")
-    ## Bind the constructors directly instead of hashlib.new(<name>). The
-    ## manifest algorithm set is closed and known at import time, so the
-    ## indirection through a name string buys nothing -- and a hashlib.new()
-    ## argument that is not a literal crashes bandit 1.6.2, the apt build CI
-    ## runs on ubuntu-24.04.
-    ## Not security hashes: these recompute the OVA manifest's own digests,
-    ## whose algorithms the manifest dictates. Collision resistance is not a
-    ## property this code relies on.
+    line_re = re.compile(
+        r"^(SHA1|SHA256|SHA512|MD5) \((.+)\) = ([0-9a-fA-F]+)$"
+    )
     algos = {
-        "SHA1": hashlib.sha1,
-        "SHA256": hashlib.sha256,
-        "SHA512": hashlib.sha512,
-        "MD5": hashlib.md5,
+        "SHA1": "sha1",
+        "SHA256": "sha256",
+        "SHA512": "sha512",
+        "MD5": "md5",
     }
     out_lines = []
+    ## TODO: Is this guaranteed to be latin-1?
     with open(mf_path, "r", encoding="latin-1") as handle:
         for line in handle.read().splitlines():
+            ## FIXME: "match" is a keyword in Python, rename this
             match = line_re.match(line)
             if not match:
                 out_lines.append(line)
                 continue
             algo_name, member, _ = match.groups()
-            digest = algos[algo_name](usedforsecurity=False)
+            ## TODO: Would it be faster to just point a coreutils checksum
+            ## utility at the member and extract the returned hash?
+            digest = hashlib.new(algos[algo_name])
             with open(os.path.join(workdir, member), "rb") as member_handle:
-                for chunk in iter(lambda: member_handle.read(1024 * 1024), b""):
+                for chunk in iter(
+                    lambda: member_handle.read(1024 * 1024), b""
+                ):
                     digest.update(chunk)
-            out_lines.append("%s (%s) = %s" % (algo_name, member, digest.hexdigest()))
+            out_lines.append(
+                "%s (%s) = %s" % (algo_name, member, digest.hexdigest())
+            )
     with open(mf_path, "w", encoding="latin-1") as handle:
         handle.write("\n".join(out_lines) + "\n")
 
@@ -340,7 +358,9 @@ def check_tar_member_name(name):
     if not name or os.path.isabs(name) or name.startswith("/"):
         raise SystemExit("ERROR: refusing absolute tar member name: %r" % name)
     if os.path.normpath(name).startswith(".."):
-        raise SystemExit("ERROR: refusing tar member name escaping the archive: %r" % name)
+        raise SystemExit(
+            "ERROR: refusing tar member name escaping the archive: %r" % name
+        )
 
 
 def safe_tar_members(tar, dest):
@@ -370,6 +390,8 @@ def safe_tar_members(tar, dest):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ova", required=True)
+    ## TODO: Consider reading SOURCE_DATE_EPOCH from the environment for
+    ## consistency with other reproducible-build-supporting tools?
     parser.add_argument("--source-date-epoch", type=int, required=True)
     parser.add_argument("--salt", required=True)
     args = parser.parse_args()
@@ -377,7 +399,9 @@ def main():
     epoch = args.source_date_epoch
     salt = args.salt
 
-    with tempfile.TemporaryDirectory(dir=os.path.dirname(os.path.abspath(args.ova))) as workdir:
+    with tempfile.TemporaryDirectory(
+        dir=os.path.dirname(os.path.abspath(args.ova))
+    ) as workdir:
         ## Preserve the original member order for the repack.
         member_names = []
         with tarfile.open(args.ova, "r") as tar:
@@ -400,9 +424,12 @@ def main():
         vmdk_names = [n for n in member_names if n.endswith(".vmdk")]
         mf_names = [n for n in member_names if n.endswith(".mf")]
         if len(ovf_names) != 1:
-            raise SystemExit("ERROR: expected exactly one .ovf, found %r." % ovf_names)
+            raise SystemExit(
+                "ERROR: expected exactly one .ovf, found %r." % ovf_names
+            )
 
         ovf_path = os.path.join(workdir, ovf_names[0])
+        ## TODO: Double-check that latin-1 is right here and elsewhere
         with open(ovf_path, "r", encoding="latin-1") as handle:
             ovf_text = handle.read()
         ovf_text, disk_uuid_by_href = normalize_ovf(ovf_text, salt, epoch)

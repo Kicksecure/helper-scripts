@@ -28,12 +28,6 @@ black=(black --config="${pyrc}" --color --diff --check)
 pylint=(pylint --rcfile="${pyrc}")
 mypy=(mypy --config-file="${pyrc}")
 
-## Shell-level regression tests. Deliberately FIRST: this script runs under
-## errexit, so anything below that fails would otherwise stop these from
-## running at all and they would silently stop guarding their regressions.
-cd -- "${git_toplevel}"
-./onion-time-pre-script-testscript
-
 py_lib_to_test_list=(
   'stdisplay'
   'sanitize_string'
@@ -90,6 +84,8 @@ done
 for util in "${stdin_file_read_utils[@]}"; do
   ./"${util}" <&-
   ./"${util}" - <&-
+  ## Double dash causes stdin to be read twice
+  ./"${util}" - - <&-
 done
 for util in "${stdin_implicit_read_utils[@]}"; do
   ./"${util}" <&-

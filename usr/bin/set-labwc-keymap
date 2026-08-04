@@ -1,5 +1,6 @@
 #!/bin/bash
 
+## style-ok: no-strict -- upstream/contributor strict-mode design kept as-is (forcing the full set risks changing command-substitution/shift behavior).
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
@@ -33,7 +34,8 @@ if [ "$(id -u)" = "0" ]; then
 fi
 
 scriptname=$(basename -- "$0")
-function_name="$(printf '%s\n' "$scriptname" | str_replace "-" "_")"
+# shellcheck disable=SC2034
+function_name="$(printf '%s\n' "${scriptname}" | str_replace "-" "_")"
 
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/set-keyboard-layout.sh
 

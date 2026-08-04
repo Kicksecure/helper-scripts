@@ -1,3 +1,64 @@
+commit d4895c28cc83fb52837d8a45865d9e5bfaf95fde
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 1 04:36:03 2026 -0400
+
+    output
+
+commit f45946d79f7970a36b4521a8d0da720056c40e36
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 31 18:02:33 2026 +0000
+
+    bumped changelog version
+
+commit 787b2cc0ac1e581baeff13291b73e3a7081babd9
+Merge: ae0e8759 673ff637
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 31 13:09:32 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 673ff63714d760e26bd182b663bb28592ae2a402
+Author: claude (dev127 7f58c5c1-92de-4201-b9b3-479cb3ce09c3) <noreply@anthropic.com>
+Date:   Wed Jul 29 16:49:39 2026 -0400
+
+    git-review-driver: disable the pager on the diffstat
+
+    The diffstat ran plain 'git diff --no-ext-diff --stat --summary', contradicting
+    the no-pager contract stated in the comment ten lines below it and applied to
+    the per-file diff further down. With stdout on a tty git spawns less, which
+    waits for a keypress, so any unattended git-diff-review / git-meld / git-kdiff3
+    run in a terminal wedges instead of completing.
+
+    Found by unmasking the git-meld-tests suite, which had been suppressed by a skip
+    in a consumer's dm-consumer.yml. dist-ai gains a regression test asserting no
+    pager is spawned under a tty; with this line reverted that test fails in 41s
+    instead of hanging past 240s.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit cbb1074b5d7b19ede35ee8530d85152ebe570d73
+Author: claude (dev142 b93fb2c6-e15f-4d45-8566-f3ded893b70e) <noreply@anthropic.com>
+Date:   Fri Jul 31 08:33:33 2026 -0400
+
+    CI: repoint step-summary-emit at dist-ai
+
+    - developer-meta-files deleted ci/step-summary-emit.sh; the helper now
+      ships as a binary in dist-ai at usr/bin/step-summary-emit.
+    - The summary steps still checked out developer-meta-files into .dmf and
+      called ./.dmf/ci/step-summary-emit.sh, which no longer exists -- the
+      step died with exit 127 and failed the job.
+    - Check out org-ai-assisted/dist-ai into .github/dist-ai and call
+      ./.github/dist-ai/usr/bin/step-summary-emit instead, matching the
+      pattern the developer-meta-files reusables already use.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit ae0e875955ea599ba93af15b893bbb70593bde85
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 31 11:10:58 2026 +0000
+
+    bumped changelog version
+
 commit 26121cd8ed06d334c60032720ceddee7ecd52633
 Merge: aef07569 e0ade0e0
 Author: Patrick Schleizer <adrelanos@whonix.org>

@@ -7,27 +7,27 @@
 ## Sourced fragment; the sourcing script owns the strict-mode preamble.
 
 check_tor_bootstrap_helper_variables() {
-   if command -v qubesdb-read >/dev/null 2>&1 ; then
+   if type -P qubesdb-read >/dev/null 2>if has qubesdb-read ; then1 ; then
       if [ -f /run/qubes/this-is-templatevm ] || [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
          ## 'qubesdb-read /qubes-gateway' could fail if NetVM is set to 'none'.
-         if [ "$GATEWAY_IP" = "" ]; then
+         if [ "${GATEWAY_IP}" = "" ]; then
             gateway_ip_error=""
             qubesdb_read_qubes_gateway_result="$(qubesdb-read /qubes-gateway 2>/dev/null)" || { gateway_ip_error="qubesdb_read_failed" ; qubesdb_read_qubes_gateway_result="127.0.0.1" ; };
-            GATEWAY_IP="$qubesdb_read_qubes_gateway_result"
+            GATEWAY_IP="${qubesdb_read_qubes_gateway_result}"
          fi
-         if [ "$GATEWAY_IP6" = "" ]; then
+         if [ "${GATEWAY_IP6}" = "" ]; then
             gateway_ip_error=""
             qubesdb_read_qubes_gateway_result="$(qubesdb-read /qubes-gateway6 2>/dev/null)" || { gateway_ip_error="qubesdb_read_failed" ; qubesdb_read_qubes_gateway_result="::1" ; };
-            GATEWAY_IP6="$qubesdb_read_qubes_gateway_result"
+            GATEWAY_IP6="${qubesdb_read_qubes_gateway_result}"
          fi
-         if [ "$gateway_control_port" = "" ]; then
+         if [ "${gateway_control_port}" = "" ]; then
             gateway_control_port="9051"
          fi
       fi
    fi
 
    if [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
-      if [ "$GATEWAY_IP" = "" ]; then
+      if [ "${GATEWAY_IP}" = "" ]; then
          ## IP HARDCODED. Set GATEWAY_IP through the following configuration folder instead.
          ## (Replace IP "10.152.152.10" with the actual IP intended to use.)
          ##
@@ -51,31 +51,31 @@ check_tor_bootstrap_helper_variables() {
          ## PROXY_IP="10.152.152.10"
          GATEWAY_IP="10.152.152.10"
       fi
-      if [ "$GATEWAY_IP6" = "" ]; then
+      if [ "${GATEWAY_IP6}" = "" ]; then
          ## IP HARDCODED. See above comment
          GATEWAY_IP6="fd19:c33d:88bc::10"
       fi
-      if [ "$gateway_control_port" = "" ]; then
+      if [ "${gateway_control_port}" = "" ]; then
          gateway_control_port="9051"
       fi
    fi
 
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-      if [ "$GATEWAY_IP" = "" ]; then
+      if [ "${GATEWAY_IP}" = "" ]; then
          GATEWAY_IP="127.0.0.1"
       fi
-      if [ "$GATEWAY_IP6" = "" ]; then
+      if [ "${GATEWAY_IP6}" = "" ]; then
          GATEWAY_IP6="::1"
       fi
    fi
 
-   if [ "$gateway_control_port" = "" ]; then
+   if [ "${gateway_control_port}" = "" ]; then
       gateway_control_port="9051"
    fi
-   if [ "$GATEWAY_IP" = "" ]; then
+   if [ "${GATEWAY_IP}" = "" ]; then
       GATEWAY_IP="127.0.0.1"
    fi
-   if [ "$GATEWAY_IP6" = "" ]; then
+   if [ "${GATEWAY_IP6}" = "" ]; then
       GATEWAY_IP6="::1"
    fi
 }
@@ -93,10 +93,10 @@ check_tor_bootstrap_helper_run_helper_script() {
    ##       See also: /etc/privleap/conf.d/systemcheck.conf
    check_bootstrap_helper_script_output=$( \
       timeout \
-      --kill-after="$check_tor_bootstrap_helper_kill_after" \
-      "$check_tor_bootstrap_helper_timeout_after" \
+      --kill-after="${check_tor_bootstrap_helper_kill_after}" \
+      "${check_tor_bootstrap_helper_timeout_after}" \
          leaprun \
-            "$check_bootstrap_privleap_action" \
+            "${check_bootstrap_privleap_action}" \
                2>&1 \
                ) \
                || { check_bootstrap_helper_script_exit_code="$?" ; true; };
@@ -119,16 +119,16 @@ check_tor_dormant_status() {
    ## sets: check_bootstrap_helper_script_output
    check_tor_bootstrap_helper_run_helper_script
 
-   tor_dormant_status="$check_bootstrap_helper_script_output"
+   tor_dormant_status="${check_bootstrap_helper_script_output}"
 
    ## `timeout` returns:
    ## - 124 if sigterm was sufficient
    ## - 137 if needed to use kill.
-   if [ "$check_bootstrap_helper_script_exit_code" = "124" ]; then
+   if [ "${check_bootstrap_helper_script_exit_code}" = "124" ]; then
       tor_dormant_type="sigterm"
-   elif [ "$check_bootstrap_helper_script_exit_code" = "137" ]; then
+   elif [ "${check_bootstrap_helper_script_exit_code}" = "137" ]; then
       tor_dormant_type="sigkill"
-   elif [ "$check_bootstrap_helper_script_exit_code" = "254" ]; then
+   elif [ "${check_bootstrap_helper_script_exit_code}" = "254" ]; then
       tor_dormant_type="invalid-exit-code-please-report-this-bug"
    else
       tor_dormant_type="check-ok"
@@ -143,17 +143,17 @@ check_tor_bootstrap_status() {
    ## sets: check_bootstrap_helper_script_output
    check_tor_bootstrap_helper_run_helper_script
 
-   tor_bootstrap_percent="$check_bootstrap_helper_script_exit_code"
-   tor_bootstrap_status="$(sanitize-string -- 255 "$check_bootstrap_helper_script_output")"
+   tor_bootstrap_percent="${check_bootstrap_helper_script_exit_code}"
+   tor_bootstrap_status="$(sanitize-string -- 255 "${check_bootstrap_helper_script_output}")"
 
    ## `timeout` returns:
    ## - 124 if sigterm was sufficient
    ## - 137 if needed to use kill.
-   if [ "$check_bootstrap_helper_script_exit_code" = "124" ]; then
+   if [ "${check_bootstrap_helper_script_exit_code}" = "124" ]; then
       tor_bootstrap_timeout_type="sigterm"
-   elif [ "$check_bootstrap_helper_script_exit_code" = "137" ]; then
+   elif [ "${check_bootstrap_helper_script_exit_code}" = "137" ]; then
       tor_bootstrap_timeout_type="sigkill"
-   elif [ "$check_bootstrap_helper_script_exit_code" = "254" ]; then
+   elif [ "${check_bootstrap_helper_script_exit_code}" = "254" ]; then
       tor_bootstrap_timeout_type="invalid-exit-code-please-report-this-bug"
    else
       tor_bootstrap_timeout_type="none"
@@ -168,11 +168,11 @@ check_tor_circuit_established() {
    ## sets: tor_bootstrap_timeout_type
    check_tor_bootstrap_helper_run_helper_script
 
-   tor_circuit_established_check_exit_code="$check_bootstrap_helper_script_exit_code"
+   tor_circuit_established_check_exit_code="${check_bootstrap_helper_script_exit_code}"
 
-   if [ "$check_bootstrap_helper_script_exit_code" = "0" ]; then
-      tor_circuit_established="$check_bootstrap_helper_script_output"
-      if [ "$tor_circuit_established" = "1" ]; then
+   if [ "${check_bootstrap_helper_script_exit_code}" = "0" ]; then
+      tor_circuit_established="${check_bootstrap_helper_script_output}"
+      if [ "${tor_circuit_established}" = "1" ]; then
          tor_circuit_established_word="established"
       else
          tor_circuit_established_word="not established"
@@ -189,8 +189,9 @@ check_tor_circuit_built() {
    ## action (which passes its own timeout to fit the leaprun window).
    check_bootstrap_privleap_action="tor-circuit-built-check"
    check_tor_bootstrap_helper_run_helper_script
-   tor_circuit_built_check_exit_code="$check_bootstrap_helper_script_exit_code"
-   tor_circuit_built_output="$check_bootstrap_helper_script_output"
+   tor_circuit_built_check_exit_code="${check_bootstrap_helper_script_exit_code}"
+   ## Used to be displayed by onion-time-pre-script, but no longer.
+   #tor_circuit_built_output="$check_bootstrap_helper_script_output"
 }
 
 tor_consensus_valid-after() {
@@ -200,18 +201,18 @@ tor_consensus_valid-after() {
    ## sets: check_bootstrap_helper_script_output
    check_tor_bootstrap_helper_run_helper_script
 
-   tor_consensus_valid_after_exit_code="$check_bootstrap_helper_script_exit_code"
-   tor_consensus_valid_after_output="$check_bootstrap_helper_script_output"
+   tor_consensus_valid_after_exit_code="${check_bootstrap_helper_script_exit_code}"
+   tor_consensus_valid_after_output="${check_bootstrap_helper_script_output}"
    tor_consensus_valid_after_unixtime=""
-   if [ ! "$check_bootstrap_helper_script_exit_code" = "0" ]; then
-      true "check_bootstrap_helper_script_exit_code is non-zero $check_bootstrap_helper_script_exit_code."
+   if [ ! "${check_bootstrap_helper_script_exit_code}" = "0" ]; then
+      true "check_bootstrap_helper_script_exit_code is non-zero ${check_bootstrap_helper_script_exit_code}."
       return 0
    fi
-   if [ "$tor_consensus_valid_after_output" = "" ]; then
+   if [ "${tor_consensus_valid_after_output}" = "" ]; then
       true "tor_consensus_valid_after_output is empty."
       return 0
    fi
-   tor_consensus_valid_after_unixtime="$(date --utc --date="$tor_consensus_valid_after_output" +"%s")" || true
+   tor_consensus_valid_after_unixtime="$(date --utc --date="${tor_consensus_valid_after_output}" +"%s")" || true
 }
 
 tor_consensus_valid-until() {
@@ -221,16 +222,16 @@ tor_consensus_valid-until() {
    ## sets: check_bootstrap_helper_script_output
    check_tor_bootstrap_helper_run_helper_script
 
-   tor_consensus_valid_until_exit_code="$check_bootstrap_helper_script_exit_code"
-   tor_consensus_valid_until_output="$check_bootstrap_helper_script_output"
+   tor_consensus_valid_until_exit_code="${check_bootstrap_helper_script_exit_code}"
+   tor_consensus_valid_until_output="${check_bootstrap_helper_script_output}"
    tor_consensus_valid_until_unixtime=""
-   if [ ! "$check_bootstrap_helper_script_exit_code" = "0" ]; then
-      true "check_bootstrap_helper_script_exit_code is non-zero $check_bootstrap_helper_script_exit_code."
+   if [ ! "${check_bootstrap_helper_script_exit_code}" = "0" ]; then
+      true "check_bootstrap_helper_script_exit_code is non-zero ${check_bootstrap_helper_script_exit_code}."
       return 0
    fi
-   if [ "$tor_consensus_valid_until_output" = "" ]; then
+   if [ "${tor_consensus_valid_until_output}" = "" ]; then
       true "tor_consensus_valid_until_output is empty."
       return 0
    fi
-   tor_consensus_valid_until_unixtime="$(date --utc --date="$tor_consensus_valid_until_output" +"%s")" || true
+   tor_consensus_valid_until_unixtime="$(date --utc --date="${tor_consensus_valid_until_output}" +"%s")" || true
 }

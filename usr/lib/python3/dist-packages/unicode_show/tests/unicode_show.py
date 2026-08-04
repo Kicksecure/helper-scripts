@@ -8,8 +8,6 @@
 import os
 import pty
 import sys
-import unittest
-import io
 import tempfile
 from typing import Callable
 from io import BytesIO, FileIO, TextIOWrapper
@@ -560,176 +558,87 @@ FILENAME_PLACEHOLDER:1: pre[U+202A]post
             file_contents=test_string,
         )
 
+    def test_missing_newline_at_end(self) -> None:
+        """
+        Tests if a file with no newline at the end triggers a warning.
+        """
 
-class TestUnicodeShowMain(unittest.TestCase):
-    """
-    Drive main() over real files and stdin.
+        test_string: str = "no terminator"
+        expect_string: str = """\
+FILENAME_PLACEHOLDER:1: [missing newline at end]
+"""
+        self._test_file(
+            main_func=unicode_show_main,
+            argv0=self.argv0,
+            stdout_string=expect_string,
+            stderr_string="",
+            exit_code=1,
+            file_contents=test_string,
+        )
 
-    The existing tests cover the scanning helpers; main()'s file handling, its
-    stdin path and its error branches had no test, so a read failure or a
-    non-UTF-8 file was never exercised.
-    """
+    def test_directory_argument(self) -> None:
+        """
+        Tests if trying to unicode-scan a directory errors out.
+        """
 
-    def _run(
-        self, args: list[str], stdin_text: str | None = None
-    ) -> tuple[int, str, str]:
-        """Run main(), returning (exit code, stdout, stderr)."""
+        dir_str: str = tempfile.gettempdir()
+        self._test_args(
+            main_func=unicode_show_main,
+            argv0=self.argv0,
+            stdout_string="",
+            stderr_string=f"""\
+[ERROR] File read error [{dir_str}]: [Errno 21] Is a directory: '{dir_str}'
+""",
+            exit_code=2,
+            args=[dir_str],
+        )
 
-        out: io.StringIO = io.StringIO()
-        err: io.StringIO = io.StringIO()
-        stdin_stream: object = None
-        if stdin_text is not None:
-            stdin_stream = io.TextIOWrapper(
-                io.BytesIO(stdin_text.encode("utf-8")),
-                encoding="utf-8",
-                newline="\n",
+    def test_describe_char_allowed_characters(self) -> None:
+        """
+        Tests if describe_char outputs allowed characters literally rather
+        than converting them to a Unicode escape.
+        """
+
+        self.assertEqual(
+            describe_char("a"), "a (U+0061, LATIN SMALL LETTER A, Ll)"
+        )
+        self.assertEqual(describe_char("-"), "- (U+002D, HYPHEN-MINUS, Pd)")
+
+    def test_no_input(self) -> None:
+        """
+        Tests if unicode-show exits normally if given neither a file nor stdin
+        input. Note that the run-tests Bash script handles the case where stdin
+        is closed before unicode-show starts.
+        """
+
+        self._test_stdin(
+            main_func=unicode_show_main,
+            argv0=self.argv0,
+            stdout_string="",
+            stderr_string="",
+            args=[],
+            exit_code=0,
+            stdin_string="",
+        )
+
+    def test_unexpected_error(self) -> None:
+        """
+        Tests if an unexpected exception exits 2 and prints the exception
+        message.
+        """
+
+        with mock.patch(
+            "unicode_show.unicode_show.scan_file",
+            side_effect=ValueError("boom"),
+        ):
+            self._test_stdin(
+                main_func=unicode_show_main,
+                argv0=self.argv0,
+                stdout_string="",
+                stderr_string="""\
+[ERROR] Unexpected error [main]: boom
+""",
+                args=[],
+                exit_code=2,
+                stdin_string="text\n",
             )
-        with (
-            mock.patch.object(sys, "argv", ["unicode-show", *args]),
-            mock.patch.object(sys, "stdout", out),
-            mock.patch.object(sys, "stderr", err),
-            mock.patch.object(sys, "stdin", stdin_stream),
-        ):
-            exit_code: int = unicode_show_main()
-        return exit_code, out.getvalue(), err.getvalue()
-
-    def test_missing_newline_at_end_is_reported(self) -> None:
-        """A file whose last line has no terminator is suspicious."""
-
-        with tempfile.NamedTemporaryFile(
-            "w", suffix=".txt", delete=False, encoding="utf-8"
-        ) as handle:
-            handle.write("no terminator")
-            path: str = handle.name
-        try:
-            _exit_code, output, _err = self._run([path])
-        finally:
-            os.unlink(path)
-
-        self.assertIn("missing newline at end", output)
-
-    def test_trailing_whitespace_is_reported(self) -> None:
-        """Trailing whitespace is suspicious and named as such."""
-
-        with tempfile.NamedTemporaryFile(
-            "w", suffix=".txt", delete=False, encoding="utf-8"
-        ) as handle:
-            handle.write("text   \n")
-            path: str = handle.name
-        try:
-            exit_code, output, _err = self._run([path])
-        finally:
-            os.unlink(path)
-
-        ## reported by annotating each space, not by naming the category
-        self.assertEqual(exit_code, 1)
-        self.assertIn("[U+0020]", output)
-
-    def test_non_utf8_file_fails_closed(self) -> None:
-        """
-        Decoding must fail closed rather than fall back to replacement, or
-        suspicious bytes would slip past the scanner. Exit 2.
-        """
-
-        with tempfile.NamedTemporaryFile(
-            "wb", suffix=".bin", delete=False
-        ) as handle:
-            handle.write(b"\xff\xfe invalid utf-8\n")
-            path: str = handle.name
-        try:
-            exit_code, _out, err = self._run([path])
-        finally:
-            os.unlink(path)
-
-        self.assertEqual(exit_code, 2)
-        self.assertIn("Unicode decode error", err)
-
-    def test_unreadable_path_is_an_error(self) -> None:
-        """
-        A path that cannot be opened at all (a directory) is a read error, not
-        a clean scan.
-        """
-
-        exit_code, _out, err = self._run([tempfile.gettempdir()])
-
-        self.assertEqual(exit_code, 2)
-        self.assertIn("File read error", err)
-
-    def test_reads_stdin_when_no_file_is_given(self) -> None:
-        """With no argument the scan runs over stdin."""
-
-        exit_code, output, _err = self._run([], stdin_text="plain text\n")
-
-        self.assertEqual(exit_code, 0)
-        self.assertEqual(output, "")
-
-    def test_stdin_decode_error_fails_closed(self) -> None:
-        """
-        A stdin that cannot be decoded strictly is reported and exits 2, for
-        the same fail-closed reason as a file.
-        """
-
-        broken: io.TextIOWrapper = io.TextIOWrapper(
-            io.BytesIO(b"\xff\xfe bad\n"), encoding="utf-8", newline="\n"
-        )
-        out: io.StringIO = io.StringIO()
-        err: io.StringIO = io.StringIO()
-        with (
-            mock.patch.object(sys, "argv", ["unicode-show"]),
-            mock.patch.object(sys, "stdout", out),
-            mock.patch.object(sys, "stderr", err),
-            mock.patch.object(sys, "stdin", broken),
-        ):
-            exit_code: int = unicode_show_main()
-
-        self.assertEqual(exit_code, 2)
-        self.assertIn("Unicode decode error", err.getvalue())
-
-    def test_describe_char_shows_an_allowed_character_literally(self) -> None:
-        """
-        describe_char() escapes with ascii() by default, but a character that
-        is both codepoint- and semantically-allowed and is not whitespace is
-        shown as itself. Only the escaping side was covered.
-        """
-
-        self.assertTrue(describe_char("a").startswith("a (U+0061"))
-        self.assertTrue(describe_char("-").startswith("- (U+002D"))
-
-    def test_no_file_and_no_stdin_is_clean(self) -> None:
-        """
-        With neither a file argument nor a stdin there is nothing to scan;
-        that is a clean result, not an error.
-        """
-
-        exit_code, output, err = self._run([])
-
-        self.assertEqual(exit_code, 0)
-        self.assertEqual(output, "")
-        self.assertEqual(err, "")
-
-    def test_unexpected_error_is_caught_and_reported(self) -> None:
-        """
-        The outer handler exists so an unforeseen failure exits 2 with a
-        message instead of a traceback. The stdin path's inner handler catches
-        only UnicodeDecodeError, so a different exception reaches it.
-        """
-
-        stdin_stream: io.TextIOWrapper = io.TextIOWrapper(
-            io.BytesIO(b"text\n"), encoding="utf-8", newline="\n"
-        )
-        out: io.StringIO = io.StringIO()
-        err: io.StringIO = io.StringIO()
-        with (
-            mock.patch.object(sys, "argv", ["unicode-show"]),
-            mock.patch.object(sys, "stdout", out),
-            mock.patch.object(sys, "stderr", err),
-            mock.patch.object(sys, "stdin", stdin_stream),
-            mock.patch(
-                "unicode_show.unicode_show.scan_file",
-                side_effect=ValueError("boom"),
-            ),
-        ):
-            exit_code: int = unicode_show_main()
-
-        self.assertEqual(exit_code, 2)
-        self.assertIn("Unexpected error", err.getvalue())

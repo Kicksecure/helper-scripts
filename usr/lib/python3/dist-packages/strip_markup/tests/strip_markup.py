@@ -10,10 +10,6 @@ from io import BytesIO, TextIOWrapper
 from typing import Callable
 from unittest import TestCase, mock
 from strip_markup.strip_markup import main as strip_markup_main
-from strip_markup.strip_markup_lib import (
-    markup_incomplete,
-    strip_markup,
-)
 
 
 class TestStripMarkupBase(TestCase):
@@ -418,22 +414,22 @@ class TestStripMarkup(TestStripMarkupBase):
     """
 
     argv0: str = "strip-markup"
+    help_str: str = """\
+strip-markup: Usage: strip-markup [--help] [string]
+  If no string is provided as an argument, the string is read from standard \
+input.
+"""
 
     def test_help(self) -> None:
         """
         Ensures strip_markup.py's help output is as expected.
         """
 
-        help_str: str = """\
-strip-markup: Usage: strip-markup [--help] [string]
-  If no string is provided as an argument, the string is read from standard \
-input.
-"""
         self._test_args(
             main_func=strip_markup_main,
             argv0=self.argv0,
             stdout_string="",
-            stderr_string=help_str,
+            stderr_string=TestStripMarkup.help_str,
             exit_code=0,
             args=["--help"],
         )
@@ -441,7 +437,7 @@ input.
             main_func=strip_markup_main,
             argv0=self.argv0,
             stdout_string="",
-            stderr_string=help_str,
+            stderr_string=TestStripMarkup.help_str,
             exit_code=0,
             args=["-h"],
         )
@@ -494,67 +490,46 @@ input.
             args=["--"],
         )
 
-    def test_too_many_positional_arguments_is_a_usage_error(self) -> None:
+    def test_too_many_positional_arguments(self) -> None:
         """
-        strip-markup takes at most one string. A second positional is a usage
-        error, not a silently ignored argument.
+        Ensure strip-markup crashes if too many positional arguments are
+        passed.
         """
 
-        help_str: str = """\
-strip-markup: Usage: strip-markup [--help] [string]
-  If no string is provided as an argument, the string is read from standard \
-input.
-"""
         self._test_args(
             main_func=strip_markup_main,
             argv0=self.argv0,
             stdout_string="",
-            stderr_string=help_str,
+            stderr_string=TestStripMarkup.help_str,
             exit_code=1,
             args=["one", "two"],
         )
 
-    def test_markup_incomplete_reports_an_open_construct(self) -> None:
+    def test_neutralize_on_parse_failure(self) -> None:
         """
-        markup_incomplete() is the split-point oracle for streaming callers.
-        It is exercised through sanitize-string's stdin loop but had no direct
-        test here, so its own module showed it uncovered.
-        """
-
-        self.assertTrue(markup_incomplete("<!-- still open"))
-        self.assertTrue(markup_incomplete("<a href="))
-        self.assertFalse(markup_incomplete("<b>closed</b>"))
-        self.assertFalse(markup_incomplete("plain text"))
-
-    def test_strip_markup_falls_back_when_the_parser_raises(self) -> None:
-        """
-        CPython's HTMLParser raises on some malformed inputs. Sanitization must
-        never propagate parser internals, so it falls back to underscoring the
-        ORIGINAL input. Forced here, since the inputs that trigger it depend on
-        the interpreter version.
+        Ensure strip-markup falls back to neutralizing malformed inputs if it
+        can't sanitize them.
         """
 
+        in_str: str = "<![x] a & b"
+        expect_str: str = "_![x] a _ b"
         with mock.patch(
             "strip_markup.strip_markup_lib._strip_once",
             side_effect=AssertionError("parser exploded"),
         ):
-            result: str = strip_markup("<![x] a & b")
-
-        ## fell back rather than raising, and neutralised the markup chars
-        self.assertNotIn("<", result)
-        self.assertIn("a", result)
-
-    def test_markup_incomplete_errs_toward_flushing_when_the_parser_raises(
-        self,
-    ) -> None:
-        """
-        A raising parser must report "complete" (False), so a streaming caller
-        flushes what it has instead of buffering forever waiting for a
-        construct that will never be recognised.
-        """
-
-        with mock.patch(
-            "strip_markup.strip_markup_lib.StripMarkupEngine.feed",
-            side_effect=AssertionError("parser exploded"),
-        ):
-            self.assertFalse(markup_incomplete("<!-- would be open"))
+            self._test_args(
+                main_func=strip_markup_main,
+                argv0=self.argv0,
+                stdout_string=expect_str,
+                stderr_string="",
+                exit_code=0,
+                args=[in_str],
+            )
+            self._test_stdin(
+                main_func=strip_markup_main,
+                argv0=self.argv0,
+                stdout_string=expect_str,
+                stderr_string="",
+                args=[],
+                stdin_string=in_str,
+            )

@@ -48,11 +48,11 @@ check_ref_commits_for_unicode() {
     die 2 "git_log_cmd failed! git_log_cmd: ${git_log_cmd[*]}"
   fi
 
-  if [ "$git_log_output" = "" ]; then
+  if [ "${git_log_output}" = "" ]; then
     die 2 'No new commits in target ref!'
   fi
 
-  readarray -t commit_list <<< "$git_log_output"
+  readarray -t commit_list <<< "${git_log_output}"
 
   if [ -z "${commit_list[0]:-}" ]; then
     die 2 'commit_list array first element is empty or missing!'
@@ -86,7 +86,7 @@ check_ref_commits_for_unicode() {
       printf '%s\n' "${unicode_report:-'No stdout or stderr from unicode-show!'}"
       found_malicious_unicode='true'
     else
-      log info "No unicode detected in commit '${commit}'."
+      true "INFO: No unicode detected in commit '${commit}'."
     fi
   done
 

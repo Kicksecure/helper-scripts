@@ -1,5 +1,6 @@
 #!/bin/bash
 
+## style-ok: no-strict -- upstream/contributor strict-mode design kept as-is (forcing the full set risks changing command-substitution/shift behavior).
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
@@ -38,22 +39,22 @@ while [ -n "${1:-}" ]; do
 done
 
 error_exit() {
-  exit_code="${1:-}"
+  local exit_code="${1:-}"
 
-  if [ -z "$exit_code" ]; then
+  if [ -z "${exit_code}" ]; then
     printf '%s\n' 'WARNING: No exit code provided to error_exit!'
     exit_code='1'
   fi
 
-  if ! [[ "$exit_code" =~ ^[0-9]*$ ]]; then
+  if ! [[ "${exit_code}" =~ ^[0-9]*$ ]]; then
     printf '%s\n' 'WARNING: Non-numeric exit code provided to error_exit!'
     exit_code='1'
   fi
 
-  if [ "$exit_zero_on_error" = 'true' ]; then
+  if [ "${exit_zero_on_error}" = 'true' ]; then
     exit 0
   fi
-  exit "$exit_code"
+  exit "${exit_code}"
 }
 
 lock_failure_warn() {
@@ -61,12 +62,12 @@ lock_failure_warn() {
   short_msg="${1:-}"
   shift
   long_msg_args=( "$@" )
-  case "$message_level" in
+  case "${message_level}" in
     'noisy')
       /usr/libexec/msgcollector/generic_gui_message.py "${long_msg_args[@]}"
       ;;
     'less-noisy')
-      if [ "$(notify-send --action=MORE='More info...' --app-name="$title" 'Cannot lock screen!' "$short_msg")" = 'MORE' ]; then
+      if [ "$(notify-send --action=MORE='More info...' --app-name="${title}" 'Cannot lock screen!' "${short_msg}")" = 'MORE' ]; then
         /usr/libexec/msgcollector/generic_gui_message.py "${long_msg_args[@]}"
       fi
       ;;
@@ -74,7 +75,7 @@ lock_failure_warn() {
       true
       ;;
     *)
-      printf '%s\n' "ERROR: Unrecognized message level '$message_level' encountered!"
+      printf '%s\n' "ERROR: Unrecognized message level '${message_level}' encountered!"
       error_exit 1
       ;;
   esac
@@ -85,20 +86,20 @@ user_list_str="$(/usr/libexec/helper-scripts/get-user-list)" || {
   question=""
   button="ok"
   msg="<p>Failed to get user list, cannot lock screen!</p>"
-  lock_failure_warn "$short_msg" "error" "$title" "$msg" "$question" "$button"
+  lock_failure_warn "${short_msg}" "error" "${title}" "${msg}" "${question}" "${button}"
   error_exit 1
 }
-readarray -t user_list <<< "$user_list_str"
+readarray -t user_list <<< "${user_list_str}"
 
 password_status_list_str="$(leaprun get-password-status-list)" || {
   short_msg='Failed to check user password status!'
   question=""
   button="ok"
   msg="<p>Failed to check user password status, cannot lock screen!</p>"
-  lock_failure_warn "$short_msg" "error" "$title" "$msg" "$question" "$button"
+  lock_failure_warn "${short_msg}" "error" "${title}" "${msg}" "${question}" "${button}"
   error_exit 1
 }
-readarray -t password_status_list <<< "$password_status_list_str"
+readarray -t password_status_list <<< "${password_status_list_str}"
 
 for (( user_idx = 0; user_idx < ${#user_list[@]}; user_idx++ )); do
   if [ "${user_list[user_idx]}" = "${active_user_name}" ]; then
@@ -107,42 +108,42 @@ for (( user_idx = 0; user_idx < ${#user_list[@]}; user_idx++ )); do
 done
 
 if [[ "${password_status_list[user_idx]}" =~ ^Locked ]]; then
-  short_msg="Account '$active_user_name' has a locked password!"
+  short_msg="Account '${active_user_name}' has a locked password!"
   question=""
   button="ok"
-  msg="Refusing to lock screen, because current account '$active_user_name' has a locked password.
+  msg="Refusing to lock screen, because current account '${active_user_name}' has a locked password.
 
 If the screen was locked, it would be impossible to unlock it. Please unlock the password (and if needed, set a password) to enable screen locking."
-  msg="$(/usr/libexec/msgcollector/br_add.py "$msg")"
-  lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+  msg="$(/usr/libexec/msgcollector/br_add.py "${msg}")"
+  lock_failure_warn "${short_msg}" "error" "${title}" "<p>${msg}</p>" "${question}" "${button}"
   error_exit 1
 fi
 
 if [[ "${password_status_list[user_idx]}" =~ ^Restricted ]]; then
-  short_msg="Account '$active_user_name' has a locked password!"
+  short_msg="Account '${active_user_name}' has a locked password!"
   question=""
   button="ok"
-  msg="Refusing to lock screen, because current account '$active_user_name' has a locked password.
+  msg="Refusing to lock screen, because current account '${active_user_name}' has a locked password.
 
 If the screen was locked, it would be impossible to unlock it. Please set a password to enable screen locking."
-  msg="$(/usr/libexec/msgcollector/br_add.py "$msg")"
-  lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+  msg="$(/usr/libexec/msgcollector/br_add.py "${msg}")"
+  lock_failure_warn "${short_msg}" "error" "${title}" "<p>${msg}</p>" "${question}" "${button}"
   error_exit 1
 fi
 
 if [[ "${password_status_list[user_idx]}" =~ ^Absent ]]; then
-  short_msg="Account '$active_user_name' has no password set!"
+  short_msg="Account '${active_user_name}' has no password set!"
   question=""
   button="ok"
-  msg="Refusing to lock screen, because current account '$active_user_name' has no password set.
+  msg="Refusing to lock screen, because current account '${active_user_name}' has no password set.
 
 If the screen was locked, it would automatically unlock the moment any user input was received. Please set a password to enable screen locking."
-  msg="$(/usr/libexec/msgcollector/br_add.py "$msg")"
-  lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+  msg="$(/usr/libexec/msgcollector/br_add.py "${msg}")"
+  lock_failure_warn "${short_msg}" "error" "${title}" "<p>${msg}</p>" "${question}" "${button}"
   error_exit 1
 fi
 
-case "$XDG_SESSION_TYPE" in
+case "${XDG_SESSION_TYPE}" in
    x11)
       xscreensaver-command --lock
       ;;
@@ -165,22 +166,22 @@ case "$XDG_SESSION_TYPE" in
             swaylock_exit_code="$?"
          fi
       fi
-      if [ "$swaylock_exit_code" != '0' ]; then
+      if [ "${swaylock_exit_code}" != '0' ]; then
          short_msg='swaylock encountered an error!'
          question=""
          button="ok"
          msg="Error encountered while locking screen!
 
-The screen locker ('swaylock') exited with code '$swaylock_exit_code'. Non-zero exit codes generally indicate something has gone wrong.
+The screen locker ('swaylock') exited with code '${swaylock_exit_code}'. Non-zero exit codes generally indicate something has gone wrong.
 
 Please report this bug!
 
 Information from 'swaylock':
 
 <pre>
-$swaylock_output
+${swaylock_output}
 </pre>"
-         lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+         lock_failure_warn "${short_msg}" "error" "${title}" "<p>${msg}</p>" "${question}" "${button}"
          error_exit 1
       fi
       ;;
@@ -192,10 +193,10 @@ $swaylock_output
 
 The XDG_SESSION_TYPE environment variable must be set to 'x11' or 'wayland' to determine the proper screen locker to use.
 
-However, XDG_SESSION_TYPE is currently set to '$XDG_SESSION_TYPE'.
+However, XDG_SESSION_TYPE is currently set to '${XDG_SESSION_TYPE}'.
 
 Please report this bug!"
-      lock_failure_warn "$short_msg" "error" "$title" "<p>$msg</p>" "$question" "$button"
+      lock_failure_warn "${short_msg}" "error" "${title}" "<p>${msg}</p>" "${question}" "${button}"
       error_exit 1
       ;;
 esac

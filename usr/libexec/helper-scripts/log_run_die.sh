@@ -101,7 +101,7 @@ log() {
   local -
   set +x
 
-  local log_type log_type_up log_color log_source_script log_level_colorized log_content log_full
+  local log_type log_type_up log_color log_source_script log_level_colorized log_content log_full log_who_ami_maybe
   local should_print=0
   local caller_level_num msg_level_num
 
@@ -174,17 +174,17 @@ log() {
       ;;
   esac
 
-  true "${FUNCNAME[0]}: INFO: log_level: $log_level | log_type: $log_type"
+  true "${FUNCNAME[0]}: INFO: log_level: ${log_level} | log_type: ${log_type}"
   caller_level_num="$(__log_level_num "${log_level}")"
-  true "${FUNCNAME[0]}: INFO: log_level: $log_level | caller_level_num: $caller_level_num"
+  true "${FUNCNAME[0]}: INFO: log_level: ${log_level} | caller_level_num: ${caller_level_num}"
   msg_level_num="$(__log_level_num "${log_type}")"
-  true "${FUNCNAME[0]}: INFO: log_type: $log_type | msg_level_num: $msg_level_num"
+  true "${FUNCNAME[0]}: INFO: log_type: ${log_type} | msg_level_num: ${msg_level_num}"
 
   if (( msg_level_num <= caller_level_num )); then
     should_print=1
   fi
 
-  if [ "$should_print" = 1 ]; then
+  if [ "${should_print}" = 1 ]; then
     stecho "${log_full}" >&2
   fi
 
@@ -221,7 +221,7 @@ prompt_yes_no_tty() {
 }
 
 
-## For one liners 'log error; die'
+## For one-liners 'log error; die'
 ## 'log' should not handle exits, because then it would not be possible
 ## to log consecutive errors on multiple lines, making die more suitable
 ## usage: die # "msg"
@@ -297,7 +297,7 @@ log_run_silent_if_success() {
 }
 
 
-## Useful to get runtime mid run to log easily
+## Useful to get runtime mid-run to log easily
 ## Variable to define outside: start_time
 # shellcheck disable=SC2154
 get_elapsed_time() {

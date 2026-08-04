@@ -1,5 +1,6 @@
 #!/bin/bash
 
+## style-ok: no-strict -- upstream/contributor strict-mode design kept as-is (forcing the full set risks changing command-substitution/shift behavior).
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
@@ -31,13 +32,12 @@ exit_code: ${exit_code}"
 
 exit_handler() {
   exit_code="${?}"
-  printf '%s\n' ""
-  if [ "$exit_code" = 0 ]; then
+  if [ "${exit_code}" = 0 ]; then
     log notice "${FUNCNAME[0]}: OK."
   else
-    log error "${FUNCNAME[0]}: Exiting with code '$exit_code'."
+    log error "${FUNCNAME[0]}: Exiting with code '${exit_code}'."
   fi
-  exit "$exit_code"
+  exit "${exit_code}"
 }
 
 ## Checks to see if all items in "check_str" are present in the output of a
@@ -354,7 +354,7 @@ set_labwc_keymap() {
     return 1
   fi
 
-  ## If 'labwc's environment config file exists, read it.
+  ## If labwc's environment config file exists, read it.
   labwc_existing_config=''
   if [ -f "${labwc_config_path}" ]; then
     if ! [ -r "${labwc_config_path}" ]; then
@@ -533,7 +533,6 @@ prompt_for_luks_on_root_fs_maybe() {
     log error "${FUNCNAME[0]}: OS disk is encrypted, cannot prompt user for confirmation, and --force not used! See:"
     log error "${FUNCNAME[0]}: https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption"
     log notice "${FUNCNAME[0]}: If the keyboard layout change will not make the LUKS passphrase impossible to type, use --force to skip this check."
-    printf '%s\n' ""
     return 1
   fi
   if [ "${scriptname:-}" = 'set-system-keymap' ]; then
@@ -698,14 +697,14 @@ labwc_kb_reload_root() {
       loginctl -j list-users
   )" || true
 
-  if [ "$loginctl_users_json" = "" ]; then
+  if [ "${loginctl_users_json}" = "" ]; then
     log warn "${FUNCNAME[0]}: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
     return 0
   fi
 
-  loginctl_users_parsed="$(jq -r '.[] | .user' <<< "$loginctl_users_json")" || true
+  loginctl_users_parsed="$(jq -r '.[] | .user' <<< "${loginctl_users_json}")" || true
 
-  if [ "$loginctl_users_parsed" = "" ]; then
+  if [ "${loginctl_users_parsed}" = "" ]; then
     log warn "${FUNCNAME[0]}: Minor issue. Failed to parse 'loginctl_users_json' using 'jq'.
 loginctl_users_json: '${loginctl_users_json}'
 Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
@@ -714,8 +713,8 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
 
   user_list=()
   while IFS= read -r -- line; do
-    user_list+=("$line")
-  done <<< "$loginctl_users_parsed"
+    user_list+=("${line}")
+  done <<< "${loginctl_users_parsed}"
 
   true "user_list: ${user_list[*]}"
 
@@ -775,7 +774,7 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
     done
   done
 
-  if [ "$counter" = 0 ]; then
+  if [ "${counter}" = 0 ]; then
     log notice "${FUNCNAME[0]}: No need to send SIGHUP to 'labwc' because none running."
   fi
 }
@@ -803,7 +802,6 @@ set_system_keymap() {
   fi
 
   set_console_keymap || return 1
-  printf '%s\n' ""
 
   ## {{{ Set the specified keyboard layout for labwc both system-wide and for the greeter.
 
@@ -811,20 +809,16 @@ set_system_keymap() {
 
   labwc_config_path="${labwc_system_wide_config_path}"
   set_labwc_keymap || return 1
-  printf '%s\n' ""
 
   log notice "${FUNCNAME[0]}: 'greetd' configuration..."
   labwc_config_path="${labwc_greeter_config_path}"
   set_labwc_keymap || return 1
-  printf '%s\n' ""
 
   ## }}}
 
   set_grub_keymap || return 1
-  printf '%s\n' ""
 
   labwc_kb_reload_root
-  printf '%s\n' ""
 
   if [ "$("${timeout_command[@]}" systemctl is-active kloak.service)" = 'active' ]; then
     log notice "${FUNCNAME[0]}: Restarting 'kloak'..."
@@ -833,12 +827,10 @@ set_system_keymap() {
     else
       log warn "${FUNCNAME[0]}: Failed to restart 'kloak'!"
     fi
-    printf '%s\n' ""
   fi
 
   ## Soft-fail.
   dracut_run
-  printf '%s\n' ""
 
   if [ "${exit_code:-0}" = 0 ]; then
     log notice "${FUNCNAME[0]}: Keyboard layout change successful."
@@ -1045,7 +1037,6 @@ Type 'exit' to quit without changing keyboard layout settings.
   while true; do
     log question "${FUNCNAME[0]}: Enter the keyboard layout(s) you would like to use:"
     read -r -- layout_str
-    printf '%s\n' ""
     if [ -z "${layout_str}" ]; then
       log notice "${FUNCNAME[0]}: No keyboard layouts specified. Exiting."
       return 0
@@ -1084,7 +1075,6 @@ Type 'exit' to quit without changing keyboard layout settings.
   while true; do
     log question "${FUNCNAME[0]}: Enter the keyboard layout variant(s) if desired, leave empty otherwise:"
     read -r -- variant_str
-    printf '%s\n' ""
     if [ -z "${variant_str}" ]; then
       break
     fi
@@ -1127,7 +1117,6 @@ Type 'exit' to quit without changing keyboard layout settings.
   while true; do
     log question "${FUNCNAME[0]}: Enter the keyboard layout option(s) if desired, leave empty otherwise:"
     read -r -- option_str
-    printf '%s\n' ""
     if [ -z "${option_str}" ]; then
       break
     fi
@@ -1215,7 +1204,7 @@ parse_cmd() {
           unknown_option_error "$1"
         fi
         labwc_config_path="$(cut -d'=' -f2- <<< "$1")"
-        if [ -z "$labwc_config_path" ]; then
+        if [ -z "${labwc_config_path}" ]; then
           log error "${FUNCNAME[0]}: No '--config=path' specified!"
           exit 1
         fi
@@ -1250,7 +1239,7 @@ parse_cmd() {
   args=( "$@" )
   true "${FUNCNAME[0]}: args: ${args[*]}"
 
-  if [ "$do_build_all_grub_keymaps" = "true" ]; then
+  if [ "${do_build_all_grub_keymaps}" = "true" ]; then
     ## Build all GRUB keymaps if requested.
     build_all_grub_keymaps
     exit 0
@@ -1303,7 +1292,6 @@ trap "error_handler" ERR
 trap "exit_handler" EXIT
 
 log notice "$0: Start."
-printf '%s\n' ""
 
 has safe-rm
 has mktemp
