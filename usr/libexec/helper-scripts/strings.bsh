@@ -378,7 +378,34 @@ is_whole_number() {
   [[ "$1" =~ ^[0-9]+$ ]]
 }
 
-## same results as is_whole_number, but also allows negative numbers
+## R-141's mandated guard before an untrusted value reaches an arithmetic
+## context or an array subscript. It asks bash's own printf whether the value is
+## an integer it accepts, so the accept-set is strtoimax syntax -- deliberately
+## NOT a regex, which cannot reproduce those edge cases. The printf FAILING is
+## the check; rewriting it to '%s' would make this return 0 for every input and
+## silently retire the guard.
+##
+## Its accept-set is WIDER than is_whole_number's, in ways a caller must know
+## (all verified, not inferred):
+##
+## success:
+##   42  -7  +5  0        decimal, signed either way
+##   ''                   EMPTY INPUT -- printf '%d' '' prints 0 and succeeds.
+##                        Safe where it lands: '' is 0 in an arithmetic context
+##                        and a syntax error as a subscript, so it cannot smuggle
+##                        anything past R-141. Callers that need a VALUE rather
+##                        than a safe one must reject '' themselves.
+##   '  42'               LEADING whitespace is accepted (trailing is not)
+##   0x1F  0b101  010     hex / binary / octal-looking literals, which an
+##                        arithmetic context then evaluates in that base
+##   99999999999999999999 out-of-range still succeeds; this is a syntax check,
+##                        not a range check
+##
+## fail:
+##   '42  '  ' '  '-'  '1 2'  5.5  5,500  1.23e10  abc
+##
+## For "digits only, no sign, no whitespace, no base prefix" use
+## is_whole_number instead -- that is a regex and means exactly what it says.
 is_integer(){
   printf '%d' "${1}" >/dev/null 2>&1 || return 1
 }
