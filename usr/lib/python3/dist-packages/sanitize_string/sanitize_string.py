@@ -9,6 +9,7 @@
 sanitize_string.py: Strips markup and control characters from a string.
 """
 
+import contextlib
 import os
 import sys
 from .sanitize_string_lib import sanitize_string
@@ -27,11 +28,15 @@ def _silence_broken_pipe_on_shutdown() -> None:
     behavior while suppressing the shutdown noise.
     """
 
-    try:
+    ## contextlib.suppress rather than a bare 'except OSError: pass' (an empty
+    ## except is a smell); the try/finally closes the fd dup2 duplicated, so it
+    ## is not leaked even though the process is about to exit.
+    with contextlib.suppress(OSError):
         devnull_fd: int = os.open(os.devnull, os.O_WRONLY)
-        os.dup2(devnull_fd, sys.stdout.fileno())
-    except OSError:
-        pass
+        try:
+            os.dup2(devnull_fd, sys.stdout.fileno())
+        finally:
+            os.close(devnull_fd)
 
 
 def print_usage() -> None:

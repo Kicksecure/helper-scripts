@@ -16,7 +16,11 @@ from strip_markup.tests.strip_markup import TestStripMarkupBase
 from stdisplay.tests.stdisplay import simple_escape_cases
 
 import sanitize_string.sanitize_string as sanitize_string_module
-from sanitize_string.sanitize_string import main as sanitize_string_main
+
+## Single import of the module (aliased below) rather than also using
+## 'from sanitize_string.sanitize_string import main', which CodeQL flags as
+## importing the same module both with 'import' and 'import from'.
+sanitize_string_main = sanitize_string_module.main
 
 
 class TestSanitizeString(TestStripMarkupBase):
