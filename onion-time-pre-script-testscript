@@ -73,9 +73,9 @@ check() {
 
 run_anondate_use() {
    ## Run anondate_use in a subshell so its 'exit' does not end this script,
-   ## and report its exit code. The sourced script installs EXIT and ERR traps
-   ## and enables errexit; the traps are dropped because they would fire on the
-   ## subshell's own exit and print a misleading verdict.
+   ## and report its exit code. The sourced script installs EXIT and ERR traps;
+   ## they are dropped because they would fire on the subshell's own exit and
+   ## print a misleading verdict.
    ##
    ## nounset is switched off to match how the script actually runs: it does
    ## not set nounset itself and relies on unset variables expanding to empty.

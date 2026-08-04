@@ -425,33 +425,36 @@ gpg_bash_lib_function_displaytime() {
 
   sep=''
 
+  ## Y/D/H/M/S come out of '$(( ))', so they are already decimal integer
+  ## strings and need no numeric format verb. R-030 keeps the format fixed
+  ## and puts every value in the data argument.
   if (( Y > 0 )); then
-    printf '%s%d years' "${sep}" "${Y}"
+    printf '%s' "${sep}${Y} years"
     sep=' '
   fi
 
   if (( D > 0 )); then
-    printf '%s%d days' "${sep}" "${D}"
+    printf '%s' "${sep}${D} days"
     sep=' '
   fi
 
   if (( H > 0 )); then
-    printf '%s%d hours' "${sep}" "${H}"
+    printf '%s' "${sep}${H} hours"
     sep=' '
   fi
 
   if (( M > 0 )); then
-    printf '%s%d minutes' "${sep}" "${M}"
+    printf '%s' "${sep}${M} minutes"
     sep=' '
   fi
 
   if (( S > 0 )); then
-    printf '%s%d seconds' "${sep}" "${S}"
+    printf '%s' "${sep}${S} seconds"
     sep=' '
   fi
 
   if (( Y == 0 && D == 0 && H == 0 && M == 0 && S == 0 )); then
-    printf '0 seconds'
+    printf '%s' '0 seconds'
   fi
 
   printf '%s\n' ''
@@ -460,6 +463,16 @@ gpg_bash_lib_function_displaytime() {
 check_variable_name() {
   ## Ensures a string is a valid Bash variable name.
   [[ "$1" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]
+}
+
+## Assertion failure for the tests below. Prefixed rather than a bare 'error': this
+## library is sourced by everything, and a generic name would land in every caller's
+## shell and shadow theirs. Returning 1 lets the caller's '&&'/'||' chain fail so
+## errexit and the ERR trap end the run, with the message saying WHICH assertion
+## fired -- an undefined helper aborts too, but reports only 'command not found'.
+strings_bsh_test_error() {
+  printf '%s\n' "$0: Test Failed: ${1}" >&2
+  return 1
 }
 
 ## Value-based counterpart to run_test, for functions that take a VALUE rather than the
@@ -515,7 +528,7 @@ run_test() {
 }
 
 string_bsh_tests() {
-  local input_string expected_result actual_result
+  local input_string expected_result actual_result injection_payload
 
   ## Should be inside a function to avoid doing this if this script gets 'source'ed.
   set -o errexit
@@ -564,18 +577,43 @@ string_bsh_tests() {
 
   ## check_valid_linux_user_account_name tests
   ## Regex: ^[a-zA-Z_][a-zA-Z0-9_-]*\$?$ (SYS_NAME_REGEX)
-  check_valid_linux_user_account_name "user" || error "linux_user_account_name: 'user' should be valid"
-  check_valid_linux_user_account_name "_user" || error "linux_user_account_name: '_user' should be valid"
-  check_valid_linux_user_account_name "user123" || error "linux_user_account_name: 'user123' should be valid"
-  check_valid_linux_user_account_name "user-name" || error "linux_user_account_name: 'user-name' should be valid"
-  check_valid_linux_user_account_name "_sysuser\$" || error "linux_user_account_name: '_sysuser\$' should be valid"
+  check_valid_linux_user_account_name "user" || strings_bsh_test_error "linux_user_account_name: 'user' should be valid"
+  check_valid_linux_user_account_name "_user" || strings_bsh_test_error "linux_user_account_name: '_user' should be valid"
+  check_valid_linux_user_account_name "user123" || strings_bsh_test_error "linux_user_account_name: 'user123' should be valid"
+  check_valid_linux_user_account_name "user-name" || strings_bsh_test_error "linux_user_account_name: 'user-name' should be valid"
+  check_valid_linux_user_account_name "_sysuser\$" || strings_bsh_test_error "linux_user_account_name: '_sysuser\$' should be valid"
 
-  check_valid_linux_user_account_name "" && error "linux_user_account_name: empty string should be invalid"
-  check_valid_linux_user_account_name "1user" && error "linux_user_account_name: '1user' should be invalid"
-  check_valid_linux_user_account_name "-user" && error "linux_user_account_name: '-user' should be invalid"
-  check_valid_linux_user_account_name "user name" && error "linux_user_account_name: 'user name' should be invalid"
-  check_valid_linux_user_account_name "user@host" && error "linux_user_account_name: 'user@host' should be invalid"
-  check_valid_linux_user_account_name "user\$bad" && error "linux_user_account_name: 'user\$bad' should be invalid"
+  check_valid_linux_user_account_name "" && strings_bsh_test_error "linux_user_account_name: empty string should be invalid"
+  check_valid_linux_user_account_name "1user" && strings_bsh_test_error "linux_user_account_name: '1user' should be invalid"
+  check_valid_linux_user_account_name "-user" && strings_bsh_test_error "linux_user_account_name: '-user' should be invalid"
+  check_valid_linux_user_account_name "user name" && strings_bsh_test_error "linux_user_account_name: 'user name' should be invalid"
+  check_valid_linux_user_account_name "user@host" && strings_bsh_test_error "linux_user_account_name: 'user@host' should be invalid"
+  check_valid_linux_user_account_name "user\$bad" && strings_bsh_test_error "linux_user_account_name: 'user\$bad' should be invalid"
+
+  ## is_integer tests. Asserted directly, not through run_test: run_test hands the
+  ## function a variable NAME, and is_integer takes a VALUE.
+  ##
+  ## is_integer REJECTS by letting 'printf %d' fail on a non-number, so the format
+  ## verb IS the check. R-141 makes this the guard that must run before an untrusted
+  ## value reaches an arithmetic context or an array index, and ip_syntax.sh /
+  ## get_os.sh rely on it. A format that cannot fail ('%s', '%s\n') would return 0
+  ## for every input and silently retire the guard, so the rejecting cases below are
+  ## what keeps it real -- do not weaken them.
+  is_integer "0" || strings_bsh_test_error "is_integer: '0' should be valid"
+  is_integer "42" || strings_bsh_test_error "is_integer: '42' should be valid"
+  is_integer "-1" || strings_bsh_test_error "is_integer: '-1' should be valid"
+
+  is_integer "abc" && strings_bsh_test_error "is_integer: 'abc' should be invalid"
+  is_integer "5.5" && strings_bsh_test_error "is_integer: '5.5' should be invalid"
+  is_integer "5x" && strings_bsh_test_error "is_integer: '5x' should be invalid"
+  is_integer "1e3" && strings_bsh_test_error "is_integer: '1e3' should be invalid"
+  is_integer "9,9" && strings_bsh_test_error "is_integer: '9,9' should be invalid"
+  is_integer "1 2" && strings_bsh_test_error "is_integer: '1 2' should be invalid"
+  ## The R-141 payload shape: a value crafted to run a command when it lands in an
+  ## arithmetic context or an array subscript. Escaped rather than single-quoted so
+  ## the literal stays inert without a shellcheck SC2016 waiver.
+  injection_payload="a[\$(date)]"
+  is_integer "${injection_payload}" && strings_bsh_test_error "is_integer: an arithmetic-injection payload should be invalid"
 
   ## Asserted on OUTPUT, not through run_test. run_test hands the function a variable
   ## NAME, which is right for the name-based validators but not for displaytime, which
@@ -595,31 +633,31 @@ string_bsh_tests() {
 
   actual_result="$(br_add "${input_string}")"
   if ! [ "${expected_result}" = "${actual_result}" ]; then
-    error "br_add command failed!"
+    strings_bsh_test_error "br_add command failed!"
   fi
 
   actual_result="$(printf '%s\n' "${input_string}" | br_add)"
   if ! [ "${expected_result}" = "${actual_result}" ]; then
-    error "br_add pipe failed!"
+    strings_bsh_test_error "br_add pipe failed!"
   fi
 
   ## default_if_empty: unset and empty both take the default; a set value survives.
   unset -v default_if_empty_probe
   default_if_empty default_if_empty_probe 'fallback'
   if ! [ "${default_if_empty_probe}" = 'fallback' ]; then
-    error "default_if_empty: an unset variable did not take the default!"
+    strings_bsh_test_error "default_if_empty: an unset variable did not take the default!"
   fi
 
   default_if_empty_probe=''
   default_if_empty default_if_empty_probe 'fallback'
   if ! [ "${default_if_empty_probe}" = 'fallback' ]; then
-    error "default_if_empty: an empty variable did not take the default!"
+    strings_bsh_test_error "default_if_empty: an empty variable did not take the default!"
   fi
 
   default_if_empty_probe='kept value'
   default_if_empty default_if_empty_probe 'fallback'
   if ! [ "${default_if_empty_probe}" = 'kept value' ]; then
-    error "default_if_empty: a set value was overwritten!"
+    strings_bsh_test_error "default_if_empty: a set value was overwritten!"
   fi
 
   ## A non-identifier must be REFUSED, not evaluated: 'printf -v' evaluates an array
@@ -628,7 +666,7 @@ string_bsh_tests() {
   # shellcheck disable=SC2016  # single quotes are the point: the '$(...)' must stay literal
   default_if_empty 'probe[$(exit 7)]' 'fallback' 2>/dev/null || default_if_empty_rc="$?"
   if ! [ "${default_if_empty_rc}" = '1' ]; then
-    error "default_if_empty: a non-identifier name was not refused!"
+    strings_bsh_test_error "default_if_empty: a non-identifier name was not refused!"
   fi
   unset -v default_if_empty_probe default_if_empty_rc
 
@@ -639,13 +677,13 @@ string_bsh_tests() {
   var_name=''
   default_if_empty var_name 'fallback'
   if ! [ "${var_name}" = 'fallback' ]; then
-    error "default_if_empty: caller variable named 'var_name' was shadowed!"
+    strings_bsh_test_error "default_if_empty: caller variable named 'var_name' was shadowed!"
   fi
 
   default_value=''
   default_if_empty default_value 'fallback'
   if ! [ "${default_value}" = 'fallback' ]; then
-    error "default_if_empty: caller variable named 'default_value' was shadowed!"
+    strings_bsh_test_error "default_if_empty: caller variable named 'default_value' was shadowed!"
   fi
 
   ## shellcheck cannot see an indirect expansion, so these three assignments
@@ -655,18 +693,18 @@ string_bsh_tests() {
   # shellcheck disable=SC2034  # consumed by name, via ${!varname} in the callee
   varname='!@#'
   if check_is_alpha_numeric varname 2>/dev/null; then
-    error "check_is_alpha_numeric: bypassed by a caller variable named 'varname'!"
+    strings_bsh_test_error "check_is_alpha_numeric: bypassed by a caller variable named 'varname'!"
   fi
 
   varname='../../../etc/passwd'
   if validate_safe_filename varname 2>/dev/null; then
-    error "validate_safe_filename: bypassed by a caller variable named 'varname'!"
+    strings_bsh_test_error "validate_safe_filename: bypassed by a caller variable named 'varname'!"
   fi
 
   # shellcheck disable=SC2034  # consumed by name, via ${!varname} in the callee
   varname=$'multi\nline'
   if check_is_not_empty_and_only_one_line varname 2>/dev/null; then
-    error "check_is_not_empty_and_only_one_line: bypassed by 'varname'!"
+    strings_bsh_test_error "check_is_not_empty_and_only_one_line: bypassed by 'varname'!"
   fi
   unset -v var_name default_value varname
 

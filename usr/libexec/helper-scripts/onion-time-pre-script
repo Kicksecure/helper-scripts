@@ -8,8 +8,18 @@
 ## exit 1: wait, retry and error icon
 ## exit 2: wait, retry and busy icon
 
-set -o pipefail
-set -e errtrace
+## provides was_executed
+# shellcheck source=./check_runtime.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
+
+## Dual-mode: 'onion-time-pre-script-testscript' sources this file, so strict
+## mode is enabled on a direct run only and cannot leak into the sourcing
+## shell. 'nounset' is deliberately absent: this script relies on unset
+## variables expanding to empty.
+if was_executed "${BASH_SOURCE[0]}"; then
+   set -o errexit
+   set -o pipefail
+fi
 
 output_cmd() {
    msg="$*"
@@ -53,9 +63,6 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_enabled_check
 
 ## provides check_tor_bootstrap_status
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_bootstrap_check.bsh
-
-## provides was_executed
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 
 detect_vm_type() {
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then

@@ -176,9 +176,9 @@ read_target() {
   if [ -L "${1}" ]; then
     tr '\n' ' ' < <(readlink --no-newline -- "${1}")
   elif [ "${1}" = /dev/null ] || [ ! -e "${1}" ]; then
-    printf '(none)'
+    printf '%s' '(none)'
   elif [ ! -s "${1}" ]; then
-    printf '(empty)'
+    printf '%s' '(empty)'
   else
     tr '\n' ' ' < "${1}"
   fi
@@ -212,7 +212,8 @@ if [ "${old_is_link}" = 'true' ] || [ "${new_is_link}" = 'true' ]; then
   else
     new_target='(regular file)'
   fi
-  printf "%s: SYMLINK '%s': '%s' -> '%s'\n" "${review_tool}" "${diff_path}" "${old_target}" "${new_target}" \
+  symlink_message="${review_tool}: SYMLINK '${diff_path}': '${old_target}' -> '${new_target}'"
+  printf '%s\n' "${symlink_message}" \
     | stcat >&2 || true
 
   ## Scan each symlink side's target string. In external-diff mode the side is a
