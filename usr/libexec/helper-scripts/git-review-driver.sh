@@ -321,9 +321,11 @@ stat_rc=0
 git diff --no-ext-diff --no-index --stat --color=always \
   -- "${old_file}" "${new_file}" | stcat || stat_rc="${PIPESTATUS[0]}"
 if [ "${stat_rc}" -gt 1 ]; then
-  ## FIXME: Shouldn't we error out entirely if `git diff` fails here? There's
-  ## no good reason this command should fail.
-  log warn "'--stat' for '${diff_path_q}' failed; showing the diff anyway."
+  ## rc > 1 is a real 'git diff' error (rc 1 just means the files differ), and
+  ## there is no legitimate reason it should fail on two materialized blobs --
+  ## it means git is broken or misused, so the whole review is untrustworthy.
+  ## Fail loud rather than press on with a possibly-broken display.
+  die 1 "'--stat' for '${diff_path_q}' failed (git diff rc ${stat_rc})."
 fi
 
 if [ "${is_binary}" = 'true' ]; then

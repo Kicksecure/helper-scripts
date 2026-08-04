@@ -9,11 +9,29 @@
 sanitize_string.py: Strips markup and control characters from a string.
 """
 
+import os
 import sys
 from .sanitize_string_lib import sanitize_string
 
 
 suppress_usage_info: bool = False
+
+
+def _silence_broken_pipe_on_shutdown() -> None:
+    """
+    Redirect stdout to /dev/null after a BrokenPipeError so the interpreter's
+    implicit flush of sys.stdout at shutdown does not re-raise BrokenPipeError
+    from the C-level finalizer -- which prints an 'Exception ignored on
+    flushing sys.stdout' traceback to stderr. The downstream pipe is already
+    gone, so nothing more is written anyway; this keeps the immediate-exit
+    behavior while suppressing the shutdown noise.
+    """
+
+    try:
+        devnull_fd: int = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull_fd, sys.stdout.fileno())
+    except OSError:
+        pass
 
 
 def print_usage() -> None:
@@ -76,6 +94,7 @@ def sanitize_stdin_noblock(
         ## `cat /dev/zero | tee /dev/null | head -c1` exits when `head` exits,
         ## rather than running forever with `cat` feeding into a
         ## "fault-tolerant" `tee`).
+        _silence_broken_pipe_on_shutdown()
         return 0
 
 
@@ -97,7 +116,7 @@ def sanitize_block(
             sys.stdout.write("\n")
     except BrokenPipeError:
         ## Not worth erroring out for.
-        pass
+        _silence_broken_pipe_on_shutdown()
 
 
 # pylint: disable=too-many-branches,too-many-return-statements
@@ -157,7 +176,10 @@ def main() -> int:
         print_usage()
         return 1
 
-    if max_string_length == 0:
+    ## A zero limit emits no sanitized content, but '--newline' must still
+    ## append its newline (as it does for every other limit), so only take the
+    ## fast path when no newline is requested.
+    if max_string_length == 0 and not append_newline:
         return 0
 
     ## Prepare to print output

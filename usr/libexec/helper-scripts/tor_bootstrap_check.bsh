@@ -88,9 +88,11 @@ check_tor_bootstrap_helper_run_helper_script() {
 
    check_bootstrap_helper_script_exit_code="0"
 
-   ## TODO: Consider moving the privleap configuration that allows this to work
-   ##       into this package (right now it's part of systemcheck)
-   ##       See also: /etc/privleap/conf.d/systemcheck.conf
+   ## The privleap action invoked below is authorized by the systemcheck
+   ## package: /etc/privleap/conf.d/systemcheck.conf. It stays there rather than
+   ## moving into this package -- the authorization is security-sensitive config
+   ## and relocating it across packages risks leaving the action unauthorized
+   ## for no functional gain.
    check_bootstrap_helper_script_output=$( \
       timeout \
       --kill-after="${check_tor_bootstrap_helper_kill_after}" \

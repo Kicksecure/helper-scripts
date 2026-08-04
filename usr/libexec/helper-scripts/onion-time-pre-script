@@ -378,11 +378,11 @@ anondate_request_rate_limited() {
    request_age_seconds="$((current_unixtime - stamp_unixtime))"
 
    ## A negative age means the clock moved backwards since the stamp was
-   ## written. Both anondate-set and sdwdate set the clock, so this is
-   ## expected and we should treat the stamp as stale.
-   ##
-   ## TODO: Is anondate-set actually able to set the clock backwards, or was
-   ## that disabled for security reasons?
+   ## written, so the stamp is stale and the rate limit must not apply.
+   ## anondate-set is forward-only by design (it refuses to set the clock to an
+   ## earlier time), so it never causes this; sdwdate can correct the clock
+   ## forward OR backward, and manual/NTP/VM-snapshot changes can too, which is
+   ## what this guard covers.
    if [ "${request_age_seconds}" -lt 0 ]; then
       return 1
    fi
