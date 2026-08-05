@@ -6,8 +6,11 @@
 ## style-ok: no-strict
 ## Sourced fragment; the sourcing script owns the strict-mode preamble.
 
+# shellcheck source=./has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+
 check_tor_bootstrap_helper_variables() {
-   if type -P qubesdb-read >/dev/null 2>if has qubesdb-read ; then1 ; then
+   if has qubesdb-read ; then
       if [ -f /run/qubes/this-is-templatevm ] || [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
          ## 'qubesdb-read /qubes-gateway' could fail if NetVM is set to 'none'.
          if [ "${GATEWAY_IP}" = "" ]; then

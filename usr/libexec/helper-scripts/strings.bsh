@@ -6,13 +6,8 @@
 ## style-ok: no-strict
 ## To avoid forcing callers to use strict Bash.
 
-## Resolve wc-test.sh relative to THIS file, not via HELPER_SCRIPTS_PATH or a
-## hardcoded /usr path: strings.bsh is a low-level library sourced by many tools
-## (dm-upload-images, dm-build-official, ...) in varying contexts, some of which
-## do not set HELPER_SCRIPTS_PATH and run from the checkout, not the installed
-## package. A self-relative source works installed AND in a source-tree build.
 # shellcheck source=./wc-test.sh
-source "$(dirname -- "${BASH_SOURCE[0]}")/wc-test.sh"
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/wc-test.sh
 
 ## Maximum number of bytes output by some error messages. Very long messages
 ## are truncated.

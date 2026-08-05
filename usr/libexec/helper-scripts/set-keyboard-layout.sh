@@ -1,6 +1,5 @@
 #!/bin/bash
 
-## style-ok: no-strict -- upstream/contributor strict-mode design kept as-is (forcing the full set risks changing command-substitution/shift behavior).
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
@@ -21,6 +20,8 @@ set -o errexit
 set -o nounset
 set -o errtrace
 set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 error_handler() {
   exit_code="${?}"
