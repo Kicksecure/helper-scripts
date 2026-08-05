@@ -61,12 +61,14 @@ import tempfile
 import uuid
 from datetime import datetime, timezone
 
-## Fixed namespace for the deterministic UUIDv5 derivation. Only needs to be a
-## stable constant so the derived UUIDs are reproducible. Freshly generated with
-## uuid.uuid4() (os.urandom) rather than a well-known published GUID, so the
-## derived UUIDs cannot be precomputed from a public constant plus a guessed
-## salt; the salt supplies the actual entropy.
-NAMESPACE = uuid.UUID("209249ec-6936-4712-8997-fb2cd35dd69e")
+## Fixed namespace for the deterministic UUIDv5 derivation. Arbitrary constant;
+## only needs to be stable so the derived UUIDs are reproducible.
+## TODO-HUMAN-DEVELOPER-ONLY: regenerate this randomly on a trusted developer
+## machine so there is no chance of the UUID being crafted to cause some sort of
+## harm. An AI model must NOT generate this value -- the trust premise is that a
+## human produced it on a trusted machine, which an AI-generated UUID cannot
+## satisfy.
+NAMESPACE = uuid.UUID("6f9619ff-8b86-d011-b42d-00cf4fc964ff")
 
 
 ## USTAR stores the member size in 11 octal digits: 8 GiB - 1.
