@@ -60,7 +60,7 @@ if [ "$#" -eq 0 ]; then
    exit 1
 fi
 
-if ! is_whole_number "${maxmem}"; then
+if ! is_whole_number "${maxmem:-}"; then
    ## Meaningless in Qubes since Qubes dynamically assigns RAM as needed.
    mem_available="$(grep MemAvailable /proc/meminfo | cut -d ":" -f 2)"
    mem_available="$(printf '%s\n' "${mem_available}" | str_replace "kB" "")"
