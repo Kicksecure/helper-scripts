@@ -3,9 +3,16 @@
 ## Copyright (C) 2024 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
-if ! [ "$TERMINAL_WRAPPER_NO_COMMAND_ECHO" = 'true' ]; then
+if ! [ "${TERMINAL_WRAPPER_NO_COMMAND_ECHO:-}" = 'true' ]; then
    printf '%s\n' "$*"
 fi
 
@@ -13,11 +20,11 @@ terminal_wrapper_command_exit_code="0"
 "$@"
 terminal_wrapper_command_exit_code="$?"
 
-if ! [ "$TERMINAL_WRAPPER_NO_FINISH_MSG" = 'true' ]; then
-   if [ "$terminal_wrapper_command_exit_code" = "0" ]; then
-      log notice "Command exited with exit code '$terminal_wrapper_command_exit_code'. You may close this window safely."
+if ! [ "${TERMINAL_WRAPPER_NO_FINISH_MSG:-}" = 'true' ]; then
+   if [ "${terminal_wrapper_command_exit_code}" = "0" ]; then
+      log notice "Command exited with exit code '${terminal_wrapper_command_exit_code}'. You may close this window safely."
    else
-      log warn "Command exited with exit code '$terminal_wrapper_command_exit_code'. You may close this window safely."
+      log warn "Command exited with exit code '${terminal_wrapper_command_exit_code}'. You may close this window safely."
    fi
 fi
 
