@@ -3,22 +3,27 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 set -o pipefail
 
 if [ "$(id -u)" != "0" ]; then
-  echo "leaktest: This script must be run as root (sudo)"
+  printf '%s\n' "leaktest: This script must be run as root (sudo)"
   exit 1
 fi
 
-echo "leaktest: Starting leak test, hit ctrl+c to abort..."
+printf '%s\n' "leaktest: Starting leak test, hit ctrl+c to abort..."
 
-echo "leaktest: /usr/libexec/helper-scripts/leak-tests/exhaustive_ip_send.py..."
+printf '%s\n' "leaktest: /usr/libexec/helper-scripts/leak-tests/exhaustive_ip_send.py..."
 /usr/libexec/helper-scripts/leak-tests/exhaustive_ip_send.py
-echo "leaktest: python /usr/libexec/helper-scripts/leak-tests/tcp_test.py..."
+printf '%s\n' "leaktest: python /usr/libexec/helper-scripts/leak-tests/tcp_test.py..."
 /usr/libexec/helper-scripts/leak-tests/tcp_test.py
-echo "leaktest: /usr/libexec/helper-scripts/leak-tests/udp_test.py..."
+printf '%s\n' "leaktest: /usr/libexec/helper-scripts/leak-tests/udp_test.py..."
 /usr/libexec/helper-scripts/leak-tests/udp_test.py
 
-echo "leaktest: Leaktest finished."
-echo "leaktest: See https://www.whonix.org/wiki/Dev/Leak_Tests_Old on instructions how to interpret the results."
+printf '%s\n' "leaktest: Leaktest finished."
+printf '%s\n' "leaktest: See https://www.whonix.org/wiki/Dev/Leak_Tests_Old on instructions how to interpret the results."

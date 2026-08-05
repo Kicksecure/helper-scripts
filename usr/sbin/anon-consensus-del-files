@@ -11,13 +11,20 @@
 ## Deletes Tor consensus files.
 #### meta end
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 if ! [ "$(id -u)" = 0 ]; then
-   echo "$0: ERROR: This script must run as root/sudo! run:"
-   echo "sudo $0"
+   printf '%s\n' "$0: ERROR: This script must run as root/sudo! run:"
+   printf '%s\n' "sudo $0"
    exit 1
 fi
 
-rm -f /var/lib/tor/cached-certs
-rm -f /var/lib/tor/cached-microdesc-consensus
-rm -f /var/lib/tor/cached-microdescs
-rm -f /var/lib/tor/cached-microdescs.new
+safe-rm -f -- /var/lib/tor/cached-certs
+safe-rm -f -- /var/lib/tor/cached-microdesc-consensus
+safe-rm -f -- /var/lib/tor/cached-microdescs
+safe-rm -f -- /var/lib/tor/cached-microdescs.new

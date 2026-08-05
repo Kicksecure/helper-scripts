@@ -7,18 +7,25 @@
 
 ## Not using sudo hardcoded below.
 ## https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/29
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 if [ "$(id -u)" != "0" ]; then
-   echo "ERROR: Must run as root." >&2
-   echo "sudo $0" >&2
+   printf '%s\n' "ERROR: Must run as root." >&2
+   printf '%s\n' "sudo $0" >&2
    exit 112
 fi
 
 while read -r -d $'\n' line; do
-   line=$(echo "$line" | grep "ALLOWED\|DENIED")
-   line=$(echo "$line" | sed -e 's/pid=.* comm/comm/g')
-   line=$(echo "$line" | sed -e 's/ fsuid.*//g')
-   if [ "$line" = "" ]; then
+   line=$(printf '%s\n' "${line}" | grep "ALLOWED\|DENIED")
+   line=$(printf '%s\n' "${line}" | sed -e 's/pid=.* comm/comm/g')
+   line=$(printf '%s\n' "${line}" | sed -e 's/ fsuid.*//g')
+   if [ "${line}" = "" ]; then
       continue
    fi
-   echo "$line"
+   printf '%s\n' "${line}"
 done < <( journalctl _TRANSPORT=audit --follow --lines=0 --output cat "${@}" )

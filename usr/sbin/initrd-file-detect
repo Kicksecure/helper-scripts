@@ -5,17 +5,22 @@
 ## See the file COPYING for copying conditions.
 
 #set -x
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 kernel="$(kernel-file-detect)"
 
-initrd="$(printf "%s\n" "$kernel" | sed "s#vmlinuz#initrd.img#")"
+initrd="$(printf "%s\n" "${kernel}" | sed "s#vmlinuz#initrd.img#")"
 ## example initrd:
 ## /boot//initrd.img-5.10.0-20-amd64
 
-if ! test -r "$kernel"; then
-   printf "%s\n" "$0: ERROR: Kernel File '$kernel' not found or not readable!" >&2
+if ! test -r "${kernel}"; then
+   printf "%s\n" "$0: ERROR: Kernel File '${kernel}' not found or not readable!" >&2
    exit 1
 fi
 
-printf "%s\n" "$initrd"
+printf "%s\n" "${initrd}"

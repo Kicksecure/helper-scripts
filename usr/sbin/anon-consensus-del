@@ -11,9 +11,16 @@
 ## Stops Tor, deletes Tor consensus using `anon-consensus-del-files` and restarts Tor.
 #### meta end
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 if ! [ "$(id -u)" = 0 ]; then
-   echo "$0: ERROR: This script must run as root/sudo! run:"
-   echo "sudo $0"
+   printf '%s\n' "$0: ERROR: This script must run as root/sudo! run:"
+   printf '%s\n' "sudo $0"
    exit 1
 fi
 
