@@ -7,12 +7,14 @@ set -o errexit
 set -o nounset
 set -o errtrace
 set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/live-mode.sh
 
-printf '%s\n' "$live_status_detected"
+printf '%s\n' "${live_status_detected}"
 
-if [ "$live_status_detected" = "true" ]; then
+if [ "${live_status_detected}" = "true" ]; then
   exit 0
 else
   exit 1
