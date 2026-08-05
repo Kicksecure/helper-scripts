@@ -4,7 +4,12 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-set -euo pipefail -o errtrace
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/accountctl.sh
 
@@ -62,10 +67,18 @@ main(){
     lock-pass|unlock-pass|disable-pass|enable-pass|get-pass| \
     is-user|is-pass-empty|is-pass-locked|is-pass-disabled|is-group)
       ;;
-    get-clean-pass) symbol="${3-}";;
-    get-entry) db="${3-}"; field="${4-}";;
-    -h|--?help|help) usage 0;;
-    *) usage 1;;
+    get-clean-pass)
+      symbol="${3-}"
+      ;;
+    get-entry)
+      db="${3-}"; field="${4-}"
+      ;;
+    -h|--?help|help)
+      usage 0
+      ;;
+    *)
+      usage 1
+      ;;
   esac
   cmd="${cmd//-/_}"
 
@@ -74,9 +87,15 @@ main(){
   fi
 
   case "${cmd}" in
-    get_clean_pass) "${cmd}" "${user}" "${symbol}";;
-    get_entry) "${cmd}" "${user}" "${db}" "${field}";;
-    *) "${cmd}" "${user}";;
+    get_clean_pass)
+      "${cmd}" "${user}" "${symbol}"
+      ;;
+    get_entry)
+      "${cmd}" "${user}" "${db}" "${field}"
+      ;;
+    *)
+      "${cmd}" "${user}"
+      ;;
   esac
 }
 
