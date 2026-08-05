@@ -1,14 +1,28 @@
 #!/bin/bash
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 set -x
-set -e
+
+# shellcheck source=../libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
+
+if [ "$#" -lt 2 ]; then
+   printf '%s\n' "$0: ERROR: usage: $0 <search> <replace> [file ...]" >&2
+   exit 1
+fi
 
 search="$1"
 shift
 replace="$1"
 shift
-files_list="$@"
+files_list=("$@")
 
-for files_item in $files_list ; do
-   str_replace "$search" "$replace" "$files_item"
+for files_item in "${files_list[@]}"; do
+   str_replace "${search}" "${replace}" "${files_item}"
 done
