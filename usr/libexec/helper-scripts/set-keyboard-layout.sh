@@ -33,6 +33,7 @@ exit_code: ${exit_code}"
 
 exit_handler() {
   exit_code="${?}"
+  printf '%s\n' ""
   if [ "${exit_code}" = 0 ]; then
     log notice "${FUNCNAME[0]}: OK."
   else
@@ -534,6 +535,7 @@ prompt_for_luks_on_root_fs_maybe() {
     log error "${FUNCNAME[0]}: OS disk is encrypted, cannot prompt user for confirmation, and --force not used! See:"
     log error "${FUNCNAME[0]}: https://www.kicksecure.com/wiki/Keyboard_Layout#Changing_the_system_or_console_keymap_when_using_Full_Disk_Encryption"
     log notice "${FUNCNAME[0]}: If the keyboard layout change will not make the LUKS passphrase impossible to type, use --force to skip this check."
+    printf '%s\n' ""
     return 1
   fi
   if [ "${scriptname:-}" = 'set-system-keymap' ]; then
@@ -803,6 +805,7 @@ set_system_keymap() {
   fi
 
   set_console_keymap || return 1
+  printf '%s\n' ""
 
   ## {{{ Set the specified keyboard layout for labwc both system-wide and for the greeter.
 
@@ -810,16 +813,20 @@ set_system_keymap() {
 
   labwc_config_path="${labwc_system_wide_config_path}"
   set_labwc_keymap || return 1
+  printf '%s\n' ""
 
   log notice "${FUNCNAME[0]}: 'greetd' configuration..."
   labwc_config_path="${labwc_greeter_config_path}"
   set_labwc_keymap || return 1
+  printf '%s\n' ""
 
   ## }}}
 
   set_grub_keymap || return 1
+  printf '%s\n' ""
 
   labwc_kb_reload_root
+  printf '%s\n' ""
 
   if [ "$("${timeout_command[@]}" systemctl is-active kloak.service)" = 'active' ]; then
     log notice "${FUNCNAME[0]}: Restarting 'kloak'..."
@@ -828,10 +835,12 @@ set_system_keymap() {
     else
       log warn "${FUNCNAME[0]}: Failed to restart 'kloak'!"
     fi
+    printf '%s\n' ""
   fi
 
   ## Soft-fail.
   dracut_run
+  printf '%s\n' ""
 
   if [ "${exit_code:-0}" = 0 ]; then
     log notice "${FUNCNAME[0]}: Keyboard layout change successful."
@@ -1038,6 +1047,7 @@ Type 'exit' to quit without changing keyboard layout settings.
   while true; do
     log question "${FUNCNAME[0]}: Enter the keyboard layout(s) you would like to use:"
     read -r -- layout_str
+    printf '%s\n' ""
     if [ -z "${layout_str}" ]; then
       log notice "${FUNCNAME[0]}: No keyboard layouts specified. Exiting."
       return 0
@@ -1076,6 +1086,7 @@ Type 'exit' to quit without changing keyboard layout settings.
   while true; do
     log question "${FUNCNAME[0]}: Enter the keyboard layout variant(s) if desired, leave empty otherwise:"
     read -r -- variant_str
+    printf '%s\n' ""
     if [ -z "${variant_str}" ]; then
       break
     fi
@@ -1118,6 +1129,7 @@ Type 'exit' to quit without changing keyboard layout settings.
   while true; do
     log question "${FUNCNAME[0]}: Enter the keyboard layout option(s) if desired, leave empty otherwise:"
     read -r -- option_str
+    printf '%s\n' ""
     if [ -z "${option_str}" ]; then
       break
     fi
@@ -1293,6 +1305,7 @@ trap "error_handler" ERR
 trap "exit_handler" EXIT
 
 log notice "$0: Start."
+printf '%s\n' ""
 
 has safe-rm
 has mktemp
