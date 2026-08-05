@@ -3,10 +3,15 @@
 ## Copyright (C) 2020 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 if grep -q "libhardened_malloc" "/proc/$$/maps"; then
-    echo "yes"
-    exit 0
+    printf '%s\n' "yes"    exit 0
 fi
 
-echo "no"
-exit 1
+printf '%s\n' "no"exit 1
