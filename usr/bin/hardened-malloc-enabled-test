@@ -11,7 +11,9 @@ shopt -s inherit_errexit
 shopt -s shift_verbose
 
 if grep -q "libhardened_malloc" "/proc/$$/maps"; then
-    printf '%s\n' "yes"    exit 0
+    printf '%s\n' "yes"
+    exit 0
 fi
 
-printf '%s\n' "no"exit 1
+printf '%s\n' "no"
+exit 1
