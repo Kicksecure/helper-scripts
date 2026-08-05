@@ -3,6 +3,11 @@
 ## Copyright (C) 2017 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 /usr/libexec/helper-scripts/settings_echo > /run/helper-scripts/settings_environment_file

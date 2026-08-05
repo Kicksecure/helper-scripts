@@ -4,7 +4,12 @@
 ## See the file COPYING for copying conditions.
 
 set -x
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 file_list=(
   /usr/bin/su
@@ -16,9 +21,9 @@ file_list=(
 )
 
 for file_item in "${file_list[@]}"; do
-  if test -f "$file_item"; then
-    if command -v "$file_item" &>/dev/null; then
-      chmod --verbose o+x -- "$file_item"
+  if test -f "${file_item}"; then
+    if test -x "${file_item}"; then
+      chmod --verbose o+x -- "${file_item}"
     fi
   fi
 done

@@ -13,24 +13,24 @@ check_tor_bootstrap_helper_variables() {
    if has qubesdb-read ; then
       if [ -f /run/qubes/this-is-templatevm ] || [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
          ## 'qubesdb-read /qubes-gateway' could fail if NetVM is set to 'none'.
-         if [ "${GATEWAY_IP}" = "" ]; then
+         if [ "${GATEWAY_IP:-}" = "" ]; then
             gateway_ip_error=""
             qubesdb_read_qubes_gateway_result="$(qubesdb-read /qubes-gateway 2>/dev/null)" || { gateway_ip_error="qubesdb_read_failed" ; qubesdb_read_qubes_gateway_result="127.0.0.1" ; };
             GATEWAY_IP="${qubesdb_read_qubes_gateway_result}"
          fi
-         if [ "${GATEWAY_IP6}" = "" ]; then
+         if [ "${GATEWAY_IP6:-}" = "" ]; then
             gateway_ip_error=""
             qubesdb_read_qubes_gateway_result="$(qubesdb-read /qubes-gateway6 2>/dev/null)" || { gateway_ip_error="qubesdb_read_failed" ; qubesdb_read_qubes_gateway_result="::1" ; };
             GATEWAY_IP6="${qubesdb_read_qubes_gateway_result}"
          fi
-         if [ "${gateway_control_port}" = "" ]; then
+         if [ "${gateway_control_port:-}" = "" ]; then
             gateway_control_port="9051"
          fi
       fi
    fi
 
    if [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
-      if [ "${GATEWAY_IP}" = "" ]; then
+      if [ "${GATEWAY_IP:-}" = "" ]; then
          ## IP HARDCODED. Set GATEWAY_IP through the following configuration folder instead.
          ## (Replace IP "10.152.152.10" with the actual IP intended to use.)
          ##
@@ -54,31 +54,31 @@ check_tor_bootstrap_helper_variables() {
          ## PROXY_IP="10.152.152.10"
          GATEWAY_IP="10.152.152.10"
       fi
-      if [ "${GATEWAY_IP6}" = "" ]; then
+      if [ "${GATEWAY_IP6:-}" = "" ]; then
          ## IP HARDCODED. See above comment
          GATEWAY_IP6="fd19:c33d:88bc::10"
       fi
-      if [ "${gateway_control_port}" = "" ]; then
+      if [ "${gateway_control_port:-}" = "" ]; then
          gateway_control_port="9051"
       fi
    fi
 
    if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-      if [ "${GATEWAY_IP}" = "" ]; then
+      if [ "${GATEWAY_IP:-}" = "" ]; then
          GATEWAY_IP="127.0.0.1"
       fi
-      if [ "${GATEWAY_IP6}" = "" ]; then
+      if [ "${GATEWAY_IP6:-}" = "" ]; then
          GATEWAY_IP6="::1"
       fi
    fi
 
-   if [ "${gateway_control_port}" = "" ]; then
+   if [ "${gateway_control_port:-}" = "" ]; then
       gateway_control_port="9051"
    fi
-   if [ "${GATEWAY_IP}" = "" ]; then
+   if [ "${GATEWAY_IP:-}" = "" ]; then
       GATEWAY_IP="127.0.0.1"
    fi
-   if [ "${GATEWAY_IP6}" = "" ]; then
+   if [ "${GATEWAY_IP6:-}" = "" ]; then
       GATEWAY_IP6="::1"
    fi
 }

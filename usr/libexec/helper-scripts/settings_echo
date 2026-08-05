@@ -3,7 +3,12 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 ## provides: check_tor_bootstrap_helper_variables
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_bootstrap_check.bsh
@@ -11,6 +16,6 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_bootstrap_check
 check_tor_bootstrap_helper_variables
 
 printf '%s\n' "\
-GATEWAY_IP=\"$GATEWAY_IP\"
-GATEWAY_IP6=\"$GATEWAY_IP6\"
-gateway_control_port=\"$gateway_control_port\""
+GATEWAY_IP=\"${GATEWAY_IP}\"
+GATEWAY_IP6=\"${GATEWAY_IP6}\"
+gateway_control_port=\"${gateway_control_port}\""
