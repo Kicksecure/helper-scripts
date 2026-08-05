@@ -7,14 +7,20 @@ set -o errexit
 set -o nounset
 set -o errtrace
 set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
-command -v start-stop-daemon >/dev/null
-command -v timeout >/dev/null
-command -v apt-get >/dev/null
+# shellcheck source=./has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+
+has start-stop-daemon
+has timeout
+has apt-get
 
 export LC_ALL=C
 pidfile="/run/helper-scripts/apt-get-update-pid"
 
+# shellcheck disable=SC2317  # reached via the SIGTERM/SIGINT trap, not a direct call
 sigterm_trap() {
    /usr/libexec/helper-scripts/apt-get-update-kill-helper &>/dev/null
    exit 143
@@ -30,15 +36,15 @@ trap "sigterm_trap" SIGTERM SIGINT
 
 start-stop-daemon \
   --make-pidfile \
-  --pidfile "$pidfile" \
+  --pidfile "${pidfile}" \
   --exec /usr/bin/timeout \
   --start \
   -- \
-    --kill-after="$kill_after" \
-    "$timeout_after" \
+    --kill-after="${kill_after}" \
+    "${timeout_after}" \
       apt-get-noninteractive update --error-on=any "$@" &
 
 lastpid="$!"
-wait "$lastpid"
+wait "${lastpid}"
 
 exit "$?"
