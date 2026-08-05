@@ -2,6 +2,13 @@
 
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 curl_exit_codes() {
    local codes
    codes="
@@ -101,32 +108,32 @@ curl_exit_codes() {
 [143] - [helper-scripts curl-prgs (not curl!) reports: signal sigterm received.]
 "
 
-   if [ "$1" = "" ]; then
+   if [ "${1:-}" = "" ]; then
       exit 1
    fi
 
    local line
 
-   OIFS="$IFS"
+   OIFS="${IFS}"
    IFS='
 '
 
-   for line in $codes; do
+   for line in ${codes}; do
       local number
-      IFS="$OIFS"
+      IFS="${OIFS}"
       number="${line:0:4}"
       number="${number//\[/""}"
       number="${number//\]/""}"
       number="${number// /""}"
-      true "number: $number | line: $line"
-      if [ "$number" = "$1" ]; then
+      true "number: ${number} | line: ${line}"
+      if [ "${number}" = "$1" ]; then
          ## exit code found.
-         printf '%s\n' "$line"
+         printf '%s\n' "${line}"
          exit 0
       fi
    done
 
-   IFS="$OIFS"
+   IFS="${OIFS}"
 
    ## exit code not found.
    printf '%s\n' "[$1] - [Unknown curl exit code, please report this!]"
