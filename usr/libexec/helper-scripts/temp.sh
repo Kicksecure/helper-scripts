@@ -3,6 +3,9 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- dual-mode: strict is set only inside 'if was_executed' (a direct run), so the directives are not at column 0; sourcing this file must not enable strict mode in the sourcing shell.
+## style-ok: no-tmp-hardcode -- the '/tmp/user/<uid>' path is the EXPECTED TMPDIR this test verifies, not a tmp-file location to parameterize.
+
 # shellcheck source=./check_runtime.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 
@@ -16,15 +19,15 @@ check_tempdir() {
 
   id_of_user="$(id --user)"
   tmpdir_expected="/tmp/user/${id_of_user}"
-  true "TMPDIR: $TMPDIR"
+  true "TMPDIR: ${TMPDIR}"
 
-  if ! [ "$TMPDIR" = "$tmpdir_expected" ]; then
-    printf "%s\n" "ERROR: tmpdir_expected '$tmpdir_expected' does not match TMPDIR '$TMPDIR'!" >&2
+  if ! [ "${TMPDIR}" = "${tmpdir_expected}" ]; then
+    printf "%s\n" "ERROR: tmpdir_expected '${tmpdir_expected}' does not match TMPDIR '${TMPDIR}'!" >&2
     return 1
   fi
 
-  if ! test -d "$TMPDIR"; then
-    printf "%s\n" "ERROR: TMPDIR '$TMPDIR' does not exist!" >&2
+  if ! test -d "${TMPDIR}"; then
+    printf "%s\n" "ERROR: TMPDIR '${TMPDIR}' does not exist!" >&2
     return 1
   fi
 
@@ -34,13 +37,13 @@ check_tempdir() {
   fi
 
   ## 'sponge' can cause error "mkstemp failed: No such file or directory" when $TMPDIR does not exist.
-  if ! printf "%s\n" "test" | sponge -- "$temp_file" ; then
+  if ! printf "%s\n" "test" | sponge -- "${temp_file}" ; then
     printf "%s\n" "ERROR: Testing 'sponge' failed!" >&2
     return 1
   fi
 
-  if ! safe-rm --force -- "$temp_file" ; then
-    printf "%s\n" "ERROR: 'safe-rm --force -- $temp_file' failed!" >&2
+  if ! safe-rm --force -- "${temp_file}" ; then
+    printf "%s\n" "ERROR: 'safe-rm --force -- ${temp_file}' failed!" >&2
     return 1
   fi
 
@@ -53,6 +56,8 @@ if was_executed "${BASH_SOURCE[0]}"; then
   set -o nounset
   set -o errtrace
   set -o pipefail
+  shopt -s inherit_errexit
+  shopt -s shift_verbose
   check_tempdir
   true "$0: END"
 fi
