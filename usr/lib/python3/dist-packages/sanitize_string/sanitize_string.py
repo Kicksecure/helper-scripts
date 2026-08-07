@@ -125,6 +125,21 @@ def sanitize_block(
 
 
 # pylint: disable=too-many-branches,too-many-return-statements
+def emit_trailing_newline_only(
+    max_string_length: int, append_newline: bool
+) -> None:
+    """
+    Emit just the trailing newline, with no sanitized content.
+
+    Used where there is nothing to sanitize -- a zero limit, or no readable
+    stdin -- but '--newline' still has to append its newline, as it does for
+    every other limit and as echo does when given no arguments.
+    """
+
+    if append_newline:
+        sanitize_block("", max_string_length, append_newline)
+
+
 def main() -> int:
     """
     Main function.
@@ -190,8 +205,7 @@ def main() -> int:
     ## stdin, but '--newline' still has to append its newline (as it does for
     ## every other limit), so emit just that and stop.
     if max_string_length == 0:
-        if append_newline:
-            sanitize_block("", max_string_length, append_newline)
+        emit_trailing_newline_only(max_string_length, append_newline)
         return 0
 
     ## Sanitize standard input if no string was given as an argument
@@ -203,8 +217,7 @@ def main() -> int:
             ## when given no arguments. Emitting nothing here made
             ## 'sanitize-echo' with no stdin (pythonw, a detached service)
             ## silently produce no output at all.
-            if append_newline:
-                sanitize_block("", max_string_length, append_newline)
+            emit_trailing_newline_only(max_string_length, append_newline)
             return 0
         sys.stdin.reconfigure(  # type: ignore
             encoding="utf-8", errors="replace", newline="\n"
