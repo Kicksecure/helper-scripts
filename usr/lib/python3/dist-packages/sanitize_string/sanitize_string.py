@@ -126,7 +126,7 @@ def sanitize_block(
 
 # pylint: disable=too-many-branches,too-many-return-statements
 def emit_trailing_newline_only(
-    max_string_length: int, append_newline: bool
+    max_string_length: int | None, append_newline: bool
 ) -> None:
     """
     Emit just the trailing newline, with no sanitized content.
