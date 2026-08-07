@@ -197,8 +197,14 @@ def main() -> int:
     ## Sanitize standard input if no string was given as an argument
     if untrusted_string is None:
         if sys.stdin is None:
-            ## No way to get an untrusted string, print nothing and
-            ## exit successfully
+            ## No way to get an untrusted string. There is no content to
+            ## sanitize, but '--newline' still has to append its newline --
+            ## exactly as the zero-limit branch above does, and as echo does
+            ## when given no arguments. Emitting nothing here made
+            ## 'sanitize-echo' with no stdin (pythonw, a detached service)
+            ## silently produce no output at all.
+            if append_newline:
+                sanitize_block("", max_string_length, append_newline)
             return 0
         sys.stdin.reconfigure(  # type: ignore
             encoding="utf-8", errors="replace", newline="\n"

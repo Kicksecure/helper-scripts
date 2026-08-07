@@ -87,7 +87,10 @@ def derive_mac(salt, index):
     ## it a globally-administered unicast address.
     ## Not a security hash: a deterministic function to derive a stable MAC
     ## suffix from the salt. Collision resistance is irrelevant here.
-    digest = hashlib.sha1(
+    ## nosec B303: bandit blacklists the sha1 call by name. This is not a
+    ## security hash -- see the comment above -- and 'usedforsecurity=False'
+    ## already states that to Python/OpenSSL.
+    digest = hashlib.sha1(  # nosec B303
         ("%s:mac:%d" % (salt, index)).encode(), usedforsecurity=False
     ).hexdigest()
     return "080027" + digest[:6].upper()
@@ -98,7 +101,9 @@ def derive_cid(salt, role, index):
     ## 0xffffffff sentinel (VMDK "no parent" / null CID).
     ## Not a security hash: a deterministic function to derive a stable content
     ## id from the salt. Collision resistance is irrelevant here.
-    digest = hashlib.sha1(
+    ## nosec B303: as above -- deterministic id derivation, not a security
+    ## hash, and already marked 'usedforsecurity=False'.
+    digest = hashlib.sha1(  # nosec B303
         ("%s:%s:%d" % (salt, role, index)).encode(), usedforsecurity=False
     ).hexdigest()
     cid = digest[:8]
