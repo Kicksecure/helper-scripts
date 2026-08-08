@@ -6,6 +6,17 @@
 ## style-ok: no-strict
 ## Sourced fragment; the sourcing script owns the strict-mode preamble.
 
+## The variables this file sets ARE its interface -- gateway_ip_error,
+## tor_bootstrap_percent, tor_circuit_established_word, the consensus
+## timestamps and the exit codes are read by its callers, e.g.
+## systemcheck's usr/libexec/systemcheck/check_tor_bootstrap.bsh, which
+## documents them with '## sets: tor_bootstrap_percent'.
+##
+## shellcheck sees only this file, so every one of them looks unused. That is
+## the nature of a sourced library, not a defect here: an 'unused' variable in
+## a fragment is exactly what an OUTPUT looks like from a single-file view.
+# shellcheck disable=SC2034
+
 # shellcheck source=./has.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 

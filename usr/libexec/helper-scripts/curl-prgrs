@@ -125,7 +125,10 @@ shutdown() {
   local signal="$1"
   local last_err="${BASH_COMMAND}"
   if [ "${signal}" = "err" ]; then
-    stecho "${BASH_SOURCE[0]} ERROR: Signal ${signal} received. Exiting." >&4
+    ## '${last_err}' is the failing command, captured above. It was being
+    ## captured and then discarded, so the error said a signal arrived but not
+    ## what had failed -- the one detail worth having.
+    stecho "${BASH_SOURCE[0]} ERROR: Signal ${signal} received while running '${last_err}'. Exiting." >&4
     stecho "${BASH_SOURCE[0]} ERROR: BASH_COMMAND '${BASH_COMMAND}' exit code '${exit_code}'." >&4
     error_exit_code=110
   elif [ "${signal}" = "exit" ]; then
@@ -341,6 +344,11 @@ curl_download() {
 
   ## curl already terminated.
 
+  ## Both in-file call sites pass 'header_download=' as a per-call env prefix,
+  ## but this is a SOURCED library and an external caller need not. Defaulting
+  ## to "false" keeps the truncation check below ENABLED for such a caller --
+  ## the safe direction, since skipping it would let a short download pass.
+  : "${header_download:="false"}"
   : "${size_file_downloaded_bytes:=""}"
   if is_whole_number "${size_file_downloaded_bytes}" ; then
     true "size_file_downloaded_bytes: ${size_file_downloaded_bytes}"

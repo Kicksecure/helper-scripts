@@ -55,10 +55,6 @@ fi
 ## example kernel:
 ## /boot/vmlinuz-5.10.0-20-amd64
 
-initrd="$(printf "%s\n" "${kernel}" | sed "s#vmlinuz#initrd.img#")"
-## example initrd:
-## /boot/initrd.img-5.10.0-20-amd64
-
 if ! test -r "${kernel}"; then
    printf "%s\n" "$0: ERROR: Kernel File '${kernel}' not found or not readable!" >&2
    exit 1

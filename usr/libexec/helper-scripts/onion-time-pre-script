@@ -119,6 +119,10 @@ exit_if_tor_not_yet_enabled() {
    ## Sets: TOR_ENABLED
    check_tor_enabled_do
 
+   ## check_tor_enabled_do (tor_enabled_check, sourced) assigns TOR_ENABLED on
+   ## its FIRST line as a fallback, so it is always set. shellcheck sees only
+   ## this file and cannot know that.
+   # shellcheck disable=SC2154
    if [ "${TOR_ENABLED}" = "1" ]; then
       true "Tor enabled check: Tor already enabled, ok."
    else
@@ -255,7 +259,17 @@ tor_consensus_time_sanity_check() {
    ## If the static timestamp based time sanity check failed, there is no
    ## need to run the Tor consensus based time sanity check. Avoiding
    ## duplicate output.
-   if [ "${timesanitycheck_static_timestamp_based_failed}" = "true" ]; then
+   ## NOTHING SETS THIS. 'timesanitycheck_static_timestamp_based_failed' is
+   ## assigned nowhere in this package, so the comparison is always false and
+   ## this early return never fires -- the duplicate-output optimisation the
+   ## comment above describes has never taken effect.
+   ##
+   ## Defaulted rather than deleted: removing the guard would discard the
+   ## intent, and making it fire needs someone to decide WHICH check should set
+   ## the flag. That is a product decision, not a style fix. The ':-' at least
+   ## makes the comparison well defined and keeps the file safe under a future
+   ## nounset.
+   if [ "${timesanitycheck_static_timestamp_based_failed:-}" = "true" ]; then
       return 0
    fi
 
