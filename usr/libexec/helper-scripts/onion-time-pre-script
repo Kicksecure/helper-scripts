@@ -111,8 +111,30 @@ onion_time_script_status() {
    fi
 }
 
+## Set by timesanitycheck_static below, read by tor_consensus_time_sanity_check
+## and by the anondate_use branch. Declared here so both reads are defined even
+## if the static check never runs.
+timesanitycheck_static_timestamp_based_failed=""
+
 timesanitycheck_static() {
-   output_cmd "Static Time Sanity Check: $(timesanitycheck)" || true
+   local timesanitycheck_output timesanitycheck_exit_code
+
+   ## The exit code was being DISCARDED by '|| true', so the flag it should set
+   ## was never assigned -- and the two things gated on that flag have therefore
+   ## never happened: the duplicate-output avoidance in
+   ## tor_consensus_time_sanity_check, and the anondate_use clock-recovery
+   ## branch further down.
+   ##
+   ## timesanitycheck exits 0 when the clock is within the shipped min/expiry
+   ## window, and 2 or 3 when it is not.
+   timesanitycheck_exit_code=0
+   timesanitycheck_output="$(timesanitycheck)" || timesanitycheck_exit_code="$?"
+
+   output_cmd "Static Time Sanity Check: ${timesanitycheck_output}"
+
+   if [ "${timesanitycheck_exit_code}" != "0" ]; then
+      timesanitycheck_static_timestamp_based_failed="true"
+   fi
 }
 
 exit_if_tor_not_yet_enabled() {
@@ -259,17 +281,10 @@ tor_consensus_time_sanity_check() {
    ## If the static timestamp based time sanity check failed, there is no
    ## need to run the Tor consensus based time sanity check. Avoiding
    ## duplicate output.
-   ## NOTHING SETS THIS. 'timesanitycheck_static_timestamp_based_failed' is
-   ## assigned nowhere in this package, so the comparison is always false and
-   ## this early return never fires -- the duplicate-output optimisation the
-   ## comment above describes has never taken effect.
-   ##
-   ## Defaulted rather than deleted: removing the guard would discard the
-   ## intent, and making it fire needs someone to decide WHICH check should set
-   ## the flag. That is a product decision, not a style fix. The ':-' at least
-   ## makes the comparison well defined and keeps the file safe under a future
-   ## nounset.
-   if [ "${timesanitycheck_static_timestamp_based_failed:-}" = "true" ]; then
+   ## Now genuinely reachable: timesanitycheck_static sets the flag when the
+   ## static check fails. Before that wiring nothing assigned it, so this early
+   ## return never fired.
+   if [ "${timesanitycheck_static_timestamp_based_failed}" = "true" ]; then
       return 0
    fi
 
