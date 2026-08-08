@@ -22,10 +22,22 @@ error_handler() {
 
 trap error_handler ERR
 
-script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+## Sources the INSTALLED has.sh, not a copy resolved relative to this file.
+## A self-relative source validates the checkout and passes even when the
+## deployed copy is stale, which is exactly the failure it must be able to
+## catch -- it reported 7/7 against a broken install once already.
+has_sh_path="/usr/libexec/helper-scripts/has.sh"
 
+if ! test -r "${has_sh_path}" ; then
+   printf '%s\n' "ERROR: '${has_sh_path}' not readable; install helper-scripts first." >&2
+   exit 1
+fi
+
+## The source= directive points at the in-tree copy purely so shellcheck can
+## resolve the file statically. It does not affect what is sourced at runtime,
+## which is the INSTALLED path above -- that distinction is the whole point.
 # shellcheck source=../../../libexec/helper-scripts/has.sh
-source "${script_dir}/../../../libexec/helper-scripts/has.sh"
+source "${has_sh_path}"
 
 tests_total=0
 tests_failed=0
