@@ -148,7 +148,14 @@ fi
 ## bare shell, a cron job or a broken session -- this file runs under nounset,
 ## so reading it bare aborted before the '*' arm could report the unknown
 ## session type.
-case "${XDG_SESSION_TYPE:-}" in
+##
+## Declared ONCE here rather than defaulted at each read. The first attempt
+## defaulted only the 'case' and left the '*' arm's message interpolating it
+## bare, so the script still aborted on precisely the path the fix was meant to
+## reach -- and a third use would have reintroduced it again.
+XDG_SESSION_TYPE="${XDG_SESSION_TYPE:-}"
+
+case "${XDG_SESSION_TYPE}" in
    x11)
       xscreensaver-command --lock
       ;;
