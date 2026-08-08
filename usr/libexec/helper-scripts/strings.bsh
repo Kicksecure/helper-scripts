@@ -98,7 +98,10 @@ read_integer_file() {
       "$0: ERROR: Target file '${target_file}' not readable!" >&2
     return 1
   fi
-  if ! file_contents="$(stcat -- "${target_file}")"; then
+  ## NO '--': stcat takes every argument as a path, so it reads the separator
+  ## itself as a filename and dies with FileNotFoundError. R-062's negative
+  ## half; the static gate now denylists it.
+  if ! file_contents="$(stcat "${target_file}")"; then
     sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- \
       "$0: ERROR: Cannot stcat target file '${target_file}'!" >&2
     return 1
