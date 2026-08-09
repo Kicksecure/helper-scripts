@@ -13,6 +13,7 @@ from typing import Callable
 from io import BytesIO, FileIO, TextIOWrapper
 from unittest import TestCase, mock
 from stdisplay.stdisplay import stdisplay
+from unicode_show.unicode_show import describe_char
 from unicode_show.unicode_show import main as unicode_show_main
 
 
@@ -556,3 +557,88 @@ FILENAME_PLACEHOLDER:1: pre[U+202A]post
             filename_prefix="danger\u202adanger",
             file_contents=test_string,
         )
+
+    def test_missing_newline_at_end(self) -> None:
+        """
+        Tests if a file with no newline at the end triggers a warning.
+        """
+
+        test_string: str = "no terminator"
+        expect_string: str = """\
+FILENAME_PLACEHOLDER:1: [missing newline at end]
+"""
+        self._test_file(
+            main_func=unicode_show_main,
+            argv0=self.argv0,
+            stdout_string=expect_string,
+            stderr_string="",
+            exit_code=1,
+            file_contents=test_string,
+        )
+
+    def test_directory_argument(self) -> None:
+        """
+        Tests if trying to unicode-scan a directory errors out.
+        """
+
+        dir_str: str = tempfile.gettempdir()
+        self._test_args(
+            main_func=unicode_show_main,
+            argv0=self.argv0,
+            stdout_string="",
+            stderr_string=f"""\
+[ERROR] File read error [{dir_str}]: [Errno 21] Is a directory: '{dir_str}'
+""",
+            exit_code=2,
+            args=[dir_str],
+        )
+
+    def test_describe_char_allowed_characters(self) -> None:
+        """
+        Tests if describe_char outputs allowed characters literally rather
+        than converting them to a Unicode escape.
+        """
+
+        self.assertEqual(
+            describe_char("a"), "a (U+0061, LATIN SMALL LETTER A, Ll)"
+        )
+        self.assertEqual(describe_char("-"), "- (U+002D, HYPHEN-MINUS, Pd)")
+
+    def test_no_input(self) -> None:
+        """
+        Tests if unicode-show exits normally if given neither a file nor stdin
+        input. Note that the run-tests Bash script handles the case where stdin
+        is closed before unicode-show starts.
+        """
+
+        self._test_stdin(
+            main_func=unicode_show_main,
+            argv0=self.argv0,
+            stdout_string="",
+            stderr_string="",
+            args=[],
+            exit_code=0,
+            stdin_string="",
+        )
+
+    def test_unexpected_error(self) -> None:
+        """
+        Tests if an unexpected exception exits 2 and prints the exception
+        message.
+        """
+
+        with mock.patch(
+            "unicode_show.unicode_show.scan_file",
+            side_effect=ValueError("boom"),
+        ):
+            self._test_stdin(
+                main_func=unicode_show_main,
+                argv0=self.argv0,
+                stdout_string="",
+                stderr_string="""\
+[ERROR] Unexpected error [main]: boom
+""",
+                args=[],
+                exit_code=2,
+                stdin_string="text\n",
+            )

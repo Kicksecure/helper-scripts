@@ -29,9 +29,11 @@ review_tool="git-diff-review"
 
 ## This display is capable of safely displaying content that triggered fatal
 ## errors in unicode-show.
+# shellcheck disable=SC2034
 git_review_display_fatal_content='true'
 
 ## This display outputs to a terminal.
+# shellcheck disable=SC2034
 git_review_outputs_to_terminal='true'
 
 ## Invoked indirectly by the sourced git-review-driver.sh (not dead code).

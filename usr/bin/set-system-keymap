@@ -31,6 +31,7 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 scriptname=$(basename -- "$0")
+# shellcheck disable=SC2034
 function_name="$(printf '%s\n' "$scriptname" | str_replace "-" "_")"
 
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/set-keyboard-layout.sh

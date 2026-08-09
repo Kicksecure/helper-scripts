@@ -38,7 +38,7 @@ while [ -n "${1:-}" ]; do
 done
 
 error_exit() {
-  exit_code="${1:-}"
+  local exit_code="${1:-}"
 
   if [ -z "$exit_code" ]; then
     printf '%s\n' 'WARNING: No exit code provided to error_exit!'

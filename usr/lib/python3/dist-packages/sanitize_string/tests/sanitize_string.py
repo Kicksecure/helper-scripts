@@ -5,6 +5,11 @@
 
 # pylint: disable=missing-module-docstring,fixme,unknown-option-value
 
+import sys
+
+from io import BytesIO, StringIO, TextIOWrapper
+from unittest import mock
+
 from strip_markup.tests.strip_markup import TestStripMarkupBase
 from stdisplay.tests.stdisplay import simple_escape_cases
 
@@ -20,9 +25,25 @@ class TestSanitizeString(TestStripMarkupBase):
 
     argv0: str = "sanitize-string"
     help_str: str = """\
-sanitize-string: Usage: sanitize-string [--help] max_length [string]
-  If no string is provided as an argument, the string is read from standard input.
-  Set max_length to 'nolimit' to allow arbitrarily long strings.
+sanitize-string: Strip / sanitize dangerous control characters and markup.
+Usage: sanitize-string [--help|-h] [--no-block] [--no-usage] [--newline] [--] max_length [string]
+
+Arguments:
+  --help|-h   Prints this help message.
+  --no-block  When reading from stdin, sanitize line by line rather than
+              buffering all input first. The string must not be provided as an
+              argument if this option is specified. Note that this option may
+              cause neutralized HTML to appear in sanitize-string's output
+              that would have been stripped otherwise.
+  --no-usage  If an error occurs when parsing arguments, do not print usage
+              information.
+  --newline   Append a new line to the output.
+  --          End-of-options marker.
+  max_length  Maximum allowable number of output characters, input will be
+              truncated past this point. Set to 'nolimit' to allow arbitrarily
+              long strings.
+  string      The string to sanitize. If omitted, the string is read from
+              standard input.
 """
 
     def test_help(self) -> None:
@@ -61,6 +82,132 @@ sanitize-string: Usage: sanitize-string [--help] max_length [string]
                 exit_code=1,
                 args=test_args,
             )
+
+    def test_noblock_max_length(self) -> None:
+        """
+        Ensure that in --no-block mode, no further line is read once max_length
+        is reached.
+        """
+
+        stdout_buf_internal: BytesIO = BytesIO()
+        stdin_buf_internal: BytesIO = BytesIO()
+        stdout_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdout_buf_internal,
+            encoding="utf-8",
+            newline="\n",
+            errors="surrogateescape",
+        )
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=stdin_buf_internal,
+            encoding="utf-8",
+            newline="\n",
+            errors="surrogateescape",
+        )
+        stdin_buf.write("123456\nsecond line\n")
+        stdin_buf.seek(0, 0)
+
+        with (
+            mock.patch.object(
+                sys, "argv", [self.argv0, "--no-block", "--", "5"]
+            ),
+            mock.patch.object(sys, "stdin", stdin_buf),
+            mock.patch.object(sys, "stdout", stdout_buf),
+        ):
+            exit_code: int = sanitize_string_main()
+
+        stdout_buf.seek(0, 0)
+        self.assertEqual(stdout_buf.read(), "12345")
+        self.assertEqual(exit_code, 0)
+        ## TODO: Revert back to this method if the new one doesn't work, or
+        ## maybe just bring back the flush
+        # stdout_buf.flush()
+        # self.assertEqual(
+        #    stdout_buf_internal.getvalue().decode("utf-8"), "12345"
+        # )
+
+        ## The second line must still be waiting, unread.
+        self.assertEqual(stdin_buf.read(), "second line\n")
+
+    def test_broken_pipe(self) -> None:
+        """
+        Ensure a closed downstream ends the run cleanly rather than raising.
+        """
+
+        stdin_buf: TextIOWrapper = TextIOWrapper(
+            buffer=BytesIO(), encoding="utf-8", newline="\n"
+        )
+        stdin_buf.write("first\nsecond\n")
+        stdin_buf.seek(0, 0)
+
+        class BrokenPipeStdout(StringIO):
+            """
+            A stdout whose every write reports the reader is gone.
+            """
+
+            def reconfigure(self, **kwargs: object) -> None:
+                """
+                Accept the encoding setup main() performs on stdout.
+                """
+
+            def write(self, *args: object, **kwargs: object) -> int:
+                """
+                Cause write attempts to fail.
+                """
+
+                raise BrokenPipeError()
+
+        closed_stdout = BrokenPipeStdout()
+        exit_code: int
+
+        ## Normal, all-at-end write
+        with (
+            mock.patch.object(sys, "argv", [self.argv0, "nolimit"]),
+            mock.patch.object(sys, "stdin", stdin_buf),
+            mock.patch.object(sys, "stdout", closed_stdout),
+        ):
+            exit_code = sanitize_string_main()
+        self.assertEqual(exit_code, 0)
+
+        stdin_buf.seek(0, 0)
+
+        ## Line-by-line write
+        with (
+            mock.patch.object(
+                sys, "argv", [self.argv0, "--no-block", "--", "nolimit"]
+            ),
+            mock.patch.object(sys, "stdin", stdin_buf),
+            mock.patch.object(sys, "stdout", closed_stdout),
+        ):
+            exit_code = sanitize_string_main()
+        self.assertEqual(exit_code, 0)
+
+    def test_bare_double_dash(self) -> None:
+        """
+        Ensure '--' with nothing after it results in an error.
+        """
+
+        self._test_args(
+            main_func=sanitize_string_main,
+            argv0=self.argv0,
+            stdout_string="",
+            stderr_string=self.help_str,
+            exit_code=1,
+            args=["--"],
+        )
+
+    def test_no_argument_and_no_stdin(self) -> None:
+        """
+        Ensure sanitize-string exits 0 when given no string argument and stdin
+        is closed.
+        """
+
+        with (
+            mock.patch.object(sys, "argv", [self.argv0, "nolimit"]),
+            mock.patch.object(sys, "stdin", None),
+        ):
+            exit_code: int = sanitize_string_main()
+
+        self.assertEqual(exit_code, 0)
 
     def test_safe_strings(self) -> None:
         """

@@ -4,16 +4,23 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: allow-non-ascii -- this suite asserts that non-ASCII input is
+## stripped, so the fixtures must contain the bytes under test.
+
 """
 Test the stdisplay module.
 """
 
+import os
 import unittest
+import curses
+from unittest import mock
 from typing import (
     Any,
 )
 from stdisplay.stdisplay import (
     exclude_pattern,
+    get_sgr_support,
     stdisplay,
 )
 
@@ -338,3 +345,50 @@ class TestSTDisplay(unittest.TestCase):
             ("\x1bP2$tight\x1b\\", "_P2$tight_\\"),
         ]
         self.run_stdisplay_cases(cases, sgr=2**24)
+
+
+class TestGetSgrSupport(unittest.TestCase):
+    """
+    get_sgr_support() reads the environment to decide how much colour is safe.
+    Its branches are env-dependent, so they are driven explicitly rather than
+    left to whatever the test runner happens to export.
+    """
+
+    def test_no_color_disables_everything(self) -> None:
+        """
+        NO_COLOR set at all means no SGR is permitted.
+        """
+
+        with mock.patch.dict(os.environ, {"NO_COLOR": "1"}, clear=True):
+            self.assertEqual(get_sgr_support(), -1)
+
+    def test_dumb_terminal_disables_everything(self) -> None:
+        """
+        TERM=dumb likewise.
+        """
+
+        with mock.patch.dict(os.environ, {"TERM": "dumb"}, clear=True):
+            self.assertEqual(get_sgr_support(), -1)
+
+    def test_truecolor_is_recognised(self) -> None:
+        """
+        COLORTERM=truecolor short-circuits the terminfo lookup.
+        """
+
+        for value in ("truecolor", "24bit", "TrueColor"):
+            with mock.patch.dict(
+                os.environ, {"COLORTERM": value, "TERM": "xterm"}, clear=True
+            ):
+                self.assertEqual(get_sgr_support(), 2**24)
+
+    def test_terminfo_failure_falls_back(self) -> None:
+        """
+        An unusable terminfo database must not raise out of a display helper;
+        it reports -2 so the caller redacts rather than guesses.
+        """
+
+        with (
+            mock.patch.dict(os.environ, {"TERM": "xterm"}, clear=True),
+            mock.patch.object(curses, "setupterm", side_effect=curses.error()),
+        ):
+            self.assertEqual(get_sgr_support(), -2)

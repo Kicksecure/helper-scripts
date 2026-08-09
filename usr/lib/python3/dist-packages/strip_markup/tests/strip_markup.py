@@ -414,22 +414,22 @@ class TestStripMarkup(TestStripMarkupBase):
     """
 
     argv0: str = "strip-markup"
+    help_str: str = """\
+strip-markup: Usage: strip-markup [--help] [string]
+  If no string is provided as an argument, the string is read from standard \
+input.
+"""
 
     def test_help(self) -> None:
         """
         Ensures strip_markup.py's help output is as expected.
         """
 
-        help_str: str = """\
-strip-markup: Usage: strip-markup [--help] [string]
-  If no string is provided as an argument, the string is read from standard \
-input.
-"""
         self._test_args(
             main_func=strip_markup_main,
             argv0=self.argv0,
             stdout_string="",
-            stderr_string=help_str,
+            stderr_string=TestStripMarkup.help_str,
             exit_code=0,
             args=["--help"],
         )
@@ -437,7 +437,7 @@ input.
             main_func=strip_markup_main,
             argv0=self.argv0,
             stdout_string="",
-            stderr_string=help_str,
+            stderr_string=TestStripMarkup.help_str,
             exit_code=0,
             args=["-h"],
         )
@@ -489,3 +489,47 @@ input.
             exit_code=0,
             args=["--"],
         )
+
+    def test_too_many_positional_arguments(self) -> None:
+        """
+        Ensure strip-markup crashes if too many positional arguments are
+        passed.
+        """
+
+        self._test_args(
+            main_func=strip_markup_main,
+            argv0=self.argv0,
+            stdout_string="",
+            stderr_string=TestStripMarkup.help_str,
+            exit_code=1,
+            args=["one", "two"],
+        )
+
+    def test_neutralize_on_parse_failure(self) -> None:
+        """
+        Ensure strip-markup falls back to neutralizing malformed inputs if it
+        can't sanitize them.
+        """
+
+        in_str: str = "<![x] a & b"
+        expect_str: str = "_![x] a _ b"
+        with mock.patch(
+            "strip_markup.strip_markup_lib._strip_once",
+            side_effect=AssertionError("parser exploded"),
+        ):
+            self._test_args(
+                main_func=strip_markup_main,
+                argv0=self.argv0,
+                stdout_string=expect_str,
+                stderr_string="",
+                exit_code=0,
+                args=[in_str],
+            )
+            self._test_stdin(
+                main_func=strip_markup_main,
+                argv0=self.argv0,
+                stdout_string=expect_str,
+                stderr_string="",
+                args=[],
+                stdin_string=in_str,
+            )

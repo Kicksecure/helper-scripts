@@ -190,7 +190,8 @@ check_tor_circuit_built() {
    check_bootstrap_privleap_action="tor-circuit-built-check"
    check_tor_bootstrap_helper_run_helper_script
    tor_circuit_built_check_exit_code="$check_bootstrap_helper_script_exit_code"
-   tor_circuit_built_output="$check_bootstrap_helper_script_output"
+   ## Used to be displayed by onion-time-pre-script, but no longer.
+   #tor_circuit_built_output="$check_bootstrap_helper_script_output"
 }
 
 tor_consensus_valid-after() {

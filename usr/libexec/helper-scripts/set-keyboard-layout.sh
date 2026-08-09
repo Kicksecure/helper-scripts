@@ -354,7 +354,7 @@ set_labwc_keymap() {
     return 1
   fi
 
-  ## If 'labwc's environment config file exists, read it.
+  ## If labwc's environment config file exists, read it.
   labwc_existing_config=''
   if [ -f "${labwc_config_path}" ]; then
     if ! [ -r "${labwc_config_path}" ]; then
