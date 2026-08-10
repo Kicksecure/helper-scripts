@@ -1,8 +1,103 @@
+commit 74c26d01ab51641fc7c23be79bbd5713f74e60bb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Aug 10 09:19:18 2026 -0400
+
+    fix
+
+    https://forums.kicksecure.com/t/sys-net-as-clockvm-with-sdwdate-in-qubes/1825
+
+commit 7f7612b210acdc5d646a1cf3a50bb6d12044fda3
+Merge: 3b3a8dd9 e7790209
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 9 02:47:41 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit e7790209060089af4a9d38ee382bebd454c8d1b0
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Aug 2 16:42:29 2026 -0400
+
+    Remove overly verbose comment
+
+commit 30ec67690062d15ad50baa07be4e2cdb42ef556f
+Merge: 8e8319af 3b3a8dd9
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Aug 2 16:41:12 2026 -0400
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 8e8319af0ee27a11d4809242d3cc79f3127649d8
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Aug 2 16:36:45 2026 -0400
+
+    Lint, fix minor issues
+
+commit e942b7c709e0187299ec8e869448b2157dd1a93b
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Aug 2 15:09:51 2026 -0400
+
+    Fixes and tweaks
+
+commit 3b3a8dd96d33d107fc9450a14172af94529e6f21
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 1 08:40:10 2026 +0000
+
+    bumped changelog version
+
 commit d4895c28cc83fb52837d8a45865d9e5bfaf95fde
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Aug 1 04:36:03 2026 -0400
 
     output
+
+commit 8d87af7651caa4923343d17009a7fd9e2c0dbe7f
+Merge: d1645db5 63608f3d
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Jul 31 20:59:47 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/ai' into arraybolt3/trixie
+
+commit d1645db598ef83d77dc1f33da1495e269d52e7b5
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Jul 31 20:59:11 2026 -0400
+
+    Initial overhaul of AI-generated PR
+
+commit 63608f3d892e77dd1642577135cc8c27c48deb08
+Author: claude (dev142 b93fb2c6-e15f-4d45-8566-f3ded893b70e) <noreply@anthropic.com>
+Date:   Fri Jul 31 16:59:31 2026 -0400
+
+    vbox-ova-reproducible-normalize: mark the derivation hashes non-security
+
+    - derive_mac / derive_cid use hashlib.sha1 only as a deterministic function
+      to derive a stable MAC suffix / content id from the salt. Collision
+      resistance is irrelevant; any stable hash would do.
+    - Pass usedforsecurity=False so the intent is explicit and bandit's B324
+      weak-hash flag clears honestly, rather than suppressing it.
+
+commit dab4f58ce34567af29056368dda048ba05ae1b2c
+Author: claude (dev142 b93fb2c6-e15f-4d45-8566-f3ded893b70e) <noreply@anthropic.com>
+Date:   Fri Jul 31 16:24:29 2026 -0400
+
+    CI: propagate bandit, codeql-actions, secrets-audit workflows
+
+    Byte-identical propagation from developer-meta-files
+    consumer-templates. Closes scanner-coverage gaps:
+
+    - consumer-bandit.yml: Python security lint, universal
+      self-discovery (extension + shebang scan), no per-repo config.
+    - consumer-codeql-actions.yml: CodeQL 'actions' language --
+      workflow-YAML security analysis (script-injection, missing
+      permissions, unpinned actions).
+    - consumer-secrets-audit.yml: manual-dispatch secrets surface
+      audit (presence flags only, values never emitted).
+
+    Managed files -- do not hand-edit; regenerated on the next
+    propagation pass.
+
+    ## AI-Assisted
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 
 commit f45946d79f7970a36b4521a8d0da720056c40e36
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -36,6 +131,74 @@ Date:   Wed Jul 29 16:49:39 2026 -0400
 
     Co-Authored-By: Claude <noreply@anthropic.com>
 
+commit da46a5069964ef20cea391319c69ec71df5cb35a
+Author: claude (dev143 0e237662-0437-41ed-86cc-838db157dd0a) <noreply@anthropic.com>
+Date:   Fri Jul 31 10:09:52 2026 -0400
+
+    onion-time-pre-script: redact Tor's retry counter from the output
+
+    sdwdate's preparation loop lengthens its retry wait after each failed run
+    of this script, but drops back to the minimum whenever the output differs
+    from the previous run. Tor's bootstrap line carries COUNT=, a retry
+    counter incremented on every failed connection attempt, so on a Gateway
+    with no network the output never repeated, the wait never advanced, and
+    the loop respawned six Tor control port helpers per second indefinitely:
+    https://forums.whonix.org/t/sys-whonix-has-extreme-cpu-usage-before-an-internet-connection/23450
+    https://github.com/QubesOS/qubes-issues/issues/11013
+
+    Only the printed copy is redacted. ${tor_bootstrap_status} keeps the
+    counter, so the REASON=TIMEOUT match below is unaffected, and systemcheck
+    still shows the full line in the eleven places it displays it -- which is
+    where this script's own log messages already tell the user to look.
+
+    COUNT= is the only field that moves on every run. The consensus
+    valid-after/valid-until timestamps only change when a new consensus
+    arrives, and timesanitycheck emits a static message.
+
+    Redacting is a denylist over a format we do not own, so sdwdate does not
+    rely on it being complete: it also floors its retry interval, which
+    bounds the cost regardless of what this script prints.
+
+    Regression tests in dist-ai (onion-time-pre-script-tests). They pin BOTH
+    directions -- a counter tick must not change the output, and a
+    PROGRESS/REASON transition must still change it -- because a redaction
+    that silenced real transitions would trade a CPU bug for a
+    responsiveness bug. 11 pass, 0 fail, 0 skip; against the unredacted
+    script 4 fail.
+
+    Generated with assistance from Claude Code.
+
+commit 9658636ef2ddd5dd004d8ae03df9944bd16e8702
+Merge: b7eabaa6 4b42aa36
+Author: claude (dev138 9b889944-0a22-45e7-8fd6-c189113e33b9) <noreply@anthropic.com>
+Date:   Fri Jul 31 09:39:39 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/ai' into ai
+
+commit b7eabaa66135491840374529280a9fd6a3b05c62
+Author: claude (dev138 9b889944-0a22-45e7-8fd6-c189113e33b9) <noreply@anthropic.com>
+Date:   Fri Jul 31 09:37:02 2026 -0400
+
+    ci: gate the local workflows on CI_ENABLED_ORG_AI_ASSISTED
+
+    Our workflows ran wherever the branch landed. Merged upstream they burn
+    Kicksecure/Whonix runner quota and post our CI into repos that never
+    asked for it; on a contributor fork they run the whole suite unbidden.
+    Only 5 of 136 workflow files across the fleet carried any owner gate.
+
+    Gate: a job-level `vars.CI_ENABLED_ORG_AI_ASSISTED == 'true'`, set once
+    as an organization variable on org-ai-assisted. Zero runner cost -- a job
+    whose `if:` is false never allocates one -- and the run still reports
+    green, so upstream and forks are not handed a red X for a lane they did
+    not opt into. A fork that WANTS the lane sets the same variable in its
+    own repo; no patch to these files, no fork of our workflows.
+
+    ANDed in front of any existing fork-PR guard rather than replacing it.
+
+    Verified: the workflow-yaml validator reports 0 findings for this repo.
+
+    Generated with assistance from Claude Code.
+
 commit cbb1074b5d7b19ede35ee8530d85152ebe570d73
 Author: claude (dev142 b93fb2c6-e15f-4d45-8566-f3ded893b70e) <noreply@anthropic.com>
 Date:   Fri Jul 31 08:33:33 2026 -0400
@@ -53,6 +216,90 @@ Date:   Fri Jul 31 08:33:33 2026 -0400
 
     Co-Authored-By: Claude <noreply@anthropic.com>
 
+commit 4b42aa365c4eab9bda1711e510abac6eb0e917f2
+Author: claude (dev142 b93fb2c6-e15f-4d45-8566-f3ded893b70e) <noreply@anthropic.com>
+Date:   Fri Jul 31 08:33:33 2026 -0400
+
+    CI: repoint step-summary-emit at dist-ai
+
+    - developer-meta-files deleted ci/step-summary-emit.sh; the helper now
+      ships as a binary in dist-ai at usr/bin/step-summary-emit.
+    - The summary steps still checked out developer-meta-files into .dmf and
+      called ./.dmf/ci/step-summary-emit.sh, which no longer exists -- the
+      step died with exit 127 and failed the job.
+    - Check out org-ai-assisted/dist-ai into .github/dist-ai and call
+      ./.github/dist-ai/usr/bin/step-summary-emit instead, matching the
+      pattern the developer-meta-files reusables already use.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 0fb0dfd20d11ec1e8d04c1035e6fcc2948348c78
+Merge: 327bd174 ae0e8759
+Author: claude (dev139 e7f90691-34e3-4051-8cc7-822370201493) <noreply@anthropic.com>
+Date:   Fri Jul 31 08:23:31 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master' into ai
+
+commit 327bd1741f1d0eed525a8def67c7284cd61705a5
+Author: claude (dev139 e7f90691-34e3-4051-8cc7-822370201493) <noreply@anthropic.com>
+Date:   Fri Jul 31 08:21:21 2026 -0400
+
+    onion-time-pre-script: brace variable references, run shell tests first
+
+    - run-tests: move onion-time-pre-script-testscript ahead of the python
+      suites. run-tests is errexit, and the stdisplay suite is currently red in
+      CI, so the shell test was never reached -- wired in but not running.
+    - onion-time-pre-script: brace all 77 SC2250 sites (R-020), drop the
+      blank-line separator (R-042).
+    - run-tests, ci/lint-install.sh: R-010 strict-mode block; brace $PWD.
+
+    R-010 on onion-time-pre-script is knowingly left failing. It reads 18
+    variables it never assigns (most from the sourced tor_bootstrap_check.bsh)
+    and relies on unset-expands-to-empty, so nounset needs its own audit and a
+    test round on the time-sync path. The file failed R-010 the same way before
+    this branch touched it.
+
+    Regression suite still 11 pass / 0 fail / 0 skip after the rewrite.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit dc73dc42667f39310bc7b171630ca0ded499d911
+Author: claude (dev139 e7f90691-34e3-4051-8cc7-822370201493) <noreply@anthropic.com>
+Date:   Fri Jul 31 08:07:54 2026 -0400
+
+    onion-time-pre-script: rate limit anondate-set requests
+
+    - anondate_use created /run/sdwdate/request_anondate-set on every call.
+    - sdwdate's preparation loop calls this script about once per second while
+      Tor is unreachable, and the consumer
+      (sdwdate/usr/libexec/sdwdate/sdwdate-start-anondate-set-file-watcher) is a
+      bare inotify read loop with no limit of its own, so every request became a
+      full anondate-set run.
+    - Suppress a request when the previous one is under 60s old. Nothing
+      anondate-set consumes moves faster: it derives the time from the Tor
+      consensus (hourly, valid 3h) or the Tor certificate lifetime.
+    - Timestamp kept in its own file; the consumer deletes the request file once
+      serviced, so the request file's mtime cannot carry the state.
+    - Stamp written before the request file, so a death between the two leaves
+      the limit armed rather than unarmed.
+    - First request after boot is unaffected (/run is empty, no stamp).
+    - A stamp dated in the future means the clock moved backwards, which is
+      expected because anondate-set and sdwdate both set the clock. Fail open.
+
+    Regression test: onion-time-pre-script-testscript, wired into ./run-tests.
+    Verified 11 pass / 0 fail / 0 skip on the fix, and 2 fail on the pre-fix
+    code (including the request-not-recreated assertion).
+
+    Drive-by, to leave shellcheck clean on the touched file:
+    - exit_handler ran its "No exit code set yet. Setting to 1." string as a
+      command and never set exit_code (SC2288).
+    - output_cmd msg="$@" -> "$*" (SC2124).
+    - $FUNCNAME -> ${FUNCNAME[0]} (SC2128).
+
+    ci/lint-install.sh: install safe-rm, used by the shell tests in ./run-tests.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
 commit ae0e875955ea599ba93af15b893bbb70593bde85
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jul 31 11:10:58 2026 +0000
@@ -66,11 +313,929 @@ Date:   Fri Jul 31 06:11:06 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
 
+commit 7be8f43a6ce682856fa9097a3f95b73b0a1994a3
+Merge: e0ade0e0 473c75fc
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Jul 30 21:41:36 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/ai' into arraybolt3/trixie
+
 commit e0ade0e0a6875afef83c8ac4d12588ee547bfdfd
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Thu Jul 30 21:21:32 2026 -0400
 
     Comments, minor tweaks, allow curses to determine if TERM=dumb is set in stdisplay
+
+commit 473c75fcaa84243537edf6207d2e553de2dc6652
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Thu Jul 30 11:59:10 2026 -0400
+
+    consumer-claude-code: propagate the corrected template
+
+    Byte-identical to developer-meta-files consumer-templates.
+
+    The github.ref comment was wrong for one of the two events it described:
+    issue_comment fires with the default branch ref, pull_request_review_comment
+    with the PR merge ref (refs/pull/<number>/merge). No behaviour change -- the
+    concurrency group reaches github.ref only if neither number field is set, and
+    one always is for the events this workflow accepts.
+
+    Generated with assistance from Claude Code.
+
+commit 2cb8ee6216ac49c81316a06a8b0aa0c4d2f84487
+Author: claude (dev127 7f58c5c1-92de-4201-b9b3-479cb3ce09c3) <noreply@anthropic.com>
+Date:   Wed Jul 29 17:47:41 2026 -0400
+
+    tests: hand the sanitize-echo test to dist-ai
+
+    Comprehensive tests live in org-ai-assisted/dist-ai, out of this
+    upstream-facing repo. The test now runs there as part of sanitize-string-tests;
+    the upstream in-tree tests beside it are untouched.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit bfd21a5908081140d8154214fa064b4b259d9f57
+Author: claude (dev127 7f58c5c1-92de-4201-b9b3-479cb3ce09c3) <noreply@anthropic.com>
+Date:   Wed Jul 29 17:47:40 2026 -0400
+
+    dm-consumer: install safe-rm for the dist-ai suites
+
+    safe-rm is a hard runtime dependency of this package (debian/control), but CI
+    never installed it. git-review-scan.sh probes it with 'has safe-rm' at source
+    time and the review drivers run under errexit, so its absence killed the
+    external-diff driver with no diagnostic -- empty output, rc 1 -- which git
+    reported as "external diff died" and git-meld-tests classified as 155 hidden
+    changes.
+
+    Surfaced when git-meld-tests moved to this component, where git-meld has lived
+    since 33d4b04e; developer-meta-files already listed safe-rm, which is why the
+    suite was green there.
+
+    Reproduced in a debian:trixie-slim container mirroring the reusable workflow:
+    with safe-rm added, all 8 helper-scripts core suites pass, 0 skips.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 8b6e1fda3504759fcaa0c9ecb1fa8d7c8a2b42b3
+Author: claude (dev127 7f58c5c1-92de-4201-b9b3-479cb3ce09c3) <noreply@anthropic.com>
+Date:   Wed Jul 29 16:49:39 2026 -0400
+
+    git-review-driver: disable the pager on the diffstat
+
+    The diffstat ran plain 'git diff --no-ext-diff --stat --summary', contradicting
+    the no-pager contract stated in the comment ten lines below it and applied to
+    the per-file diff further down. With stdout on a tty git spawns less, which
+    waits for a keypress, so any unattended git-diff-review / git-meld / git-kdiff3
+    run in a terminal wedges instead of completing.
+
+    Found by unmasking the git-meld-tests suite, which had been suppressed by a skip
+    in a consumer's dm-consumer.yml. dist-ai gains a regression test asserting no
+    pager is spawned under a tty; with this line reverted that test fails in 41s
+    instead of hanging past 240s.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 11b643bef9008b10b9abc0ad46629e77092acb96
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 14:10:47 2026 -0400
+
+    unicode_show: 100% branch coverage
+
+    89% -> 100%. main() had no test at all: its file handling, stdin path and
+    every error branch were unreached, so a read failure or a non-UTF-8 file was
+    never exercised by anything.
+
+    Added: missing newline at end, trailing whitespace, a non-UTF-8 file (must
+    fail CLOSED with exit 2, since errors='replace' would let suspicious bytes
+    slip), an unopenable path, the stdin scan, a stdin decode error, no-file-and-
+    no-stdin, the outer unexpected-error handler, and describe_char()'s
+    allowed-character branch, which showed the character literally rather than
+    ascii()-escaped.
+
+    One assertion corrected while writing: trailing whitespace is reported by
+    annotating each space as [U+0020], not by naming the category.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 4743044b11466f577885c675a7ea0570073fb0f4
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 14:07:15 2026 -0400
+
+    stdisplay: 100% branch coverage -- the CLI entry points had none
+
+    86% -> 100%. Nothing drove stcat, stcatn, stsponge or sttee at all; the tests
+    only exercised the stdisplay() function, so every CLI's stdin handling and
+    argument loop was unreached.
+
+    Added, patching the MODULE attributes rather than sys.* -- these modules do
+    'from sys import argv, stdin, stdout', which binds at import:
+
+    - reading stdin with no arguments, and with '-' naming it explicitly
+    - stdin being None, both before the argument loop and inside it, where each
+      '-' must be skipped rather than dereferenced
+    - more than one argument, which is what takes the loop's back edge
+    - stcatn's trailing-whitespace trim and guaranteed final newline
+    - get_sgr_support(): NO_COLOR, TERM=dumb, COLORTERM truecolor/24bit, and an
+      unusable terminfo, which must report -2 rather than raise out of a display
+      helper
+
+    One assertion had to be corrected while writing it: an SGR colour code is NOT
+    redacted at this colour depth -- stdisplay preserves it deliberately -- so the
+    escape tests use BEL, which dies at every depth.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 0374f1065f6bf3045f562673543e864b8ed1b65e
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 14:00:38 2026 -0400
+
+    sanitize_string + strip_markup: cover the untested branches
+
+    Branch coverage, unit tests, measured in the sandbox:
+
+      sanitize_string  93% -> 99%   (sanitize_echo.py 88% -> 100%)
+      strip_markup     85% -> 99%   (strip_markup_lib.py 76% -> 100%)
+
+    The branches these now reach were all error or edge paths that nothing
+    exercised:
+
+    - sanitize-echo with no argument and no stdin: sys.stdin can be None, and echo
+      still emits its newline rather than failing.
+    - the probe throttle, both ways: the buffer is HELD between probes, and
+      flushed once a probe fires and finds the construct closed. Asserted by
+      closing a comment past the interval and checking its body does not leak.
+    - the BrokenPipe handler when /dev/null cannot be opened -- not something a
+      test can arrange for real, so os.open is patched.
+    - sanitize-string with neither an argument nor a stdin, and with a bare '--'.
+    - markup_incomplete() directly, including its raising-parser path, which must
+      report "complete" so a streaming caller flushes instead of buffering forever.
+    - strip_markup()'s fallback when HTMLParser raises: it must underscore the
+      ORIGINAL input rather than propagate parser internals.
+    - strip-markup with two positional arguments.
+
+    Two partial branches remain and are NOT reachable:
+    strip_markup.py:40->53 and sanitize_string.py:192->205 are the false exit of
+    each option-parsing 'while'. Both are guarded by an earlier emptiness check,
+    and every loop body path returns or breaks on the first iteration, so the
+    loop can never re-test its condition. Left as-is: rewriting them as 'if'
+    would remove the extension point for a second option, and a pragma would be
+    hiding the branch rather than covering it.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 6704c38dc20ca8d29f5c62e4bc41e9883aec914b
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 13:52:18 2026 -0400
+
+    sanitize-echo: test the stdin path, which nothing exercised
+
+    Branch coverage put sanitize_echo.py at 88% with lines 96-103 unreached: the
+    stdin fallback. It is part of the documented contract -- read the message from
+    stdin when no argument is given -- but all 20 existing tests pass the message
+    as an argument, so the path had never run under test. I had only ever checked
+    it by hand in a shell, which is not a test.
+
+    Two added: stdin is read and sanitized with echo's trailing newline appended,
+    and --max-length applies to stdin input as it does to an argument.
+
+    sanitize_echo.py 88% -> 97%, package 93% -> 96%. The one line still uncovered
+    is the no-argument-and-no-stdin branch, which needs sys.stdin to be None.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 27d7a34a9f5bb32e5fc7a148cf8817634318d1f9
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 12:39:08 2026 -0400
+
+    Address review: USTAR member cap, and a test double that clobbered stdout
+
+    vbox-ova-reproducible-normalize: reject an OVA member above the USTAR limit.
+    repack() writes USTAR because an OVA must be a POSIX USTAR archive, and USTAR
+    encodes the size in 11 octal digits, capping a member at 8 GiB - 1. A larger
+    VMDK previously failed deep inside the repack with an opaque format error
+    instead of at the point the input was read. Verified: oversized refused with
+    the limit named, 5 GiB and exactly-at-the-limit accepted, and tarfile itself
+    does raise ValueError above it, so the premise holds.
+
+    sanitize_string tests: the BrokenPipeError double was a MagicMock, whose
+    fileno() resolves through __index__ to 1. The handler therefore ran
+    os.dup2(devnull, 1) and redirected the REAL process stdout to the null device
+    for the rest of the run -- and the branch the test names was never the one
+    taken. It is now a StringIO subclass, whose fileno() raises
+    io.UnsupportedOperation, a subclass of both OSError and ValueError, i.e.
+    exactly the "stdout has no real file descriptor" case the handler catches.
+
+    Swapping the double made the test FAIL until a reconfigure() no-op was added,
+    because main() reconfigures stdout's encoding -- which the MagicMock had been
+    silently absorbing too.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit f57537dc9f156503901af17b4220283774162668
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 12:36:48 2026 -0400
+
+    sanitize-string: stop re-parsing the pending buffer once per line
+
+    Asking markup_incomplete() per line is quadratic while a construct stays
+    open. Measured through sanitize-string on 40k short lines each opening one:
+    79.5s, against 0.8s for the same size with no markup.
+
+    The reviewer's suggested fix -- reuse one parser and feed only new input --
+    does NOT work, and the measurement says so: one StripMarkupEngine fed
+    incrementally takes 2.6s / 8.6s / 38.2s for 5k / 10k / 20k feeds, still
+    quadratic. The cost is inside HTMLParser, which re-scans its whole rawdata
+    buffer on every feed while an unterminated construct blocks progress, so
+    constructing the parser was never the expensive part.
+
+    So the fix is to ask less often: at most once per STDIN_PROBE_INTERVAL_CHARS
+    (4096) of growth, holding in between. Holding is the safe direction -- it can
+    only delay output, whereas flushing unasked could split a construct and change
+    the result.
+
+    40k lines each opening a construct: 79.5s -> 0.21s. Benign input unchanged at
+    0.8s. Streaming stays equivalent to whole-input sanitizing: 0 mismatches over
+    60 markup-heavy random corpora, plus 24 unit tests and the dist-ai adversarial
+    suite (6906 assertions incl. 3000 fuzz iterations) re-run in the sandbox
+    against this checkout.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 08e68bcc11e55e85c372c807e0bc3a9f22ebadf4
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 12:26:00 2026 -0400
+
+    python modules: make them executable, per R-180
+
+    A python library carries a shebang and is executable, so it can be run
+    directly when debugging. 45 modules had the shebang but not the mode. The 4
+    empty __init__.py package markers are exempt and unchanged.
+
+    debian/helper-scripts.install ships usr/* wholesale, so the mode carries into
+    the package.
+
+    stdisplay/tests/stdisplay.py gains '## style-ok: allow-non-ascii': the suite
+    pins an O-umlaut mapping to '_', so it must contain the bytes it asserts are
+    stripped. Adding the mode put it in a changeset and R-001 then failed it; the
+    waiver mechanism is dist-ai 49f76a2.
+
+    Caveat: a module using RELATIVE imports still cannot run as a plain script --
+    './sanitize_echo.py' gives "attempted relative import with no known parent
+    package". Use 'python3 -m sanitize_string.sanitize_echo' for those. A module
+    without relative imports (strip_markup_lib.py) runs directly and exits 0.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 5046f451929e9acd905be0cfa52887ef46d0175c
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 12:08:23 2026 -0400
+
+    Restore module shebangs; route untrusted diagnostics through sanitize-echo
+
+    Reverts 823cc8bd and puts the shebang back on the two new modules too. Every
+    python module here carries '#!/usr/bin/python3 -Bsu' while being
+    non-executable -- 23 of them -- so that is the convention, not debt. Stripping
+    it to satisfy check-shebang-scripts-are-executable was the wrong direction;
+    the hook now exempts importable modules (dist-ai 754e8c3).
+
+    Diagnostics: every one that renders untrusted data now goes through
+    sanitize-echo, capped, instead of plain printf.
+
+    - default_if_empty: the value printed IS the rejected name, i.e. the hostile
+      input that just failed check_variable_name.
+    - read_integer_file: target_file is a caller-supplied path, and file_contents
+      is the CONTENT of that file -- the least trustworthy string in the file.
+      This also closes the CodeRabbit finding about target_file left open earlier.
+    - check_is_not_empty_and_only_one_line and random_alpha_numeric: the
+      caller-supplied variable name and byte count.
+
+    Left as plain printf: the diagnostics whose text is fixed, plus the ERR trap
+    (BASH_COMMAND is our own source, last_exit_code numeric).
+
+    Verified a hostile path and a hostile variable name are neutralised in the
+    output: escapes become '_', markup is stripped, a CR can no longer forge a
+    line.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 81196dba50b70921a480cf9934d829c8188a5c24
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 11:44:55 2026 -0400
+
+    strings.bsh: route the last diagnostic through sanitize-echo too
+
+    The empty-value branch still used stecho. Every other diagnostic in the file
+    now goes through sanitize-echo, so this one did too little: the variable NAME
+    it prints is caller-supplied, and stecho neutralises escapes but does not
+    strip markup or cap the length.
+
+    One path for every diagnostic in this file, capped at STRINGS_BSH_REPORT_MAX
+    like the rest. stecho remains the right tool for trusted text elsewhere.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit eea2e615d3b39e9256a1a4a5cda5b2c629cac356
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 11:19:47 2026 -0400
+
+    Address CodeRabbit review on PR #78
+
+    Three of four taken.
+
+    validate_safe_filename now rejects a missing argument, like its two siblings.
+    It expanded "$1" unguarded, so a no-argument call aborted the caller with
+    '$1: unbound variable' under nounset instead of returning 1. Reproduced.
+
+    The hex dump moves AFTER the human-readable reason. It was printed first,
+    which contradicts the reason-FIRST/value-LAST contract documented at the top
+    of the file and buried the explanation under hex digits.
+
+    consumer-claude-code.yml:
+    - the concurrency group gains an '@claude' term. Concurrency is evaluated
+      BEFORE the job-level 'if:', so an unrelated comment on the same PR joined
+      the group of an in-flight review and cancelled it, while its own job was
+      then skipped.
+    - the job now requires a pull-request context. 'issue_comment' fires for
+      ISSUES too, and an issue carries no PR for the reviewer to check out.
+      Written as an alternation because github.event.issue.pull_request is absent
+      for pull_request_review_comment, which is always a PR.
+
+    NOT taken: the SIGPIPE half of the od|head finding. Not reproducible -- with a
+    200 KB value the pipeline still reports PIPESTATUS=(0 0) under pipefail,
+    because GNU head --bytes drains its input rather than closing the pipe early.
+    The ordering half of that same finding is fixed above.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit cc09c0db5d0f4e049259b789f2fef76b3669afc9
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 11:15:17 2026 -0400
+
+    Address review: member-name traversal, and SC2034 aborting the test suite
+
+    Two findings from the review of this branch.
+
+    agy, high: host file read via the RAW member names. 'filter="data"' sanitizes
+    the extraction, but member_names keeps the unsanitized names and they are
+    later joined with the workdir to read each member back. os.path.join DISCARDS
+    the base when the second component is absolute, so an .ova carrying a member
+    named '/etc/shadow' had repack() read the host file and bake it into the
+    output. The earlier fix covered only the extract fallback, not this.
+
+    Names are now validated once where they are collected, which covers every
+    later use; safe_tar_members reuses the same check. Verified '/etc/shadow',
+    '../../../etc/shadow', 'a/../../b' and '' are refused while 'machine.ovf',
+    'disk1.vmdk' and 'sub/dir/file.mf' still pass.
+
+    codex, P1: SC2034 on the test variables consumed by name. Not cosmetic --
+    string_bsh_tests runs 'shellcheck "${BASH_SOURCE[0]}"' under errexit, so a
+    warning aborts the suite BEFORE any test runs and the regression tests would
+    silently stop existing. The local shellcheck does not flag it; the sandbox's
+    pinned one does, which is what CI uses. Suppressed with that rationale, and
+    confirmed the suite runs to completion under the strict shellcheck.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit f5dc251804bb7c3485e835225e82d527251b5a0b
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 11:00:03 2026 -0400
+
+    vbox-ova-reproducible-normalize: close the tar-slip in the extract fallback
+
+    CodeQL on PR #78: 1 high (py/tarslip) + 1 note (py/unused-import), both in
+    this file, which arrived via the merge of #69.
+
+    extractall(filter="data") is safe, but the 'except TypeError' fallback for
+    interpreters predating that argument extracted with NO validation at all, so
+    a member named '../x' or an absolute path escaped the temporary directory.
+    The fallback now validates every member: the resolved path must stay inside
+    the destination, and a link member is refused outright -- an OVA is a flat
+    archive of .ovf/.vmdk/.mf files, so a link is never legitimate.
+
+    Verified each hostile member type is refused ('../escaped.txt', '/abs.txt',
+    and a symlink to /etc/passwd) and that a benign archive still yields its
+    members.
+
+    Also drops the unused 'sys' import.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 0ca0f8a901123bad1592c3b0d3bf6b93b2e58759
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 10:43:05 2026 -0400
+
+    Revert the wayland menu fixes merge
+
+    Reverts f71fec2e. Not a history rewrite: the branch is pushed, so this is a
+    forward revert commit.
+
+    Its only net effect was adding askpass_gui_env.bsh -- use_sudo.sh resolved to
+    master's version during that merge and lock-screen was already identical, so
+    neither changes here.
+
+    askpass_gui_env.bsh has no caller: not in this repo, not on the branch that
+    introduced it, not in any other derivative-maker package. It defines
+    askpass_gui_env() and nothing invokes it. Dropping it rather than carrying
+    unreferenced code in the consolidated branch; it can return with its consumer.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 823cc8bd0b76cac0bb03a1f47b0833f86868b21f
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 10:26:18 2026 -0400
+
+    python modules: drop the shebang from import-only files
+
+    check-shebang-scripts-are-executable flags a shebang on a non-executable
+    file. These four are libraries and pytest modules -- imported, never run --
+    so the shebang is what is wrong, not the mode. The entry points in usr/bin
+    keep theirs and stay executable.
+
+    Pre-existing; surfaced because the merges above put the files in a changeset
+    and the gate reads whole changed files.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit ad7c6d9463a25bc8b408a8c0303a84787bcc35a5
+Merge: ab415975 7d247b4f
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 10:24:19 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/move-vbox-ova-reproducible-normalize' into ai
+
+commit ab415975ba4d7ab83d78b6f5b14fc38bb79b0c40
+Merge: f71fec2e ceba9107
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 10:24:12 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/ai-sanitize-string-stream' into ai
+
+commit f71fec2e628f49fada939e00c261ca49f8c5766f
+Merge: 663c26a7 c1887f6a
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 10:24:11 2026 -0400
+
+    Merge the wayland menu fixes (closed PR #77) into ai
+
+    Consolidating the open work onto the single ai branch.
+
+    Conflict in use_sudo.sh resolved to MASTER's version of
+    sudo_error_exit_if_unavailable, not the branch's:
+
+    - master gained an optional graphical mode in fe11d7b5 ("Add an optional
+      graphical mode to sudo_error_exit_if_unavailable"), which this branch
+      predates. The branch's variant solves the same problem (a visible sudo
+      error under a .desktop launch) the older way, by auto-detecting a
+      graphical launch instead of taking a msg_type argument.
+    - the branch's variant also calls generic_gui_message.py, which does not
+      exist on this system; the non-.py helper master calls does.
+
+    So the branch's approach is superseded rather than lost. askpass_gui_env.bsh,
+    the substance of that PR, merges unchanged.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 663c26a7f693f04d8043d8d0818371ce5ec55a2e
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 10:21:36 2026 -0400
+
+    strings.bsh: stop shadowing caller variables; diagnostics via sanitize-echo
+
+    Two changes to the functions that take a variable NAME.
+
+    1. Dynamic-scope shadowing, a silent validation BYPASS.
+
+       These functions read the caller's variable back with '${!name}', but bash
+       scoping is dynamic, so a local here shadows a caller variable of the same
+       name. A caller passing 'varname' had the function inspect its OWN local --
+       validating the literal string "varname" and returning SUCCESS for input
+       that must be rejected. Measured before the fix:
+
+         varname='../../../etc/passwd'; validate_safe_filename varname   -> rc 0
+         varname='!@#'; check_is_alpha_numeric varname                   -> rc 0
+         varname=$'multi\nline'; check_is_not_empty_and_only_one_line varname -> rc 0
+
+       default_if_empty had the benign form of it: a caller variable named
+       'var_name' or 'default_value' was left unset, exit 0.
+
+       The locals are now prefixed, so a plausible caller name cannot collide.
+       Found independently here and by agy during review.
+
+    2. Diagnostics print through sanitize-echo, restoring stecho.
+
+       stecho is back for the plain, trusted lines. Where an untrusted value is
+       shown, one sanitize-echo call now prints the whole diagnostic: no command
+       substitution, no subshell per message, and the value is no longer spliced
+       into a printf FORMAT string where a '%' in it is a conversion spec.
+
+       Each message puts the reason FIRST and the untrusted value LAST, so
+       hitting STRINGS_BSH_REPORT_MAX truncates the value, not the explanation.
+
+    Regression tests for all five shadowing cases added to string_bsh_tests, and
+    verified they FAIL against the pre-fix code (5 of 6) rather than passing
+    vacuously.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 95ebbfe81c02153d9743002a96cf955fa75d5e11
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 10:02:09 2026 -0400
+
+    sanitize-echo: print a sanitized string the way echo would
+
+    stecho sanitizes escapes but has no length cap. sanitize-string sanitizes
+    markup too and caps the length, but writes no trailing newline, so a caller
+    wanting a diagnostic line had to wrap it in a command substitution inside
+    another printf:
+
+        printf '%s\n' "content: '$(sanitize-string 200 "$value")'"
+
+    That inline form is what this removes. It spawns a subshell per message, and
+    the sanitized value is spliced back into a FORMAT string, so a '%' in
+    untrusted text becomes a conversion spec.
+
+    sanitize-echo is the union: sanitize-string's sanitizer, echo's shape.
+
+        sanitize-echo [--max-length LENGTH] [--] [string ...]
+
+    Arguments join with a single space, stdin is read when none are given, and a
+    newline always follows. LENGTH caps the sanitized output; nolimit is the
+    default. Reuses sanitize_string_lib, so there is one sanitizer, not two.
+
+    Verified against escape, CR line-forging, OSC title-set, markup and '%'
+    payloads; 20 tests, black/pylint/mypy clean.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 98aac93eee2a13acb30de00a3c5cfef3f7822d7a
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 09:20:51 2026 -0400
+
+    default_if_empty: move into strings.bsh, reuse check_variable_name
+
+    Drops the standalone variables.bsh: strings.bsh is where the functions that
+    take a variable NAME already live, and it already has check_variable_name,
+    so the hand-rolled identifier check was duplicating it.
+
+    The guard it provides is load-bearing, not cosmetic: the name reaches
+    "printf -v", which evaluates an array subscript, so an unchecked
+    "arr[$(command)]" would run the command.
+
+    Self-test folded into string_bsh_tests rather than a second was_executed
+    block: unset and empty take the default, a set value survives, and a
+    non-identifier name is refused. Verified they can fail -- removing the
+    validation or the "-n" test makes the suite exit non-zero.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 656d7228827a27e8fa735e5233a053d86ab56861
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 09:19:56 2026 -0400
+
+    strings.bsh: brace variable references (R-020)
+
+    Mechanical, generated with "shellcheck --enable=require-variable-braces
+    --format=diff". 114 unbraced references; no behaviour change.
+
+    The file previously could not be touched without the pre-push gate failing
+    on debt none of the change introduced.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 776a28cf7547f6e682cf0670971b9650062277d6
+Merge: ffa6eaf7 76d7c6b1
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 09:17:26 2026 -0400
+
+    Merge branch 'ai-claude-review-mention-only' into ai-default-if-empty
+
+commit ffa6eaf77fec6b27d9cc7c643df149eb673a7575
+Author: claude (dev122 ee1a166e-9fdb-47c3-8710-35498a053fb7) <noreply@anthropic.com>
+Date:   Wed Jul 29 09:08:52 2026 -0400
+
+    helper-scripts: add default_if_empty
+
+    Sets a variable at its SOURCE when it is unset OR empty, naming it BARE:
+
+        default_if_empty TMP /tmp
+
+    Nothing in the caller is dereferenced, so the call is safe under
+    "set -o nounset" -- the same property that makes "[ -v VAR ] || VAR=value"
+    the house idiom, and the reason neither form is a "${VAR:-value}" guard at
+    each consumer (those defeat nounset: a consumer that defaults the value
+    away can no longer report a genuinely missing one as the bug it is).
+
+    The two forms are a semantic choice, not a preference:
+
+        [ -v VAR ] || VAR=value      empty is MEANINGFUL and must survive
+        default_if_empty VAR value   empty is not a usable value
+
+    "-v" alone reports an explicitly-empty variable as set, keeping an
+    intentional empty. Right for a flag or optional string; wrong for a PATH,
+    where empty turns "${VAR}/file" into "/file" -- a root-relative path that
+    fails far from the cause, or as root writes to the wrong place.
+
+    The name reaches "printf -v", which evaluates an array subscript, so only
+    a plain identifier is accepted; "case" rather than "[[ =~ ]]" keeps to
+    "[ ]"-style tests. The "&&" short-circuit before the indirect expansion is
+    load-bearing under nounset.
+
+    Carries a was_executed self-test (unset / empty / set / rejected name).
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 76d7c6b16575873799635a0c9ef3192445d6e315
+Author: claude (dev118 bd22decd-3027-4ab5-9e48-11adfe39b279) <noreply@anthropic.com>
+Date:   Wed Jul 29 06:40:35 2026 -0400
+
+    strings.bsh: the self-tests never ran, and seven defects behind them
+
+    string_bsh_tests began with 'shellcheck "$0"'. Sourced -- which is how
+    this library is used -- $0 is the CALLER, so it linted whatever invoked
+    the library, or died when that was not a file, and the ERR trap aborted
+    the function before a single assertion. Measured: 0 tests executed.
+    Linting BASH_SOURCE[0] instead, and skipping when shellcheck is absent,
+    brings the suite to 28 passed / 0 failed.
+
+    With it running, the rest:
+
+    - br_add_to_file dropped the final line of a file not ending in a
+      newline: 'a\nb' produced only 'a<br />'. br_add, the same transform in
+      memory, kept both.
+    - validate_safe_filename measured length in CHARACTERS against a limit
+      that is 255 BYTES, so 200 multibyte letters (600 bytes) passed a check
+      meant to guarantee the filesystem will accept the name.
+    - check_is_alpha_numeric accepted accented letters under a UTF-8 locale,
+      because 'a-z' is resolved by collation. The test marked "unclear if
+      this is possible" is now enabled and passes. check_valid_linux_user_-
+      account_name got the same treatment: SYS_NAME_REGEX is meant
+      byte-for-byte.
+    - its empty-value branch was unreachable -- the regex rejects "" first --
+      so an empty value reported "Invalid character!". Checked before the
+      regex now.
+    - check_is_not_empty_and_only_one_line accepted a carriage return as one
+      line, though CR ends a line and rewrites it on a terminal. Also fixes
+      the comment claiming the read trims whitespace; with IFS= it trims
+      nothing.
+    - the six displaytime tests were vacuous: run_test passes a variable
+      NAME, right for the name-based validators but not for a function taking
+      a value, so every case was forced to T=0 and would have passed with the
+      arithmetic entirely wrong. Replaced with output assertions, plus a
+      non-numeric case.
+    - a zero-argument call read $1 before the arity check, killing the
+      caller's shell under nounset instead of returning 1. Also 'stcat --'
+      so a filename beginning with a dash is an operand.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit d814901a8ab349c2bc10a23dd5c1c454793c3a63
+Author: claude (dev118 bd22decd-3027-4ab5-9e48-11adfe39b279) <noreply@anthropic.com>
+Date:   Wed Jul 29 06:04:14 2026 -0400
+
+    strings.bsh: three defects found by ai-review
+
+    read_integer_file's bounds checks fail open on leading-zero input. The
+    value is validated as a string with ^[0-9]+$ and then compared inside
+    ((...)), which reads a leading zero as octal. With file contents '08' and
+    bounds 0..7 both comparisons abort with "value too great for base", each
+    'if' is therefore false, and the function returns 0 and emits 08 -- above
+    the upper bound it was asked to enforce. '010' with bounds 9..100 is
+    rejected although the caller means decimal 10. Reproduced, then fixed by
+    forcing base 10 on both operands.
+
+    validate_safe_filename dumped the rejected value to stdout, raw and
+    uncapped, immediately above the sanitized stderr message -- so the
+    sanitizing was moot. Confirmed on this host: a filename containing U+202E
+    put the raw override bytes on stdout. It is also the wrong stream for a
+    library, corrupting any caller that captures stdout, and od amplifies its
+    input several-fold, defeating the length cap. The %q line is gone (%q runs
+    under the caller's locale and passes multibyte sequences through, which is
+    exactly why string_quote_safe exists) and the hex dump now goes to stderr,
+    capped.
+
+    random_alpha_numeric returned whatever it got. A failed read left the
+    value empty and the function still exited 0, handing a caller an empty
+    string where it asked for a secret. Length is now checked.
+
+    Verified: 08/010/5 bound cases, stdout empty and stderr sanitized for a
+    U+202E filename, and a 43-character result.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 4f49d6f42f40383b4f031a459a7a61f006aa4c56
+Author: claude (dev118 bd22decd-3027-4ab5-9e48-11adfe39b279) <noreply@anthropic.com>
+Date:   Wed Jul 29 05:54:20 2026 -0400
+
+    strings.bsh: sanitize rejected values with sanitize-string, not stecho
+
+    stecho is the wrong tool for echoing back a value that failed validation.
+    It passes SGR escape sequences through -- verified on this host, TERM
+    independent: given 'A\033[31mB\033[2J' it strips the clear-screen but
+    keeps the colour code, because stdisplay defaults sgr to
+    get_sgr_support(). SGR alone still spoofs, e.g. foreground matched to
+    background to hide text in the very message explaining the rejection. It
+    also imposes no length limit: a 5000-byte value produced 5001 bytes of
+    output.
+
+    sanitize-string escapes every ESC unconditionally and takes a maximum
+    length. All three sites that echo a rejected value now use it, capped at
+    200 characters: check_is_not_empty_and_only_one_line,
+    check_is_alpha_numeric and validate_safe_filename. The remaining stecho
+    call reports "empty!" and interpolates no value.
+
+    Verified: no ESC byte reaches stderr from any of the three, a 5000-byte
+    multi-line value reports in 297 bytes, and valid inputs are still
+    accepted.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 635a4a28ace20c35c8da16c73e65d328df179b12
+Author: claude (dev118 bd22decd-3027-4ab5-9e48-11adfe39b279) <noreply@anthropic.com>
+Date:   Wed Jul 29 05:28:46 2026 -0400
+
+    strings.bsh: clear the static-gate debt the previous commit surfaced
+
+    The gate greps WHOLE changed files, so touching this file exposed three
+    pre-existing findings. All three are now green.
+
+    R-010 wanted a strict-mode preamble. It is a SOURCED library: setting
+    'set -o errexit' here would silently impose it on every caller's shell,
+    and the file's own header already documents that the caller owns that
+    choice. Waived with 'style-ok: no-strict' and the reason recorded, rather
+    than adding options a library has no business setting.
+
+    R-034: echo -> printf in the error trap.
+
+    R-042 flagged the trailing newline in random_alpha_numeric as a
+    decorative blank-line separator. It is not -- 'head --bytes' emits no
+    trailing newline, so that printf terminated the value. The two obvious
+    rewrites are both dead ends: R-030/R-031 requires the newline be spelled
+    printf '%s\n' "", which is exactly what R-042 rejects, and printf '\n' ""
+    is a shellcheck SC2182 error. Capturing the bytes and printing value and
+    terminator in one statement sidesteps the knot and reads better.
+    Behaviour verified unchanged for n=1/8/43: length, alphanumeric content,
+    trailing newline, and the non-numeric rejection.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 871fc4bb49610cc57cc40d62ef23e5dbf05ef528
+Author: claude (dev118 bd22decd-3027-4ab5-9e48-11adfe39b279) <noreply@anthropic.com>
+Date:   Wed Jul 29 05:26:03 2026 -0400
+
+    strings.bsh: report a rejected multi-line value through stecho
+
+    check_is_not_empty_and_only_one_line echoed the value it had just
+    rejected straight to the terminal with printf. Callers reach that branch
+    holding exactly the input they could not vouch for -- an api reply, a
+    config field, a filename -- so the value may carry ANSI escapes or a
+    U+202E right-to-left override and spoof what the operator reads about why
+    it was rejected. A validator whose failure path is itself an injection
+    vector undoes the reason it was called.
+
+    This was the only such site in the file. check_is_alpha_numeric already
+    reports through stecho on the same class of failure, so this is a
+    consistency fix as much as a security one; line 175 interpolates with %q
+    and is fine.
+
+    Verified at byte level rather than by eye, since the sandbox transport
+    sanitises its own output and hides the difference: with printf the stderr
+    contained a literal 0x1B, with stecho it is '_'. Exit status, the
+    accepted single-line case and the empty-value rejection are unchanged.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit ceba91070885809efae1a02820ccb0341bfe150b
+Author: claude (dev115 59b990ca-99cf-4143-876d-5052e0d99a6d) <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Jul 28 17:10:06 2026 -0400
+
+    sanitize-string: close the null device descriptor, explain the empty except
+
+    Two CodeQL findings on the broken-pipe handler.
+
+    os.open returned a descriptor that was never closed. dup2 duplicates it onto
+    stdout, leaving the original open, and when sys.stdout has no real descriptor
+    it leaked without even being used. Open it separately and close it in a finally.
+
+    The except swallowing that case had a bare pass whose explanation sat above the
+    outer try, so a reader arriving at it learned nothing. Say there what it means:
+    stdout is not a real file, so there is nothing to redirect and nothing for the
+    interpreter's shutdown flush to fail on.
+
+    Failing to open the null device is now its own case rather than being folded in
+    with a failing dup2.
+
+commit 4418787fd8cfe7912168266f930a274684a162aa
+Author: claude (dev118 bd22decd-3027-4ab5-9e48-11adfe39b279) <noreply@anthropic.com>
+Date:   Tue Jul 28 13:50:02 2026 -0400
+
+    consumer-claude-code: mention-only triggers (propagated from template)
+
+    Byte-identical cp from developer-meta-files/consumer-templates.
+
+    pull_request and workflow_dispatch resolve to claude-code-action's
+    agent mode, whose trigger is a non-empty 'prompt' input that this
+    workflow does not pass, so those events could only spin up a runner
+    and exit without calling the model - a green "Claude Code Review"
+    check that reviewed nothing.
+
+    Co-Authored-By: Claude <noreply@anthropic.com>
+
+commit 7b9496746372be620c62ff095612480b2694d185
+Author: claude (dev115 59b990ca-99cf-4143-876d-5052e0d99a6d) <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Jul 28 11:32:26 2026 -0400
+
+    sanitize-string: survive a closed pipe, skip the parse when it cannot help
+
+    Second review pass, three findings.
+
+    Writing each chunk as it becomes ready means a write can now fail part way
+    through, where before there was a single write at the end. Piping into head
+    therefore ended in a BrokenPipeError traceback and exit 1 rather than a quiet
+    exit. Handle it and point stdout at the null device so the interpreter's
+    shutdown flush cannot raise again.
+
+    markup_incomplete() re-parsed the whole pending buffer once per line, which is
+    quadratic in its length. Only a markup character can leave a construct open, so
+    skip the parse entirely when the buffer holds none, which is the common case
+    for log output.
+
+    Two divergences from sanitizing the whole input at once were asserted not to
+    exist: a construct still open at the character cap is written out anyway, and
+    one that makes the parser raise is written instead of underscore-sanitizing
+    everything. Neither can emit markup or an escape sequence, since every chunk
+    goes through the full sanitizer. Documented both, and covered the cap with a
+    test rather than leaving the one known difference untested. The cap comment
+    also claimed to bound memory, which it does not: a line is read whole, so
+    input without a newline still accumulates, exactly as before.
+
+commit bd9d4490204b5ebfd78930ddc106596f68e93b6f
+Author: claude (dev115 59b990ca-99cf-4143-876d-5052e0d99a6d) <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Jul 28 11:18:48 2026 -0400
+
+    sanitize-string: hold back input while markup is still open
+
+    Review of the previous commit found three defects in sanitizing standard input
+    as it arrives.
+
+    Sanitizing strictly per line was not equivalent to sanitizing the whole input.
+    A markup construct spanning a line boundary was not recognised as markup, so
+    content the parser would have consumed was emitted as text: '<!--\nsecret\n-->'
+    gave '' as an argument but 'secret\n--_\n' via standard input. Underscoring
+    every surviving metacharacter bounds what that text can do, but it is still a
+    difference in what the sanitizer emits, so it is not acceptable.
+
+    Hold lines back while a markup construct is open, via a new strip_markup
+    helper that reports whether the parser is still buffering an unfinished
+    construct, and sanitize once it closes. Output is then written only where a
+    split cannot change the parse. Realistic input is unaffected: 'a < b',
+    'cat < input > output' and a trailing '<' all parse as text and stream
+    immediately. A character cap bounds how much a construct that never closes can
+    hold back.
+
+    Also:
+
+    - Flush explicitly rather than relying on line buffering, which only flushes
+      on a newline in the output; sanitizing can consume the newline, e.g. one
+      inside a tag, and the line then sat in the buffer.
+    - Stop before reading another line once max_length is spent, instead of
+      blocking on a producer that is still running with nothing left to emit.
+
+    Both new tests fail on the previous commit and pass here. Existing suite,
+    black, pylint and mypy --strict stay clean, and usr/share/sanitize-string-tests
+    from dist-ai still passes 6906/6906.
+
+commit c5b280689205d7c4b2770bfb04e855072cc51819
+Author: claude (dev115 59b990ca-99cf-4143-876d-5052e0d99a6d) <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Jul 28 10:58:43 2026 -0400
+
+    sanitize-string: sanitize standard input line by line
+
+    Reading from standard input read() the whole input before writing anything, so
+    sanitize-string could not be used as a filter on a long-running producer: output
+    appeared only when the producer exited. A build log piped through it showed
+    nothing for the whole build, then everything at once.
+
+    Sanitize each line as it is read instead. Safe per line:
+
+    - No allowed escape sequence can contain a newline (SGR is digits, semicolons,
+      colons and the 'm' terminator), so a line boundary can never fall inside one.
+      Same reasoning that already lets stcat/stcatn/sttee stream, per
+      agents/stdisplay-security.md.
+    - Markup may span a line boundary, and a tag split that way is not recognised
+      as a tag. It cannot leak markup: strip_markup() unconditionally underscores
+      every '<', '>' and '&' surviving the parser. Such a tag's inert text is
+      retained rather than dropped, the only observable difference.
+
+    max_length becomes a budget across the stream rather than a slice of the whole
+    sanitized string, which yields the same output.
+
+    Not a new option, so every existing caller benefits and the existing stdin
+    tests cover the streaming path. The path taking the string as an argument is
+    unchanged; there is nothing to stream there.
+
+    Verified: existing suite passes unmodified (multi-line stdin cases included);
+    usr/share/sanitize-string-tests from dist-ai passes 6906/6906 including the
+    adversarial bypass corpus, Qt differential and 3000 fuzz iterations.
 
 commit aef075694facaafcc9e82e13fe454360bdc87527
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -224,6 +1389,21 @@ Date:   Tue Jul 21 05:09:03 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
 
+commit 7d247b4f4fa859e9f598c594611f38b71ecee73e
+Author: claude (dev74 3cdbae8e-30ec-412d-8ce2-ba63d1c9b6af) <noreply@anthropic.com>
+Date:   Sun Jul 19 23:32:50 2026 -0400
+
+    usr/libexec/helper-scripts: add vbox-ova-reproducible-normalize
+
+    Relocate derivative-maker's VirtualBox .ova reproducibility normalizer (formerly
+    help-steps/vbox-ova-reproducible-normalize) into the helper-scripts package, where the other Python
+    helpers live (usr/libexec/helper-scripts/). It rewrites the export-generated random disk/machine/image
+    UUIDs, MACs, wall-clock lastStateChange, VMDK CID/ddb.uuid.image/ddb.comment, and repacks the OVA tar
+    deterministically from SOURCE_DATE_EPOCH + a per-image salt, so a build-twice produces a bit-identical
+    .ova. Invoked by derivative-maker's pbuilder-chroot-script-export-vbox-vm.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
 commit 30cb90f65c1f61d28b6c6bcf7575d7d5cf5711d7
 Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
 Date:   Sun Jul 19 04:16:31 2026 -0400
@@ -238,6 +1418,18 @@ Date:   Sun Jul 19 04:16:31 2026 -0400
 
     Co-authored-by: claude (dev95 d7769525-599d-4781-9f2c-f21aa34d292d) <noreply@anthropic.com>
 
+commit c1887f6aae202386db4ee0a1528cf75826a18162
+Author: claude (dev95 d7769525-599d-4781-9f2c-f21aa34d292d) <noreply@anthropic.com>
+Date:   Sun Jul 19 03:35:30 2026 -0400
+
+    helper-scripts: use .py names for msgcollector/tb-updater libexec scripts
+
+    The Python libexec scripts now ship only under their <name>.py names (compat
+    symlinks removed upstream in msgcollector/tb-updater); update the
+    /usr/libexec/... call sites here to match.
+
+    AI-Assisted
+
 commit 357b3ac3a076783a2d328d00abb7bb7106a430cb
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Sun Jul 19 00:19:57 2026 -0400
@@ -249,6 +1441,35 @@ Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai
 Date:   Sat Jul 18 20:00:19 2026 -0400
 
     Coverity: point CI at the org-ai-assisted-helper-scripts project
+
+commit 29ee2b252b44d5c5351b4c4ef0e8df88c8593c66
+Author: claude (dev94 1791c284-6eef-470c-a35a-b8fdcfe1ae65) <noreply@anthropic.com>
+Date:   Sat Jul 18 09:22:22 2026 -0400
+
+    askpass + firewall menu: self-sufficient Wayland env, visible sudo error
+
+    Two fixes for start-menu privilege GUIs that fail on a non-Qubes Wayland
+    session:
+
+    askpass_gui_env.bsh (new): a sourced helper that re-derives XDG_RUNTIME_DIR
+    and finds the live Wayland socket (via find_wl_compositor, falling back to
+    wayland-0) so a GUI askpass run by sudo can reach the compositor even when a
+    .desktop launcher did not export it. sudo execs SUDO_ASKPASS as the invoking
+    user with the process environment inherited unchanged, so the helper can
+    re-derive it; sudo env_keep cannot help, as it governs only the eventual root
+    command's environment, never the askpass. An already-set WAYLAND_DISPLAY or
+    X11 DISPLAY is left untouched.
+
+    use_sudo.sh: sudo_error_exit_if_unavailable now shows a generic_gui_message
+    dialog when the invocation looks like a graphical launch (no stream is a
+    terminal and a display is reachable), so the "sudo unavailable, boot into
+    sysmaint session" error is visible from a Terminal-less .desktop instead of
+    vanishing into an invisible stderr. Interactive CLI callers and headless jobs
+    (cron, CI, ssh) keep the plain stderr path. Soft dependency: no dialog when
+    msgcollector is absent. Detection already worked via test -x; only visibility
+    was broken.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
 
 commit 7db3a282b7eff86178f07878c343ae19bf56a70b
 Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
