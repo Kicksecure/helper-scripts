@@ -21,6 +21,8 @@ if [ "${live_mode_sourced}" = 'false' ]; then
   set -o nounset
   set -o errtrace
 #  set -o pipefail
+  shopt -s inherit_errexit
+  shopt -s shift_verbose
 fi
 
 was_pipefail_enabled='false'
@@ -174,7 +176,7 @@ else
   live_status_maybe_iso_live_message=""
 fi
 
-if [ "$was_pipefail_enabled" = 'true' ]; then
+if [ "${was_pipefail_enabled}" = 'true' ]; then
   set -o pipefail
 fi
 
@@ -191,7 +193,7 @@ if [ "${live_mode_sourced}" = 'false' ]; then
   for var_name in "${var_list[@]}"; do
     ## Single quotes. Do not change without reflecting this change by users of this script.
     check_variable_name "${var_name}" || exit 1
-    printf "%s='%s'\n" "$var_name" "${!var_name}"
+    printf '%s\n' "${var_name}='${!var_name}'"
   done
 fi
 

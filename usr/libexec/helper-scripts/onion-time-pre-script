@@ -20,6 +20,8 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 if was_executed "${BASH_SOURCE[0]}"; then
    set -o errexit
    set -o pipefail
+   shopt -s inherit_errexit
+   shopt -s shift_verbose
 fi
 
 output_cmd() {

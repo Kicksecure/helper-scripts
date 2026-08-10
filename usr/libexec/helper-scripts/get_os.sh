@@ -96,7 +96,7 @@ get_os(){
           distro='Bedrock Linux'
           ;;
       esac
-      if [ "${WSLENV:-}" ]; then
+      if [ -n "${WSLENV:-}" ]; then
         distro="${distro}${WSLENV+ on Windows 10 [WSL2]}"
       elif [ -z "${kernel%%*-Microsoft}" ]; then
         distro="${distro} on Windows 10 [WSL1]"
@@ -129,7 +129,7 @@ get_os(){
   fi
 
   ## TODO: Debian 'forky' - change this from 'forky' to 'duke'.
-  if [ "$distro_codename" = "forky" ]; then
+  if [ "${distro_codename}" = "forky" ]; then
     log info "Debian 'testing' or 'unstable' detection: 'forky' still considered 'testing' (hardcoded in this program)"
     debian_testing_or_unstable_detected=1
   fi
@@ -149,7 +149,7 @@ get_os(){
   log notice "Distribution/Derivative name detected: '${distro}' / '${distro_derivative_name_pretty}'"
   log notice "Distribution/Derivative version detected: '${distro_version}' / '${distro_derivative_version}'"
 
-  if [ "$debian_testing_or_unstable_detected" = "1" ]; then
+  if [ "${debian_testing_or_unstable_detected}" = "1" ]; then
     log notice "Debian 'testing' or 'unstable' detection: 'yes', detected"
     if test "${oracle_repo}" = "1"; then
       log error "You are attempting to use '--oracle-repo' on Debian 'testing' or 'unstable'. This is impossible."

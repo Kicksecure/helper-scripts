@@ -3,6 +3,9 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- sourced library; a top-level strict-mode block
+## would leak 'set -o errexit'/'nounset' into the sourcing shell.
+
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/ip_syntax.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
@@ -140,7 +143,7 @@ range_arg(){
       [ "${var:-}" = "${tests}" ] && success=1 && break
     done
     ## if not within range, fail and show the fixed range that can be used
-    if [ ${success} -eq 0 ]; then
+    if [ "${success}" -eq 0 ]; then
       die 2 "Option '${key}' cannot be '${var:-}'. Possible values: '${list}'"
     fi
   fi
