@@ -3,6 +3,10 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict
+##
+## No strict-mode preamble: this file is SOURCED, never executed.
+
 ## Fully in-Bash replacement for 'sleep'. Doesn't fork, and doesn't consume
 ## around 1.5 MB of RAM like 'sleep' does. Inspired by:
 ## https://blog.dhampir.no/content/sleeping-without-a-subprocess-in-bash-and-how-to-sleep-forever
@@ -19,6 +23,13 @@ light_sleep() {
     return 1
   fi
 
+  ## Test hook: return immediately without waiting when light_sleep_skip=true,
+  ## so a suite exercising a caller of light_sleep spends no real time asleep.
+  ## Unset in production, where it sleeps normally.
+  if [ "${light_sleep_skip:-}" = 'true' ]; then
+    return 0
+  fi
+
   if [ -z "${light_sleep_fd:-}" ]; then
     ## Create a dangling file descriptor and save it
     exec {light_sleep_fd}<> <(true)
@@ -29,10 +40,10 @@ light_sleep() {
   if [ "${sleep_seconds}" = 'inf' ] \
     || [ "${sleep_seconds}" = 'infinity' ]; then
     ## Hang forever
-    read -u "${light_sleep_fd}" || true
+    read -r -u "${light_sleep_fd}" || true
   elif [[ "${sleep_seconds}" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
     ## Hang for the specified number of seconds
-    read -t "${sleep_seconds}" -u "${light_sleep_fd}" || true
+    read -r -t "${sleep_seconds}" -u "${light_sleep_fd}" || true
   else
     printf '%s\n' 'Sleep duration is not an integer, floating point value, or infinity!'
     return 1
