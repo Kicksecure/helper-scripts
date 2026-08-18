@@ -18,10 +18,18 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 if ! has qubesdb-read; then
   exit 0
 fi
+
 if ! [ -f /usr/share/qubes/marker-vm ]; then
   exit 0
 fi
-if qubesdb-read /qubes-gateway >/dev/null 2>&1; then
+
+## Qubes sys-net does not have '/qubes-gateway'.
+if qubesdb-read /qubes-netvm-gateway &>/dev/null ; then
   exit 0
 fi
+
+if qubesdb-read /qubes-gateway &>/dev/null ; then
+  exit 0
+fi
+
 exit 1
