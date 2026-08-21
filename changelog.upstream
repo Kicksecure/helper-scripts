@@ -1,14 +1,67 @@
+commit ecea07a54e8de0a46ba8c05ddf7fd15d32d0265a
+Merge: 2bf741ef 526a31af
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Aug 21 04:46:43 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/ai'
+
+commit 526a31af943fe572e4873020eb224255ec9c2fb8
+Merge: b4eda921 2bf741ef
+Author: claude (dev226 179d234f-88ec-4eaa-993f-32d2ac59580e) <noreply@anthropic.com>
+Date:   Tue Aug 18 00:31:17 2026 -0400
+
+    Merge branch 'master' into ai
+
+commit 2bf741ef5f10d685bc68553aba36b5b2151d5df7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 12 08:02:04 2026 +0000
+
+    bumped changelog version
+
 commit 77ea4f3f721ec69ca13a489a2b6a9a1f2e4ff56e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Aug 12 04:00:13 2026 -0400
 
     fix
 
+commit b4eda921164e32337017a3c167f9d4285a5fcfdf
+Author: claude (dev180 9d183bca-c1ec-46a0-8d1b-71048fd8d710) <noreply@anthropic.com>
+Date:   Tue Aug 11 12:12:59 2026 -0400
+
+    light_sleep: honor light_sleep_skip=true to return without waiting
+
+    A test exercising a caller of light_sleep can set light_sleep_skip=true to skip
+    the real wait; unset in production, where it sleeps normally. Add the no-strict
+    waiver + -r on the two timeout reads to satisfy the static gate.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 commit eb89e4ff1cc56385bd3ab6b1da62e72407ed38f5
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Aug 10 17:06:12 2026 +0000
 
     bumped changelog version
+
+commit a0eebafad1c9fb12ab27220726ad0467de728066
+Author: claude (dev179 34adc465-191d-4a9b-857a-2b62c4467b43) <noreply@anthropic.com>
+Date:   Mon Aug 10 12:06:58 2026 -0400
+
+    helper-scripts: add shopt half to guarded blocks; style/gate cleanup
+
+    - Add shopt -s inherit_errexit / shift_verbose to the source-able
+      guarded strict blocks that enabled errexit but omitted them
+      (systemd-notify, live-mode, get_writable_fs_lists, pre.bsh,
+      onion-time-pre-script, shim-signed-mok-setup).
+    - Brace all variable refs (R-020/SC2250) across trace, root_cmd,
+      package_installed_check, get_os, xtrace, parse_opt.
+    - pre.bsh: rm -> safe-rm; mark the error-handler 'set +e' with the
+      allow-errexit-toggle waiver (recursion guard).
+    - systemd-notify: 'command -v' -> 'has' (source has.sh).
+    - live-mode: printf keeps the name='value' contract via a prebuilt
+      string (R-030).
+    - no-strict waivers on the pure sourced libs (trace, xtrace, parse_opt,
+      package_installed_check); SC3043 disable where 'local' is used in a
+      deliberately-POSIX file.
 
 commit 74c26d01ab51641fc7c23be79bbd5713f74e60bb
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -18,12 +71,1189 @@ Date:   Mon Aug 10 09:19:18 2026 -0400
 
     https://forums.kicksecure.com/t/sys-net-as-clockvm-with-sdwdate-in-qubes/1825
 
+commit eea38688c2723bc4fe95a79f4c509acfe6b86238
+Merge: 7ecf971d 7f7612b2
+Author: claude (dev170 ad818220-b8bb-4205-b850-b65074e52454) <noreply@anthropic.com>
+Date:   Sun Aug 9 11:39:30 2026 -0400
+
+    Merge branch 'master' into ai
+
 commit 7f7612b210acdc5d646a1cf3a50bb6d12044fda3
 Merge: 3b3a8dd9 e7790209
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Aug 9 02:47:41 2026 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 7ecf971d0f93f84af7abe5daf8f2c68fe4e81122
+Author: claude (dev170 ad818220-b8bb-4205-b850-b65074e52454) <noreply@anthropic.com>
+Date:   Sun Aug 9 01:31:54 2026 -0400
+
+    tests: hand has.sh / strings.bsh coverage to the central suite
+
+    - both cases now live in dist-ai as helper-scripts-lib-tests
+      (has_builtin_test.sh, read_integer_file_test.sh), which resolves the
+      library from the INSTALLED path by default and takes a checkout only via
+      an explicit HELPER_SCRIPTS_REPO the runner wires
+    - the copies here sourced /usr/libexec/helper-scripts directly, so nothing
+      ran them: no runner in this repo globs usr/share/helper-scripts/tests
+    - debian/*.install ships 'usr/*', so there is no entry to drop; removing the
+      files removes them from the package
+    - coverage is unchanged and canaried in its new home: reverting the '-x' on
+      a bare word fails 4 cases, reverting 'stcat --' fails 3
+
+commit 31ff576fed83d83dfd93ef4bff59fa7c2187a210
+Author: claude (dev170 ad818220-b8bb-4205-b850-b65074e52454) <noreply@anthropic.com>
+Date:   Sat Aug 8 14:13:33 2026 -0400
+
+    read_integer_file: stcat rejects the '--' separator
+
+    stcat takes EVERY argument as a path, so 'stcat -- "${target_file}"' made it
+    read a file literally named '--' and die with FileNotFoundError.
+    read_integer_file then reported
+
+      ERROR: Cannot stcat target file '<path>'!
+
+    for a file it had just confirmed exists and is readable. Four of tb-updater's
+    e2e scenarios failed on this -- all of them the ones that read a cached
+    signature timestamp back: second_run_cache_hit_tb, cross_context_fallback,
+    downgrade_attack_warning, second_run_mullvad_cache_hit.
+
+    Verified against the real binary: 'stcat -- file' exits 1, 'stcat file' exits 0.
+
+    R-062 is why the separator was added, and it is right for tools that accept
+    one; this is the rule's negative half. pre-push-static now denylists 'stcat --'
+    so it cannot come back, and the style guide records stcat as a verified
+    rejecter.
+
+    Test: usr/share/helper-scripts/tests/test_read_integer_file.sh, which asserts
+    the INSTALLED library rather than the checkout -- a self-relative source would
+    pass against a stale install, which is exactly the failure mode this suite
+    exists to catch. Canaried: it FAILS against an install carrying the '--', and
+    passes once the fixed library is installed.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 8ec0fdaf1424fb4309d4faabaff086eb815b5682
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Sat Aug 8 10:11:39 2026 -0400
+
+    run-tests: keep the mypy cache out of the packaged tree
+
+    - mypy writes its cache into the CURRENT directory, and the loops cd into
+      usr/lib/python3/dist-packages/<pkg>/ to lint. That left a .mypy_cache beside
+      the sources, which genmkfile swept into the .deb; lintian then warned with
+      package-contains-python-dot-directory and the build failed closed.
+    - Gitignoring it does not help: genmkfile packages the WORKING TREE, not git's
+      view, so an ignored directory is still shipped.
+    - Anchor the cache at the repo root via --cache-dir, outside anything packaged.
+
+    Verified: after linting a package, 0 .mypy_cache directories exist under usr/
+    and the cache is at the repo root instead.
+
+    ## AI-Assisted
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 6233649a22b1f457b0d6f3a160a79062aa99024c
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Sat Aug 8 09:53:35 2026 -0400
+
+    has-builtin test: assert the INSTALLED has.sh, not the checkout
+
+    - The test sourced has.sh by a path relative to itself, so it validated the
+      checkout copy and passed 7/7 while the installed copy was still the broken
+      version. It could not detect a stale deployment, which is the one thing a
+      deployment check has to catch.
+    - Now sources /usr/libexec/helper-scripts/has.sh and fails loudly when it is
+      absent, rather than silently falling back to a copy that always passes.
+
+    Verified against a real deployment: before installing, the probe reported
+    INSTALLED-STALE; after, INSTALLED-OK with the path guard present and 7/7 pass.
+
+    ## AI-Assisted
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit baa77320c058803d3fd3f880b77cf6f21f5b2ecd
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Sat Aug 8 06:43:17 2026 -0400
+
+    Fix 'has' returning false for shell builtins
+
+    - 'command -v' prints a bare word for builtins, functions, aliases and
+      keywords rather than a path. Testing that word with '-x' resolved it as a
+      RELATIVE path in the current directory, so 'has printf' returned non-zero
+      even though printf is always available, and the result depended on what
+      happened to be in the cwd.
+    - Only test '-x' when 'command -v' actually produced a path.
+    - 'has' is the R-090 replacement for 'command -v', so a conversion that passed
+      a builtin turned a working check into one that could never succeed.
+
+    Found while converting tb-updater's version-validator, where 'has printf'
+    aborted the unit test suite at its first case.
+
+    Regression test asserts builtins, externals, a mix, and absent commands.
+    Verified by canary: with the unconditional '-x' test restored, 4 of the 7
+    cases fail.
+
+    ## AI-Assisted
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 08e52cf18a6c5ed7c5ad89b13a9a242ea22f0386
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Sat Aug 8 06:05:35 2026 -0400
+
+    onion-time-pre-script: wire up the static time-sanity flag
+
+    timesanitycheck_static discarded timesanitycheck's exit code with '|| true', so
+    timesanitycheck_static_timestamp_based_failed was never assigned by anything.
+
+    Two things are gated on that flag, and NEITHER has ever happened:
+
+    - tor_consensus_time_sanity_check returns early when it is "true", to avoid
+      repeating a complaint the static check already made. That duplicate output has
+      always been printed.
+    - further down, a "true" flag routes to anondate_use -- the clock-recovery path
+      for a system whose time is wrong by a lot. That path has never run.
+
+    The second is the reason this is worth fixing rather than deleting: it is not a
+    cosmetic optimisation, it is error recovery that was silently unreachable.
+
+    timesanitycheck exits 0 when the clock is inside the shipped min/expiry window
+    and 2 or 3 when it is not. The exit code is captured now and the flag set on
+    non-zero. The variable is also declared at file scope so both read sites are
+    defined even when the static check does not run.
+
+    BEHAVIOUR CHANGE, stated plainly: on a system whose static time check fails, the
+    consensus check is now skipped and anondate_use runs. That is what the code
+    always said it would do.
+
+    Testing
+    -------
+
+    Gate exit 0 in an ISOLATED checkout.
+
+      3 pass, 0 fail
+
+      clock OK (exit 0)          same,   FLAG_NOT_SET
+      clock too EARLY (exit 2)   differ, FLAG_SET
+      clock EXPIRED (exit 3)     differ, FLAG_SET
+
+    Both non-zero codes are covered, not just one -- 2 and 3 are distinct failure
+    modes in timesanitycheck and it would be easy to wire up only the first.
+
+    The 'clock OK' case asserts the two versions AGREE: the fix must not start
+    setting the flag when the clock is fine.
+
+commit bc5fe3b9fea58b8a08f7ce2d31b4ef87aa50bdf3
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Sat Aug 8 00:25:56 2026 -0400
+
+    lock-screen: declare XDG_SESSION_TYPE once, not per-use
+
+    The previous commit defaulted it at the 'case' and left the '*' arm's message
+    interpolating '${XDG_SESSION_TYPE}' bare. Under nounset the script therefore
+    still aborted on exactly the path the fix was for -- a bare shell, a cron job or
+    a broken session -- and never printed the "must be set to 'x11' or 'wayland'"
+    guidance that arm exists to give.
+
+    Declared ONCE before the case now, so both uses are covered and a third cannot
+    reintroduce it. That is the same reasoning as msgdispatcher's gui/cli: patching
+    the one site you noticed leaves the next one.
+
+    Found by codex, on my own fix.
+
+    Testing
+    -------
+
+    Gate exit 0 in an ISOLATED checkout.
+
+      4 pass, 0 fail
+
+      XDG_SESSION_TYPE UNSET reaches the message   old ABORTS, new prints it
+      unknown value reaches the message            unchanged
+      x11 still dispatches                         unchanged
+      wayland still dispatches (no error path)     unchanged
+
+    The first case asserts the MESSAGE is produced, not that the case statement was
+    reached -- reaching the case was never the problem.
+
+    Canary: removing the declaration fails exactly that case.
+
+    Four fixture defects on the way, each one a case that would have proved nothing:
+    - 'env PATH=... --unset=X' takes '--unset=X' as the COMMAND. env parses options
+      only BEFORE the first assignment, so the UNSET case ran WITH the variable set
+      and cheerfully locked x11.
+    - the sed anchor required '${XDG_SESSION_TYPE}'; the old side spells it
+      '$XDG_SESSION_TYPE' unbraced, so the old driver extracted NOTHING, printed its
+      trailing marker and read as a pass. The anchor takes both spellings now, and
+      an empty extraction fails loudly as EXTRACTION_EMPTY.
+    - the stubs invented function names the script does not have; it calls
+      xscreensaver-command and swaylock directly and reads ${title} set earlier.
+    - the wayland arm CAPTURES swaylock's output into a variable rather than
+      printing it, so asserting on the stub's text was wrong. A successful lock is
+      the absence of the failure message.
+
+commit 98a4f2f8e0f8df9f24239c760ceda633a55e1040
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Sat Aug 8 00:01:45 2026 -0400
+
+    helper-scripts: clear the remaining shellcheck failures
+
+    With the gate's --source-path fix (dist-ai 2c48caa) the 27 failures here dropped
+    to 7. These are those 7, and they were all genuine.
+
+    Two live nounset aborts
+    -----------------------
+
+    Both files carry the strict preamble, so these were real:
+
+    - lock-screen: XDG_SESSION_TYPE comes from the session manager and is simply
+      absent in a bare shell, a cron job or a broken session. Reading it bare
+      aborted before the '*' arm could report the unknown session type.
+    - anondate-set: 'debugging' is assigned nowhere in the tree.
+
+    A latent one
+    ------------
+
+    curl-prgrs's curl_download reads '${header_download}'. Both in-file call sites
+    pass it as a per-call env prefix, but this is a SOURCED library and an external
+    caller need not. Defaulted to "false", which keeps the truncation check ENABLED
+    for such a caller -- the safe direction, since skipping it would let a short
+    download pass as complete.
+
+    A diagnostic that captured the failure and threw it away
+    ---------------------------------------------------------
+
+    curl-prgrs's trap handler assigned 'last_err="${BASH_COMMAND}"' and never used
+    it, so the error said a signal had arrived but not what had failed. It is in the
+    message now.
+
+    Genuinely dead code, removed
+    -----------------------------
+
+    - anondate-get: anondate_tor_certificate_lifetime_set_file, a pure string
+      assignment read nowhere.
+    - kernel-file-detect: the initrd derivation. The identical two lines live in
+      initrd-file-detect, which is the script that actually outputs it; this copy
+      computed a value the script never prints.
+
+    Library outputs, documented not silenced
+    -----------------------------------------
+
+    tor_bootstrap_check.bsh sets 13 variables that ARE its interface --
+    tor_bootstrap_percent, tor_circuit_established_word, the consensus timestamps.
+    systemcheck's check_tor_bootstrap.bsh reads them and documents each with
+    '## sets: ...'. shellcheck sees one file, so an output looks unused. One
+    file-level disable, with that reasoning written down.
+
+    Same for TOR_ENABLED in onion-time-pre-script: check_tor_enabled_do assigns it
+    on its FIRST line as a fallback, so it is always set.
+
+    Reported, NOT fixed
+    -------------------
+
+    onion-time-pre-script guards tor_consensus_time_sanity_check with
+
+      if [ "${timesanitycheck_static_timestamp_based_failed}" = "true" ]
+
+    and NOTHING in this package assigns that variable. The comparison is always
+    false, so the early return never fires and the duplicate-output optimisation the
+    comment describes has never taken effect. Defaulted with ':-' so the comparison
+    is well defined, but not made to fire: that needs someone to decide WHICH check
+    should set the flag, which is a product decision.
+
+    Testing
+    -------
+
+      27 shellcheck failures -> 0. Gate exit 0 in an ISOLATED checkout.
+
+    The 20 that vanished were the gate's own path-resolution bug, fixed separately
+    in dist-ai and measured there against six other packages before landing.
+
+commit 8de7318aa5f3438754cc196b4bbe6a4794bf721c
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Fri Aug 7 21:48:54 2026 -0400
+
+    grub-pwchange: complete the R-010 preamble, printf, braces
+
+    This script was ALREADY bash with a strict preamble -- errexit, nounset,
+    errtrace, pipefail. It was missing the other two R-010 directives, which this
+    adds:
+
+      shopt -s inherit_errexit
+      shopt -s shift_verbose
+
+    What they do NOT add here, stated because the first version of this commit
+    claimed otherwise: a failing grub-mkpasswd-pbkdf2 was ALREADY caught. pipefail
+    makes the pipeline fail, and that is the command substitution's status, so the
+    assignment fails and errexit aborts. inherit_errexit governs errexit INSIDE a
+    subshell, which is a different case. Measured, not assumed -- behaviour is
+    identical with and without it.
+
+    Touching the file brought it into the gate's changed-file scope, which surfaced
+    pre-existing issues, all fixed:
+    - R-034: six 'echo' uses, including 'echo -n'. The blank-line ones take the
+      R-030 form 'printf "%s\n" ""', not 'printf "\n"'.
+    - SC2250 braces on user, grub_config_file, first_input, second_input,
+      password_hash.
+    - SC2154 on 'password', which get_password sets from the sourced
+      get_password.sh that shellcheck cannot follow. Documented at the use site.
+    - SC1091 on both sourced helpers, for the same reason.
+
+    Testing
+    -------
+
+    grub-pwchange is clean in an ISOLATED checkout. NOTE: the helper-scripts package
+    as a whole does NOT pass -- 27 other files fail shellcheck, and that is entirely
+    pre-existing. Measured by stashing this change and re-running: the same 27 fail
+    without it. Those are not touched here and are recorded separately.
+
+    The harness compares the GENERATED /etc/grub.d/44_password, not just exit codes,
+    since the file is the thing this script exists to produce:
+
+      3 pass, 0 fail
+
+      passwords match -> hash written        same, DEADBEEF in the config
+      passwords differ -> refused            same, no config
+      grub-mkpasswd FAILS -> no config       same, no config
+
+    Canary: adding '|| true' to the hash pipeline -- simulating an unguarded
+    failure -- makes an empty hash reach the config, and the third case fails.
+
+    Four harness defects on the way, each one a case that would have proved nothing:
+    - 'timeout' was missing from the stub PATH, so both variants died before exec
+      and compared equal. A run carrying an 'env:'/'bwrap:'/root-guard line now
+      fails outright.
+    - the tool-symlink loop used '[ -n "${real}" ] && ln ...' as the last command in
+      the loop body. For a missing tool that returns non-zero, and under errexit it
+      aborted the whole setup -- so every tool AFTER the first missing one was
+      silently never linked.
+    - /usr/bin/awk is a symlink through /etc/alternatives/awk, and the harness
+      replaces /etc with a tmpfs, so the link dangled inside the sandbox. The links
+      are realpath-resolved now.
+    - the generated config embeds "$0", and the script runs from a per-variant copy,
+      so every case differed on the fixture path until it was normalised.
+
+commit d829c59a97edd6c711698c597b9026c603ce0141
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Fri Aug 7 10:08:51 2026 -0400
+
+    check-ref-commits-for-unicode: stop flagging commits that did not add unicode
+
+    Two distinct false positives, both of which flagged an INNOCENT commit with the
+    same warning as a real attack. A scanner that cries wolf trains reviewers to
+    ignore it, so a false positive here costs more than a missed feature.
+
+    1. Hunk-header function context
+    -------------------------------
+
+    A hunk header ends with a funcname suffix -- '@@ -3,0 +4 @@ text' -- where
+    'text' is the nearest preceding line, which the commit did NOT touch. Once a
+    file contains hostile unicode, every later commit anywhere near it is flagged
+    for a character it neither added nor removed. '--unified=0' does not suppress
+    this; it only removes context LINES, not the header decoration.
+
+    The ranges themselves are pure ASCII, so they are kept and the decoration is
+    dropped.
+
+    2. Removal lines
+    ----------------
+
+    The commit that DELETES a hostile character was flagged, because the diff line
+    '-dirty <U+202E>line' still contains it. The fix got the same warning as the
+    attack. Nothing a commit removes can appear in the resulting tree, so a removal
+    cannot be the attack.
+
+    Both file headers ('---' and '+++') are KEPT: a hostile FILENAME must stay
+    detectable.
+
+    Identity and message are now scanned SEPARATELY and unfiltered
+    --------------------------------------------------------------
+
+    The removal filter drops diff lines starting with '-', and a commit message
+    line may legitimately start with '-'. Feeding the message through that filter
+    would let hostile unicode hide behind a leading dash -- so the metadata comes
+    from its own '--no-patch' git show and is never filtered.
+
+    Testing
+    -------
+
+    dist-ai's check-ref-commits-for-unicode suite: 44 passed, 0 failed.
+    Against the pre-change tool the same suite reports 3 failures --
+    M:clean-not-flagged, M:only-dirty-flagged and M:removal-not-flagged -- so each
+    regression test genuinely exercises the fix.
+
+    The message-behind-a-dash guard is canaried too: routing the message through
+    the removal filter makes the tool exit 0 with "No unicode detected" on a commit
+    whose message carries U+202E, and M:dash-message-flagged catches exactly that.
+
+commit 4c6abe6c5c007c0d592535419a666ff719b9b3b1
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Fri Aug 7 07:41:56 2026 -0400
+
+    sanitize-string: emit_trailing_newline_only takes int | None
+
+    mypy caught that the new helper over-narrowed its parameter. The
+    zero-limit call site is narrowed to int by the '== 0' test, but the
+    stdin-None site still holds 'int | None', which is what sanitize_block
+    itself accepts. Match that signature.
+
+    Verified locally with the full lint stack this time -- mypy clean, pylint
+    10.00/10, black clean, pytest 15/15 -- rather than pushing and reading the
+    result off CI.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 90e72cf41ea1c3108b0f852790eb68561aaee524
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Fri Aug 7 07:32:20 2026 -0400
+
+    sanitize-string: extract emit_trailing_newline_only()
+
+    Fixes a lint regression I introduced in ec7efbb2. Adding the stdin-None
+    newline emission pushed main() to 51 statements, one over pylint's cap,
+    and broke the lint job on all four distro images -- it had been passing.
+
+    The zero-limit branch and the stdin-None branch now share one helper
+    instead of repeating the same two lines, which removes the duplication and
+    brings main() back under the limit.
+
+    Verified locally: pylint 10.00/10, black clean, the in-repo pytest suite
+    and the dist-ai sanitize-string suite both 15/15.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit ec7efbb2a4faa1ca3684a5fac1452be289c280d8
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Fri Aug 7 07:26:37 2026 -0400
+
+    fix the bandit and sanitize-echo CI failures
+
+    bandit (B303, two sites in vbox-ova-reproducible-normalize): both hash
+    calls already pass 'usedforsecurity=False' and carry comments explaining
+    that collision resistance is irrelevant -- they derive a stable MAC suffix
+    and content id for reproducible builds. bandit blacklists the sha1 call by
+    NAME regardless, so each site now carries an inline '# nosec B303' with
+    the reason, which the consumer-bandit workflow documents as the intended
+    suppression mechanism. Verified: 'bandit -ll -r .' over the whole repo now
+    reports no issues.
+
+    sanitize-string: with no argument and 'sys.stdin' None -- pythonw, or a
+    detached service -- the '--newline' flag was ignored and nothing at all was
+    printed. The zero-limit branch immediately above goes out of its way to
+    emit just the newline "as it does for every other limit", and echo with no
+    arguments prints a newline too, so the stdin-None branch was inconsistent
+    with both. It now emits the newline as well.
+
+    That was a real behaviour bug, not a stale expectation: the dist-ai test
+    'test_no_argument_and_no_stdin_still_prints_a_newline' asserts exactly
+    this and was failing in CI.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 22b198834ae51bde7e48f683b34c66980671adbf
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Wed Aug 5 15:25:14 2026 -0400
+
+    helper-scripts: R-010 strict for the remaining 14 standalone scripts
+
+    Completes the standalone set. benchmark.bsh and source_folder.bsh are NOT
+    included: both are libraries -- pure function definitions with no
+    top-level statements -- that simply have no in-tree sourcer yet because
+    they are new. A strict-mode block in either would rewrite the shell
+    options of every future caller.
+
+    Real nounset traps fixed, each read on a path where only some branches
+    assign the variable:
+    - anondate-set: 'indent_style' is read by output_cmd() but assigned much
+      further down, so any earlier call aborted. Unset previously took the
+      non-indented branch, which 'false' reproduces.
+    - anondate-set: 'current_message' / 'old_message' are each assigned only
+      when their state file exists, then compared unconditionally. Unset
+      compared "" against "" and skipped systemd-cat; the defaults keep that.
+    - anondate-get / anondate-set: 'exit_code' is read by the 'trap ... EXIT'
+      handler but only assigned inside branches. Initialised defensively --
+      the handler already has an explicit "no exit code set yet" branch, and
+      an unset read inside an EXIT trap would mask the real status. Note this
+      one is defence, not a demonstrated abort on any path tested here.
+
+    Pre-existing array/string defects the gate surfaced:
+    - '$@' inside a string in anondate, anondate-get and anondate-set message
+      lines expands to one word per parameter; '$*' joins them, which is what
+      those messages mean (SC2145 / SC2124).
+    - anondate-tester iterated an unquoted "${cmd_item_list[@]}" and passed an
+      unquoted $@ through to anondate (SC2068).
+
+    policy-rc.d moves from '#!/bin/sh' to bash. It is EXECUTED by dpkg via
+    POLICYRCD, and bash is Essential in any Debian chroot it runs in. Its
+    'exit 101' is the policy decision and is unchanged -- verified.
+
+    Also: echo -> printf (R-034), safe-rm (R-120), 'has' instead of
+    'command -v' (R-090), SC2250 braces, and a file-wide SC2317 waiver on the
+    three anondate scripts, whose functions are reached only through the EXIT
+    trap and the option-parser dispatch.
+
+    Sandbox differential vs the pre-change scripts, comparing output AND exit
+    code with both versions staged at an identical path: 17 cases, all
+    identical -- including policy-rc.d still exiting 101.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 6c8a527d7107ab0b0b3fc4d39f82352a6d5827f5
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Wed Aug 5 12:26:18 2026 -0400
+
+    terminal-wrapper: R-010 strict + array args + exit on missing emulator
+
+    Convert bare 'set -e' to the full strict preamble. Source has.sh and use
+    'has' instead of 'command -v' (R-090). Build terminal_emulator_extra_args
+    as an ARRAY throughout -- it was a string in some branches and an array in
+    others -- and collapse the three-way final dispatch into one quoted call.
+
+    Two behaviour bugs this exposed:
+    - '$@' was unquoted in the final dispatch, so an argument containing
+      whitespace was word-split and one containing glob characters was
+      expanded against the caller's working directory.
+    - The 'no supported terminal emulator' branch printed the error but did
+      not exit; it then ran an empty command name, so the first argument was
+      executed as a command (exit 127).
+
+    nounset-safe initialisation for the base_name / app / extra_args
+    variables and for the optional terminal_emulator_window_title input.
+
+    Sandbox stub-tested, 13 cases with mocked emulators on a private PATH:
+    qterminal, xfce4-terminal (title set / unset / empty), gnome-terminal
+    (title set / unset), xterm, konsole (Qubes and non-Qubes), both
+    x-terminal-emulator alternative paths, and the error path. 13 pass, 0
+    fail. The same suite against the pre-change file: 11 pass, 2 fail --
+    exactly the two bugs above.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 01d892bf9445a4dc4b39c18428c954859441746a
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 11:57:01 2026 -0400
+
+    curl-prgrs: R-010 strict + R-051 named trap handlers
+
+    Convert bare 'set -e' to the full strict preamble. Source has.sh and use
+    'has' for the tput/curl/safe-rm/mktemp dependency checks (R-090). Replace
+    the 5 inline signal traps with named wrapper functions (R-051) --
+    'shutdown_sigint() { shutdown sigint; }' etc.; behaviour-equivalent ($?
+    and the signal argument are identical, $BASH_COMMAND is read inside
+    shutdown either way). SC2004 / SC2250 cleanup; SC2317 disable on the
+    trap-only handlers. A/B tested against the prior version: behaviour
+    identical (a file:// URL exits 110 in both).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 15343c17f6ec609a2e76d9d94b996592f136a3ed
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 11:43:30 2026 -0400
+
+    check-image-builtin-mok: R-010 strict
+
+    Add the full strict preamble. Sourcing shim-signed-mok-setup, has.sh and
+    secure_boot_enabled_check.bsh under nounset is safe (function definitions
+    only, no bare top-level variable references). Sandbox-tested: no nounset
+    abort.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit a9d1b924e8f615c705c07afcb0be9b1a6d4d5a79
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 11:42:29 2026 -0400
+
+    repair-torrc: R-010 strict + nounset-safe defaults
+
+    Convert bare 'set -e' to the full strict preamble (keeping 'set -x').
+    Make the tor_user / tor_group / tor_dir / client_onion_auth_dir defaults
+    nounset-safe ('VAR="${VAR:-x}"' instead of '[ -n "$VAR" ] || VAR=x').
+    SC2250 braces. Sandbox-tested: no nounset abort.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit e9d14b3be0ff4137710d22b503b1a32db589f742
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 11:40:32 2026 -0400
+
+    helper-scripts usr/libexec: R-010 strict on curl_exit_codes + run-in-cgroup
+
+    Add the full strict preamble (both self-invoke via '"$@"'). curl_exit_codes:
+    guard the empty-arg check ("${1:-}") so a no-arg call exits 1 instead of a
+    nounset abort; SC2250 braces. run-in-cgroup already used '${1:-}'.
+    Sandbox-tested: 'curl_exit_codes 7' -> the code-7 message; no-arg -> exit 1;
+    run-in-cgroup no-arg -> exit 1, no nounset abort.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 74d4ecdbf7d270d61b2dff26b3c44bf0a311a272
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 11:19:15 2026 -0400
+
+    helper-scripts usr/libexec: R-010 strict on 8 standalones + nounset-safe fragment
+
+    Strict preamble on settings_echo, settings_environment_file_update,
+    first-boot-skel (+${1:-} guard, rm -f -> safe-rm), sudo-tools-enable
+    (command -v full-path -> test -x), has_netvm_on_qubes,
+    detect-ipv6-enabled-in-kernel, apt-get-update-simulate (init lastpid
+    before the trap; SC2181; SC2317), get-password-status-list. SC2250 braces.
+
+    Root fix: tor_bootstrap_check.bsh guarded 11 bare '[ "${GATEWAY_IP...}" =
+    "" ]' defaults with ':-' -- they aborted under nounset, exposed when
+    settings_echo (now strict) sources the fragment. Fixes every nounset
+    caller. Sandbox-tested (settings_echo now emits the defaulted values).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 312aa5f2597e9c1da73f2965502bd44f06e1638f
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 10:56:22 2026 -0400
+
+    helper-scripts usr/libexec: R-010 strict on 7 standalones
+
+    Add the full strict preamble to restart-tor, debug-kicksecure-enabled,
+    check-network-access, system-ready-check, system-ready-check-user,
+    try-wait-for-tor-service-running, terminal-wrapper-helper. Fix surfaced
+    debt: expand try-wait's case arms (R-070); SC2250 braces; guard
+    terminal-wrapper-helper's optional TERMINAL_WRAPPER_NO_COMMAND_ECHO /
+    TERMINAL_WRAPPER_NO_FINISH_MSG env vars ("${VAR:-}") against a nounset
+    abort. Sandbox-tested (terminal-wrapper-helper: no abort, runs the
+    command then 'sleep infinity' to hold the terminal).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 69a172b761d5e2399e3bd730a0ab097fc6daa196
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 10:34:12 2026 -0400
+
+    helper-scripts usr/libexec: strict on temp.sh + apt-get-update-sanity-test
+
+    temp.sh: dual-mode self-test -- add inherit_errexit + shift_verbose inside
+    the 'if was_executed' guard; document the design with a no-strict waiver
+    (strict not at column 0) and a no-tmp-hardcode waiver (the '/tmp/user/<uid>'
+    path is the EXPECTED TMPDIR under test). Brace SC2250 references.
+    apt-get-update-sanity-test: convert 'set -e' to the full strict preamble
+    (keeping the intentional 'set -x'). Sandbox-tested; no strict regression.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit b070ff6a2512428c6951ec9c566904aa1c54ea42
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 10:00:17 2026 -0400
+
+    helper-scripts usr/libexec: R-010 strict on 4 standalones
+
+    Complete apt-get-update, apt-get-update-kill-helper, get-user-list,
+    pre-bsh-test to the full strict directive set. Fix surfaced debt: source
+    has.sh + 'has' over 'command -v' (apt-get-update pair, R-090); echo ->
+    printf '%s\n' (get-user-list, R-034); SC2317 disable on apt-get-update's
+    SIGTERM/SIGINT trap handler; SC2250 braces. Sandbox-tested (has resolves,
+    get-user-list lists users, no strict regression).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit fdc557c70d13f946b7737fe0843afebf4488079c
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 09:39:02 2026 -0400
+
+    str-replace-many: R-010 strict, source strings.bsh, guard args
+
+    Rewrite for correctness: full strict preamble; source strings.bsh (the
+    script calls str_replace but never sourced it); require >=2 args with a
+    usage message instead of a nounset abort on bare $1; collect the file
+    list as an array and iterate it quoted (SC2124/SC2086 -- also handles
+    paths with spaces). Functionally tested: replaces text, usage on
+    too-few args.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 2ca371129ec961b93fb4678681e22a6fc11998ff
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 09:35:35 2026 -0400
+
+    limit-low, limit-medium: nounset-guard the optional maxmem override
+
+    'maxmem' is an optional external override, never set locally, so
+    'is_whole_number "${maxmem}"' aborted under nounset when unset. Default
+    it empty ('${maxmem:-}'): unset falls through to the meminfo path, and
+    the '$(( maxmem * 1000 ))' branch is only reached when maxmem is a
+    number. Sandbox-tested both paths (unset and maxmem=100).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 4b63c8e8af0a94e566553d813cee3b6423fdbd2c
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 09:34:10 2026 -0400
+
+    limit-low, limit-medium: R-010 strict + shellcheck cleanup
+
+    Convert bare 'set -e' to the full strict preamble. Fix surfaced debt:
+    '[[ "$@" = "" ]]' -> '[ "$#" -eq 0 ]' (SC2199), drop the useless cat
+    (SC2002), drop '$' in arithmetic (SC2004), echo -> printf '%s\n', brace
+    SC2250 references. '"$@"' passthrough is nounset-safe; sandbox-tested
+    (no-args prints usage, 'limit-low true' runs).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit c7ea64d2e233a907fb49395341e4dc5a7b340193
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 09:31:57 2026 -0400
+
+    minimum-unixtime-show: R-010 strict + nounset-safe env defaults
+
+    Add the full strict preamble; make the LC_TIME/TZ defaults nounset-safe
+    ('export VAR="${VAR:-x}"' instead of '[ -n "$VAR" ] || export VAR=x');
+    echo -> printf '%s\n'; brace SC2250 references. Sandbox-tested with
+    LC_TIME/TZ unset: prints a valid unixtime, no nounset abort.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit b53c21de8e92724018269a5f88168d309c1682d7
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 09:00:51 2026 -0400
+
+    minimum-time-check: R-010 strict + nounset-guard the argument
+
+    Convert bare 'set -e' to the full strict preamble; read the argument as
+    "${1:-}" so the missing-argument check fires instead of a nounset abort;
+    echo -> printf '%s\n'; brace SC2250 references. Sandbox-tested: no-args
+    exits 1 with the missing-argument error, a valid unixtime returns 0.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit b1ece6eda6f60a756cb94c84f55232a1ecd22dd5
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 09:00:50 2026 -0400
+
+    hardened-malloc-{enabled,type}-test: fix merged printf/exit lines
+
+    An echo->printf conversion dropped the newline before the following
+    'exit', merging 'printf %s\n "no"' with 'exit 1' onto one line, so printf
+    swallowed 'exit 1' as arguments and the negative case returned 0 instead
+    of 1 -- a broken test. Split the statements back onto their own lines.
+    Verified: both now exit 1 when hardened_malloc is absent.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit bcb8b1e430b0eb6ce87de443d5589e0523083350
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 08:54:12 2026 -0400
+
+    dev-adrelanos, dev-root: R-010 strict + nounset-guard the force arg
+
+    Convert bare 'set -e' to the full strict preamble, keeping the intentional
+    'set -x' that surfaces the 'true "$0: ..."' log lines. Guard the argument
+    check as '[ ! "${1:-}" = "force" ]' so a no-args run prints the error and
+    exits 1 instead of a nounset abort. Sandbox-tested the no-args path.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit c168daa047c2b771c0e4543e3b198d60eae5b387
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 08:36:01 2026 -0400
+
+    accountctl: R-010 canonical strict form + expand case arms
+
+    Rewrite 'set -euo pipefail -o errtrace' as the six canonical directives
+    and add inherit_errexit + shift_verbose. Expand the compact 'pat) body;;'
+    case arms to multi-line (R-070). Args were already '${n-}'-guarded and the
+    script already ran under nounset, so no behavioural change; sandbox-tested.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit ac98a23dad73c7ef2c2a744c890fa50cd61f8ede
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 08:34:22 2026 -0400
+
+    apt-get-noninteractive, apt-get-reset, dpkg-noninteractive: R-010 strict
+
+    Convert bare 'set -e' to the full strict preamble. Make the env-default
+    idiom nounset-safe: '[ -n "${VAR}" ] || VAR=x' aborts under nounset when
+    VAR is unset (bare ${VAR} evaluated before the || default), so use
+    'VAR="${VAR:-x}"'. Brace SC2250 references. Sandbox-tested: no nounset
+    abort (dpkg-noninteractive --version returns 0).
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit e3361dc460acfea5e343ca95d04e768170f77ada
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 08:10:24 2026 -0400
+
+    helper-scripts usr/bin: add R-010 strict to 6 simple standalones
+
+    Add the full 6-directive strict preamble to standalones that carried
+    none (disallowed-test, env-sorted, ld-system-preload-disable,
+    hardened-malloc-enabled-test, hardened-malloc-type-test) and convert
+    upgrade-nonroot's bare 'set -e'. Fix surfaced debt: echo -> printf '%s\n'
+    (hardened-malloc pair); waive upgrade-nonroot's intentional terminal
+    apt-get exec (allow-exec). Sandbox-tested (upgrade-nonroot static-only:
+    it execs apt-get); no strict regression.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit e5d5b717504b7f37463e4da72b2678a22433dedb
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 07:50:35 2026 -0400
+
+    text-safety-scan: complete R-010 strict + R-030/R-051/SC2317 cleanup
+
+    Add inherit_errexit + shift_verbose. Make the ERR-trap error reporter
+    R-051-compliant: 'trap on_err ERR' (named function) reads the failed
+    command's context from within -- $?, ${BASH_COMMAND}, and ${BASH_LINENO[0]}
+    (the caller's line; a bare $LINENO would be on_err's own). Move the printf
+    content into the '%s\n' data argument (R-030). Mark the trap-only handlers
+    '# shellcheck disable=SC2317'. Verified the trap reports the correct line.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit a0538c30faf0854cc575620e7d02205042966189
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 07:45:48 2026 -0400
+
+    gpg-dearmor, localectl-static: complete R-010 strict + has over command -v
+
+    Add inherit_errexit + shift_verbose, brace the SC2250 references, and
+    source has.sh to replace the R-090-flagged 'command -v X >/dev/null'
+    existence checks with 'has X'. Sandbox smoke-tested, no strict regression.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit ddcff3e5c359565ec7ff671069245a93e6fc4c7a
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 07:43:22 2026 -0400
+
+    apt-key-install: make the usage check reachable under nounset
+
+    Read the positional args as "${1:-}" / "${2:-}" so the empty-arg syntax
+    check fires and prints usage, instead of nounset aborting on a bare "$1"
+    with "unbound variable".
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit dae1089cb3070198a71d49b781265d4b3dd18456
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 07:40:32 2026 -0400
+
+    apt-key-install, live-status-detected: complete R-010 strict set
+
+    Add inherit_errexit + shift_verbose (the two missing strict directives)
+    and brace the variable references SC2250 surfaces. Sandbox smoke-tested
+    under the new strict mode with no regression.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 2147c33677f1c4112551d74b12aa78acacc3ac13
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 07:21:40 2026 -0400
+
+    helper-scripts usr/bin: complete R-010 strict set on 7 standalones
+
+    Add the two missing strict directives (inherit_errexit, shift_verbose)
+    to standalone executables that already carried the other four: gsudo-wl,
+    gsudo-x, modeline-show, package-installed-check, run-via-xwayland,
+    secure-boot-enabled-check, text-safety-scan-find. None use command
+    substitution so inherit_errexit is inert; sandbox smoke test shows no
+    strict-mode regression.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit c246778bb00594515610a4bb7a398144131a0def
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 05:46:22 2026 -0400
+
+    vbox-ova-reproducible-normalize: revert AI-generated namespace UUID
+
+    The deterministic UUIDv5 namespace must be regenerated by a human on a
+    trusted machine: no AI-generated value can satisfy the "no chance of the
+    UUID being crafted to cause harm" trust premise. Restore the original
+    constant and mark the regeneration TODO-HUMAN-DEVELOPER-ONLY.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit b42b43b1972b175357773b0aa5af3efb378cce0b
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 05:14:44 2026 -0400
+
+    set-keyboard-layout.sh: restore intentional blank-line printfs
+
+    Restore the 13 'printf %s\n' "" output-spacing lines dropped in the merge
+    cleanup (blank lines between keymap operations, after interactive reads,
+    in the exit handler and LUKS/kloak paths). Legitimate blank-line output,
+    not stray separators.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 986835215d6c5be8a73769998486dc99c0f86aa1
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Wed Aug 5 05:06:39 2026 -0400
+
+    Restore correct strict-mode and sourcing in merged helper-scripts
+
+    - strings.bsh: source wc-test.sh via HELPER_SCRIPTS_PATH (installed /usr
+      when empty, checkout when set), matching the check_runtime.bsh source.
+    - tor_bootstrap_check.bsh: fix garbled qubesdb-read line into
+      'has qubesdb-read'; source has.sh.
+    - onion-time-pre-script: restore dual-mode preamble (strict only under
+      'if was_executed', cannot leak into a sourcing shell; nounset
+      deliberately absent -- relies on unset vars expanding empty); drop the
+      garbled 'set -e errtrace'; keep the intentional blank-line printf in
+      te_pe_tb_check.
+    - lock-screen, set-{console,grub,labwc,system}-keymap,
+      set-keyboard-layout.sh: complete the R-010 strict set (add
+      inherit_errexit + shift_verbose); drop the no-strict waivers.
+    - run-tests: drop the strings.bsh regression guard; the caller
+      (dm-upload-images) now preflights HELPER_SCRIPTS_PATH.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit d78aca3b0a8368b7b1c51b0ee690f93aef46c0ce
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Tue Aug 4 18:43:15 2026 -0400
+
+    strings.bsh: source wc-test.sh relative to itself (BASH_SOURCE)
+
+    The previous "${HELPER_SCRIPTS_PATH:-}" fix was insufficient: strings.bsh is
+    sourced by tools that do NOT set HELPER_SCRIPTS_PATH (dm-upload-images, seen
+    failing late in an image build) and run from the checkout, so the empty variable
+    still expanded to the installed /usr path and aborted with "No such file or
+    directory". Resolve wc-test.sh relative to ${BASH_SOURCE[0]} so it works
+    installed AND in every source-tree build regardless of the caller's environment.
+
+    run-tests: strengthen the regression guard -- besides the static bare-absolute
+    check, load strings.bsh with HELPER_SCRIPTS_PATH set to a nonexistent path and
+    assert it still sources wc-test.sh (only a self-relative source survives). Fails
+    on both prior forms.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 4256f71fe395b81f28c992528ba7fbca160e145a
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Tue Aug 4 17:41:10 2026 -0400
+
+    strings.bsh: source wc-test.sh via HELPER_SCRIPTS_PATH, not a hardcoded path
+
+    strings.bsh sourced its sibling wc-test.sh from a hardcoded absolute
+    /usr/libexec/helper-scripts/wc-test.sh. That path exists only once the package
+    is installed; every source-tree build runs the checkout, where it does not
+    exist, so the very first library load aborted with "No such file or directory"
+    and exit 1 -- breaking the image build (found via the VirtualBox reproducibility
+    build; it would break qcow2/iso too). Every sibling (benchmark.bsh,
+    get_colors.sh, git-review-*) already uses "${HELPER_SCRIPTS_PATH:-}", and
+    benchmark.bsh sources strings.bsh with that variable set, so strings.bsh must do
+    the same.
+
+    run-tests: add a regression guard that fails if any helper-scripts library
+    sources a sibling via a hardcoded absolute /usr/libexec/helper-scripts/ path.
+    Fails on the old code, passes now.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit abde3c0b8f8cc9d56067fe1f554601b0954ff668
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Tue Aug 4 15:55:51 2026 -0400
+
+    sanitize-string: address CodeQL alarms on the shutdown-silencer
+
+    - File-not-closed: os.open(os.devnull) was never closed. Close the fd in a
+      finally after dup2 duplicates it.
+    - Empty-except: replace 'except OSError: pass' with contextlib.suppress(OSError).
+    - Test import-and-import-from: import the module once and alias main from it,
+      instead of also using 'from sanitize_string.sanitize_string import main'.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 86f8ed4ff1c91e15fbfb41df00085ea844522b99
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Tue Aug 4 15:25:28 2026 -0400
+
+    sanitize-string: zero limit must not read stdin (coderabbit)
+
+    The earlier '--newline' fix let a zero limit fall through the fast path, so
+    '--no-block --newline 0' (and the blocking path) consumed a line of stdin
+    before emitting the newline. A zero limit reads nothing: move the zero-limit
+    handling after the stdout reconfigure and emit just the newline via
+    sanitize_block(), returning without touching stdin.
+
+    Add a stdin regression test asserting the newline is emitted and stdin stays
+    unread; it fails on the old fall-through.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit e02d420b19bbcade83068c4ed42163719770a97e
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Tue Aug 4 14:54:51 2026 -0400
+
+    helper-scripts: resolve ArrayBolt3 TODO/FIXME + fix two sanitize-string bugs
+
+    Implement every TODO/FIXME ArrayBolt3 introduced in the trixie merge and
+    remove the markers once resolved.
+
+    vbox-ova-reproducible-normalize:
+    - NAMESPACE: replace the well-known published DCE/MS example GUID with a
+      freshly generated random UUID so derived UUIDs cannot be precomputed from a
+      public constant.
+    - Keep latin-1 at all three sites (OVF, VMDK descriptor, .mf) as a lossless
+      byte<->codepoint codec; document why UTF-8 would gain nothing and risk a
+      decode abort. Only ASCII tokens are rewritten, so bytes round-trip.
+    - CID rewrite preserves leading indentation.
+    - Rename the 'match' variable ('match' shadows the soft keyword).
+    - --source-date-epoch falls back to the SOURCE_DATE_EPOCH environment
+      variable; an explicit flag still wins.
+    - Keep hashlib for manifest digests (no per-member subprocess).
+
+    onion-time-pre-script: anondate-set is forward-only by design, so it cannot
+    cause the negative stamp age this guard handles; correct the comment (sdwdate
+    and manual/NTP/VM-snapshot changes still can), keep the guard.
+
+    git-review-driver.sh: a 'git diff --stat' rc > 1 is a real error on two
+    materialized blobs, so fail loud instead of warning and pressing on.
+
+    tor_bootstrap_check.bsh: record where the privleap authorization lives rather
+    than leaving an open "consider moving it" question (relocating security config
+    across packages is risk for no functional gain).
+
+    Test edge cases (strip_markup, sanitize_string): add verified malicious cases
+    (entity-smuggled brackets, attribute-bearing tags, spec-compliant non-tags,
+    raw ANSI escapes, bidi overrides) with golden outputs confirmed against the
+    real sanitizers.
+
+    Fix two bugs agy flagged in the merged sanitize_string.py (both confirmed
+    empirically, both regression-tested):
+    - A zero max-length took a fast path that swallowed the '--newline' newline,
+      inconsistent with every other limit. Only fast-path when no newline is due.
+    - Removing the devnull redirect reintroduced a BrokenPipeError traceback from
+      the interpreter's shutdown flush ('... | head'). Redirect stdout to
+      /dev/null after a BrokenPipeError so the shutdown flush is a no-op, keeping
+      the immediate-exit behavior.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 0bf1e3eb5bd9c3c979f40d069ae8870867d6cc7e
+Merge: b0a5ff92 e7790209
+Author: claude (dev141 763ccfe0-7bd8-4e8c-afd0-c39aceb48d72) <noreply@anthropic.com>
+Date:   Tue Aug 4 12:54:42 2026 -0400
+
+    Merge ArrayBolt3/arraybolt3/trixie into ai
+
+    Take ArrayBolt3's trixie rework wholesale (his versions win on every
+    conflict): strings.bsh, onion-time-pre-script, vbox-ova-reproducible-normalize,
+    plus the git-review tooling and keymap/lock-screen helpers.
+
+    Conflict resolution:
+    - strings.bsh, onion-time-pre-script, vbox-ova-reproducible-normalize: --theirs.
+    - onion-time-pre-script-testscript: git rm (removed upstream).
+
+    Style pass over the merged shell (gate-green):
+    - R-030 displaytime printfs collapsed to single '%s' (output identical).
+    - R-042 blank-line printf separators removed.
+    - R-090 'command -v' path probe -> 'type -P'.
+    - R-010 strict preamble waived where the upstream idiom omits it.
+    - shellcheck optional checks (SC2250 braces, SC2248 quoting) auto-applied.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit b0a5ff92c0506ce61967508bd54a3262f83f0c0a
+Author: claude (dev161 151ccca1-8a4e-4cae-aba3-d2fb959e0d4e) <noreply@anthropic.com>
+Date:   Tue Aug 4 10:50:54 2026 -0400
+
+    strings.bsh: document what is_integer actually accepts
+
+    Behaviour deliberately unchanged (product decision): is_integer '' stays TRUE.
+    The doc was the defect -- "same results as is_whole_number, but also allows
+    negative numbers" pointed at a list that says empty input and leading spaces
+    FAIL, and both actually pass. A guard R-141 mandates must not be described by
+    a comment that contradicts it.
+
+    Accept-set verified by running the function, not inferred from the source:
+    - TRUE : 42  -7  +5  0  ''  '  42'  0x1F  0b101  010  99999999999999999999
+    - false: '42  '  ' '  '-'  '1 2'  5.5  5,500  1.23e10  abc
+
+    So it is strtoimax syntax, which is the point: a regex cannot reproduce that
+    accept-set, and the printf FAILING is the check. Notable for callers:
+    - '' is 0 in an arithmetic context and a syntax error as a subscript, so it
+      cannot smuggle anything past R-141; a caller that needs a VALUE must reject
+      it itself.
+    - leading whitespace passes, trailing does not.
+    - hex/binary/octal literals pass and the arithmetic context then evaluates
+      them in that base.
+    - out-of-range still passes: this is a syntax check, not a range check.
+    Callers wanting "digits only" are pointed at is_whole_number.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 952dfc366eb15741ff4df2c97e4d6fa91532e77e
+Author: claude (dev161 151ccca1-8a4e-4cae-aba3-d2fb959e0d4e) <noreply@anthropic.com>
+Date:   Tue Aug 4 09:47:12 2026 -0400
+
+    helper-scripts: clear the static gate (11 findings -> 0)
+
+    - onion-time-pre-script (R-010): the file is dual-mode -- its testscript
+      SOURCES it and relies on unset variables expanding empty -- so six directives
+      at column 0 would leak errexit/nounset into the sourcing shell. Use the
+      repo's guarded idiom (systemd-notify.bsh, get_writable_fs_lists.sh), which is
+      the gate's documented escape for this shape, so R-010 auto-skips with no
+      waiver. Fixes a latent bug in passing: 'set -e errtrace' enabled errexit and
+      assigned 'errtrace' to $1 -- the option was never on. nounset/inherit_errexit
+      deliberately NOT added: they change runtime semantics of a 500-line script.
+    - git-review-driver.sh: printf '(none)' -> printf '%s' '(none)'; the four-%s
+      symlink line precomposed into a variable per R-033.
+    - strings.bsh duration formatting: %d over $(( )) results, already decimal
+      strings, so '%s' is byte-identical.
+    - strings.bsh is_integer: NOT rewritten. R-141 names it the mandated injection
+      guard before an untrusted value reaches an arithmetic context, and its
+      printf FAILING is the check -- '%s' would make it return 0 for every input,
+      silently retiring the guard. A per-file printf-format waiver was rejected as
+      well: it would blind all 46 printfs in a universally-sourced library. The
+      gate now carves out a single-quoted %d format whose own command discards
+      BOTH streams -- a validator, not output.
+
+    Verified: gate exit 0; strings.bsh suite 28 passed / 0 failed / 0 skipped;
+    onion-time-pre-script-testscript 11 passed / 0 failed / 0 skipped;
+    pre-push-static style rules 144 passed. A/B of onion-time-pre-script's
+    executed path is byte-identical with the same exit code.
+
+    Canary: mutating is_integer's printf to '%s' fails the suite with
+    "is_integer: 'abc' should be invalid". Each of the four carve-out guards has an
+    assertion that fails when that guard is removed.
+
+    Known, pre-existing, left alone: is_integer "" returns true (bash printf '%d'
+    ""  prints 0 and succeeds). Not exploitable for R-141, but it contradicts the
+    doc comment; tightening it is a product decision.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 8fbb77513f260276cae816efbce72862e92b111d
+Author: claude (dev161 151ccca1-8a4e-4cae-aba3-d2fb959e0d4e) <noreply@anthropic.com>
+Date:   Tue Aug 4 08:08:50 2026 -0400
+
+    vbox-ova-reproducible-normalize: unbreak the bandit CI lane
+
+    - hashlib.new(algos[algo_name]) crashed bandit 1.6.2-3, the apt build the
+      reusable bandit workflow installs on ubuntu-24.04: its hashlib_new plugin
+      calls .lower() on an argument it cannot resolve to a literal, so a dynamic
+      name raises AttributeError. xargs turned bandit's non-zero into exit 123
+      and the lane went red.
+    - Bind the four manifest constructors directly instead. The algorithm set is
+      closed and known at import time, so the name-string indirection bought
+      nothing, and the crash goes away because no hashlib.new() call remains.
+    - derive_mac / derive_cid: add '# nosec B303'. usedforsecurity=False already
+      states the intent, but bandit 1.6.2 predates that keyword and blacklists
+      sha1 unconditionally, so the lane failed on those two lines even once the
+      crash was gone. nosec is the per-repo suppression the reusable workflow
+      documents.
+
+    Verified in the sandbox against ubuntu:24.04 with the same apt bandit CI
+    uses, invoked exactly as CI invokes it ('bandit -ll -ii --'):
+      before: 'Bandit internal error running: hashlib_new ... NoneType', rc 1
+      after : no issues, no internal error, rc 0
+    Also rc 0 under bandit 1.7.10. SHA1/SHA256/SHA512/MD5 digests verified
+    byte-identical between the old and new construction.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
 
 commit e7790209060089af4a9d38ee382bebd454c8d1b0
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
