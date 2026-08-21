@@ -20,6 +20,8 @@ set -o errexit
 set -o nounset
 set -o errtrace
 set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 error_handler() {
   exit_code="${?}"
@@ -32,12 +34,12 @@ exit_code: ${exit_code}"
 exit_handler() {
   exit_code="${?}"
   printf '%s\n' ""
-  if [ "$exit_code" = 0 ]; then
+  if [ "${exit_code}" = 0 ]; then
     log notice "${FUNCNAME[0]}: OK."
   else
-    log error "${FUNCNAME[0]}: Exiting with code '$exit_code'."
+    log error "${FUNCNAME[0]}: Exiting with code '${exit_code}'."
   fi
-  exit "$exit_code"
+  exit "${exit_code}"
 }
 
 ## Checks to see if all items in "check_str" are present in the output of a
@@ -698,14 +700,14 @@ labwc_kb_reload_root() {
       loginctl -j list-users
   )" || true
 
-  if [ "$loginctl_users_json" = "" ]; then
+  if [ "${loginctl_users_json}" = "" ]; then
     log warn "${FUNCNAME[0]}: Minor issue. 'loginctl -j list-users' returned no users. Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
     return 0
   fi
 
-  loginctl_users_parsed="$(jq -r '.[] | .user' <<< "$loginctl_users_json")" || true
+  loginctl_users_parsed="$(jq -r '.[] | .user' <<< "${loginctl_users_json}")" || true
 
-  if [ "$loginctl_users_parsed" = "" ]; then
+  if [ "${loginctl_users_parsed}" = "" ]; then
     log warn "${FUNCNAME[0]}: Minor issue. Failed to parse 'loginctl_users_json' using 'jq'.
 loginctl_users_json: '${loginctl_users_json}'
 Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layout."
@@ -714,8 +716,8 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
 
   user_list=()
   while IFS= read -r -- line; do
-    user_list+=("$line")
-  done <<< "$loginctl_users_parsed"
+    user_list+=("${line}")
+  done <<< "${loginctl_users_parsed}"
 
   true "user_list: ${user_list[*]}"
 
@@ -775,7 +777,7 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
     done
   done
 
-  if [ "$counter" = 0 ]; then
+  if [ "${counter}" = 0 ]; then
     log notice "${FUNCNAME[0]}: No need to send SIGHUP to 'labwc' because none running."
   fi
 }
@@ -1215,7 +1217,7 @@ parse_cmd() {
           unknown_option_error "$1"
         fi
         labwc_config_path="$(cut -d'=' -f2- <<< "$1")"
-        if [ -z "$labwc_config_path" ]; then
+        if [ -z "${labwc_config_path}" ]; then
           log error "${FUNCNAME[0]}: No '--config=path' specified!"
           exit 1
         fi
@@ -1250,7 +1252,7 @@ parse_cmd() {
   args=( "$@" )
   true "${FUNCNAME[0]}: args: ${args[*]}"
 
-  if [ "$do_build_all_grub_keymaps" = "true" ]; then
+  if [ "${do_build_all_grub_keymaps}" = "true" ]; then
     ## Build all GRUB keymaps if requested.
     build_all_grub_keymaps
     exit 0

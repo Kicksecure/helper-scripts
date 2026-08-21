@@ -3,14 +3,25 @@
 ## Copyright (C) 2024 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 delay_ctr=0
 
 while (( delay_ctr < 120 )); do
   tor_active_state="$(systemctl --no-pager --no-block show tor@default.service \
     --property ActiveState)"
   case "${tor_active_state}" in
-    'ActiveState=active') break;;
-    'ActiveState=failed') break;;
+    'ActiveState=active')
+      break
+      ;;
+    'ActiveState=failed')
+      break
+      ;;
     *)
       sleep 1
       (( delay_ctr++ )) || true

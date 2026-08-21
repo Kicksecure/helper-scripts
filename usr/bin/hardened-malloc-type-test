@@ -3,15 +3,22 @@
 ## Copyright (C) 2020 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 if grep -q "libhardened_malloc-light.so" "/proc/$$/maps"; then
-    echo "light"
+    printf '%s\n' "light"
     exit 0
 fi
 
 if grep -q "libhardened_malloc.so" "/proc/$$/maps"; then
-    echo "default"
+    printf '%s\n' "default"
     exit 0
 fi
 
-echo "none"
+printf '%s\n' "none"
 exit 1

@@ -3,6 +3,13 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 ## Required to run apt-get dist-upgrade --simulate as user (non-root).
 ## Required for systemcheck function check_operating_system.
 ## Exception to run /usr/libexec/helper-scripts/apt-get-update as user
@@ -10,30 +17,33 @@
 
 export LC_ALL=C
 
+# shellcheck disable=SC2317  # reached via the SIGTERM/SIGINT trap, not a direct call
 sigterm_trap() {
-   if [ "$lastpid" = "" ]; then
+   if [ "${lastpid}" = "" ]; then
       exit 0
    fi
-   ps -p "$lastpid" >/dev/null 2>&1
-   if [ ! "$?" = "0" ]; then
-      ## Already terminated.
+   ## Already terminated.
+   if ! ps -p "${lastpid}" >/dev/null 2>&1; then
       exit 0
    fi
-   kill -s sigterm "$lastpid"
+   kill -s sigterm "${lastpid}"
    exit "$?"
 }
 
+## Initialised before the trap is armed so the handler's "${lastpid}" test
+## cannot hit an unbound variable if a signal arrives before the background job.
+lastpid=""
 trap "sigterm_trap" SIGTERM SIGINT
 
 timeout_after="10"
 kill_after="5"
 
 timeout \
-   --kill-after="$kill_after" \
-   "$timeout_after" \
+   --kill-after="${kill_after}" \
+   "${timeout_after}" \
    apt-get dist-upgrade --simulate &
 
 lastpid="$!"
-wait "$lastpid"
+wait "${lastpid}"
 
 exit "$?"

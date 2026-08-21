@@ -7,17 +7,22 @@ set -o errexit
 set -o nounset
 set -o errtrace
 set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
-command -v start-stop-daemon >/dev/null
+# shellcheck source=./has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+
+has start-stop-daemon
 
 pidfile="/run/helper-scripts/apt-get-update-pid"
 
-if ! test -f "$pidfile" ; then
-  printf "%s\n" "$0: INFO: pidfile $pidfile does not exist, ok."
+if ! test -f "${pidfile}" ; then
+  printf "%s\n" "$0: INFO: pidfile ${pidfile} does not exist, ok."
   exit 0
 fi
 
-if start-stop-daemon --stop --quiet --retry=TERM/5/KILL/5 --pidfile "$pidfile" &>/dev/null ; then
+if start-stop-daemon --stop --quiet --retry=TERM/5/KILL/5 --pidfile "${pidfile}" &>/dev/null ; then
   printf "%s\n" "$0: INFO: apt-get update pid killed, ok."
 else
   printf "%s\n" "$0: INFO: apt-get update pid was no longer running, ok"

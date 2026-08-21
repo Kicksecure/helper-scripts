@@ -1,5 +1,6 @@
 #!/bin/bash
 
+## style-ok: no-strict -- dual-mode: strict is set only inside 'if was_executed' (a direct run, so it cannot leak into a shell that sources this file), hence not at column 0; 'nounset' deliberately absent (script relies on unset vars expanding to empty).
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
@@ -8,8 +9,20 @@
 ## exit 1: wait, retry and error icon
 ## exit 2: wait, retry and busy icon
 
-set -o pipefail
-set -e errtrace
+## provides was_executed
+# shellcheck source=./check_runtime.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
+
+## Dual-mode: this file is also SOURCED (by its testscript / helper contexts), so
+## strict mode is enabled on a DIRECT run only and cannot leak into the sourcing
+## shell. 'nounset' is deliberately absent: this script relies on unset variables
+## expanding to empty.
+if was_executed "${BASH_SOURCE[0]}"; then
+   set -o errexit
+   set -o pipefail
+   shopt -s inherit_errexit
+   shopt -s shift_verbose
+fi
 
 output_cmd() {
    msg="$*"
@@ -54,10 +67,6 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_enabled_check
 ## provides check_tor_bootstrap_status
 # shellcheck source=./tor_bootstrap_check.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_bootstrap_check.bsh
-
-## provides was_executed
-# shellcheck source=./check_runtime.bsh
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 
 ## provides is_whole_number
 # shellcheck source=./strings.bsh
@@ -104,14 +113,40 @@ onion_time_script_status() {
    fi
 }
 
+## Set by timesanitycheck_static below, read by tor_consensus_time_sanity_check
+## and by the anondate_use branch. Declared here so both reads are defined even
+## if the static check never runs.
+timesanitycheck_static_timestamp_based_failed=""
+
 timesanitycheck_static() {
-   output_cmd "Static Time Sanity Check: $(timesanitycheck)" || true
+   local timesanitycheck_output timesanitycheck_exit_code
+
+   ## The exit code was being DISCARDED by '|| true', so the flag it should set
+   ## was never assigned -- and the two things gated on that flag have therefore
+   ## never happened: the duplicate-output avoidance in
+   ## tor_consensus_time_sanity_check, and the anondate_use clock-recovery
+   ## branch further down.
+   ##
+   ## timesanitycheck exits 0 when the clock is within the shipped min/expiry
+   ## window, and 2 or 3 when it is not.
+   timesanitycheck_exit_code=0
+   timesanitycheck_output="$(timesanitycheck)" || timesanitycheck_exit_code="$?"
+
+   output_cmd "Static Time Sanity Check: ${timesanitycheck_output}"
+
+   if [ "${timesanitycheck_exit_code}" != "0" ]; then
+      timesanitycheck_static_timestamp_based_failed="true"
+   fi
 }
 
 exit_if_tor_not_yet_enabled() {
    ## Sets: TOR_ENABLED
    check_tor_enabled_do
 
+   ## check_tor_enabled_do (tor_enabled_check, sourced) assigns TOR_ENABLED on
+   ## its FIRST line as a fallback, so it is always set. shellcheck sees only
+   ## this file and cannot know that.
+   # shellcheck disable=SC2154
    if [ "${TOR_ENABLED}" = "1" ]; then
       true "Tor enabled check: Tor already enabled, ok."
    else
@@ -248,6 +283,9 @@ tor_consensus_time_sanity_check() {
    ## If the static timestamp based time sanity check failed, there is no
    ## need to run the Tor consensus based time sanity check. Avoiding
    ## duplicate output.
+   ## Now genuinely reachable: timesanitycheck_static sets the flag when the
+   ## static check fails. Before that wiring nothing assigned it, so this early
+   ## return never fired.
    if [ "${timesanitycheck_static_timestamp_based_failed}" = "true" ]; then
       return 0
    fi
@@ -377,11 +415,11 @@ anondate_request_rate_limited() {
    request_age_seconds="$((current_unixtime - stamp_unixtime))"
 
    ## A negative age means the clock moved backwards since the stamp was
-   ## written. Both anondate-set and sdwdate set the clock, so this is
-   ## expected and we should treat the stamp as stale.
-   ##
-   ## TODO: Is anondate-set actually able to set the clock backwards, or was
-   ## that disabled for security reasons?
+   ## written, so the stamp is stale and the rate limit must not apply.
+   ## anondate-set is forward-only by design (it refuses to set the clock to an
+   ## earlier time), so it never causes this; sdwdate can correct the clock
+   ## forward OR backward, and manual/NTP/VM-snapshot changes can too, which is
+   ## what this guard covers.
    if [ "${request_age_seconds}" -lt 0 ]; then
       return 1
    fi

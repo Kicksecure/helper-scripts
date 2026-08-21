@@ -3,7 +3,14 @@
 ## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+## style-ok: allow-exec -- terminal exec of apt-get is the wrapper's purpose; nothing to run after.
 
 if [ "$(id -un)" = 'root' ]; then
   ## Avoid using 'sudo' if already using account 'root'. Reasons:

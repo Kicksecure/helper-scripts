@@ -173,9 +173,9 @@ read_target() {
   if [ -L "${1}" ]; then
     tr '\n' ' ' < <(readlink --no-newline -- "${1}")
   elif [ "${1}" = /dev/null ] || [ ! -e "${1}" ]; then
-    printf '(none)'
+    printf '%s' '(none)'
   elif [ ! -s "${1}" ]; then
-    printf '(empty)'
+    printf '%s' '(empty)'
   else
     tr '\n' ' ' < "${1}"
   fi
@@ -209,7 +209,8 @@ if [ "${old_is_link}" = 'true' ] || [ "${new_is_link}" = 'true' ]; then
   else
     new_target='(regular file)'
   fi
-  printf "%s: SYMLINK '%s': '%s' -> '%s'\n" "${review_tool}" "${diff_path}" "${old_target}" "${new_target}" \
+  symlink_message="${review_tool}: SYMLINK '${diff_path}': '${old_target}' -> '${new_target}'"
+  printf '%s\n' "${symlink_message}" \
     | stcat >&2 || true
 
   ## Scan each symlink side's target string. In external-diff mode the side is a
@@ -320,9 +321,11 @@ stat_rc=0
 git diff --no-ext-diff --no-index --stat --color=always \
   -- "${old_file}" "${new_file}" | stcat || stat_rc="${PIPESTATUS[0]}"
 if [ "${stat_rc}" -gt 1 ]; then
-  ## FIXME: Shouldn't we error out entirely if `git diff` fails here? There's
-  ## no good reason this command should fail.
-  log warn "'--stat' for '${diff_path_q}' failed; showing the diff anyway."
+  ## rc > 1 is a real 'git diff' error (rc 1 just means the files differ), and
+  ## there is no legitimate reason it should fail on two materialized blobs --
+  ## it means git is broken or misused, so the whole review is untrustworthy.
+  ## Fail loud rather than press on with a possibly-broken display.
+  die 1 "'--stat' for '${diff_path_q}' failed (git diff rc ${stat_rc})."
 fi
 
 if [ "${is_binary}" = 'true' ]; then

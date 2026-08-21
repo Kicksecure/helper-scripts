@@ -7,6 +7,8 @@ set -o errexit
 set -o nounset
 set -o errtrace
 set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 if test -r /etc/adduser.conf; then
   adduser_conf_file="$(cat -- /etc/adduser.conf)"
@@ -18,8 +20,8 @@ if test -r /etc/adduser.conf; then
       | cut -d'=' -f2 | sed 's/^[[:space:]]*//'
   )" || true
 
-  if [[ "$first_uid" = *[!0-9]* ]]; then
-    echo "$0: ERROR: FIRST_UID in file /etc/adduser.conf is not strictly numeric!" >&2
+  if [[ "${first_uid}" = *[!0-9]* ]]; then
+    printf '%s\n' "$0: ERROR: FIRST_UID in file /etc/adduser.conf is not strictly numeric!" >&2
     exit 1
   fi
 
@@ -28,8 +30,8 @@ if test -r /etc/adduser.conf; then
       | cut -d'=' -f2 | sed 's/^[[:space:]]*//'
   )" || true
 
-  if [[ "$last_uid" = *[!0-9]* ]]; then
-    echo "$0: ERROR: LAST_UID in file /etc/adduser.conf is not strictly numeric!" >&2
+  if [[ "${last_uid}" = *[!0-9]* ]]; then
+    printf '%s\n' "$0: ERROR: LAST_UID in file /etc/adduser.conf is not strictly numeric!" >&2
     exit 1
   fi
 fi
@@ -42,7 +44,7 @@ if [ -z "${last_uid:-}" ]; then
 fi
 
 if ! test -r /etc/passwd; then
-  echo "$0: ERROR: file /etc/passwd is not readable!" >&2
+  printf '%s\n' "$0: ERROR: file /etc/passwd is not readable!" >&2
   exit 1
 fi
 

@@ -11,6 +11,8 @@ if was_executed "${BASH_SOURCE[0]}"; then
   set -o nounset
   set -o errtrace
 #  set -o pipefail
+  shopt -s inherit_errexit
+  shopt -s shift_verbose
 fi
 
 safe_writable_fs_list=()

@@ -12,6 +12,8 @@ set -o errexit
 set -o nounset
 set -o errtrace
 set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
@@ -62,6 +64,7 @@ To scan directories, use text-safety-scan-find.
 EOF
 }
 
+# shellcheck disable=SC2317  # reached via the EXIT trap, not a direct call
 cleanup() {
   local _exit_code="${1:-$?}"
   trap - EXIT ERR
@@ -81,15 +84,15 @@ cleanup() {
 ## line + rc + command then returns; errexit terminates the script
 ## and the EXIT trap (cleanup) prints the summary.
 ##
-## $LINENO / $BASH_COMMAND captured at trap-fire time via the trap
-## string; reading them inside the function would yield on_err's
-## own line.
+## Read the failing command's context from inside the handler: $? is the failed
+## rc, ${BASH_COMMAND} the command, and ${BASH_LINENO[0]} the CALLER's line (a
+## bare $LINENO here would resolve to on_err's own line).
+# shellcheck disable=SC2317  # reached via the ERR trap, not a direct call
 on_err() {
-  local rc="$1" line="$2" cmd="$3"
-  printf 'ERROR: %s: line %d: command failed (rc=%d): %s\n' \
-    "${BASH_SOURCE[0]##*/}" "${line}" "${rc}" "${cmd}" >&2
+  local rc=$? line="${BASH_LINENO[0]}" cmd="${BASH_COMMAND}"
+  printf '%s\n' "ERROR: ${BASH_SOURCE[0]##*/}: line ${line}: command failed (rc=${rc}): ${cmd}" >&2
 }
-trap 'on_err "$?" "$LINENO" "$BASH_COMMAND"' ERR
+trap on_err ERR
 trap 'cleanup' EXIT
 
 ## Bump 'overall_exit' to the highest severity seen so far.

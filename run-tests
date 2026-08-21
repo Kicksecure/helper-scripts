@@ -26,7 +26,14 @@ pytest=(python3 -m pytest -o 'python_files=tests/*.py')
 pytest_ci_tests=(python3 -m pytest --import-mode=importlib)
 black=(black --config="${pyrc}" --color --diff --check)
 pylint=(pylint --rcfile="${pyrc}")
-mypy=(mypy --config-file="${pyrc}")
+## mypy writes its cache into the CURRENT directory, and the loops below cd
+## into the packaged tree under usr/. That put a .mypy_cache next to the
+## sources, where genmkfile swept it into the .deb -- lintian then warned
+## (package-contains-python-dot-directory) and the build failed closed.
+## Gitignoring it does not help: genmkfile packages the WORKING TREE, not
+## git's view. Anchor the cache at the repo root, outside anything packaged.
+mypy_cache_dir="${git_toplevel}/.mypy_cache"
+mypy=(mypy --config-file="${pyrc}" --cache-dir="${mypy_cache_dir}")
 
 py_lib_to_test_list=(
   'stdisplay'

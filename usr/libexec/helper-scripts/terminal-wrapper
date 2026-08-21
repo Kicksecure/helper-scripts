@@ -4,15 +4,31 @@
 ## See the file COPYING for copying conditions.
 
 #set -x
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+# shellcheck source=./has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
 
 terminal_wrapper_helper='/usr/libexec/helper-scripts/terminal-wrapper-helper'
+
+## Nounset-safe initialisation: base_name is only set when the symlink resolves;
+## app accumulates the first match; extra_args is built as an ARRAY throughout;
+## the window title is an optional input.
+etc_alternatives_x_terminal_emulator_base_name=""
+terminal_emulator_app=""
+terminal_emulator_extra_args=()
+terminal_emulator_window_title="${terminal_emulator_window_title:-}"
 
 if [ -e "/etc/alternatives/x-terminal-emulator" ]; then
    ## Lets see where for example /etc/alternatives/aptitude links to.
    if readlink_result="$(readlink "/etc/alternatives/x-terminal-emulator")" ; then
       ## Symlink could be read. Lets use it.
-      etc_alternatives_x_terminal_emulator_full_path="$readlink_result"
+      etc_alternatives_x_terminal_emulator_full_path="${readlink_result}"
       etc_alternatives_x_terminal_emulator_base_name="${etc_alternatives_x_terminal_emulator_full_path##*/}"
    fi
 fi
@@ -25,46 +41,47 @@ supported_terminal_emulator_apps="
    konsole
 "
 
-for terminal_emulator_app_supported in $supported_terminal_emulator_apps ; do
-   if [ "$etc_alternatives_x_terminal_emulator_base_name" = "$terminal_emulator_app_supported" ]; then
-      [ -n "$terminal_emulator_app" ] || terminal_emulator_app="$terminal_emulator_app_supported"
+## Deliberate word-splitting of the newline-separated list.
+# shellcheck disable=SC2086
+for terminal_emulator_app_supported in ${supported_terminal_emulator_apps} ; do
+   if [ "${etc_alternatives_x_terminal_emulator_base_name}" = "${terminal_emulator_app_supported}" ]; then
+      [ -n "${terminal_emulator_app}" ] || terminal_emulator_app="${terminal_emulator_app_supported}"
    fi
 done
 
-if command -v qterminal >/dev/null 2>&1; then
-   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="qterminal"
-elif command -v xfce4-terminal >/dev/null 2>&1; then
-   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="xfce4-terminal"
-elif command -v gnome-terminal >/dev/null 2>&1; then
-   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="gnome-terminal"
-elif command -v xterm >/dev/null 2>&1; then
-   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="xterm"
-elif command -v konsole >/dev/null 2>&1; then
-   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="konsole"
-elif [ ! "$etc_alternatives_x_terminal_emulator_base_name" = "" ]; then
-   [ -n "$terminal_emulator_app" ] || terminal_emulator_app="$etc_alternatives_x_terminal_emulator_base_name"
-   [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="-e"
+if has qterminal; then
+   [ -n "${terminal_emulator_app}" ] || terminal_emulator_app="qterminal"
+elif has xfce4-terminal; then
+   [ -n "${terminal_emulator_app}" ] || terminal_emulator_app="xfce4-terminal"
+elif has gnome-terminal; then
+   [ -n "${terminal_emulator_app}" ] || terminal_emulator_app="gnome-terminal"
+elif has xterm; then
+   [ -n "${terminal_emulator_app}" ] || terminal_emulator_app="xterm"
+elif has konsole; then
+   [ -n "${terminal_emulator_app}" ] || terminal_emulator_app="konsole"
+elif [ ! "${etc_alternatives_x_terminal_emulator_base_name}" = "" ]; then
+   [ -n "${terminal_emulator_app}" ] || terminal_emulator_app="${etc_alternatives_x_terminal_emulator_base_name}"
+   [ "${#terminal_emulator_extra_args[@]}" -ne 0 ] || terminal_emulator_extra_args=(-e)
 else
    error_message="$0: No supported terminal_emulator_app installed! Please install either:
-$supported_terminal_emulator_apps
+${supported_terminal_emulator_apps}
 
-PPID: $PPID
-$0 was called by: $(ps --no-headers -o command $PPID)" || true
-   kdialog --sorry "$error_message" >/dev/null 2>&1 || true
-   yad --error --text "$error_message" >/dev/null 2>&1 || true
-   printf '%s\n' "$error_message" >&2
+PPID: ${PPID}
+$0 was called by: $(ps --no-headers -o command "${PPID}")" || true
+   kdialog --sorry "${error_message}" >/dev/null 2>&1 || true
+   yad --error --text "${error_message}" >/dev/null 2>&1 || true
+   printf '%s\n' "${error_message}" >&2
+   exit 1
 fi
 
-if [ "$terminal_emulator_app" = "qterminal" ]; then
-   [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="-e ${terminal_wrapper_helper}"
+if [ "${terminal_emulator_app}" = "qterminal" ]; then
+   [ "${#terminal_emulator_extra_args[@]}" -ne 0 ] || terminal_emulator_extra_args=(-e "${terminal_wrapper_helper}")
 fi
 
-if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then
-   if [ "$terminal_emulator_extra_args" = "" ]; then
-      unset terminal_emulator_extra_args
-      declare -a terminal_emulator_extra_args
-      if [ ! "$terminal_emulator_window_title" = "" ]; then
-         terminal_emulator_extra_args="--title=$terminal_emulator_window_title"
+if [ "${terminal_emulator_app}" = "xfce4-terminal" ]; then
+   if [ "${#terminal_emulator_extra_args[@]}" -eq 0 ]; then
+      if [ ! "${terminal_emulator_window_title}" = "" ]; then
+         terminal_emulator_extra_args=("--title=${terminal_emulator_window_title}")
       fi
       terminal_emulator_extra_args+=("--hold")
       terminal_emulator_extra_args+=("--execute")
@@ -72,13 +89,11 @@ if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then
    fi
 fi
 
-if [ "$terminal_emulator_app" = "gnome-terminal" ]; then
-   if [ "$terminal_emulator_extra_args" = "" ]; then
-      unset terminal_emulator_extra_args
-      declare -a terminal_emulator_extra_args
-      if [ ! "$terminal_emulator_window_title" = "" ]; then
-         terminal_emulator_extra_args="--title"
-         terminal_emulator_extra_args+=("$terminal_emulator_window_title")
+if [ "${terminal_emulator_app}" = "gnome-terminal" ]; then
+   if [ "${#terminal_emulator_extra_args[@]}" -eq 0 ]; then
+      if [ ! "${terminal_emulator_window_title}" = "" ]; then
+         terminal_emulator_extra_args=("--title")
+         terminal_emulator_extra_args+=("${terminal_emulator_window_title}")
       fi
       terminal_emulator_extra_args+=("--maximize")
       ## --full-screen is needed in Qubes.
@@ -89,29 +104,23 @@ if [ "$terminal_emulator_app" = "gnome-terminal" ]; then
    fi
 fi
 
-if [ "$terminal_emulator_app" = "xterm" ]; then
-   [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="-e ${terminal_wrapper_helper}"
+if [ "${terminal_emulator_app}" = "xterm" ]; then
+   [ "${#terminal_emulator_extra_args[@]}" -ne 0 ] || terminal_emulator_extra_args=(-e "${terminal_wrapper_helper}")
 fi
 
-if command -v qubesdb-read >/dev/null 2>&1; then
+if has qubesdb-read; then
    ## Qubes.
-   if [ "$terminal_emulator_app" = "konsole" ]; then
-      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e ${terminal_wrapper_helper}"
+   if [ "${terminal_emulator_app}" = "konsole" ]; then
+      [ "${#terminal_emulator_extra_args[@]}" -ne 0 ] || terminal_emulator_extra_args=(--hold -e "${terminal_wrapper_helper}")
    fi
 else
    ## Non-Qubes.
-   if [ "$terminal_emulator_app" = "konsole" ]; then
+   if [ "${terminal_emulator_app}" = "konsole" ]; then
       ## Do not use '--fullscreen' since this starts the window without window
       ## controls (no window close button) which is confusing.
       ## '-e' needs to be the last parameter.
-      [ -n "$terminal_emulator_extra_args" ] || terminal_emulator_extra_args="--hold -e ${terminal_wrapper_helper}"
+      [ "${#terminal_emulator_extra_args[@]}" -ne 0 ] || terminal_emulator_extra_args=(--hold -e "${terminal_wrapper_helper}")
    fi
 fi
 
-if [ "$terminal_emulator_app" = "xfce4-terminal" ]; then
-   $terminal_emulator_app "${terminal_emulator_extra_args[@]}" $@
-elif [ "$terminal_emulator_app" = "gnome-terminal" ]; then
-   $terminal_emulator_app "${terminal_emulator_extra_args[@]}" $@
-else
-   $terminal_emulator_app $terminal_emulator_extra_args $@
-fi
+"${terminal_emulator_app}" "${terminal_emulator_extra_args[@]}" "$@"

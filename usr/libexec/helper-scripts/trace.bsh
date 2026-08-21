@@ -3,6 +3,9 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- sourced library; a top-level strict-mode block
+## would leak 'set -o errexit'/'nounset' into the sourcing shell.
+
 ## AI-Assisted
 
 ## Diagnostic backtrace helpers for error handlers. Both functions
@@ -34,20 +37,20 @@ function_trace() {
    local frame temp one two result
    result=""
    frame=0
-   while caller >/dev/null 2>&1 "$frame"; do
-      temp="$(caller "$frame")" || true
-      read -r one two _ <<< "$temp"
-      if [ -z "$result" ]; then
-         result="$two (line number: $one)"
+   while caller >/dev/null 2>&1 "${frame}"; do
+      temp="$(caller "${frame}")" || true
+      read -r one two _ <<< "${temp}"
+      if [ -z "${result}" ]; then
+         result="${two} (line number: ${one})"
       else
-         result="$result
-$two (line number: $one)"
+         result="${result}
+${two} (line number: ${one})"
       fi
       frame=$(( frame + 1 ))
    done
    ## tac flips deepest-frame-first into outermost-first, matching the
    ## order most readers expect from a "trace" report.
-   printf '%s\n' "$result" | tac
+   printf '%s\n' "${result}" | tac
 }
 
 ## Walks /proc/<pid>/{cmdline,status} from $$ up to PID 1 and prints a
@@ -68,20 +71,20 @@ process_backtrace() {
    cp="$$"   ## PID of the script itself
    while true ; do
       loop_counter=$(( loop_counter + 1 ))
-      if [ "$loop_counter" -ge 20 ]; then
-         printf '%s\n' "process_backtrace ERROR: who_ami: $who_ami | loop counter >= 20, aborting" >&2
+      if [ "${loop_counter}" -ge 20 ]; then
+         printf '%s\n' "process_backtrace ERROR: who_ami: ${who_ami} | loop counter >= 20, aborting" >&2
          break
       fi
       if [ -z "${cp:-}" ]; then
-         printf '%s\n' "process_backtrace ERROR: who_ami: $who_ami | empty pid" >&2
+         printf '%s\n' "process_backtrace ERROR: who_ami: ${who_ami} | empty pid" >&2
          break
       fi
-      if [ "$cp" = "1" ]; then
+      if [ "${cp}" = "1" ]; then
          ## reached init [PID 1] -> end of trace
-         trace="$trace : init\n"
+         trace="${trace} : init\n"
          break
       fi
-      if [ "$cp" = "0" ] || ! [[ "$cp" =~ ^[0-9]+$ ]]; then
+      if [ "${cp}" = "0" ] || ! [[ "${cp}" =~ ^[0-9]+$ ]]; then
          ## PPid=0 is what /proc/<pid>/status reports for kernel
          ## threads or for processes whose parent has been reaped;
          ## treat it as "end of trace" rather than try to read
@@ -94,27 +97,27 @@ process_backtrace() {
       ## to the wrong PID.
       cmdline=""
       pp=""
-      if test -f "/proc/$cp/cmdline" ; then
+      if test -f "/proc/${cp}/cmdline" ; then
          ## NUL is the argv separator on /proc/<pid>/cmdline; flatten
          ## to spaces. CR/LF can appear inside an argv element when a
          ## script was invoked with a multi-line "bash -c '<script>'"
          ## or similar; flatten those too so the trailing
          ## "tac | grep --line-number" does not mis-number this entry
          ## across embedded newlines.
-         cmdline="$(tr '\000\n\r' '   ' < "/proc/$cp/cmdline")" || true
+         cmdline="$(tr '\000\n\r' '   ' < "/proc/${cp}/cmdline")" || true
       else
-         ps_p_output="$(ps --no-headers -p "$cp")" || true
-         printf '%s\n' "process_backtrace ERROR: /proc/$cp/cmdline missing | ps: $ps_p_output" >&2
+         ps_p_output="$(ps --no-headers -p "${cp}")" || true
+         printf '%s\n' "process_backtrace ERROR: /proc/${cp}/cmdline missing | ps: ${ps_p_output}" >&2
       fi
-      if test -f "/proc/$cp/status" ; then
-         pp="$(grep -- PPid "/proc/$cp/status" | awk '{ print $2; }')" || true
+      if test -f "/proc/${cp}/status" ; then
+         pp="$(grep -- PPid "/proc/${cp}/status" | awk '{ print $2; }')" || true
       else
-         ps_p_output="$(ps --no-headers -p "$cp")" || true
-         printf '%s\n' "process_backtrace ERROR: /proc/$cp/status missing | ps: $ps_p_output" >&2
+         ps_p_output="$(ps --no-headers -p "${cp}")" || true
+         printf '%s\n' "process_backtrace ERROR: /proc/${cp}/status missing | ps: ${ps_p_output}" >&2
       fi
-      trace="$trace : $cmdline\n"
-      cp="$pp"
+      trace="${trace} : ${cmdline}\n"
+      cp="${pp}"
    done
    ## tac to print init-first; grep --line-number renumbers from 1.
-   printf '%b' "$trace" | tac | grep --line-number -- ":" || true
+   printf '%b' "${trace}" | tac | grep --line-number -- ":" || true
 }

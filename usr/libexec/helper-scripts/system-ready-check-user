@@ -3,13 +3,20 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 # set -o errexit
 # set -o nounset
 # set -o errtrace
 # set -o pipefail
 
 if result="$(timeout --kill-after="1" "5" systemctl --user --wait is-system-running 2>&1)"; then
-  printf '%s\n' "$result"
+  printf '%s\n' "${result}"
   exit 0
 fi
 

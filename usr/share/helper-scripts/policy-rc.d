@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
@@ -16,5 +16,12 @@
 
 ## Thanks to
 ## http://lifeonubuntu.com/how-to-prevent-server-daemons-from-starting-during-apt-get-install/
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 exit 101

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## Functions here are reached only indirectly -- via "trap ... EXIT" and via
+## the option-parser dispatch -- which shellcheck cannot follow.
+# shellcheck disable=SC2317
+
 ## Copyright (C) 2014 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
@@ -50,47 +54,56 @@
 # ----------
 
 #set -x
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 set -o pipefail
 
 output_cmd() {
-   msg="$0: $@"
-   echo "______ $msg" >&2
+   msg="$0: $*"
+   printf '%s\n' "______ ${msg}" >&2
 }
 
+## Only ever assigned inside branches below, yet read by the EXIT trap.
+## Without this an early exit aborts inside the trap itself.
+exit_code=""
+
 exit_handler() {
-   if [ "$exit_code" = "" ]; then
+   if [ "${exit_code}" = "" ]; then
       meaning="Unexpected error (1). No exit code set yet. Setting exit_code to 1."
       exit_code=1
-   elif [ "$exit_code" = "0" ]; then
+   elif [ "${exit_code}" = "0" ]; then
       meaning="Showed Tor consensus time middle range or minimum time."
-   elif [ "$exit_code" = "1" ]; then
+   elif [ "${exit_code}" = "1" ]; then
       meaning="error"
-   elif [ "$exit_code" = "2" ]; then
+   elif [ "${exit_code}" = "2" ]; then
       meaning="Showed Tor certificate life time."
-   elif [ "$exit_code" = "3" ]; then
+   elif [ "${exit_code}" = "3" ]; then
       meaning="Could not determine any time using Tor from consensus or certificate life time."
-   elif [ "$exit_code" = "4" ]; then
+   elif [ "${exit_code}" = "4" ]; then
       meaning="Setting time using anondate either not possible or not required."
    else
       meaning="Unexpected error (2)."
    fi
 
-   output_cmd "### END: ### Exiting with exit_code '$exit_code' indicating '$meaning'."
-   exit "$exit_code"
+   output_cmd "### END: ### Exiting with exit_code '${exit_code}' indicating '${meaning}'."
+   exit "${exit_code}"
 }
 
 minimum_time_check() {
    time_result_unixtime="$(date --utc --date="$1" "+%s")"
 
-   if ! minimum-time-check "$time_result_unixtime" ; then
+   if ! minimum-time-check "${time_result_unixtime}" ; then
       output_cmd "INFO: minimum-time-check determined the time_result to be obsolete, ok."
-      output_cmd "debug: command: minimum-time-check: '$time_result_unixtime'"
-      output_cmd "debug: time_result: '$time_result'"
-      output_cmd "debug: time_result_unixtime: '$time_result_unixtime'"
+      output_cmd "debug: command: minimum-time-check: '${time_result_unixtime}'"
+      output_cmd "debug: time_result: '${time_result}'"
+      output_cmd "debug: time_result_unixtime: '${time_result_unixtime}'"
       output_cmd "debug: earlier than"
-      output_cmd "debug: minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'"
-      output_cmd "debug: minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
+      output_cmd "debug: minimum_unixtime_show_human_readable: '${minimum_unixtime_show_human_readable}'"
+      output_cmd "debug: minimum_unixtime_show_unixtime: '${minimum_unixtime_show_unixtime}'"
       return 1
    fi
    output_cmd "INFO: time_result later than minimum-unixtime-show, ok."
@@ -100,13 +113,13 @@ trap exit_handler EXIT
 
 who_ami="$(whoami)"
 
-if [ "$who_ami" = "sdwdate" ]; then
+if [ "${who_ami}" = "sdwdate" ]; then
    anondate_state_folder=/run/sdwdate
 elif [ "$(id -u)" = "0" ]; then
    anondate_state_folder=/run/anondate
 else
    anondate_state_folder=/run/anondate
-   echo "ERROR: Must run as root."
+   printf '%s\n' "ERROR: Must run as root."
    exit_code=112
    exit 112
 fi
@@ -114,27 +127,25 @@ fi
 
 output_cmd "### START: ### $0"
 
-true "INFO: who_ami: '$who_ami'"
-true "INFO: anondate_state_folder: '$anondate_state_folder'"
+true "INFO: who_ami: '${who_ami}'"
+true "INFO: anondate_state_folder: '${anondate_state_folder}'"
 
-[ -n "$LC_TIME" ] || export LC_TIME=C
-[ -n "$TZ" ] || export TZ=UTC
+[ -n "${LC_TIME}" ] || export LC_TIME=C
+[ -n "${TZ}" ] || export TZ=UTC
 
 ## capture stdout
 minimum_unixtime_show_unixtime="$(minimum-unixtime-show 2>/dev/null)"
 ## capture stderr
 minimum_unixtime_show_human_readable="$(minimum-unixtime-show 2>&1 > /dev/null)"
 
-anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
-
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/tor_bootstrap_check.bsh
 check_tor_bootstrap_helper
 
-if [ "$tor_bootstrap_percent" = "100" ]; then
+if [ "${tor_bootstrap_percent}" = "100" ]; then
    output_cmd "INFO: 100% Tor bootstrap, ok."
    if tor_circuit_established_check="$(/usr/bin/tor-circuit-established-check)" ; then
       output_cmd "INFO: tor-circuit-established-check, ok."
-      if [ "$tor_circuit_established_check" = "1" ]; then
+      if [ "${tor_circuit_established_check}" = "1" ]; then
          output_cmd "INFO: Tor circuit already established, ok."
       else
          output_cmd "WARNING: Tor circuit not yet established."
@@ -172,15 +183,15 @@ if time_result="$(anondate --show-middle-range 2>/dev/null)" ; then
 
    output_cmd "INFO: Tor consensus time middle range could be determined, ok."
 
-   range_info="valid_after: '$valid_after' | middle_range: '$time_result' | valid_until: '$valid_until'"
+   range_info="valid_after: '${valid_after}' | middle_range: '${time_result}' | valid_until: '${valid_until}'"
 
-   if [ "$time_result" = "" ]; then
+   if [ "${time_result}" = "" ]; then
       output_cmd "WARNING: Tor consensus time middle range result empty."
    elif anondate --current-time-in-valid-range ; then
       output_cmd "INFO: Local system time is already within Tor consensus time valid range, ok."
-      output_cmd "INFO: $range_info"
-      output_cmd "INFO: Tor consensus time middle_range: '$time_result'"
-      if minimum_time_check "$time_result" ; then
+      output_cmd "INFO: ${range_info}"
+      output_cmd "INFO: Tor consensus time middle_range: '${time_result}'"
+      if minimum_time_check "${time_result}" ; then
          output_cmd "INFO: minimum-time-check determined Tor consensus time middle range to be valid (A), ok."
          ## Deliberately not doing 'echo "$time_result"' here.
          ## - Since local system time is already within valid range there is no need to fix the clock.
@@ -195,16 +206,16 @@ if time_result="$(anondate --show-middle-range 2>/dev/null)" ; then
       fi
       output_cmd "INFO: Do not show Tor consensus time middle range as result, ok."
    else
-      output_cmd "WARNING: local system time is NOT within Tor consensus time valid time range. ($range_info)"
-      if minimum_time_check "$time_result" ; then
+      output_cmd "WARNING: local system time is NOT within Tor consensus time valid time range. (${range_info})"
+      if minimum_time_check "${time_result}" ; then
          output_cmd "INFO: minimum-time-check determined Tor consensus time middle range to be valid (B), ok."
          output_cmd "INFO: Showing Tor consensus time middle range..."
-         output_cmd "INFO: Tor consensus time middle_range: '$time_result'"
-         echo "$time_result"
+         output_cmd "INFO: Tor consensus time middle_range: '${time_result}'"
+         printf '%s\n' "${time_result}"
          exit_code=0
          exit 0
       else
-         output_cmd "INFO: Tor consensus time middle_range: '$time_result'"
+         output_cmd "INFO: Tor consensus time middle_range: '${time_result}'"
          output_cmd "INFO: minimum-time-check determined Tor consensus time middle range to be obsolete (B), ok."
          output_cmd "INFO: Do not show Tor consensus time middle range as result, ok."
       fi
@@ -223,19 +234,19 @@ if anondate --tor-cert-lifetime-valid ; then
 else
    output_cmd "WARNING: Tor certificate lifetime invalid according to Tor log. This information might be outdated and not matter."
    if time_result="$(anondate --tor-cert-valid-after)" ; then
-      output_cmd "INFO: Tor certificate life date: '$time_result'"
-      time_result_unixtime="$(date --utc --date="$time_result" "+%s")"
+      output_cmd "INFO: Tor certificate life date: '${time_result}'"
+      time_result_unixtime="$(date --utc --date="${time_result}" "+%s")"
       current_unixtime="$(date --utc "+%s")"
-      if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
+      if [ "${current_unixtime}" -ge "${time_result_unixtime}" ]; then
          output_cmd "INFO: System clock is LATER than Tor certificate life date, ok."
       else
          output_cmd "INFO: System clock is EARLIER than Tor certificate life date."
       fi
-      if minimum_time_check "$time_result" ; then
+      if minimum_time_check "${time_result}" ; then
          output_cmd "INFO: minimum-time-check determined Tor certificate lifetime to be valid, ok."
          output_cmd "INFO: Showing Tor certificate lifetime as result..."
-         output_cmd "INFO: Tor certificate lifetime: '$time_result'"
-         echo "$time_result"
+         output_cmd "INFO: Tor certificate lifetime: '${time_result}'"
+         printf '%s\n' "${time_result}"
          exit_code=2
          exit 2
       else
@@ -251,7 +262,7 @@ fi
 output_cmd "INFO: Could not determine a time later than minimum time from either Tor consensus time or Tor certificate lifetime, ok."
 output_cmd "INFO: Showing minimum time instead as result..."
 ## anondate-set would not set the time backwards anyhow, therefore safe to show minimum time here.
-output_cmd "INFO: minimum time: '$minimum_unixtime_show_human_readable'"
-echo "$minimum_unixtime_show_human_readable"
+output_cmd "INFO: minimum time: '${minimum_unixtime_show_human_readable}'"
+printf '%s\n' "${minimum_unixtime_show_human_readable}"
 exit_code=0
 exit 0

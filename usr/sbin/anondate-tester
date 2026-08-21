@@ -4,8 +4,15 @@
 ## See the file COPYING for copying conditions.
 
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 if [ "$(id -u)" != "0" ]; then
-   echo "$0: ERROR: Must run as root."
+   printf '%s\n' "$0: ERROR: Must run as root."
    exit 112
 fi
 
@@ -19,11 +26,11 @@ cmd_item_list=(
 "--tor-cert-valid-after"
 )
 
-for cmd_item in ${cmd_item_list[@]} ; do
-   echo "cmd_item: anondate $cmd_item $@"
-   output="$(anondate $cmd_item $@)"
+for cmd_item in "${cmd_item_list[@]}" ; do
+   printf '%s\n' "cmd_item: anondate ${cmd_item} $*"
+   output="$(anondate "${cmd_item}" "$@")"
    exit_code="$?"
-   echo "output: $output"
-   echo "exit_code: $exit_code"
-   echo "----------"
+   printf '%s\n' "output: ${output}"
+   printf '%s\n' "exit_code: ${exit_code}"
+   printf '%s\n' "----------"
 done

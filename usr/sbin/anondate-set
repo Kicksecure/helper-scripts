@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## Functions here are reached only indirectly -- via "trap ... EXIT" and via
+## the option-parser dispatch -- which shellcheck cannot follow.
+# shellcheck disable=SC2317
+
 ## Copyright (C) 2014 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
@@ -10,35 +14,54 @@
 ## Used by: /usr/libexec/helper-scripts/onion-time-pre-script
 
 #set -x
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+# shellcheck source=../libexec/helper-scripts/has.sh
+source /usr/libexec/helper-scripts/has.sh
 set -o pipefail
 
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
+## Read by output_cmd() below but only assigned further down, so an early
+## call aborts under nounset. Unset previously took the non-indented
+## branch, which "false" reproduces exactly.
+indent_style=false
+
 output_init() {
-   rm -f "${anondate_state_folder}/anondate-set-current-message.txt"
+   safe-rm -f -- "${anondate_state_folder}/anondate-set-current-message.txt"
    touch "${anondate_state_folder}/anondate-set-current-message.txt"
 }
 
 output_cmd() {
-   msg="$0: $@"
-   if [ "$indent_style" = "true" ]; then
-      echo "____ $msg"
+   msg="$0: $*"
+   if [ "${indent_style}" = "true" ]; then
+      printf '%s\n' "____ ${msg}"
    else
-      echo "$msg"
+      printf '%s\n' "${msg}"
    fi
    if [ ! -w "${anondate_state_folder}/anondate-set-current-message.txt" ]; then
       true "$0: ERROR: '${anondate_state_folder}/anondate-set-current-message.txt' not writeable!"
       return 0
    fi
-   if [ "$indent_style" = "true" ]; then
-      echo "____ $msg" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" >/dev/null || true
+   if [ "${indent_style}" = "true" ]; then
+      printf '%s\n' "____ ${msg}" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" >/dev/null || true
    else
-      echo "$msg" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" >/dev/null || true
+      printf '%s\n' "${msg}" | tee -a "${anondate_state_folder}/anondate-set-current-message.txt" >/dev/null || true
    fi
 }
 
 systemd_cat_maybe() {
+   ## Each is assigned only when its state file exists, yet both are compared
+   ## below. Unset previously compared "" against "" and skipped systemd-cat;
+   ## these defaults reproduce that instead of aborting under nounset.
+   local current_message=""
+   local old_message=""
+
    if [ -f "${anondate_state_folder}/anondate-set-current-message.txt" ]; then
       current_message="$(cat "${anondate_state_folder}/anondate-set-current-message.txt")"
    fi
@@ -46,32 +69,36 @@ systemd_cat_maybe() {
       old_message="$(cat "${anondate_state_folder}/anondate-set-old-message.txt")"
    fi
 
-   if [ "$current_message" = "$old_message" ]; then
+   if [ "${current_message}" = "${old_message}" ]; then
       true "INFO: current_message equals old_message. Skipping systemd-cat."
       return 0
    fi
    cp "${anondate_state_folder}/anondate-set-current-message.txt" "${anondate_state_folder}/anondate-set-old-message.txt"
-   echo "$current_message" | systemd-cat --identifier="anondate" || true
+   printf '%s\n' "${current_message}" | systemd-cat --identifier="anondate" || true
 }
 
+## Only ever assigned inside branches below, yet read by the EXIT trap.
+## Without this an early exit aborts inside the trap itself.
+exit_code=""
+
 exit_handler() {
-   if [ "$exit_code" = "" ]; then
+   if [ "${exit_code}" = "" ]; then
       meaning="Unexpected error (1). No exit code set yet. Setting exit_code to 1."
       exit_code=1
-   elif [ "$exit_code" = "0" ]; then
+   elif [ "${exit_code}" = "0" ]; then
       meaning="Set time using Tor consensus middle range time or minimum time."
-   elif [ "$exit_code" = "1" ]; then
+   elif [ "${exit_code}" = "1" ]; then
       meaning="error"
-   elif [ "$exit_code" = "2" ]; then
+   elif [ "${exit_code}" = "2" ]; then
       meaning="Success, set system clock using Tor certificate lifetime."
-   elif [ "$exit_code" = "3" ]; then
+   elif [ "${exit_code}" = "3" ]; then
       meaning="Setting time using anondate either not possible or not required."
    else
       meaning="Unexpected error (2)."
    fi
-   output_cmd "### END: ### Exiting with exit_code '$exit_code' indicating '$meaning'."
+   output_cmd "### END: ### Exiting with exit_code '${exit_code}' indicating '${meaning}'."
    systemd_cat_maybe || true
-   exit "$exit_code"
+   exit "${exit_code}"
 }
 
 trap exit_handler EXIT
@@ -101,21 +128,21 @@ set_date() {
    current_unixtime="$(date --utc "+%s")"
    check_is_not_empty_and_only_one_line current_unixtime
 
-   time_result_unixtime="$(date --utc --date "$time_result_human_readable" "+%s")"
+   time_result_unixtime="$(date --utc --date "${time_result_human_readable}" "+%s")"
    check_is_not_empty_and_only_one_line time_result_unixtime
 
-   if [ "$current_unixtime" -ge "$time_result_unixtime" ]; then
+   if [ "${current_unixtime}" -ge "${time_result_unixtime}" ]; then
       output_cmd "INFO: The 'anondate-get' time_result is earlier than the current system time, ok. Not setting clock backwards."
-      if [ "$debugging" = "true" ]; then
+      if [ "${debugging:-}" = "true" ]; then
          output_cmd "INFO: Debugging information:
-   '$current_unixtime' -ge '$time_result_unixtime'
+   '${current_unixtime}' -ge '${time_result_unixtime}'
    (function: set_date)
 
-   time_result_human_readable: '$time_result_human_readable'
-   time_result_unixtime: '$time_result_unixtime'
+   time_result_human_readable: '${time_result_human_readable}'
+   time_result_unixtime: '${time_result_unixtime}'
    earlier than
-   current_time_human_readable: '$current_time_human_readable'
-   current_unixtime: '$current_unixtime'"
+   current_time_human_readable: '${current_time_human_readable}'
+   current_unixtime: '${current_unixtime}'"
       fi
 
       exit_code=3
@@ -124,7 +151,7 @@ set_date() {
       output_cmd "INFO: The 'anondate-get' time_result is later than the current system time, ok"
    fi
 
-   if ! minimum-time-check "$time_result_unixtime" ; then
+   if ! minimum-time-check "${time_result_unixtime}" ; then
       ## capture stdout
       minimum_unixtime_show_unixtime="$(minimum-unixtime-show 2>/dev/null)"
       ## capture stderr
@@ -132,13 +159,13 @@ set_date() {
 
       output_cmd "INFO: minimum-time-check determined the time_result is earlier than minimum time, ok."
       output_cmd "INFO: The 'anondate-get' time result is earlier than 'minimum-unixtime-show'."
-      output_cmd "debug: command: minimum-time-check: '$time_result_unixtime'"
+      output_cmd "debug: command: minimum-time-check: '${time_result_unixtime}'"
       output_cmd "debug: (function: set_date)"
-      output_cmd "debug: time_result_human_readable: '$time_result_human_readable'"
-      output_cmd "debug: time_result_unixtime: '$time_result_unixtime'"
+      output_cmd "debug: time_result_human_readable: '${time_result_human_readable}'"
+      output_cmd "debug: time_result_unixtime: '${time_result_unixtime}'"
       output_cmd "debug: earlier than"
-      output_cmd "debug: minimum_unixtime_show_human_readable: '$minimum_unixtime_show_human_readable'"
-      output_cmd "debug: minimum_unixtime_show_unixtime: '$minimum_unixtime_show_unixtime'"
+      output_cmd "debug: minimum_unixtime_show_human_readable: '${minimum_unixtime_show_human_readable}'"
+      output_cmd "debug: minimum_unixtime_show_unixtime: '${minimum_unixtime_show_unixtime}'"
       output_cmd "INFO: Not setting system clock earlier than 'minimum-unixtime-show'."
 
       exit_code=3
@@ -150,23 +177,23 @@ set_date() {
    fi
 
    output_cmd "INFO: Running the following command:"
-   output_cmd "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"$time_result_human_readable\""
-   date_command_output="$(date --utc "+%Y-%m-%d %H:%M:%S" --set "$time_result_human_readable" 2>&1)"
-   output_cmd "INFO: date command output: '$date_command_output'"
+   output_cmd "date --utc \"+%Y-%m-%d %H:%M:%S\" --set \"${time_result_human_readable}\""
+   date_command_output="$(date --utc "+%Y-%m-%d %H:%M:%S" --set "${time_result_human_readable}" 2>&1)"
+   output_cmd "INFO: date command output: '${date_command_output}'"
 }
 
 true "START: $0"
 
 who_ami="$(whoami)"
 
-if [ "$who_ami" = "sdwdate" ]; then
+if [ "${who_ami}" = "sdwdate" ]; then
    anondate_state_folder=/run/sdwdate
 elif [ "$(id -u)" = "0" ]; then
    anondate_state_folder=/run/anondate
-   mkdir -p "$anondate_state_folder"
+   mkdir -p "${anondate_state_folder}"
 else
    anondate_state_folder=/run/anondate
-   echo "$0: ERROR: Must run as root." >&2
+   printf '%s\n' "$0: ERROR: Must run as root." >&2
    exit 112
 fi
 
@@ -176,22 +203,22 @@ output_init
 
 output_cmd "### START: ### $0"
 
-true "INFO: who_ami: $who_ami"
-true "INFO: anondate_state_folder: $anondate_state_folder"
+true "INFO: who_ami: ${who_ami}"
+true "INFO: anondate_state_folder: ${anondate_state_folder}"
 
-if ! command -v systemd-cat &>/dev/null ; then
+if ! has systemd-cat ; then
    output_cmd "WARNING: Program 'systemd-cat' is unavailable. Unable to write to systemd journal log."
 fi
 
-[ -n "$LC_TIME" ] || export LC_TIME=C
-[ -n "$TZ" ] || export TZ=UTC
+[ -n "${LC_TIME}" ] || export LC_TIME=C
+[ -n "${TZ}" ] || export TZ=UTC
 
 anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
 
-if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
-   output_cmd "INFO: Status file '$anondate_tor_certificate_lifetime_set_file' exists."
+if test -f "${anondate_tor_certificate_lifetime_set_file}" ; then
+   output_cmd "INFO: Status file '${anondate_tor_certificate_lifetime_set_file}' exists."
 else
-   output_cmd "INFO: Status file '$anondate_tor_certificate_lifetime_set_file' does not yet exist."
+   output_cmd "INFO: Status file '${anondate_tor_certificate_lifetime_set_file}' does not yet exist."
 fi
 
 output_cmd "INFO: Running anondate-get..."
@@ -202,31 +229,31 @@ anondate-get 1> "${anondate_state_folder}/anondate-get-stdout.txt" 2> "${anondat
 anondate_stdout="$(cat "${anondate_state_folder}/anondate-get-stdout.txt")"
 anondate_stderr="$(cat "${anondate_state_folder}/anondate-get-stderr.txt")"
 
-time_result_human_readable="$anondate_stdout"
+time_result_human_readable="${anondate_stdout}"
 check_is_not_empty_and_only_one_line time_result_human_readable
 
 indent_style=false
-output_cmd "$anondate_stderr"
+output_cmd "${anondate_stderr}"
 indent_style=true
 
-if [ "$anondate_get_exit_code" = "0" ]; then
+if [ "${anondate_get_exit_code}" = "0" ]; then
    output_cmd "INFO: anondate-get returned Tor consensus middle range time or minimum time."
    set_date
    exit_code=0
    exit 0
-elif [ "$anondate_get_exit_code" = "1" ]; then
+elif [ "${anondate_get_exit_code}" = "1" ]; then
    output_cmd "INFO: anondate-get error."
    exit_code=1
    exit 1
-elif [ "$anondate_get_exit_code" = "2" ]; then
-   if test -f "$anondate_tor_certificate_lifetime_set_file" ; then
+elif [ "${anondate_get_exit_code}" = "2" ]; then
+   if test -f "${anondate_tor_certificate_lifetime_set_file}" ; then
       output_cmd "INFO: No, not again setting system clock to Tor certificate lifetime."
    else
       output_cmd "INFO: Yes, setting system clock to Tor certificate lifetime."
       set_date
-      output_cmd "INFO: Creating status file '$anondate_tor_certificate_lifetime_set_file'."
-      touch "$anondate_tor_certificate_lifetime_set_file"
-      output_cmd "INFO: Done, created status file '$anondate_tor_certificate_lifetime_set_file'."
+      output_cmd "INFO: Creating status file '${anondate_tor_certificate_lifetime_set_file}'."
+      touch "${anondate_tor_certificate_lifetime_set_file}"
+      output_cmd "INFO: Done, created status file '${anondate_tor_certificate_lifetime_set_file}'."
 
       ## If clock was too fast, restart of Tor is required.
       ## Would this be still required or was this fixed in upstream in Tor?

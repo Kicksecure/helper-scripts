@@ -27,21 +27,21 @@ root_cmd(){
       ## https://stackoverflow.com/a/32966744/2605155
       cmd="$(command -v -- "${1}")"
       shift
-      log_run "$root_cmd_loglevel" su root -s "${cmd}" -- "${@}"
+      log_run "${root_cmd_loglevel}" su root -s "${cmd}" -- "${@}"
       ;;
     sudo)
-      cmdarr=( 'log_run' "$root_cmd_loglevel" 'sudo' )
-      if [ -n "$ROOT_CMD_TARGET_USER" ]; then
-        cmdarr+=( '--user' "$ROOT_CMD_TARGET_USER" );
+      cmdarr=( 'log_run' "${root_cmd_loglevel}" 'sudo' )
+      if [ -n "${ROOT_CMD_TARGET_USER}" ]; then
+        cmdarr+=( '--user' "${ROOT_CMD_TARGET_USER}" );
       fi
-      if [ -n "$ROOT_CMD_TARGET_DIR" ]; then
-        cmdarr+=( '--chdir' "$ROOT_CMD_TARGET_DIR" );
+      if [ -n "${ROOT_CMD_TARGET_DIR}" ]; then
+        cmdarr+=( '--chdir' "${ROOT_CMD_TARGET_DIR}" );
       fi
       cmdarr+=( '--' "${@}" )
       "${cmdarr[@]}"
       ;;
     doas)
-      log_run "$root_cmd_loglevel" doas -u root -- "${@}"
+      log_run "${root_cmd_loglevel}" doas -u root -- "${@}"
       ;;
     *)
       die 1 "${underline}root_cmd function:${nounderline} 'root_cmd' does not support sucmd: '${sucmd}'"
@@ -72,7 +72,7 @@ get_su_cmd(){
         true
         ;;
       *)
-        log warn "Using sucmd '$sucmd'. Consider installation of 'sudo' instead to cache your passwords instead of typing them every time."
+        log warn "Using sucmd '${sucmd}'. Consider installation of 'sudo' instead to cache your passwords instead of typing them every time."
         ;;
     esac
   done

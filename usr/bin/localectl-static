@@ -7,9 +7,14 @@ set -o errexit
 set -o nounset
 set -o errtrace
 set -o pipefail
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
-command -v stcat >/dev/null
-command -v pager >/dev/null
+# shellcheck source=../libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+
+has stcat
+has pager
 
 use_pager='true'
 
@@ -43,7 +48,7 @@ variants_static_dir="${helper_scripts_share_dir}/localectl-list-x11-keymap-varia
 options_static_file="${helper_scripts_share_dir}/localectl-list-x11-keymap-options-static.txt"
 
 if [ "${subcommand}" = "list-x11-keymap-layouts" ]; then
-  if [ "$use_pager" = 'true' ]; then
+  if [ "${use_pager}" = 'true' ]; then
     stcat "${layouts_static_file}" | pager
   else
     stcat "${layouts_static_file}"
@@ -61,13 +66,13 @@ elif [ "${subcommand}" = "list-x11-keymap-variants" ]; then
     printf '%s\n' "$0: ERROR: Unrecognized keymap '${args[1]}'!"
     exit 1
   fi
-  if [ "$use_pager" = 'true' ]; then
+  if [ "${use_pager}" = 'true' ]; then
     stcat "${variants_static_dir}/${args[1]}" | pager
   else
     stcat "${variants_static_dir}/${args[1]}"
   fi
 elif [ "${subcommand}" = "list-x11-keymap-options" ]; then
-  if [ "$use_pager" = 'true' ]; then
+  if [ "${use_pager}" = 'true' ]; then
     stcat "${options_static_file}" | pager
   else
     stcat "${options_static_file}"

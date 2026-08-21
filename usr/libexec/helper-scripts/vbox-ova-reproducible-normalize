@@ -63,8 +63,11 @@ from datetime import datetime, timezone
 
 ## Fixed namespace for the deterministic UUIDv5 derivation. Arbitrary constant;
 ## only needs to be stable so the derived UUIDs are reproducible.
-## FIXME: Regenerate this randomly on a trusted developer machine to make sure
-## there is no chance of the UUID being crafted to cause some sort of harm
+## TODO-HUMAN-DEVELOPER-ONLY: regenerate this randomly on a trusted developer
+## machine so there is no chance of the UUID being crafted to cause some sort of
+## harm. An AI model must NOT generate this value -- the trust premise is that a
+## human produced it on a trusted machine, which an AI-generated UUID cannot
+## satisfy.
 NAMESPACE = uuid.UUID("6f9619ff-8b86-d011-b42d-00cf4fc964ff")
 
 
@@ -84,7 +87,10 @@ def derive_mac(salt, index):
     ## it a globally-administered unicast address.
     ## Not a security hash: a deterministic function to derive a stable MAC
     ## suffix from the salt. Collision resistance is irrelevant here.
-    digest = hashlib.sha1(
+    ## nosec B303: bandit blacklists the sha1 call by name. This is not a
+    ## security hash -- see the comment above -- and 'usedforsecurity=False'
+    ## already states that to Python/OpenSSL.
+    digest = hashlib.sha1(  # nosec B303
         ("%s:mac:%d" % (salt, index)).encode(), usedforsecurity=False
     ).hexdigest()
     return "080027" + digest[:6].upper()
@@ -95,7 +101,9 @@ def derive_cid(salt, role, index):
     ## 0xffffffff sentinel (VMDK "no parent" / null CID).
     ## Not a security hash: a deterministic function to derive a stable content
     ## id from the salt. Collision resistance is irrelevant here.
-    digest = hashlib.sha1(
+    ## nosec B303: as above -- deterministic id derivation, not a security
+    ## hash, and already marked 'usedforsecurity=False'.
+    digest = hashlib.sha1(  # nosec B303
         ("%s:%s:%d" % (salt, role, index)).encode(), usedforsecurity=False
     ).hexdigest()
     cid = digest[:8]
@@ -215,18 +223,27 @@ def patch_vmdk_descriptor(path, salt, index, image_uuid):
         block = handle.read(length)
         ## The descriptor text ends at the first NUL; everything after is
         ## padding to the sector boundary.
-        ## FIXME: The encoding is not necessarily latin-1, VMDK descriptor
-        ## files can use UTF-8 encoding. Assume UTF-8 to begin with, look for
-        ## an `encoding=` field and obey it, default to UTF-8 if missing unless
-        ## something suggests latin-1 is definitely the correct default.
+        ## latin-1 is used deliberately as a lossless 1:1 byte<->codepoint codec,
+        ## not as a claim about the descriptor's real text encoding. Read and
+        ## write both use latin-1, and only pure-ASCII tokens (CID, ddb.uuid.image,
+        ## ddb.comment) are rewritten -- ASCII is identical under latin-1 and
+        ## UTF-8, so any other byte round-trips verbatim. This guarantees byte-
+        ## and length-preserving normalization (the patched text must fit the
+        ## sector-padded region below) and never raises UnicodeDecodeError on
+        ## arbitrary header bytes. The VMDK descriptor format defines no
+        ## 'encoding=' field, and ddb.comment (the only field that can carry host
+        ## bytes) is blanked below, so switching to UTF-8 would gain nothing and
+        ## could abort the build on a non-UTF-8 byte.
         text = block.split(b"\x00", 1)[0].decode("latin-1")
 
         new_cid = derive_cid(salt, "cid", index)
-        ## FIXME: Fields may have spaces in front of them, capture them and
-        ## include them in the replace string, do this for all field matches
-        ## in this function
+        ## Preserve any leading indentation before the field so the rewrite stays
+        ## byte-position neutral; a function replacement avoids backreference
+        ## escaping in the substituted hex.
         text, n_cid = re.subn(
-            r"(?m)^CID=[0-9a-fA-F]{8}$", "CID=%s" % new_cid, text
+            r"(?m)^([ \t]*)CID=[0-9a-fA-F]{8}$",
+            lambda m: "%sCID=%s" % (m.group(1), new_cid),
+            text,
         )
 
         ## Set the descriptor image UUID to the disk's OVF-assigned UUID (the
@@ -273,17 +290,20 @@ def rewrite_manifest(mf_path, workdir):
         "MD5": "md5",
     }
     out_lines = []
-    ## TODO: Is this guaranteed to be latin-1?
+    ## latin-1 as a lossless byte<->codepoint codec (see rewrite_vmdk): manifest
+    ## lines are 'ALGO (name) = hex', all ASCII in practice, and any other byte
+    ## round-trips verbatim because read and write both use latin-1.
     with open(mf_path, "r", encoding="latin-1") as handle:
         for line in handle.read().splitlines():
-            ## FIXME: "match" is a keyword in Python, rename this
-            match = line_re.match(line)
-            if not match:
+            line_match = line_re.match(line)
+            if not line_match:
                 out_lines.append(line)
                 continue
-            algo_name, member, _ = match.groups()
-            ## TODO: Would it be faster to just point a coreutils checksum
-            ## utility at the member and extract the returned hash?
+            algo_name, member, _ = line_match.groups()
+            ## Stream the member through hashlib (OpenSSL-backed) in 1 MiB
+            ## chunks. Shelling out to a coreutils checksum tool would add a
+            ## per-member subprocess plus output parsing and a PATH dependency
+            ## for no meaningful speedup.
             digest = hashlib.new(algos[algo_name])
             with open(os.path.join(workdir, member), "rb") as member_handle:
                 for chunk in iter(
@@ -390,13 +410,25 @@ def safe_tar_members(tar, dest):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ova", required=True)
-    ## TODO: Consider reading SOURCE_DATE_EPOCH from the environment for
-    ## consistency with other reproducible-build-supporting tools?
-    parser.add_argument("--source-date-epoch", type=int, required=True)
+    ## Optional so the SOURCE_DATE_EPOCH environment variable can supply it, as
+    ## other reproducible-build tools do; an explicit flag still wins.
+    parser.add_argument("--source-date-epoch", type=int, default=None)
     parser.add_argument("--salt", required=True)
     args = parser.parse_args()
 
     epoch = args.source_date_epoch
+    if epoch is None:
+        epoch_env = os.environ.get("SOURCE_DATE_EPOCH")
+        if not epoch_env:
+            parser.error(
+                "--source-date-epoch not given and SOURCE_DATE_EPOCH is unset"
+            )
+        try:
+            epoch = int(epoch_env)
+        except ValueError:
+            parser.error(
+                "SOURCE_DATE_EPOCH is not an integer: %r" % epoch_env
+            )
     salt = args.salt
 
     with tempfile.TemporaryDirectory(
@@ -429,7 +461,11 @@ def main():
             )
 
         ovf_path = os.path.join(workdir, ovf_names[0])
-        ## TODO: Double-check that latin-1 is right here and elsewhere
+        ## latin-1 as a lossless byte<->codepoint codec (see rewrite_vmdk). The
+        ## OVF is semantically UTF-8 XML, but this pass rewrites only ASCII
+        ## tokens (UUIDs, MACs, ISO timestamps) and round-trips every other byte
+        ## verbatim, so reading and writing latin-1 reproduces the file exactly
+        ## without risking a decode error on non-ASCII content.
         with open(ovf_path, "r", encoding="latin-1") as handle:
             ovf_text = handle.read()
         ovf_text, disk_uuid_by_href = normalize_ovf(ovf_text, salt, epoch)

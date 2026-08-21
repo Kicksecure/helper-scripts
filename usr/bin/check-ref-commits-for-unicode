@@ -48,11 +48,11 @@ check_ref_commits_for_unicode() {
     die 2 "git_log_cmd failed! git_log_cmd: ${git_log_cmd[*]}"
   fi
 
-  if [ "$git_log_output" = "" ]; then
+  if [ "${git_log_output}" = "" ]; then
     die 2 'No new commits in target ref!'
   fi
 
-  readarray -t commit_list <<< "$git_log_output"
+  readarray -t commit_list <<< "${git_log_output}"
 
   if [ -z "${commit_list[0]:-}" ]; then
     die 2 'commit_list array first element is empty or missing!'
@@ -70,14 +70,58 @@ check_ref_commits_for_unicode() {
     ##
     ## The commit message is intentionally included since it could contain
     ## malicious unicode too.
+    ## Identity and message are scanned WHOLE and unfiltered -- a commit
+    ## message line may legitimately start with '-', and the removal filter
+    ## below must never reach it.
+    commit_meta="$(git show \
+      --no-patch \
+      --format=$'Author: %an\nAuthor email: %ae\nCommitter: %cn\nCommitter email: %ce\n%B' \
+      "${commit}")"
+
     commit_diff="$(git show \
       --no-ext-diff \
       --unified=0 \
       --no-textconv \
-      --format=$'Author: %an\nAuthor email: %ae\nCommitter: %cn\nCommitter email: %ce\n%B' \
+      --format='' \
       "${commit}")"
+
+    ## Scan what the commit ADDS, not what it removes.
+    ##
+    ## With the removal lines included, the commit that DELETES a hostile
+    ## character is flagged as hostile -- the diff line '-dirty <U+202E>line'
+    ## still contains it. So the cleanup commit gets the same warning as the
+    ## attack, and a scanner that flags fixes trains reviewers to ignore it.
+    ## Nothing a commit removes can end up in the resulting tree, so a removal
+    ## cannot be the attack.
+    ##
+    ## '---' is the file header, not a removal, and both file headers are KEPT:
+    ## a hostile FILENAME has to stay detectable.
+    commit_diff_additions=''
+    while IFS= read -r diff_line; do
+      case "${diff_line}" in
+        '@@ '*)
+          ## A hunk header ends with a FUNCNAME suffix -- '@@ -3,0 +4 @@ text'
+          ## -- where 'text' is the nearest preceding line, which the commit
+          ## did NOT touch. When that surrounding line already contains hostile
+          ## unicode, every later commit anywhere near it is flagged for a
+          ## character it neither added nor removed. Keep the ranges, which are
+          ## pure ASCII, and drop the decoration.
+          hunk_ranges="${diff_line#'@@ '}"
+          if [ "${hunk_ranges}" != "${hunk_ranges%%'@@'*}" ]; then
+            diff_line="@@ ${hunk_ranges%%'@@'*}@@"
+          fi
+          ;;
+        '---'*)
+          ;;
+        '-'*)
+          continue
+          ;;
+      esac
+      commit_diff_additions+="${diff_line}"$'\n'
+    done <<< "${commit_diff}"
+
     unicode_show_exit_code='0'
-    unicode_report="$(unicode-show <<< "${commit_diff}" 2>&1)" \
+    unicode_report="$(unicode-show <<< "${commit_meta}${commit_diff_additions}" 2>&1)" \
       || unicode_show_exit_code="$?"
 
     if [ -n "${unicode_report}" ] \

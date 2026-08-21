@@ -3,6 +3,13 @@
 ## Copyright (C) 2025 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 ## Many earlier Kicksecure and Whonix images unintentionally shipped with DKMS
 ## public and private keys built into the image by the build process, due to
 ## the fact that DKMS auto-generates these keys when tirdad is initially

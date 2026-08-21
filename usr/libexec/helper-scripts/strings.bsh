@@ -7,7 +7,7 @@
 ## To avoid forcing callers to use strict Bash.
 
 # shellcheck source=./wc-test.sh
-source /usr/libexec/helper-scripts/wc-test.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/wc-test.sh
 
 ## Maximum number of bytes output by some error messages. Very long messages
 ## are truncated.
@@ -98,7 +98,10 @@ read_integer_file() {
       "$0: ERROR: Target file '${target_file}' not readable!" >&2
     return 1
   fi
-  if ! file_contents="$(stcat -- "${target_file}")"; then
+  ## NO '--': stcat takes every argument as a path, so it reads the separator
+  ## itself as a filename and dies with FileNotFoundError. R-062's negative
+  ## half; the static gate now denylists it.
+  if ! file_contents="$(stcat "${target_file}")"; then
     sanitize-echo --max-length "${STRINGS_BSH_REPORT_MAX}" -- \
       "$0: ERROR: Cannot stcat target file '${target_file}'!" >&2
     return 1
@@ -376,32 +379,32 @@ gpg_bash_lib_function_displaytime() {
   sep=''
 
   if (( Y > 0 )); then
-    printf '%s%d years' "${sep}" "${Y}"
+    printf '%s' "${sep}${Y} years"
     sep=' '
   fi
 
   if (( D > 0 )); then
-    printf '%s%d days' "${sep}" "${D}"
+    printf '%s' "${sep}${D} days"
     sep=' '
   fi
 
   if (( H > 0 )); then
-    printf '%s%d hours' "${sep}" "${H}"
+    printf '%s' "${sep}${H} hours"
     sep=' '
   fi
 
   if (( M > 0 )); then
-    printf '%s%d minutes' "${sep}" "${M}"
+    printf '%s' "${sep}${M} minutes"
     sep=' '
   fi
 
   if (( S > 0 )); then
-    printf '%s%d seconds' "${sep}" "${S}"
+    printf '%s' "${sep}${S} seconds"
     sep=' '
   fi
 
   if (( Y == 0 && D == 0 && H == 0 && M == 0 && S == 0 )); then
-    printf '0 seconds'
+    printf '%s' '0 seconds'
   fi
 
   printf '%s\n' ''

@@ -1,32 +1,42 @@
 #!/bin/bash
 
+## Functions here are reached only indirectly -- via "trap ... EXIT" and via
+## the option-parser dispatch -- which shellcheck cannot follow.
+# shellcheck disable=SC2317
+
 ## Copyright (C) Amnesia <amnesia at boum dot org>
 ## Copyright (C) 2014 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 #set -x
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 set -o pipefail
 
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 variables() {
-   [ -n "$TOR_RC" ] || TOR_RC="/etc/tor/torrc"
+   [ -n "${TOR_RC}" ] || TOR_RC="/etc/tor/torrc"
 
    if test -r /run/tor/log ; then
-      [ -n "$TOR_LOG" ] || TOR_LOG="cat /run/tor/log"
+      [ -n "${TOR_LOG}" ] || TOR_LOG="cat /run/tor/log"
    fi
    ## Does not include certificate lifetime.
-   [ -n "$TOR_LOG" ] || TOR_LOG="journalctl --boot --output cat --no-pager -u tor@default"
+   [ -n "${TOR_LOG}" ] || TOR_LOG="journalctl --boot --output cat --no-pager -u tor@default"
 
-   [ -n "$TOR_DIR" ] || TOR_DIR="/var/lib/tor"
-   [ -n "$TOR_DESCRIPTORS" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
-   [ -n "$NEW_TOR_DESCRIPTORS" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"
-   [ -n "$TOR_CONSENSUS" ] || TOR_CONSENSUS="${TOR_DIR}/cached-microdesc-consensus"
-   [ -n "$TOR_UNVERIFIED_CONSENSUS" ] || TOR_UNVERIFIED_CONSENSUS="${TOR_DIR}/unverified-microdesc-consensus"
-   [ -n "$DATE_RE" ] || DATE_RE='[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]'
-   [ -n "$LC_TIME" ] || export LC_TIME=C
-   [ -n "$TZ" ] || export TZ=UTC
+   [ -n "${TOR_DIR}" ] || TOR_DIR="/var/lib/tor"
+   [ -n "${TOR_DESCRIPTORS}" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
+   [ -n "${NEW_TOR_DESCRIPTORS}" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"
+   [ -n "${TOR_CONSENSUS}" ] || TOR_CONSENSUS="${TOR_DIR}/cached-microdesc-consensus"
+   [ -n "${TOR_UNVERIFIED_CONSENSUS}" ] || TOR_UNVERIFIED_CONSENSUS="${TOR_DIR}/unverified-microdesc-consensus"
+   [ -n "${DATE_RE}" ] || DATE_RE='[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]'
+   [ -n "${LC_TIME}" ] || export LC_TIME=C
+   [ -n "${TZ}" ] || export TZ=UTC
 }
 
 parse_cmd_options() {
@@ -37,9 +47,9 @@ parse_cmd_options() {
    do
        case $1 in
            --verbose)
-               echo "$0: verbose output... Script running as whoami: '$(whoami)'"
+               printf '%s\n' "$0: verbose output... Script running as whoami: '$(whoami)'"
                set -x
-               true "$0: $@"
+               true "$0: $*"
                shift
                ;;
            --has-consensus)
@@ -95,7 +105,7 @@ parse_cmd_options() {
                break
                ;;
            -*)
-               echo "$0: unknown option: $1" >&2
+               printf '%s\n' "$0: unknown option: $1" >&2
                exit 111
                ;;
            *)
@@ -107,60 +117,60 @@ parse_cmd_options() {
    ## If there are input files (for example) that follow the options, they
    ## will remain in the "$@" positional parameters.
 
-   if [ "$verified_only_" = "true" ]; then
-      consensus="$TOR_CONSENSUS"
-   elif [ "$prefer_verified_" = "true" ]; then
+   if [ "${verified_only_}" = "true" ]; then
+      consensus="${TOR_CONSENSUS}"
+   elif [ "${prefer_verified_}" = "true" ]; then
       if [ -e "${TOR_CONSENSUS}" ]; then
-         consensus="$TOR_CONSENSUS"
+         consensus="${TOR_CONSENSUS}"
       else
          ## make unverified consensus ISOTime accessible through Tor's ControlPort
          ## https://gitlab.torproject.org/tpo/core/tor/-/issues/16845
-         consensus="$TOR_UNVERIFIED_CONSENSUS"
+         consensus="${TOR_UNVERIFIED_CONSENSUS}"
       fi
-   elif [ "$unverified_only_" = "true" ]; then
-      consensus="$TOR_UNVERIFIED_CONSENSUS"
+   elif [ "${unverified_only_}" = "true" ]; then
+      consensus="${TOR_UNVERIFIED_CONSENSUS}"
    else
-      consensus="$TOR_CONSENSUS"
+      consensus="${TOR_CONSENSUS}"
    fi
 
-   if [ "$has_consensus_" = "true" ]; then
+   if [ "${has_consensus_}" = "true" ]; then
       has_consensus
       exit "$?"
    fi
-   if [ "$current_time_in_valid_range_" = "true" ]; then
+   if [ "${current_time_in_valid_range_}" = "true" ]; then
       current_time_is_in_valid_range
       exit "$?"
    fi
-   if [ "$show_valid_after_" = "true" ]; then
+   if [ "${show_valid_after_}" = "true" ]; then
       show-valid-after
       exit "$?"
    fi
-   if [ "$show_valid_until_" = "true" ]; then
+   if [ "${show_valid_until_}" = "true" ]; then
       show-valid-until
       exit "$?"
    fi
-   if [ "$show_middle_range_" = "true" ]; then
+   if [ "${show_middle_range_}" = "true" ]; then
       show-middle-range
       exit "$?"
    fi
-   if [ "$tor_cert_lifetime_valid_" = "true" ]; then
+   if [ "${tor_cert_lifetime_valid_}" = "true" ]; then
       tor_cert_lifetime_valid
       exit "$?"
    fi
-   if [ "$tor_cert_valid_after_" = "true" ]; then
+   if [ "${tor_cert_valid_after_}" = "true" ]; then
       tor_cert_valid_after
       exit "$?"
    fi
-   if [ "$user_permission_" = "true" ]; then
+   if [ "${user_permission_}" = "true" ]; then
       user_permission
       exit "$?"
    fi
-   if [ "$group_permission_" = "true" ]; then
+   if [ "${group_permission_}" = "true" ]; then
       group_permission
       exit "$?"
    fi
 
-   echo "$0: No option chosen." 2>&1
+   printf '%s\n' "$0: No option chosen." 2>&1
    exit 1
 }
 
@@ -168,23 +178,23 @@ root_check() {
    if [ "$(whoami)" = "sdwdate" ]; then
       true
    elif [ "$(id -u)" != "0" ]; then
-      echo "$0: ERROR: Must run as root." >&2
+      printf '%s\n' "$0: ERROR: Must run as root." >&2
       exit 112
    fi
 }
 
 has_consensus() {
-   if ! test -r "$TOR_DIR" ; then
-      echo "$0: ERROR: Cannot read TOR_DIR: '$TOR_DIR'" >&2
+   if ! test -r "${TOR_DIR}" ; then
+      printf '%s\n' "$0: ERROR: Cannot read TOR_DIR: '${TOR_DIR}'" >&2
       exit 4
    fi
-   if [ ! -r "$consensus" ]; then
-      echo "$0: ERROR: Cannot read consensus file: '$consensus'" >&2
+   if [ ! -r "${consensus}" ]; then
+      printf '%s\n' "$0: ERROR: Cannot read consensus file: '${consensus}'" >&2
       exit 4
    fi
    local grep_exit_code="0"
-   grep -qs "^valid-until ${DATE_RE}"'$' "$consensus" || { grep_exit_code="$?" ; true; };
-   if [ "$grep_exit_code" = "0" ]; then
+   grep -qs "^valid-until ${DATE_RE}"'$' "${consensus}" || { grep_exit_code="$?" ; true; };
+   if [ "${grep_exit_code}" = "0" ]; then
       return 0
    else
       return 1
@@ -195,8 +205,8 @@ show-valid-after() {
    vstart="$(/usr/libexec/helper-scripts/tor_consensus_valid-after.py)"
    #vstart="$(sed -n "/^valid-after \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
    check_is_not_empty_and_only_one_line vstart
-   if [ "$show_valid_after_" = "true" ]; then
-      echo "${vstart}"
+   if [ "${show_valid_after_}" = "true" ]; then
+      printf '%s\n' "${vstart}"
    fi
 }
 
@@ -204,8 +214,8 @@ show-valid-until() {
    vend="$(/usr/libexec/helper-scripts/tor_consensus_valid-until.py)"
    #vend="$(sed -n "/^valid-until \(${DATE_RE}\)"'$/s//\1/p; t q; b; :q q' ${consensus})" || exit 1
    check_is_not_empty_and_only_one_line vend
-   if [ "$show_valid_until_" = "true" ]; then
-      echo "$vend"
+   if [ "${show_valid_until_}" = "true" ]; then
+      printf '%s\n' "${vend}"
    fi
 }
 
@@ -214,8 +224,8 @@ show-middle-range() {
    show-valid-until
    vmid="$(date --utc --date="${vstart} -0130" +'%F %T')" || exit 1
    check_is_not_empty_and_only_one_line vmid
-   if [ "$show_middle_range_" = "true" ]; then
-      echo "$vmid"
+   if [ "${show_middle_range_}" = "true" ]; then
+      printf '%s\n' "${vmid}"
    fi
 }
 
@@ -228,7 +238,7 @@ current_time_is_in_valid_range() {
    vendchk="$(date --utc --date="${vstart} -0300" +'%F %T')"
    check_is_not_empty_and_only_one_line vendchk
    if [ ! "${vend}" = "${vendchk}" ]; then
-      echo "$0: ERROR: Unexpected valid-until: [vend: '${vend}'] is not [vstart: '${vstart}' + 3h]" >&2
+      printf '%s\n' "$0: ERROR: Unexpected valid-until: [vend: '${vend}'] is not [vstart: '${vstart}' + 3h]" >&2
       exit 1
    fi
    ## }} Sanity Test
@@ -242,7 +252,7 @@ current_time_is_in_valid_range() {
    order="${vstart}
 ${curdate}
 ${vendcons}"
-   ordersrt="$(echo "${order}" | sort)"
+   ordersrt="$(printf '%s\n' "${order}" | sort)"
 
    if [ "${order}" = "${ordersrt}" ]; then
       exit 0
@@ -269,7 +279,7 @@ tor_cert_lifetime_valid() {
    ## authorities and "info" with bridges.
 
    ## For some reason 'grep -q' does not work here.
-   if $TOR_LOG | grep "Certificate \(not yet valid\|already expired\)\." >/dev/null ; then
+   if ${TOR_LOG} | grep "Certificate \(not yet valid\|already expired\)\." >/dev/null ; then
       return 1
    else
       return 0
@@ -281,7 +291,7 @@ tor_cert_valid_after() {
    ## https://gitlab.torproject.org/tpo/core/tor/-/issues/16822
 
    ## Only print the last = freshest match
-   $TOR_LOG | sed -n 's/^.*certificate lifetime runs from \(.*\) through.*$/\1/p' | tail -n 1
+   ${TOR_LOG} | sed -n 's/^.*certificate lifetime runs from \(.*\) through.*$/\1/p' | tail -n 1
 
    ## Example output:
    ## Jun 16 00:00:00 2014 GMT
@@ -289,11 +299,11 @@ tor_cert_valid_after() {
 }
 
 user_permission() {
-   stat -c "%U" "$consensus"
+   stat -c "%U" "${consensus}"
 }
 
 group_permission() {
-   stat -c "%G" "$consensus"
+   stat -c "%G" "${consensus}"
 }
 
 root_check

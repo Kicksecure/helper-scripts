@@ -11,12 +11,17 @@
 ## 0: success
 ## non-zero: error
 
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 check_valid() {
    expected_string_lenght=10
    actual_string_length="${#1}"
-   if [ ! "$actual_string_length" = "$expected_string_lenght" ]; then
+   if [ ! "${actual_string_length}" = "${expected_string_lenght}" ]; then
       return 1
    fi
    if [[ ! "$1" != *[!0-9]* ]]; then
@@ -25,30 +30,30 @@ check_valid() {
    return 0
 }
 
-unixtime_to_validate="$1"
+unixtime_to_validate="${1:-}"
 
-if [ "$unixtime_to_validate" = "" ]; then
-   echo "$0: ERROR: missing argument" >&2
+if [ "${unixtime_to_validate}" = "" ]; then
+   printf '%s\n' "$0: ERROR: missing argument" >&2
    exit 1
 fi
 
-if check_valid "$unixtime_to_validate" ; then
+if check_valid "${unixtime_to_validate}" ; then
    true ok
 else
-   echo "$0: ERROR: unixtime_to_validate '$unixtime_to_validate' is invalid." >&2
+   printf '%s\n' "$0: ERROR: unixtime_to_validate '${unixtime_to_validate}' is invalid." >&2
    exit 1
 fi
 
 minimum_unixtime="$(minimum-unixtime-show 2>/dev/null)"
 
-if check_valid "$minimum_unixtime" ; then
+if check_valid "${minimum_unixtime}" ; then
    true ok
 else
-   echo "$0: ERROR: minimum_unixtime '$minimum_unixtime' is invalid." >&2
+   printf '%s\n' "$0: ERROR: minimum_unixtime '${minimum_unixtime}' is invalid." >&2
    exit 1
 fi
 
-if [ "$unixtime_to_validate" -ge "$minimum_unixtime" ]; then
+if [ "${unixtime_to_validate}" -ge "${minimum_unixtime}" ]; then
    exit 0
 fi
 

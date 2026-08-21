@@ -3,6 +3,13 @@
 ## Copyright (C) 2020 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 ## This fails if file /etc/ld.so.preload does not exists.
 ## bwrap: Can't create file at /etc/ld.so.preload: Permission denied
 bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "${@}"

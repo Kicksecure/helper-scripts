@@ -3,6 +3,11 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- this file is 'source'd, so a strict-mode block here
+## would change the SOURCING shell's behaviour rather than apply to a shell of
+## its own. The sourcer owns its strict-mode settings.
+## style-ok: no-has -- this is the definition of 'has'; it cannot call itself.
+
 ## This is just a simple wrapper around 'command -v' to avoid
 ## spamming '>/dev/null' throughout this function. This also guards
 ## against aliases and functions.
@@ -12,7 +17,15 @@ has() {
 
   for _name in "$@"; do
     _cmd="$(command -v "${_name}")" 2>/dev/null || return 1
-    [ -x "${_cmd}" ] || return 1
+    ## 'command -v' prints a bare word for builtins, functions, aliases and
+    ## keywords rather than a path. Testing that word with '-x' would resolve
+    ## it as a RELATIVE path in the current directory, so 'has printf' failed
+    ## even though printf is always available. Only a path is worth testing.
+    case "${_cmd}" in
+      /*)
+        [ -x "${_cmd}" ] || return 1
+        ;;
+    esac
   done
 }
 

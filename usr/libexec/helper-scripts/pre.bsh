@@ -98,6 +98,8 @@ if [ "${pre_bsh_sourced}" = 'false' ]; then
   set -o nounset
   set -o errtrace
   set -o pipefail
+  shopt -s inherit_errexit
+  shopt -s shift_verbose
 fi
 
 if test -r "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh; then
@@ -116,7 +118,7 @@ source_config_folder() {
   ## DPKG_MAINTSCRIPT_PACKAGE=security-misc-shared
 
   [[ -v DPKG_MAINTSCRIPT_PACKAGE ]] || DPKG_MAINTSCRIPT_PACKAGE=""
-  if [ "$DPKG_MAINTSCRIPT_PACKAGE" = "" ]; then
+  if [ "${DPKG_MAINTSCRIPT_PACKAGE}" = "" ]; then
     pre_bsh_settings_folder="${own_filename}_pre.d"
   else
     pre_bsh_settings_folder="${DPKG_MAINTSCRIPT_PACKAGE}_maint.d"
@@ -140,14 +142,14 @@ source_config_folder() {
     if ! [ -f "${i}" ]; then
       continue
     fi
-    if ! bash_n_output="$(bash -n "$i" 2>&1)"; then
-      force_output "Invalid config file: '$i'
+    if ! bash_n_output="$(bash -n "${i}" 2>&1)"; then
+      force_output "Invalid config file: '${i}'
    bash_n_output:
-   $bash_n_output" >&2
+   ${bash_n_output}" >&2
       exit 1
     fi
     # shellcheck disable=SC1090
-    source "$i"
+    source "${i}"
   done
 
   shopt -u nullglob
@@ -156,9 +158,9 @@ source_config_folder() {
 check_scripts_to_skip() {
   [[ -v SKIP_SCRIPTS ]] || SKIP_SCRIPTS=""
   local skip_script
-  for skip_script in $SKIP_SCRIPTS; do
-    if [ "$skip_script" = "$own_filename" ]; then
-      force_output "INFO: Skipping $own_filename, because SKIP_SCRIPTS includes it."
+  for skip_script in ${SKIP_SCRIPTS}; do
+    if [ "${skip_script}" = "${own_filename}" ]; then
+      force_output "INFO: Skipping ${own_filename}, because SKIP_SCRIPTS includes it."
       exit 0
     fi
   done
@@ -169,7 +171,7 @@ disable_echo() {
   ## - PRE_BSH_ECHO_DISABLED: "true" iff stdout/stderr are redirected and fds saved
   ## - PRE_BSH_STDOUT_SAVE_FD / PRE_BSH_STDERR_SAVE_FD: saved fd numbers for restore
   [[ -v PRE_BSH_ECHO_DISABLED ]] || PRE_BSH_ECHO_DISABLED=""
-  if [ "$PRE_BSH_ECHO_DISABLED" = "true" ]; then
+  if [ "${PRE_BSH_ECHO_DISABLED}" = "true" ]; then
     return 0
   fi
 
@@ -187,7 +189,7 @@ disable_echo() {
 
 enable_echo() {
   [[ -v PRE_BSH_ECHO_DISABLED ]] || PRE_BSH_ECHO_DISABLED=""
-  if [ "$PRE_BSH_ECHO_DISABLED" = "true" ]; then
+  if [ "${PRE_BSH_ECHO_DISABLED}" = "true" ]; then
     ## Be defensive if internal variables were mis-set.
     if [[ -n "${PRE_BSH_STDOUT_SAVE_FD-}" && -n "${PRE_BSH_STDERR_SAVE_FD-}" ]]; then
       true "INFO: 1>&'${PRE_BSH_STDOUT_SAVE_FD}' 2>&'${PRE_BSH_STDERR_SAVE_FD}'"
@@ -202,17 +204,17 @@ enable_echo() {
 force_output() {
   local echo_setting_undo=""
   [[ -v PRE_BSH_ECHO_DISABLED ]] || PRE_BSH_ECHO_DISABLED=""
-  if [ "$PRE_BSH_ECHO_DISABLED" = "true" ]; then
+  if [ "${PRE_BSH_ECHO_DISABLED}" = "true" ]; then
     echo_setting_undo="true"
     enable_echo
   fi
 
   ## If xtrace is set and output was NOT captured, force_output would be redundant.
   ## But if output was captured (echo_setting_undo=true), we must print regardless.
-  if ! test -o xtrace || [ "$echo_setting_undo" = "true" ]; then
+  if ! test -o xtrace || [ "${echo_setting_undo}" = "true" ]; then
     printf '%s\n' "$*"
   fi
-  if [ "$echo_setting_undo" = "true" ]; then
+  if [ "${echo_setting_undo}" = "true" ]; then
     disable_echo
   fi
 }
@@ -221,13 +223,15 @@ error_handler_pre() {
   local exit_code="$?"
 
   ## Prevent recursion if anything fails inside the handler under caller 'set -e'.
+  ## style-ok: allow-errexit-toggle -- an error handler must not itself abort
+  ## under the caller's errexit; disabling it here is the recursion guard.
   trap - ERR
   set +e
 
   local error_message="## See above."
 
   if [[ -r "${TEMP_FILE_PRE_BSH-}" ]]; then
-    error_message="$(cat -- "$TEMP_FILE_PRE_BSH" 2>/dev/null || true)"
+    error_message="$(cat -- "${TEMP_FILE_PRE_BSH}" 2>/dev/null || true)"
   fi
 
   if [ -z "${error_message}" ]; then
@@ -239,7 +243,7 @@ error_handler_pre() {
 ## ${red-}${bold-}BEGIN ERROR in '$0' detected!${reset-}
 ##
 ## ${under-}ERROR LOG${reset-}:
-$error_message
+${error_message}
 ##
 ## ${under-}BASH_COMMAND${reset-}: '${BASH_COMMAND-}'
 ## ${under-}EXIT_CODE${reset-}: '${exit_code-}'
@@ -255,7 +259,7 @@ $error_message
 exit_handler_pre() {
   if [ -n "${TEMP_FILE_PRE_BSH-}" ] \
     && [ -f "${TEMP_FILE_PRE_BSH-}" ]; then
-    rm -f -- "${TEMP_FILE_PRE_BSH-}" || true
+    safe-rm -f -- "${TEMP_FILE_PRE_BSH-}" || true
   fi
   true "$0: END."
 }
@@ -278,7 +282,7 @@ if test -o xtrace; then
 fi
 
 [[ -v DEBDEBUG ]] || DEBDEBUG=""
-if [ "$DEBDEBUG" = "1" ]; then
+if [ "${DEBDEBUG}" = "1" ]; then
   set -x
 fi
 

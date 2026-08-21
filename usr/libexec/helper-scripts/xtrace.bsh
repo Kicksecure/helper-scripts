@@ -3,6 +3,9 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- sourced library; a top-level strict-mode block
+## would leak 'set -o errexit'/'nounset' into the sourcing shell.
+
 ## AI-Assisted
 
 ## Suspend/restore bash xtrace (set -x) around blocks that must not be
@@ -40,7 +43,7 @@ xtrace_restore() {
    ## re-enabled.
    local _should_restore="${helper_xtrace_prev_state:-off}"
    unset helper_xtrace_prev_state
-   if [ "$_should_restore" = "on" ]; then
+   if [ "${_should_restore}" = "on" ]; then
       set -x
    fi
    true "INFO: ${FUNCNAME[0]} called by FUNCNAME: ${FUNCNAME[1]:-}"

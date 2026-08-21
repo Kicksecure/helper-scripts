@@ -174,17 +174,17 @@ log() {
       ;;
   esac
 
-  true "${FUNCNAME[0]}: INFO: log_level: $log_level | log_type: $log_type"
+  true "${FUNCNAME[0]}: INFO: log_level: ${log_level} | log_type: ${log_type}"
   caller_level_num="$(__log_level_num "${log_level}")"
-  true "${FUNCNAME[0]}: INFO: log_level: $log_level | caller_level_num: $caller_level_num"
+  true "${FUNCNAME[0]}: INFO: log_level: ${log_level} | caller_level_num: ${caller_level_num}"
   msg_level_num="$(__log_level_num "${log_type}")"
-  true "${FUNCNAME[0]}: INFO: log_type: $log_type | msg_level_num: $msg_level_num"
+  true "${FUNCNAME[0]}: INFO: log_type: ${log_type} | msg_level_num: ${msg_level_num}"
 
   if (( msg_level_num <= caller_level_num )); then
     should_print=1
   fi
 
-  if [ "$should_print" = 1 ]; then
+  if [ "${should_print}" = 1 ]; then
     stecho "${log_full}" >&2
   fi
 

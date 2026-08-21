@@ -7,9 +7,16 @@
 
 ## Not using sudo hardcoded below.
 ## https://forums.whonix.org/t/full-system-apparmor-policy-testers-wanted/10381/29
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 if [ "$(id -u)" != "0" ]; then
-   echo "ERROR: Must run as root." >&2
-   echo "sudo $0" >&2
+   printf '%s\n' "ERROR: Must run as root." >&2
+   printf '%s\n' "sudo $0" >&2
    exit 112
 fi
 
@@ -20,16 +27,16 @@ exit_code=0
 
 output_denied="$(journalctl _TRANSPORT=audit --output cat "${@}" | grep "DENIED" | sed -e 's/pid=.* comm/comm/g' | sed -e 's/ fsuid.*//g' | awk '!x[$0]++')"
 
-if [ ! "$output_denied" = "" ]; then
+if [ ! "${output_denied}" = "" ]; then
    exit_code=1
-   echo "$output_denied"
+   printf '%s\n' "${output_denied}"
 fi
 
 output_allowed="$(journalctl _TRANSPORT=audit --output cat "${@}" | grep "ALLOWED" | sed -e 's/pid=.* comm/comm/g' | sed -e 's/ fsuid.*//g' | awk '!x[$0]++')"
 
-if [ ! "$output_allowed" = "" ]; then
+if [ ! "${output_allowed}" = "" ]; then
    exit_code=1
-   echo "$output_allowed"
+   printf '%s\n' "${output_allowed}"
 fi
 
-exit "$exit_code"
+exit "${exit_code}"
