@@ -62,8 +62,8 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/progress-bar
 ## provides: is_whole_number
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
-# shellcheck source=./has.sh
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+# shellcheck source=./has.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 
 ## Allows tests to override the stderr TTY check.
 stderr_is_tty() {

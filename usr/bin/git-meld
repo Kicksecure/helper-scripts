@@ -14,8 +14,8 @@ set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
 
-# shellcheck source=../libexec/helper-scripts/has.sh
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+# shellcheck source=../libexec/helper-scripts/has.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 
 has meld
 

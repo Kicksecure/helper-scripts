@@ -13,8 +13,8 @@
 # shellcheck source=./log_run_die.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 
-# shellcheck source=./has.sh
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+# shellcheck source=./has.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 
 set -o errexit
 set -o nounset
@@ -22,6 +22,7 @@ set -o errtrace
 set -o pipefail
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 error_handler() {
   exit_code="${?}"
@@ -655,8 +656,9 @@ set_console_keymap() {
     return 0
   fi
 
-  ## TODO: Do not try this if not running as root.
-  if "${timeout_command[@]}" systemctl --no-block --no-pager status keyboard-setup.service &>/dev/null; then
+  if [ "$(id --user)" != 0 ]; then
+    log notice "${FUNCNAME[0]}: Skipping command 'systemctl --no-block --no-pager restart keyboard-setup.service' because not running as root. Reboot may be required to change the virtual console keyboard layout."
+  elif "${timeout_command[@]}" systemctl --no-block --no-pager status keyboard-setup.service &>/dev/null; then
     if log_run notice "${timeout_command[@]}" systemctl --no-block --no-pager restart keyboard-setup.service; then
       log notice "${FUNCNAME[0]}: Restart of systemd unit 'keyboard-setup.service' success."
     else
@@ -880,10 +882,28 @@ rebuild_grub_config() {
   log notice "${FUNCNAME[0]}: Rebuilding GRUB configuration success."
 }
 
+grub_keymap_skip_in_live_mode() {
+  ## GRUB keymap files under ${grub_kb_layout_dir} take effect only once
+  ## update-grub compiles them into grub.cfg. A live system boots from a fixed,
+  ## pre-built GRUB configuration that is not regenerated, so setting a GRUB
+  ## keymap has no persistent effect there.
+  ## sets: live_status_detected
+  # shellcheck source=./live-mode.sh
+  source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/live-mode.sh
+  ## Assigned by the sourced live-mode.sh above.
+  # shellcheck disable=SC2154
+  [ "${live_status_detected}" = 'true' ]
+}
+
 set_grub_keymap() {
   local grub_kbdcomp_output name_part_list name_part
 
   log notice "${FUNCNAME[0]}: GRUB keymap configuration..."
+
+  if grub_keymap_skip_in_live_mode; then
+    log info "${FUNCNAME[0]}: Live mode detected. Skipping GRUB keyboard layout setting; a live system boots from a fixed GRUB configuration that is not regenerated."
+    return 0
+  fi
 
   if ! mkdir --parents -- "${grub_kb_layout_dir}"; then
     log error "${FUNCNAME[0]}: Cannot create GRUB keyboard layout dir '${grub_kb_layout_dir}'!"
@@ -927,6 +947,11 @@ set_grub_keymap() {
 
 build_all_grub_keymaps() {
   local keymap_list keymap old_keymap_file grub_kbdcomp_output
+
+  if grub_keymap_skip_in_live_mode; then
+    log info "${FUNCNAME[0]}: Live mode detected. Skipping GRUB keyboard layout setting; a live system boots from a fixed GRUB configuration that is not regenerated."
+    return 0
+  fi
 
   log notice "${FUNCNAME[0]}: Getting list of available keyboard layouts from 'localectl-static'."
   readarray -t keymap_list <<< "${localectl_kb_layouts}"
@@ -1101,7 +1126,7 @@ Type 'exit' to quit without changing keyboard layout settings.
         log question "${FUNCNAME[0]}: Enter the keyboard layout to view variants for:"
         read -r -- variant_key_str
         variant_key_str="$(tr -d ' ' <<< "${variant_key_str,,}")"
-        if grep -q -- ',' <<< "${variant_key_str}" ; then
+        if grep --quiet -- ',' <<< "${variant_key_str}" ; then
           log error "${FUNCNAME[0]}: Only one layout may be specified to view the variants of!"
           continue
         fi
@@ -1349,7 +1374,7 @@ did_prompt_for_luks='false'
 [[ -v "HOME" ]] || HOME="/home/user"
 labwc_config_path="${HOME}/.config/labwc/environment"
 
-grub_kb_layout_dir='/boot/grub/kb_layouts'
+grub_kb_layout_dir="${grub_kb_layout_dir:-/boot/grub/kb_layouts}"
 
 localectl_kb_layouts="$("${timeout_command[@]}" localectl-static --no-pager list-x11-keymap-layouts)"
 

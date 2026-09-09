@@ -9,8 +9,9 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
-if grep -q "libhardened_malloc" "/proc/$$/maps"; then
+if grep --quiet "libhardened_malloc" "/proc/$$/maps"; then
     printf '%s\n' "yes"
     exit 0
 fi

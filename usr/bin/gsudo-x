@@ -9,6 +9,7 @@ set -o errtrace
 set -o pipefail
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 # shellcheck source=../libexec/helper-scripts/check_runtime.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
@@ -34,8 +35,7 @@ fi
 if [ "$(id --user)" != '0' ]; then
   true "INFO: Not running as root. Re-executing using sudo."
   if test -o xtrace; then
-    ## XXX: Might add a superfluous ':xtrace'.
-    sudo -- env SHELLOPTS="${SHELLOPTS-}:xtrace" DISPLAY="${DISPLAY-}" "$0" "$@"
+    sudo -- env SHELLOPTS="$(shellopts_with_xtrace)" DISPLAY="${DISPLAY-}" "$0" "$@"
   else
     sudo DISPLAY="${DISPLAY-}" -- "$0" "$@"
   fi

@@ -3,6 +3,9 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict - sourced library; a top-level strict-mode block would
+## leak 'set -o errexit'/'nounset' into the sourcing shell.
+
 # shellcheck source=./check_runtime.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 
@@ -36,8 +39,8 @@ get_colors() {
     color_yes_or_no=no
   fi
 
-  ## TODO: Rename to 'COLOR_FORCE_YES=true'?
-  if test "${ASSUME_TERM_PRESENT-}" = 'true'; then
+  ## Force color output even when stderr is not a TTY (e.g. captured logs).
+  if test "${COLOR_FORCE_YES-}" = 'true'; then
     color_yes_or_no=yes
   fi
 

@@ -17,22 +17,22 @@ export LC_ALL=C
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 variables() {
-   [ -n "${TOR_RC}" ] || TOR_RC="/etc/tor/torrc"
+   [ -n "${TOR_RC:-}" ] || TOR_RC="/etc/tor/torrc"
 
    if test -r /run/tor/log ; then
-      [ -n "${TOR_LOG}" ] || TOR_LOG="cat /run/tor/log"
+      [ -n "${TOR_LOG:-}" ] || TOR_LOG="cat /run/tor/log"
    fi
    ## Does not include certificate lifetime.
-   [ -n "${TOR_LOG}" ] || TOR_LOG="journalctl --boot --output cat --no-pager -u tor@default"
+   [ -n "${TOR_LOG:-}" ] || TOR_LOG="journalctl --boot --output cat --no-pager -u tor@default"
 
-   [ -n "${TOR_DIR}" ] || TOR_DIR="/var/lib/tor"
-   [ -n "${TOR_DESCRIPTORS}" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
-   [ -n "${NEW_TOR_DESCRIPTORS}" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"
-   [ -n "${TOR_CONSENSUS}" ] || TOR_CONSENSUS="${TOR_DIR}/cached-microdesc-consensus"
-   [ -n "${TOR_UNVERIFIED_CONSENSUS}" ] || TOR_UNVERIFIED_CONSENSUS="${TOR_DIR}/unverified-microdesc-consensus"
-   [ -n "${DATE_RE}" ] || DATE_RE='[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]'
-   [ -n "${LC_TIME}" ] || export LC_TIME=C
-   [ -n "${TZ}" ] || export TZ=UTC
+   [ -n "${TOR_DIR:-}" ] || TOR_DIR="/var/lib/tor"
+   [ -n "${TOR_DESCRIPTORS:-}" ] || TOR_DESCRIPTORS="${TOR_DIR}/cached-microdescs"
+   [ -n "${NEW_TOR_DESCRIPTORS:-}" ] || NEW_TOR_DESCRIPTORS="${TOR_DESCRIPTORS}.new"
+   [ -n "${TOR_CONSENSUS:-}" ] || TOR_CONSENSUS="${TOR_DIR}/cached-microdesc-consensus"
+   [ -n "${TOR_UNVERIFIED_CONSENSUS:-}" ] || TOR_UNVERIFIED_CONSENSUS="${TOR_DIR}/unverified-microdesc-consensus"
+   [ -n "${DATE_RE:-}" ] || DATE_RE='[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]'
+   [ -n "${LC_TIME:-}" ] || export LC_TIME=C
+   [ -n "${TZ:-}" ] || export TZ=UTC
 }
 
 parse_cmd_options() {

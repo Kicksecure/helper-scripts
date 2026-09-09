@@ -48,21 +48,38 @@ xtrace_restore() {
    true "INFO: ${FUNCNAME[0]} called by FUNCNAME: ${FUNCNAME[1]:-}"
 }
 
-## Picks 'true' (no-op) when xtrace is on, 'echo' when xtrace is off.
+## Picks 'true' (no-op) when xtrace is on, 'printf %s\n' when xtrace is off.
 ## Lets a script print user-visible status lines without doubling them
 ## up with xtrace traces of those same printf calls when -x is on.
 ##
 ## Usage:
 ##   output_cmd_set
-##   $output_cmd "INFO: starting build"
+##   "${output_cmd[@]}" "INFO: starting build"
+##
+## output_cmd is an ARRAY. Under xtrace it is a no-op (true); otherwise it is
+## 'printf %s\n', which prints its argument verbatim -- unlike 'echo', printf
+## does not eat leading '-n'/'-e' or interpret backslashes in the message.
+## output_cmd is read by the sourcing script, not here -> SC2034 is a false positive.
+# shellcheck disable=SC2034
 output_cmd_set() {
    if [ -o xtrace ]; then
-      output_cmd="true"
-      ## TODO
-      #output_cmd=( true )
+      output_cmd=( true )
    else
-      output_cmd="echo"
-      ## TODO
-      #output_cmd=( printf '%s\n' )
+      output_cmd=( printf '%s\n' )
    fi
+}
+
+## Echo $SHELLOPTS with 'xtrace' present exactly once, for passing to a re-exec
+## (sudo / flock) that resets the environment so the child re-enables xtrace.
+## Adds ':xtrace' only when it is not already set, so it never accumulates a
+## superfluous duplicate.
+shellopts_with_xtrace() {
+   case ":${SHELLOPTS-}:" in
+      *:xtrace:*)
+         printf '%s' "${SHELLOPTS-}"
+         ;;
+      *)
+         printf '%s' "${SHELLOPTS-}:xtrace"
+         ;;
+   esac
 }

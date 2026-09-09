@@ -18,8 +18,8 @@ shopt -s inherit_errexit
 shopt -s shift_verbose
 export LC_ALL=C
 
-# shellcheck source=../libexec/helper-scripts/has.sh
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+# shellcheck source=../libexec/helper-scripts/has.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 set -o pipefail
 
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
@@ -201,8 +201,8 @@ if ! has systemd-cat ; then
    output_cmd "WARNING: Program 'systemd-cat' is unavailable. Unable to write to systemd journal log."
 fi
 
-[ -n "${LC_TIME}" ] || export LC_TIME=C
-[ -n "${TZ}" ] || export TZ=UTC
+[ -n "${LC_TIME:-}" ] || export LC_TIME=C
+[ -n "${TZ:-}" ] || export TZ=UTC
 
 anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
 

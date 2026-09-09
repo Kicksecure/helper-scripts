@@ -10,8 +10,8 @@ set -o pipefail
 shopt -s inherit_errexit
 shopt -s shift_verbose
 
-# shellcheck source=./has.sh
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+# shellcheck source=./has.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 
 has start-stop-daemon
 

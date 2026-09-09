@@ -3,9 +3,6 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## style-ok: no-strict -- script relies on unset vars expanding to empty.
-## FIXME: Don't rely on unset vars expanding to empty.
-
 ## Exit codes of this script get interpreted by sdwdate.
 ## exit 0
 ## exit 1: wait, retry and error icon
@@ -16,8 +13,9 @@
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh
 
 if was_executed "${BASH_SOURCE[0]}"; then
+   export LC_ALL=C
    set -o errexit
-   #set -o nounset
+   set -o nounset
    set -o errtrace
    set -o pipefail
    shopt -s inherit_errexit
@@ -39,7 +37,7 @@ exit_code: ${exit_code}"
 trap "error_handler" ERR
 
 exit_handler() {
-   if [ "${exit_code}" = "" ]; then
+   if [ "${exit_code:-}" = "" ]; then
       output_cmd "$0: No exit code set yet. Setting to 1."
       exit_code=1
    fi
@@ -83,14 +81,14 @@ detect_vm_type() {
 }
 
 anondate_folder() {
-   true "user: ${USER}"
+   true "user: ${USER:-}"
 
-   if [ "${USER}" = "sdwdate" ]; then
+   if [ "${USER:-}" = "sdwdate" ]; then
       anondate_state_folder=/run/sdwdate
    elif [ "$(id -u)" = "0" ]; then
       anondate_state_folder=/run/anondate
    else
-      output_cmd "ERROR: running under user '${USER}' is not yet implemented. Run:
+      output_cmd "ERROR: running under user '${USER:-}' is not yet implemented. Run:
 sudo -u sdwdate $0"
 
       anondate_state_folder=/run/anondate
@@ -180,7 +178,7 @@ check_tor_circuit_established_yet() {
       if [ "${tor_circuit_established_check_exit_code}" = "${invalid_exit_code}" ]; then
          output_cmd "Tor Bootstrap Result:
 check_bootstrap_privleap_action: ${check_bootstrap_privleap_action}
-tor_bootstrap_timeout_type: ${tor_bootstrap_timeout_type}
+tor_bootstrap_timeout_type: ${tor_bootstrap_timeout_type:-}
 tor_circuit_established_check_exit_code: ${tor_circuit_established_check_exit_code}"
          exit_code=1
          exit "${exit_code}"
@@ -353,7 +351,7 @@ exit_success_if_tor_circuit_already_established() {
 
    ## https://stackoverflow.com/questions/37135213/check-tor-connection-is-established-before-running-scrapy
 
-   if [ "${tor_bootstrap_percent}" = "100" ]; then
+   if [ "${tor_bootstrap_percent:-}" = "100" ]; then
       output_cmd "Conclusion:  No Tor circuit established yet, but Tor bootstrap progress (tor_bootstrap_percent) is 100."
 
       exit_code=0
@@ -536,7 +534,7 @@ te_pe_tb_check() {
       exit "${exit_code}"
    fi
 
-   if [ ! "${clock_tor_consensus_check_result}" = "ok" ]; then
+   if [ ! "${clock_tor_consensus_check_result:-}" = "ok" ]; then
       anondate_use
       ## Time incorrect but not by giant amounts.
       ## Probably non-fatal issue. Indicate wait.

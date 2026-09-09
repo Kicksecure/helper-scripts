@@ -8,7 +8,7 @@
 
 ## TODO: how to handle installer specific code?
 
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/ip_syntax.sh
 
@@ -128,7 +128,8 @@ get_os(){
     debian_testing_or_unstable_detected=1
   fi
 
-  ## TODO: Debian 'forky' - change this from 'forky' to 'duke'.
+  ## REMINDER: when Debian testing's codename advances past 'forky' (to 'duke'),
+  ## add/replace the codename checked here.
   if [ "${distro_codename}" = "forky" ]; then
     log info "Debian 'testing' or 'unstable' detection: 'forky' still considered 'testing' (hardcoded in this program)"
     debian_testing_or_unstable_detected=1
@@ -151,17 +152,17 @@ get_os(){
 
   if [ "${debian_testing_or_unstable_detected}" = "1" ]; then
     log notice "Debian 'testing' or 'unstable' detection: 'yes', detected"
-    if test "${oracle_repo}" = "1"; then
+    if test "${oracle_repo:-}" = "1"; then
       log error "You are attempting to use '--oracle-repo' on Debian 'testing' or 'unstable'. This is impossible."
-      if test "${ci}" = "1"; then
+      if test "${ci:-}" = "1"; then
         die 0 "${underline}Distribution Test Result:${nounderline} Oracle doesn't provide a Debian 'testing' or 'unstable' repository. Skipped on CI to avoid breaking the CI 'testing' or 'unstable'."
       else
         die 101 "${underline}Distribution Test Result:${nounderline} Oracle doesn't provide a Debian 'testing' or 'unstable' repository."
       fi
     fi
     log info "Not attempting to use '--oracle-repo' on Debian 'testing' or 'unstable', good."
-    ## In Debian 'testing' distro_version was previously observed as 'n/a' or empty, because
-    ## Debian 'testing' '/etc/os-release' does not contain VERSION_ID.
+    ## Debian 'testing' '/etc/os-release' has no VERSION_ID, so distro_version is
+    ## 'n/a' or empty here; return before the version check below.
     return 0
   fi
   log info "Debian 'testing' or 'unstable' detection: 'no', not detected"
@@ -188,6 +189,8 @@ get_os(){
 }
 
 
+## The *_derivative_detected flags are set here for the sourcing script to read.
+# shellcheck disable=SC2034
 get_distro() {
   true "distro: ${distro}"
   case "${os}" in
