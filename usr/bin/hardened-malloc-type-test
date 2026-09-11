@@ -11,12 +11,12 @@ shopt -s inherit_errexit
 shopt -s shift_verbose
 export LC_ALL=C
 
-if grep --quiet "libhardened_malloc-light.so" "/proc/$$/maps"; then
+if grep "libhardened_malloc-light.so" "/proc/$$/maps" >/dev/null 2>&1; then
     printf '%s\n' "light"
     exit 0
 fi
 
-if grep --quiet "libhardened_malloc.so" "/proc/$$/maps"; then
+if grep "libhardened_malloc.so" "/proc/$$/maps" >/dev/null 2>&1; then
     printf '%s\n' "default"
     exit 0
 fi
