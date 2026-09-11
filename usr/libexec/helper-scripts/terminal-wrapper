@@ -10,9 +10,10 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
-# shellcheck source=./has.sh
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+# shellcheck source=./has.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 
 terminal_wrapper_helper='/usr/libexec/helper-scripts/terminal-wrapper-helper'
 
@@ -64,12 +65,11 @@ ${supported_terminal_emulator_apps}
 
 PPID: ${PPID}
 $0 was called by: $(ps --no-headers -o command "${PPID}")" || true
-   ## TODO: Consider prioritizing yad over kdialog since yad is what we ship
-   ## by default.
-   if has kdialog; then
-      kdialog --sorry "${error_message}" >/dev/null 2>&1 || true
-   elif has yad; then
+   ## yad first: it is the dialog tool shipped by default.
+   if has yad; then
       yad --error --text "${error_message}" >/dev/null 2>&1 || true
+   elif has kdialog; then
+      kdialog --sorry "${error_message}" >/dev/null 2>&1 || true
    fi
    printf '%s\n' "${error_message}" >&2
    exit 1

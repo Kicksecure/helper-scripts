@@ -9,8 +9,8 @@
 ## Sourcing scripts use variables that we set here.
 # shellcheck disable=SC2034
 
-# shellcheck source=./has.sh
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+# shellcheck source=./has.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 
 check_tor_bootstrap_helper_variables() {
    if has qubesdb-read ; then

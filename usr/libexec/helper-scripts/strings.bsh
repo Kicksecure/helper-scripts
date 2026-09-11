@@ -146,6 +146,10 @@ default_if_empty() {
     return 0
   fi
 
+  ## style-ok: allow-unchecked-printf-v -- guarded above by the
+  ## 'if ! check_variable_name ...; then return 1; fi' block; R-063's detector
+  ## only recognizes the 'check_variable_name ... || return' form, not this
+  ## equivalent if-negated guard.
   printf -v "${strings_bsh_var_name}" '%s' "${strings_bsh_default_value}"
 }
 
@@ -179,6 +183,13 @@ check_is_alpha_numeric() {
 validate_safe_filename() {
   local strings_bsh_varname strings_bsh_value strings_bsh_reason strings_bsh_re
 
+  ## Byte/ASCII semantics for every match below (control-char, alnum, length),
+  ## independent of the caller's locale. Without this, [[ =~ [:alnum:] ]] treats
+  ## a non-ASCII byte sequence (e.g. UTF-8 'cafe') as letters under a UTF-8
+  ## locale and ACCEPTS it, while rejecting it under C -- a locale-dependent
+  ## safe-filename check. A filename is bytes; validate it as bytes.
+  local LC_ALL=C
+
   if [ -z "${1:-}" ]; then
     printf '%s\n' "$0: ERROR: ${FUNCNAME[0]}: No variable name provided to validate_safe_filename!" >&2
     return 1
@@ -205,7 +216,7 @@ validate_safe_filename() {
   elif [ "$(printf '%s' "${strings_bsh_value}" | LC_ALL=C wc -c)" -gt 255 ]; then
     strings_bsh_reason="Too long (>255 bytes)!"
   else
-    ## Allow: letters/digits (locale-aware), underscore, dash, dot, space,
+    ## Allow: ASCII letters/digits (LC_ALL=C above), underscore, dash, dot, space,
     ## plus, comma, equals, @, parentheses, percent, braces, square brackets
     strings_bsh_re='^[][:alnum:]_.:@+=,(){}%\[ -]+$'
     if [[ "${strings_bsh_value}" =~ ${strings_bsh_re} ]]; then
@@ -493,8 +504,7 @@ string_bsh_tests() {
   run_test "safe_filename: rejects leading dash" validate_safe_filename 1 test_value "-option"
   run_test "safe_filename: accepts colon" validate_safe_filename 0 test_value "test:test"
   run_test "safe_filename: rejects overlong name" validate_safe_filename 1 test_value "$(printf 'a%.0s' {1..256})"
-  ## TODO: unclear if this is possible without unicode-show
-  #run_test "safe_filename: rejects unicode"                 validate_safe_filename 1 test_value $'caf\xC3\xA9'
+  run_test "safe_filename: rejects unicode" validate_safe_filename 1 test_value $'caf\xC3\xA9'
 
   run_test "one_line: rejects empty" check_is_not_empty_and_only_one_line 1 test_value ""
   run_test "one_line: rejects only whitespace/newlines" check_is_not_empty_and_only_one_line 1 test_value $'\n\n   '

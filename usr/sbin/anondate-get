@@ -125,8 +125,8 @@ output_cmd "### START: ### $0"
 true "INFO: who_ami: '${who_ami}'"
 true "INFO: anondate_state_folder: '${anondate_state_folder}'"
 
-[ -n "${LC_TIME}" ] || export LC_TIME=C
-[ -n "${TZ}" ] || export TZ=UTC
+[ -n "${LC_TIME:-}" ] || export LC_TIME=C
+[ -n "${TZ:-}" ] || export TZ=UTC
 
 ## capture stdout
 minimum_unixtime_show_unixtime="$(minimum-unixtime-show 2>/dev/null)"

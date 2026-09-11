@@ -26,8 +26,8 @@ if [ "${shim_signed_mok_setup_sourced}" = 'false' ]; then
   # shellcheck source=../libexec/helper-scripts/as_root.sh
   source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/as_root.sh
 
-  # shellcheck source=../libexec/helper-scripts/has.sh
-  source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+  # shellcheck source=../libexec/helper-scripts/has.bsh
+  source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 fi
 
 dkms_mok_variables_set() {

@@ -22,7 +22,7 @@ class TermColors:
     def __init__(self) -> None:
         environ_copy: dict[str, str] = os.environ.copy()
         if sys.stderr.isatty():
-            environ_copy["ASSUME_TERM_PRESENT"] = "true"
+            environ_copy["COLOR_FORCE_YES"] = "true"
         ## NOTE: Using absolute path '/usr/libexec/helper-scripts/get_colors.sh'
         ##       to avoid environment variable injection.
         colors_list: list[str] = subprocess.run(

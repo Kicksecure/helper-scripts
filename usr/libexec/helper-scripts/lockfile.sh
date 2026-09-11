@@ -71,8 +71,18 @@ if [ "${FLOCKER-}" != "${0}" ]; then
   ## output even in case it was possible to acquire a lock.
 
   if test -o xtrace; then
-    ## XXX: Might add a superfluous ':xtrace'.
-    exec env SHELLOPTS="${SHELLOPTS-}:xtrace" FLOCKER="${0}" flock --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}"
+    ## Pass SHELLOPTS so the flock'd re-exec re-enables xtrace; add ':xtrace'
+    ## only when not already present, to avoid a superfluous duplicate. Inlined
+    ## because this helper deliberately sources nothing.
+    case ":${SHELLOPTS-}:" in
+      *:xtrace:*)
+        flocker_shellopts="${SHELLOPTS-}"
+        ;;
+      *)
+        flocker_shellopts="${SHELLOPTS-}:xtrace"
+        ;;
+    esac
+    exec env SHELLOPTS="${flocker_shellopts}" FLOCKER="${0}" flock --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}"
   else
     exec env FLOCKER="${0}" flock --exclusive --nonblock "${flocker_lockfile}" "${0}" "${@}"
   fi

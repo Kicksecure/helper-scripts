@@ -13,7 +13,7 @@ shopt -s shift_verbose
 ## On non-Qubes systems, exits 0. On Qubes systems, exits 0 if the system
 ## has a NetVM, 1 otherwise.
 
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 
 if ! has qubesdb-read; then
   exit 0

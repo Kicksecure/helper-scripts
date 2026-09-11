@@ -24,8 +24,8 @@ shopt -s shift_verbose
 
 # shellcheck source=../../sbin/shim-signed-mok-setup
 source "${HELPER_SCRIPTS_PATH:-}"/usr/sbin/shim-signed-mok-setup
-# shellcheck source=./has.sh
-source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.sh
+# shellcheck source=./has.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/has.bsh
 # shellcheck source=./secure_boot_enabled_check.bsh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/secure_boot_enabled_check.bsh
 
