@@ -3,20 +3,19 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Two ways to use it:
-##   * SOURCE it to self-lock the sourcing script: only one instance runs at a
-##     time (keyed by the script's own path, or by LOCK_NAME).
-##   * EXECUTE it as  'lockfile.sh <lock-key> -- <command> [args...]'  to run the
-##     command under a PER-KEY lock (skipping, non-zero, if the key is already
-##     held) -- a generic 'run this under a per-key lock' front-end. An executed
-##     run with NO arguments keeps the old dev self-lock behaviour.
 ## Lock file mechanism to prevent duplicate script instances across users
+##
+## Two ways to use it:
+##   * Source it to self-lock the sourcing script. Only one instance of the
+##     script will be able to run at a time.
+##   * Execute it as  'lockfile.sh <lock-key> -- <command> [args...]'  to run the
+##     command under a per-key lock (skipping, non-zero, if the key is already
+##     held).
 
 ## Based on flock man page.
 ## > [ "${FLOCKER}" != "${0}" ] && exec env FLOCKER="${0}" flock -en "${0}" "${0}" "$@" || :
 
-## style-ok: no-strict -- sourced flock lock helper; deliberately sets no
-## set-options so it imposes none on the sourcing script.
+## style-ok: no-strict -- sourced helper.
 
 ## style-ok: allow-exec -- process handoff is used here intentionally.
 
@@ -71,9 +70,9 @@ if [ "${FLOCKER-}" != "${0}" ]; then
   ## output even in case it was possible to acquire a lock.
 
   if test -o xtrace; then
-    ## Pass SHELLOPTS so the flock'd re-exec re-enables xtrace; add ':xtrace'
-    ## only when not already present, to avoid a superfluous duplicate. Inlined
-    ## because this helper deliberately sources nothing.
+    ## Code duplication. Also in xtrace.bsh function shellopts_with_xtrace.
+    ## This helper intentionally avoids sourcing dependencies.
+    ## TODO: Do we need to avoid sourcing dependencies?
     case ":${SHELLOPTS-}:" in
       *:xtrace:*)
         flocker_shellopts="${SHELLOPTS-}"
