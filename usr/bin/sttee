@@ -6,6 +6,11 @@
 ##
 ## SPDX-License-Identifier: AGPL-3.0-or-later
 
+## Shell-invocation guard: under bash/sh the shebang is ignored and the `import`
+## lines below would run as shell commands (`import` is ImageMagick -> XGrabServer,
+## which freezes X). Re-exec under python3; inert as a string literal in python3.
+"exec" "python3" "-Bsu" "$0" "$@"
+
 from stdisplay.sttee import main
 
 if __name__ == "__main__":

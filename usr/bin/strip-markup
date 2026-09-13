@@ -5,6 +5,11 @@
 
 # pylint: disable=missing-module-docstring,invalid-name
 
+## Shell-invocation guard: under bash/sh the shebang is ignored and the `import`
+## lines below would run as shell commands (`import` is ImageMagick -> XGrabServer,
+## which freezes X). Re-exec under python3; inert as a string literal in python3.
+"exec" "python3" "-Bsu" "$0" "$@"
+
 import sys
 from strip_markup.strip_markup import main
 
