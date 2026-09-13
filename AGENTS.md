@@ -17,6 +17,11 @@ Detailed guidance for AI agents working on this codebase.
   https://github.com/Kicksecure/developer-meta-files/blob/master/agents/bash-style-guide.md
 - [stdisplay](agents/stdisplay-security.md)
 - [Fuzzing](agents/fuzzing.md) - Hypothesis property tests, Atheris harnesses, ClusterFuzzLite
+- GUI helpers: any script that builds a QApplication must call `exit_if_no_gui()`
+  (`from guimessages.display import exit_if_no_gui`) AFTER argparse, BEFORE the QApplication --
+  a headless / confined / cron launch otherwise SIGABRTs (exit 134, an uncatchable C++ qFatal).
+  It checks DISPLAY / WAYLAND_DISPLAY and honours `QT_QPA_PLATFORM` (offscreen / CI renders are
+  NOT suppressed); it exits 0 with a stderr note. Reuse the shared helper -- never duplicate the check.
 
 ## Tests
 
