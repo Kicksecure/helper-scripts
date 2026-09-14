@@ -132,6 +132,48 @@ is_group(){
 }
 
 
+## Description: Check whether a non-root account belongs to a group, whether as
+##   a supplementary member (the group's member field) OR via its PRIMARY GID
+##   (an account whose primary group is this group never appears in the member
+##   field, yet genuinely has the group's access).
+## Output: None
+## Return: 0 if such an account exists, 1 otherwise (including a missing group).
+## Usage: group_has_nonroot_member GROUP
+## Example: group_has_nonroot_member sudo
+## NOTE: deliberately self-contained -- getent + bash builtins only, no 'log' /
+##   'has' / 'get_entry' -- so the body can be VENDORED verbatim into a
+##   maintainer script that runs before helper-scripts is guaranteed installed
+##   (a preinst: Depends are not configured yet at unpack time). Keep any
+##   vendored copy in sync; drift is caught by the dist-ai
+##   'group_has_nonroot_member_drift' test.
+group_has_nonroot_member() {
+  local group group_gid members member entry_name entry_gid
+  local -a member_list
+  group="${1:-}"
+  [ -n "${group}" ] || return 1
+  group_gid="$(getent group -- "${group}" 2>/dev/null | cut -d: -f3)" || true
+  [ -n "${group_gid}" ] || return 1
+
+  ## Primary-GID members: a passwd account whose GID equals the group's GID
+  ## (such accounts are absent from the group's supplementary member field).
+  while IFS=":" read -r entry_name _ _ entry_gid _; do
+    if [ "${entry_gid}" = "${group_gid}" ] && [ "${entry_name}" != "root" ]; then
+      return 0
+    fi
+  done < <(getent passwd)
+
+  ## Supplementary members (comma-separated member field).
+  members="$(getent group -- "${group}" 2>/dev/null | cut -d: -f4)" || true
+  IFS="," read -r -a member_list <<< "${members}" || true
+  for member in "${member_list[@]}"; do
+    if [ -n "${member}" ] && [ "${member}" != "root" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+
 ## Description: Get user password.
 ## Output: Password field.
 ## Usage: get_pass USER
