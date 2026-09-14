@@ -301,7 +301,7 @@ lock_pass(){
 unlock_pass(){
   log info "${FUNCNAME[0]} $*"
   has chpasswd
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}"
   if ! is_pass_locked "${user}"; then
@@ -321,7 +321,7 @@ unlock_pass(){
 disable_pass(){
   log info "${FUNCNAME[0]} $*"
   has chpasswd
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}"
   if is_pass_disabled "${user}"; then
@@ -344,7 +344,7 @@ disable_pass(){
 enable_pass(){
   log info "${FUNCNAME[0]} $*"
   has chpasswd
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}"
   if ! is_pass_disabled "${user}"; then
