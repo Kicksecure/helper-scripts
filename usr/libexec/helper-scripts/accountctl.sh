@@ -48,7 +48,7 @@ is_name_valid(){
   ## Syntax based on /etc/adduser.conf NAME_REGEX plus dot and at sign.
   ## This check exists to avoid parsing bugs in other applications on
   ## functions from this script which uses RegEx such as grep.
-  if [[ ! ${name} =~ ^[a-z_][-a-z0-9_.@]+\$?$ ]]; then
+  if [[ ! ${name} =~ ^[a-z_][-a-z0-9_.@]*\$?$ ]]; then
     log error "Invalid name: '${name}'"
     return 1
   fi
@@ -88,7 +88,10 @@ is_user(){
     log error "No user provided"
     return 1
   fi
-  is_name_valid "${user}"
+  ## Enforce validation (|| return 1): a bare call would only log and return 1,
+  ## which errexit suppresses when the caller uses the documented
+  ## 'is_user X || ...' idiom, letting an invalid name reach the grep fallback.
+  is_name_valid "${user}" || return 1
   if has getent; then
     if getent passwd -- "${user}" >/dev/null 2>&1; then
       return 0
@@ -116,7 +119,9 @@ is_group(){
     log error "No group provided"
     return 1
   fi
-  is_name_valid "${group}"
+  ## Enforce validation (see is_user): a bare call is errexit-suppressed under
+  ## the 'is_group X || ...' idiom, letting an invalid name reach grep.
+  is_name_valid "${group}" || return 1
   if has getent; then
     if getent group -- "${group}" >/dev/null 2>&1; then
       return 0
@@ -487,7 +492,14 @@ get_entry(){
       is_group "${user}"
       ;;
   esac
-  index="$(get_field "${db}" "${field}")"
+  ## Fail loudly on an unsupported/empty field: an unchecked empty index
+  ## coerces to 0 in $(( )) and would silently return the name field with a
+  ## success exit code.
+  index="$(get_field "${db}" "${field}")" || return 1
+  if test -z "${index}"; then
+    log error "No field index for ${db} field '${field}'"
+    return 1
+  fi
   ## Avoid failing on last empty field adding a field delimiter at last.
   IFS=":" read -ra entry <<<"$(getent -- "${db}" "${user}"):"
   printf '%s' "${entry[$((index))]}"
