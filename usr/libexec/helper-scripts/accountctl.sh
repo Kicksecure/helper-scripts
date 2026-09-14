@@ -156,6 +156,13 @@ group_has_nonroot_member() {
   local -a member_list
   group="${1:-}"
   [ -n "${group}" ] || return 1
+  ## A group NAME starts with a letter or underscore (per is_name_valid).
+  ## Reject anything else so a numeric argument is not silently reinterpreted
+  ## by getent as a GID lookup (answering about the wrong group). Kept
+  ## self-contained -- no is_name_valid call -- for vendoring.
+  if [[ "${group}" != [a-z_]* ]]; then
+    return 1
+  fi
   group_gid="$(getent group -- "${group}" 2>/dev/null | cut -d: -f3)" || true
   [ -n "${group_gid}" ] || return 1
 
@@ -212,9 +219,18 @@ get_clean_pass(){
   is_user "${user}"
   symbol="${2:-"!*"}"
   pass="$(get_pass "${user}")"
-  local idx
-  for (( idx=0; idx < ${#symbol}; idx++ )); do
-    pass="${pass#"${symbol:${idx}:1}"}"
+  ## Strip EVERY leading lock/disable marker (any character in symbol), not one
+  ## occurrence per symbol character: a '!!' field ('passwd -l' on a never-set
+  ## password) needs both '!' removed, else callers leave a stray '!' behind
+  ## (account still locked / password misreported as non-empty). No real crypt
+  ## hash starts with '!' or '*', so this never eats into a genuine hash.
+  local first
+  while [ -n "${pass}" ]; do
+    first="${pass:0:1}"
+    if [[ "${symbol}" != *"${first}"* ]]; then
+      break
+    fi
+    pass="${pass#?}"
   done
   printf '%s\n' "${pass}"
 }
