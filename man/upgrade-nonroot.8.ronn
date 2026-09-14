@@ -14,8 +14,7 @@ Runs '/usr/bin/apt-get --update full-upgrade' as 'root'.
 
 If 'user-sysmaint-split' is not installed, this works passwordless for any
 user who is a member of group 'sudo', because of the
-'/etc/privleap/conf.d/usability-misc.conf' and
-'/etc/sudoers.d/upgrade-passwordless' configuration snippets.
+'/etc/sudoers.d/upgrade-passwordless' configuration snippet.
 
 If 'user-sysmaint-split' is installed, this works passwordless only if
 the system is booted in 'sysmaint' mode.
