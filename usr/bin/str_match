@@ -1,7 +1,7 @@
 #!/usr/bin/python3 -Bsu
 
-## Shell-invocation guard (see AGENTS.md): re-exec under python3.
-"exec" "python3" "-Bsu" "$0" "$@"
+## Shell-invocation guard.
+"exec" "bash" "-c" "printf '%s\n' '$0: ERROR: Do not execute this script with bash!' >&2; exit 1"
 
 from pathlib import Path
 import sys

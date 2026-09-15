@@ -5,8 +5,8 @@
 
 # pylint: disable=missing-module-docstring,invalid-name
 
-## Shell-invocation guard (see AGENTS.md): re-exec under python3.
-"exec" "python3" "-Bsu" "$0" "$@"
+## Shell-invocation guard.
+"exec" "bash" "-c" "printf '%s\n' '$0: ERROR: Do not execute this script with bash!' >&2; exit 1"  # pylint: disable=line-too-long
 
 import sys
 from strip_markup.strip_markup import main

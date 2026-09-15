@@ -6,8 +6,8 @@
 ##
 ## SPDX-License-Identifier: AGPL-3.0-or-later
 
-## Shell-invocation guard (see AGENTS.md): re-exec under python3.
-"exec" "python3" "-Bsu" "$0" "$@"
+## Shell-invocation guard.
+"exec" "bash" "-c" "printf '%s\n' '$0: ERROR: Do not execute this script with bash!' >&2; exit 1"  # pylint: disable=line-too-long
 
 from stdisplay.stecho import main
 
