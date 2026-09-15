@@ -11,38 +11,34 @@ shopt -s inherit_errexit
 shopt -s shift_verbose
 export LC_ALL=C
 
-## Overridable so tests can inject fixtures; production reads the real files.
+# shellcheck source=./strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
+
 adduser_conf_path="${GET_USER_LIST_ADDUSER_CONF:-/etc/adduser.conf}"
 passwd_path="${GET_USER_LIST_PASSWD:-/etc/passwd}"
 
-## Read one key's value from adduser.conf. The file is shell-sourced by adduser,
-## so a duplicated key means the LAST assignment wins. Done in explicit steps for
-## clarity; prints the value, or empty if the key is unset.
-read_adduser_conf_uid() {
+## Read one key's value from adduser.conf. In case of multiple matches, the
+## last match wins.
+read_adduser_conf_field() {
   local key line value found
 
   key="$1"
   value=""
-  found="no"
+  found="false"
 
-  ## Step 1+2: walk the file line by line and keep the LAST assignment of the
-  ## key. The match is anchored to the line start (after optional whitespace) so
-  ## comments ('#...') and substrings (e.g. 'MY_FIRST_UID') are ignored.
   while IFS= read -r line; do
     if [[ "${line}" =~ ^[[:space:]]*${key}[[:space:]]*= ]]; then
-      ## Step 3: value is everything after the first '='.
       value="${line#*=}"
-      found="yes"
+      found="true"
     fi
-  done <<< "${adduser_conf_file}"
+  done < "${adduser_conf_path}"
 
-  ## The key was absent: report empty so the caller applies its default.
-  if [ "${found}" = "no" ]; then
+  if [ "${found}" = "false" ]; then
     printf '%s' ""
     return 0
   fi
 
-  ## Step 4: strip surrounding whitespace.
+  ## Strip whitespace.
   value="${value#"${value%%[![:space:]]*}"}"
   value="${value%"${value##*[![:space:]]}"}"
 
@@ -50,17 +46,15 @@ read_adduser_conf_uid() {
 }
 
 if test -r "${adduser_conf_path}"; then
-  adduser_conf_file="$(cat -- "${adduser_conf_path}")"
-
-  first_uid="$(read_adduser_conf_uid FIRST_UID)"
-  if [[ "${first_uid}" = *[!0-9]* ]]; then
-    printf '%s\n' "$0: ERROR: FIRST_UID in file '${adduser_conf_path}' is not strictly numeric!" >&2
+  first_uid="$(read_adduser_conf_field FIRST_UID)"
+  if ! is_whole_number "${first_uid}"; then
+    printf '%s\n' "$0: ERROR: FIRST_UID in file '${adduser_conf_path}' is not a whole number!" >&2
     exit 1
   fi
 
-  last_uid="$(read_adduser_conf_uid LAST_UID)"
-  if [[ "${last_uid}" = *[!0-9]* ]]; then
-    printf '%s\n' "$0: ERROR: LAST_UID in file '${adduser_conf_path}' is not strictly numeric!" >&2
+  last_uid="$(read_adduser_conf_field LAST_UID)"
+  if ! is_whole_number "${last_uid}"; then
+    printf '%s\n' "$0: ERROR: LAST_UID in file '${adduser_conf_path}' is not a whole number!" >&2
     exit 1
   fi
 fi

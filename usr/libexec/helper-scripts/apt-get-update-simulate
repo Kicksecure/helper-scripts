@@ -13,7 +13,7 @@ shopt -s shift_verbose
 ## Required to run apt-get dist-upgrade --simulate as user (non-root).
 ## Required for systemcheck function check_operating_system.
 ## Exception to run /usr/libexec/helper-scripts/apt-get-update as user
-## is defined in /etc/sudoers.d/ and /etc/privleap/conf.d/.
+## is defined in /etc/sudoers.d/ and /usr/lib/privleap/conf.d/.
 
 export LC_ALL=C
 

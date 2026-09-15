@@ -6,6 +6,9 @@
 ## style-ok: no-strict - sourced library.
 ## style-ok: no-has - this script is 'has' itself.
 
+## TODO-HUMAN-DEVELOPER-ONLY: Temporarily kept to avoid breaking things
+## mid-migration, delete this once everything uses has.bsh.
+
 ## This is just a simple wrapper around 'command -v' to avoid
 ## spamming '>/dev/null' throughout this function. This also guards
 ## against aliases and functions.

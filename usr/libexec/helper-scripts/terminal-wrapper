@@ -65,7 +65,6 @@ ${supported_terminal_emulator_apps}
 
 PPID: ${PPID}
 $0 was called by: $(ps --no-headers -o command "${PPID}")" || true
-   ## yad first: it is the dialog tool shipped by default.
    if has yad; then
       yad --error --text "${error_message}" >/dev/null 2>&1 || true
    elif has kdialog; then
