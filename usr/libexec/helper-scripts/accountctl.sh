@@ -158,8 +158,8 @@ group_has_nonroot_member() {
   [ -n "${group}" ] || return 1
   ## A group NAME starts with a letter or underscore (per is_name_valid).
   ## Reject anything else so a numeric argument is not silently reinterpreted
-  ## by getent as a GID lookup (answering about the wrong group). Kept
-  ## self-contained -- no is_name_valid call -- for vendoring.
+  ## by getent as a GID lookup (answering about the wrong group). Inlined rather
+  ## than calling is_name_valid to keep this a self-contained leaf helper.
   if [[ "${group}" != [a-z_]* ]]; then
     return 1
   fi
