@@ -146,10 +146,8 @@ default_if_empty() {
     return 0
   fi
 
-  ## style-ok: allow-unchecked-printf-v -- guarded above by the
-  ## 'if ! check_variable_name ...; then return 1; fi' block; R-063's detector
-  ## only recognizes the 'check_variable_name ... || return' form, not this
-  ## equivalent if-negated guard.
+  ## style-ok: allow-unchecked-printf-v - linter misses the check_variable_name
+  ## call above.
   printf -v "${strings_bsh_var_name}" '%s' "${strings_bsh_default_value}"
 }
 
@@ -183,20 +181,25 @@ check_is_alpha_numeric() {
 validate_safe_filename() {
   local strings_bsh_varname strings_bsh_value strings_bsh_reason strings_bsh_re
 
-  ## Byte/ASCII semantics for every match below (control-char, alnum, length),
-  ## independent of the caller's locale. Without this, [[ =~ [:alnum:] ]] treats
-  ## a non-ASCII byte sequence (e.g. UTF-8 'cafe') as letters under a UTF-8
-  ## locale and ACCEPTS it, while rejecting it under C -- a locale-dependent
-  ## safe-filename check. A filename is bytes; validate it as bytes.
-  local LC_ALL=C
+  ## Don't allow any Unicode to pass the checks below.
+  local was_lc_all_set='false'
+  local OLD_LC_ALL="${LC_ALL:-}"
+  [ -v LC_ALL ] && was_lc_all_set='true'
+  export LC_ALL=C
 
   if [ -z "${1:-}" ]; then
     printf '%s\n' "$0: ERROR: ${FUNCNAME[0]}: No variable name provided to validate_safe_filename!" >&2
+    unset LC_ALL
+    [ "${was_lc_all_set}" = 'true' ] && export LC_ALL="${OLD_LC_ALL}"
     return 1
   fi
 
   strings_bsh_varname="$1"
-  check_variable_name "${strings_bsh_varname}" || return 1
+  if ! check_variable_name "${strings_bsh_varname}"; then
+    unset LC_ALL
+    [ "${was_lc_all_set}" = 'true' ] && export LC_ALL="${OLD_LC_ALL}"
+    return 1
+  fi
   strings_bsh_value="${!strings_bsh_varname}"
 
   if [[ -z "${strings_bsh_value}" ]]; then
@@ -216,10 +219,12 @@ validate_safe_filename() {
   elif [ "$(printf '%s' "${strings_bsh_value}" | LC_ALL=C wc -c)" -gt 255 ]; then
     strings_bsh_reason="Too long (>255 bytes)!"
   else
-    ## Allow: ASCII letters/digits (LC_ALL=C above), underscore, dash, dot, space,
+    ## Allow: ASCII letters/digits, underscore, dash, dot, space,
     ## plus, comma, equals, @, parentheses, percent, braces, square brackets
     strings_bsh_re='^[][:alnum:]_.:@+=,(){}%\[ -]+$'
     if [[ "${strings_bsh_value}" =~ ${strings_bsh_re} ]]; then
+      unset LC_ALL
+      [ "${was_lc_all_set}" = 'true' ] && export LC_ALL="${OLD_LC_ALL}"
       return 0
     fi
     strings_bsh_reason="Invalid character!"
@@ -229,8 +234,10 @@ validate_safe_filename() {
 \$1 (variable name): '${strings_bsh_varname}'
 \$2 (variable content): '${strings_bsh_value}'" >&2
 
-  LC_ALL=C od -An -tx1 <<<"${strings_bsh_value}" | head --bytes="${STRINGS_BSH_REPORT_MAX}" >&2
+  od -An -tx1 <<<"${strings_bsh_value}" | head --bytes="${STRINGS_BSH_REPORT_MAX}" >&2
 
+  unset LC_ALL
+  [ "${was_lc_all_set}" = 'true' ] && export LC_ALL="${OLD_LC_ALL}"
   return 1
 }
 

@@ -56,10 +56,6 @@ xtrace_restore() {
 ##   output_cmd_set
 ##   "${output_cmd[@]}" "INFO: starting build"
 ##
-## output_cmd is an ARRAY. Under xtrace it is a no-op (true); otherwise it is
-## 'printf %s\n', which prints its argument verbatim -- unlike 'echo', printf
-## does not eat leading '-n'/'-e' or interpret backslashes in the message.
-## output_cmd is read by the sourcing script, not here -> SC2034 is a false positive.
 # shellcheck disable=SC2034
 output_cmd_set() {
    if [ -o xtrace ]; then
@@ -70,9 +66,7 @@ output_cmd_set() {
 }
 
 ## Echo $SHELLOPTS with 'xtrace' present exactly once, for passing to a re-exec
-## (sudo / flock) that resets the environment so the child re-enables xtrace.
-## Adds ':xtrace' only when it is not already set, so it never accumulates a
-## superfluous duplicate.
+## that resets the environment so the child re-enables xtrace.
 shellopts_with_xtrace() {
    case ":${SHELLOPTS-}:" in
       *:xtrace:*)

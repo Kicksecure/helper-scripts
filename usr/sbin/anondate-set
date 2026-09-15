@@ -201,8 +201,8 @@ if ! has systemd-cat ; then
    output_cmd "WARNING: Program 'systemd-cat' is unavailable. Unable to write to systemd journal log."
 fi
 
-[ -n "${LC_TIME}" ] || export LC_TIME=C
-[ -n "${TZ}" ] || export TZ=UTC
+[ -n "${LC_TIME:-}" ] || export LC_TIME=C
+[ -n "${TZ:-}" ] || export TZ=UTC
 
 anondate_tor_certificate_lifetime_set_file="${anondate_state_folder}/tor_certificate_lifetime_set"
 

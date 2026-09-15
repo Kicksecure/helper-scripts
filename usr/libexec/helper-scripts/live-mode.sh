@@ -3,9 +3,7 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## live_status_* are this script's eval-output interface: read by sourcing
-## callers, and when executed printed via ${!var_name}. shellcheck cannot see
-## that indirect use, so SC2034 would be a false positive.
+## live_status_* variables are used, but indirectly.
 # shellcheck disable=SC2034
 
 true "$0: START"
@@ -55,7 +53,7 @@ if [ -z "${kernel_cmdline+x}" ]; then
   fi
 fi
 
-if [ -z "${writable_fs_lists_str+x}" ]; then
+if ! [ -v writable_fs_lists_str ]; then
   writable_fs_lists_str="$(/usr/libexec/helper-scripts/get_writable_fs_lists.sh)"
 fi
 readarray -t writable_fs_lists <<< "${writable_fs_lists_str}"

@@ -128,8 +128,7 @@ get_os(){
     debian_testing_or_unstable_detected=1
   fi
 
-  ## REMINDER: when Debian testing's codename advances past 'forky' (to 'duke'),
-  ## add/replace the codename checked here.
+  ## REMINDER: Debian 'forky' - change this from 'forky' to 'duke'.
   if [ "${distro_codename}" = "forky" ]; then
     log info "Debian 'testing' or 'unstable' detection: 'forky' still considered 'testing' (hardcoded in this program)"
     debian_testing_or_unstable_detected=1
@@ -161,8 +160,8 @@ get_os(){
       fi
     fi
     log info "Not attempting to use '--oracle-repo' on Debian 'testing' or 'unstable', good."
-    ## Debian 'testing' '/etc/os-release' has no VERSION_ID, so distro_version is
-    ## 'n/a' or empty here; return before the version check below.
+    ## In Debian 'testing' distro_version was previously observed as 'n/a' or empty, because
+    ## Debian 'testing' '/etc/os-release' does not contain VERSION_ID.
     return 0
   fi
   log info "Debian 'testing' or 'unstable' detection: 'no', not detected"
@@ -189,7 +188,7 @@ get_os(){
 }
 
 
-## The *_derivative_detected flags are set here for the sourcing script to read.
+## *_derivative_detected flags are used by sourcing scripts.
 # shellcheck disable=SC2034
 get_distro() {
   true "distro: ${distro}"

@@ -1,3 +1,243 @@
+commit dc8a5b8112d65222ad77d35b55134332bd99b490
+Merge: 63afebf5 de685995
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 14 02:23:40 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit de685995c7e995613ea6280154fcb9adfd1a7eeb
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Sep 13 18:27:37 2026 -0400
+
+    Move privleap configuration to non-conffile location
+
+commit 63afebf51bd990d70c3375ac066899ba287d6406
+Merge: c194b642 16a00b77
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 12 09:04:41 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 16a00b77b1c1ee1933657c37642c5ab2691d74f7
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Sep 11 16:56:19 2026 -0400
+
+    Polish
+
+commit 49b1cf6a745df2239696d7b301e660c17f6517a1
+Merge: e795a3f3 7c66d2a7
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Sep 10 23:46:48 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit c194b6425b964a9a95bedaf8236915964239a91c
+Merge: e795a3f3 7c66d2a7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 9 07:41:07 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/ai'
+
+commit 7c66d2a75155bd193b04d581ab5b54bafe8caf79
+Author: claude (dev497 5326191d-88cb-4f38-a96b-e4d8ae5649d3) <noreply@anthropic.com>
+Date:   Wed Sep 9 07:21:30 2026 -0400
+
+    anondate: make default-setting nounset-safe
+
+    - '[ -n "${VAR}" ] || VAR=default' trips 'set -o nounset' on the guard's own
+      test when VAR is unset, aborting (e.g. "TOR_RC: unbound variable" at line 20)
+      before the default is applied -- so anondate died whenever a caller did not
+      pre-export TOR_RC/TOR_LOG/TOR_DIR/... Guard the tests with '${VAR:-}'.
+    - Same fix in anondate-get and anondate-set (LC_TIME/TZ).
+
+commit 756a687b8d391ae3ad966137fdde2d39628e4ee9
+Merge: 2a8ea1c0 cfb0ff4e
+Author: claude <noreply@anthropic.com>
+Date:   Tue Sep 8 13:59:29 2026 -0400
+
+    Merge branch 'master' into ai
+
+commit cfb0ff4ef7ac21df0b5264ec5d3cf2c3c12168bc
+Merge: 44d46b61 e795a3f3
+Author: claude <noreply@anthropic.com>
+Date:   Tue Sep 8 13:59:29 2026 -0400
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit e795a3f365a9fdb642228d6ee96f02f150cc9213
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 8 15:27:11 2026 +0000
+
+    bumped changelog version
+
+commit 44d46b619672ec0c7cbe66240c2b8fbf15a0f33c
+Merge: 6f73996f 2a8ea1c0
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Mon Sep 7 22:07:31 2026 -0400
+
+    Merge pull request #81 from org-ai-assisted/ai
+
+    Style: long grep flags, -Bsu shebang, LC_ALL=C
+
+commit 2a8ea1c03b9fda897a8beec6bceb3ae5d4b836eb
+Author: claude (dev474 c7439536-fad8-4884-b71a-d2f3c4c23905) <noreply@anthropic.com>
+Date:   Mon Sep 7 12:19:49 2026 -0400
+
+    add has.sh as temporary compat copy of has.bsh
+
+    Non-atomic migration: keep both files so consumers still sourcing has.sh keep working until all migrate. Remove has.sh once every sourcer is on has.bsh.
+
+commit a33cc2edc74b972114085a1ff4e58c2705707d8d
+Author: claude (dev478 589781b1-284b-4fe1-9193-eb6f3690d8fd) <noreply@anthropic.com>
+Date:   Mon Sep 7 10:55:34 2026 -0400
+
+    onion-time-pre-script: enable full strict mode (nounset)
+
+    Guard the unset-prone references (exit_code, tor_bootstrap_timeout_type, tor_bootstrap_percent, clock_tor_consensus_check_result, USER) with ${var:-} so the sdwdate exit-code contract (0/1/2) is unchanged; add LC_ALL=C. Removes the no-strict reliance on unset-vars-expanding-to-empty.
+
+commit 54027c6e863b8ff4318f932978f2e59bb3ccdafa
+Author: claude (dev474 c7439536-fad8-4884-b71a-d2f3c4c23905) <noreply@anthropic.com>
+Date:   Mon Sep 7 10:42:48 2026 -0400
+
+    rename has.sh to has.bsh (bashism convention)
+
+    Resolves the in-file FIXME; .bsh marks a bash-requiring sourced lib. Updates every in-repo sourcer + shellcheck directive.
+
+commit c8ca989b4652faee9623065b2f7a1db385ce2d97
+Author: claude (dev478 589781b1-284b-4fe1-9193-eb6f3690d8fd) <noreply@anthropic.com>
+Date:   Mon Sep 7 10:08:35 2026 -0400
+
+    log_run: rename dry_run to dry_run_skip_commands
+
+    Bare 'dry_run' collided with unrelated per-script dry_run flags; the specific name only triggers for callers that opt in. Resolves the log_run TODO.
+
+commit b02c1409db915de854c700f42a247560b913dc3b
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 07:10:01 2026 -0400
+
+    live-mode.sh: enable pipefail, drop the pipefail save/restore dance
+
+    - the script has no pipelines, so disabling pipefail was pointless; enable it in
+      the executed strict block and remove the save/disable/restore code
+
+commit 84585f5e32018a3771e3315b89a61ec33d42d04d
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 07:07:48 2026 -0400
+
+    xtrace re-exec: add xtrace to SHELLOPTS exactly once
+
+    - new xtrace.bsh shellopts_with_xtrace() dedupes ':xtrace'; gsudo-wl/gsudo-x use it
+    - lockfile.sh inlines the same (it sources nothing by design)
+    - complete gsudo-wl/gsudo-x strict block with export LC_ALL=C
+
+commit 18d86fa690c85b43ef4cc484a2eb2f60a98fbdf1
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 06:58:02 2026 -0400
+
+    strings.bsh: validate_safe_filename rejects non-ASCII locale-independently
+
+    - pin LC_ALL=C in the function so [[ =~ [:alnum:] ]] is byte/ASCII, not
+      locale-aware; a UTF-8 locale otherwise ACCEPTED a non-ASCII filename
+    - enable the unicode-rejection self-test
+    - waive R-063 on the guarded printf -v (guarded by the if-! check above)
+
+commit d41da2083644ef03c7a3897d136e8b383a3eabc4
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 06:43:56 2026 -0400
+
+    get_os.sh: reword forky reminder; fix pre-existing shellcheck
+
+    - forky-codename TODO -> REMINDER (future-maintenance trigger, not a defect)
+    - default oracle_repo/ci reads (${var:-}) so an unset caller cannot error
+    - disable SC2034 on get_distro's *_derivative_detected outputs (read by caller)
+    - drop the historical-narrative wording in the testing/VERSION_ID comment
+
+commit d2171d9b1f75a01b1ae17727ac0508cf7c924d50
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 06:42:10 2026 -0400
+
+    get-user-list: read adduser.conf key in explicit steps
+
+    - pure-bash select-last/split/trim loop instead of the grep|tail|cut|sed chain;
+      same last-wins semantics, anchored so comments are ignored
+
+commit fa463aaa89ff928b6f80835ec4528ae6870d8773
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 04:27:31 2026 -0400
+
+    Rename ASSUME_TERM_PRESENT to COLOR_FORCE_YES
+
+    - clearer name for the force-color-on-non-tty knob (get_colors.sh, term_colors.py)
+    - no backward-compatible alias, by request
+
+commit bf0432e6225f2515710cd58d9058802cf4ba9837
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 04:18:24 2026 -0400
+
+    get-user-list: take last FIRST_UID/LAST_UID, matching adduser
+
+    - adduser sources adduser.conf, so a duplicated key means the last wins; the old
+      all-matches grep produced a multi-line value that aborted on the numeric check
+    - anchor the key match; overridable conf/passwd paths for tests
+    - complete the strict-mode block with export LC_ALL=C
+
+commit b6bdfbb89fabb5d46acc058e79b0713bae50a81d
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 03:27:07 2026 -0400
+
+    terminal-wrapper: try yad before kdialog for the error dialog
+
+    - yad is the dialog tool shipped by default
+    - complete the strict-mode block with export LC_ALL=C
+
+commit caa90ad3aad0a1fdfbcbd5b72eb5e4fe6f27377c
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 02:40:05 2026 -0400
+
+    xtrace.bsh: output_cmd as array (printf %s\n), not echo string
+
+    - "${output_cmd[@]}" prints the message verbatim; echo ate a leading -n/-e and
+      mangled backslashes
+    - callers use "${output_cmd[@]}"; back-compatible with a scalar during rollout
+
+commit 0c60fe0885482089825df53b1c3b946dd7fa1b44
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 02:02:29 2026 -0400
+
+    set-keyboard-layout: skip GRUB keymap in live mode; guard console restart
+
+    - GRUB keymap has no persistent effect on a live boot (fixed grub.cfg); detect
+      via live-mode.sh and skip set_grub_keymap/build_all_grub_keymaps with log info
+    - guard the keyboard-setup.service restart behind a root check (defense-in-depth)
+    - grub_kb_layout_dir overridable for hermetic tests
+    - live-mode.sh: +x guard on writable_fs_lists_str (inject FS state in tests);
+      complete executed strict block with export LC_ALL=C; silence SC2034 false
+      positive on the eval-output vars
+
+commit 55d76b1fe67de70581bb6759a1cc070c1d50c41f
+Merge: 05a1b4be 6f73996f
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 01:14:50 2026 -0400
+
+    Merge branch 'master' into ai
+
+commit 6f73996f01d4d468148eadc8c167d6e3370d5a35
+Merge: 42e13aeb 36bca989
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 01:03:40 2026 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 05a1b4be54e95584e02a59ec223163822e041797
+Author: claude (dev467 5e3d4808-e430-4989-bff4-acc975c61b26) <noreply@anthropic.com>
+Date:   Mon Sep 7 00:57:12 2026 -0400
+
+    Style: long grep flags, -Bsu shebang, LC_ALL=C
+
+    - --quiet over -q per long-flag style
+    - last plain python3 shebang -> -Bsu, matching the other 85 scripts
+    - add export LC_ALL=C to complete the R-010 seven-directive strict block
+
 commit 36bca989aafadedd093d5c07af7a630beb496b1f
 Merge: 6f45e08f 51187b49
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -51,6 +291,24 @@ Date:   Thu Aug 27 23:57:53 2026 -0400
     (as str_replace_tool does) and call by absolute path. All build-reachable bare
     calls are in this one file, so this fully closes the checkout-context gap with
     no side effect; installed (empty HELPER_SCRIPTS_PATH) resolves to /usr/bin.
+
+commit 42e13aeb1869d5ffec759b3992dfc29598413ccd
+Author: claude (dev352 385b930f-4313-4883-93d5-e6857c3f7ea7) <noreply@anthropic.com>
+Date:   Thu Aug 27 23:40:54 2026 -0400
+
+    log_run_die: put HELPER_SCRIPTS_PATH/usr/bin on PATH for stecho + sanitize-string
+
+    They are usr/bin BINARIES called as bare commands here. Installed they are
+    on PATH; run from a source checkout (the build invokes consumers via sudo,
+    which resets PATH) they are not, so type_exists failed and the build died at
+    3600. Add the tree's usr/bin; no-op when installed.
+
+commit cdd7b5570046d9ded5436a561cb2590531fec94a
+Merge: acec1b56 6f45e08f
+Author: claude (dev352 385b930f-4313-4883-93d5-e6857c3f7ea7) <noreply@anthropic.com>
+Date:   Thu Aug 27 23:41:23 2026 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
 
 commit 44cedcc183f5eaf3335a8711e171b6c7c31e2474
 Author: claude (dev352 385b930f-4313-4883-93d5-e6857c3f7ea7) <noreply@anthropic.com>
