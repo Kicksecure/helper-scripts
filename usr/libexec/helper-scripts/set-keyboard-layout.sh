@@ -735,7 +735,7 @@ Reboot may be required to change the graphical (Wayland / 'labwc') keyboard layo
         continue
       fi
 
-      wl_pid="$(/usr/libexec/helper-scripts/query-sock-pid "${wl_sock}")" || true
+      wl_pid="$("${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/query-sock-pid" "${wl_sock}")" || true
       if [ -z "${wl_pid:-}" ]; then
         continue
       fi
@@ -1346,7 +1346,7 @@ has jq
 has tr
 has loginctl
 has pgrep
-has /usr/libexec/helper-scripts/query-sock-pid
+has "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/query-sock-pid"
 has localectl-static
 
 timeout_command=("timeout" "--kill-after" "5" "5")
