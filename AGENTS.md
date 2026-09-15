@@ -17,6 +17,14 @@ Detailed guidance for AI agents working on this codebase.
   https://github.com/Kicksecure/developer-meta-files/blob/master/agents/bash-style-guide.md
 - [stdisplay](agents/stdisplay-security.md)
 - [Fuzzing](agents/fuzzing.md) - Hypothesis property tests, Atheris harnesses, ClusterFuzzLite
+- Shell-invocation guard: python entry points under `usr/bin/` carry
+  `"exec" "python3" "-Bsu" "$0" "$@"` right after the header. Under python3 it is
+  an inert string-expression statement; if a shell starts the script (the
+  `#!/usr/bin/python3` shebang is then ignored) it re-execs under python3.
+  Without it the `import` lines would run as shell commands -- `import` is
+  ImageMagick's screen-grab tool (XGrabServer), which freezes X. Keep the guard
+  a single line with a one-line pointer to this note; never re-expand the
+  per-file comment.
 - GUI helpers: any script that builds a QApplication must call `exit_if_no_gui()`
   (`from guimessages.display import exit_if_no_gui`) AFTER argparse, BEFORE the QApplication --
   a headless / confined / cron launch otherwise SIGABRTs (exit 134, an uncatchable C++ qFatal).
