@@ -46,14 +46,17 @@ read_adduser_conf_field() {
 }
 
 if test -r "${adduser_conf_path}"; then
+  ## Modern adduser ships FIRST_UID/LAST_UID commented out (defaults are
+  ## built into adduser), so an absent/empty field is normal: fall through to
+  ## the defaults below. Only a field that is present but non-numeric is an error.
   first_uid="$(read_adduser_conf_field FIRST_UID)"
-  if ! is_whole_number "${first_uid}"; then
+  if [ -n "${first_uid}" ] && ! is_whole_number "${first_uid}"; then
     printf '%s\n' "$0: ERROR: FIRST_UID in file '${adduser_conf_path}' is not a whole number!" >&2
     exit 1
   fi
 
   last_uid="$(read_adduser_conf_field LAST_UID)"
-  if ! is_whole_number "${last_uid}"; then
+  if [ -n "${last_uid}" ] && ! is_whole_number "${last_uid}"; then
     printf '%s\n' "$0: ERROR: LAST_UID in file '${adduser_conf_path}' is not a whole number!" >&2
     exit 1
   fi
