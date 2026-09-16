@@ -20,6 +20,15 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/trace.bsh
 stecho_bin="${HELPER_SCRIPTS_PATH:-}/usr/bin/stecho"
 sanitize_string_bin="${HELPER_SCRIPTS_PATH:-}/usr/bin/sanitize-string"
 
+## Absolute path via HELPER_SCRIPTS_PATH (no PATH mutation): resolves for an
+## installed system (empty -> /usr/bin) and a source checkout. The
+## dist-installer-cli STANDALONE, though, runs WITHOUT helper-scripts installed and
+## defines shim FUNCTIONS named stecho / sanitize-string; when the binary is absent
+## at the path, fall back to the bare name so a shim (or a PATH binary) resolves it
+## rather than aborting.
+has "${stecho_bin}" || stecho_bin="stecho"
+has "${sanitize_string_bin}" || sanitize_string_bin="sanitize-string"
+
 if ! has "${stecho_bin}" || ! has "${sanitize_string_bin}"; then
   printf '%s\n' "$0: ERROR: stecho and/or sanitize-string missing ('${stecho_bin}', '${sanitize_string_bin}')."
   printf '%s\n' "$0: INFO: function_trace:"
