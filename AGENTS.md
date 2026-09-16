@@ -32,7 +32,7 @@ Detailed guidance for AI agents working on this codebase.
   that disable. Keep the guard a single line under a terse
   `## Shell-invocation guard.` comment; never re-expand it.
 - GUI helpers: any script that builds a QApplication must call `exit_if_no_gui()`
-  (`from guimessages.display import exit_if_no_gui`) AFTER argparse, BEFORE the QApplication --
+  (`from guimessages.check_display import exit_if_no_gui`) AFTER argparse, BEFORE the QApplication --
   a headless / confined / cron launch otherwise SIGABRTs (exit 134, an uncatchable C++ qFatal).
   It checks DISPLAY / WAYLAND_DISPLAY and honours `QT_QPA_PLATFORM` (offscreen / CI renders are
   NOT suppressed); it exits 0 with a stderr note. Reuse the shared helper -- never duplicate the check.

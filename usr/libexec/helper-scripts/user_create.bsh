@@ -3,8 +3,7 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## style-ok: no-strict -- sourced library; a top-level strict-mode block
-## would leak 'set -o errexit'/'nounset' into the sourcing shell.
+## style-ok: no-strict -- sourced library.
 
 # shellcheck source=./accountctl.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/accountctl.sh
@@ -159,7 +158,7 @@ linux_user_account_shell_to_zsh() {
      printf '%s\n' "${0}: INFO: Shell for account '${USER_CREATE_USERNAME}' has been set to 'zsh', ok."
   else
     ## 'derivative_maker=true' is set for every derivative-maker build (ISO and
-    ## VM/disk alike), so a failed chsh during the build is a hard error.
+    ## VM/disk alike).
     if [ "${derivative_maker:-}" = "true" ]; then
       printf '%s\n' "${0}: ERROR: Command 'chsh --shell /usr/bin/zsh -- ${USER_CREATE_USERNAME}' failed during the build process. (return 1 because derivative_maker=true)"
       return 1
