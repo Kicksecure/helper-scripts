@@ -1,5 +1,8 @@
 #!/usr/bin/python3 -Bsu
 
+## Shell-invocation guard.
+"exec" "bash" "-c" "printf '%s\n' '$0: ERROR: Do not execute this script with bash!' >&2; exit 1"
+
 import os
 import stat
 import logging

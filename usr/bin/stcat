@@ -6,6 +6,9 @@
 ##
 ## SPDX-License-Identifier: AGPL-3.0-or-later
 
+## Shell-invocation guard.
+"exec" "bash" "-c" "printf '%s\n' '$0: ERROR: Do not execute this script with bash!' >&2; exit 1"  # pylint: disable=line-too-long
+
 from stdisplay.stcat import main
 
 if __name__ == "__main__":

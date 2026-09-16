@@ -48,7 +48,7 @@ is_name_valid(){
   ## Syntax based on /etc/adduser.conf NAME_REGEX plus dot and at sign.
   ## This check exists to avoid parsing bugs in other applications on
   ## functions from this script which uses RegEx such as grep.
-  if [[ ! ${name} =~ ^[a-z_][-a-z0-9_.@]+\$?$ ]]; then
+  if [[ ! ${name} =~ ^[a-z_][-a-z0-9_.@]*\$?$ ]]; then
     log error "Invalid name: '${name}'"
     return 1
   fi
@@ -88,7 +88,10 @@ is_user(){
     log error "No user provided"
     return 1
   fi
-  is_name_valid "${user}"
+  ## Enforce validation (|| return 1): a bare call would only log and return 1,
+  ## which errexit suppresses when the caller uses the documented
+  ## 'is_user X || ...' idiom, letting an invalid name reach the grep fallback.
+  is_name_valid "${user}" || return 1
   if has getent; then
     if getent passwd -- "${user}" >/dev/null 2>&1; then
       return 0
@@ -116,7 +119,9 @@ is_group(){
     log error "No group provided"
     return 1
   fi
-  is_name_valid "${group}"
+  ## Enforce validation (see is_user): a bare call is errexit-suppressed under
+  ## the 'is_group X || ...' idiom, letting an invalid name reach grep.
+  is_name_valid "${group}" || return 1
   if has getent; then
     if getent group -- "${group}" >/dev/null 2>&1; then
       return 0
@@ -129,6 +134,55 @@ is_group(){
     log error "Group does not exist: '${group}'"
     return 1
   fi
+}
+
+
+## Description: Check whether a non-root account belongs to a group, whether as
+##   a supplementary member (the group's member field) OR via its PRIMARY GID
+##   (an account whose primary group is this group never appears in the member
+##   field, yet genuinely has the group's access).
+## Output: None
+## Return: 0 if such an account exists, 1 otherwise (including a missing group).
+## Usage: group_has_nonroot_member GROUP
+## Example: group_has_nonroot_member sudo
+## NOTE: deliberately self-contained -- getent + bash builtins only, no 'log' /
+##   'has' / 'get_entry' -- so the body can be VENDORED verbatim into a
+##   maintainer script that runs before helper-scripts is guaranteed installed
+##   (a preinst: Depends are not configured yet at unpack time). Keep any
+##   vendored copy in sync; drift is caught by the dist-ai
+##   'group_has_nonroot_member_drift' test.
+group_has_nonroot_member() {
+  local group group_gid members member entry_name entry_gid
+  local -a member_list
+  group="${1:-}"
+  [ -n "${group}" ] || return 1
+  ## A group NAME starts with a letter or underscore (per is_name_valid).
+  ## Reject anything else so a numeric argument is not silently reinterpreted
+  ## by getent as a GID lookup (answering about the wrong group). Inlined rather
+  ## than calling is_name_valid to keep this a self-contained leaf helper.
+  if [[ "${group}" != [a-z_]* ]]; then
+    return 1
+  fi
+  group_gid="$(getent group -- "${group}" 2>/dev/null | cut -d: -f3)" || true
+  [ -n "${group_gid}" ] || return 1
+
+  ## Primary-GID members: a passwd account whose GID equals the group's GID
+  ## (such accounts are absent from the group's supplementary member field).
+  while IFS=":" read -r entry_name _ _ entry_gid _; do
+    if [ "${entry_gid}" = "${group_gid}" ] && [ "${entry_name}" != "root" ]; then
+      return 0
+    fi
+  done < <(getent passwd)
+
+  ## Supplementary members (comma-separated member field).
+  members="$(getent group -- "${group}" 2>/dev/null | cut -d: -f4)" || true
+  IFS="," read -r -a member_list <<< "${members}" || true
+  for member in "${member_list[@]}"; do
+    if [ -n "${member}" ] && [ "${member}" != "root" ]; then
+      return 0
+    fi
+  done
+  return 1
 }
 
 
@@ -165,9 +219,18 @@ get_clean_pass(){
   is_user "${user}"
   symbol="${2:-"!*"}"
   pass="$(get_pass "${user}")"
-  local idx
-  for (( idx=0; idx < ${#symbol}; idx++ )); do
-    pass="${pass#"${symbol:${idx}:1}"}"
+  ## Strip EVERY leading lock/disable marker (any character in symbol), not one
+  ## occurrence per symbol character: a '!!' field ('passwd -l' on a never-set
+  ## password) needs both '!' removed, else callers leave a stray '!' behind
+  ## (account still locked / password misreported as non-empty). No real crypt
+  ## hash starts with '!' or '*', so this never eats into a genuine hash.
+  local first
+  while [ -n "${pass}" ]; do
+    first="${pass:0:1}"
+    if [[ "${symbol}" != *"${first}"* ]]; then
+      break
+    fi
+    pass="${pass#?}"
   done
   printf '%s\n' "${pass}"
 }
@@ -259,7 +322,7 @@ lock_pass(){
 unlock_pass(){
   log info "${FUNCNAME[0]} $*"
   has chpasswd
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}"
   if ! is_pass_locked "${user}"; then
@@ -279,7 +342,7 @@ unlock_pass(){
 disable_pass(){
   log info "${FUNCNAME[0]} $*"
   has chpasswd
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}"
   if is_pass_disabled "${user}"; then
@@ -302,7 +365,7 @@ disable_pass(){
 enable_pass(){
   log info "${FUNCNAME[0]} $*"
   has chpasswd
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}"
   if ! is_pass_disabled "${user}"; then
@@ -445,7 +508,14 @@ get_entry(){
       is_group "${user}"
       ;;
   esac
-  index="$(get_field "${db}" "${field}")"
+  ## Fail loudly on an unsupported/empty field: an unchecked empty index
+  ## coerces to 0 in $(( )) and would silently return the name field with a
+  ## success exit code.
+  index="$(get_field "${db}" "${field}")" || return 1
+  if test -z "${index}"; then
+    log error "No field index for ${db} field '${field}'"
+    return 1
+  fi
   ## Avoid failing on last empty field adding a field delimiter at last.
   IFS=":" read -ra entry <<<"$(getent -- "${db}" "${user}"):"
   printf '%s' "${entry[$((index))]}"

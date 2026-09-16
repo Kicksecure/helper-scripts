@@ -5,6 +5,9 @@
 
 # pylint: disable=missing-module-docstring,invalid-name
 
+## Shell-invocation guard.
+"exec" "bash" "-c" "printf '%s\n' '$0: ERROR: Do not execute this script with bash!' >&2; exit 1"
+
 import sys
 from sanitize_string.sanitize_echo import main
 
