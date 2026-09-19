@@ -5,6 +5,10 @@
 
 # pylint: disable=missing-module-docstring,invalid-name
 
+## Shell-invocation guard.
+# pylint: disable=line-too-long
+"exec" "bash" "-c" "printf '%s\n' '$0: ERROR: Do not execute this script with bash!' >&2; exit 1"
+
 import sys
 from unicode_show.unicode_show import main
 

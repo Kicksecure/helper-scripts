@@ -48,7 +48,7 @@ is_name_valid(){
   ## Syntax based on /etc/adduser.conf NAME_REGEX plus dot and at sign.
   ## This check exists to avoid parsing bugs in other applications on
   ## functions from this script which uses RegEx such as grep.
-  if [[ ! ${name} =~ ^[a-z_][-a-z0-9_.@]+\$?$ ]]; then
+  if [[ ! ${name} =~ ^[a-zA-Z][a-zA-Z0-9_.@-]*\$?$ ]]; then
     log error "Invalid name: '${name}'"
     return 1
   fi
@@ -88,7 +88,7 @@ is_user(){
     log error "No user provided"
     return 1
   fi
-  is_name_valid "${user}"
+  is_name_valid "${user}" || return 1
   if has getent; then
     if getent passwd -- "${user}" >/dev/null 2>&1; then
       return 0
@@ -116,7 +116,7 @@ is_group(){
     log error "No group provided"
     return 1
   fi
-  is_name_valid "${group}"
+  is_name_valid "${group}" || return 1
   if has getent; then
     if getent group -- "${group}" >/dev/null 2>&1; then
       return 0
@@ -129,6 +129,44 @@ is_group(){
     log error "Group does not exist: '${group}'"
     return 1
   fi
+}
+
+
+## Description: Check whether a non-root account belongs to a group.
+## Output: None
+## Return: 0 if account exists, 1 otherwise.
+## Usage: group_has_nonroot_member GROUP
+## Example: group_has_nonroot_member sudo
+group_has_nonroot_member() {
+  has getent || return 1
+  log info "${FUNCNAME[0]} $*"
+  local group group_gid members_list_str member entry_name entry_gid
+  local -a member_list
+  group="${1:-}"
+  if test -z "${group}"; then
+    log error "No group provided"
+    return 1
+  fi
+  is_name_valid "${group}" || return 1
+  group_gid="$(getent group -- "${group}" 2>/dev/null | cut -d: -f3)" || true
+  [ -n "${group_gid}" ] || return 1
+
+  ## Check user primary GIDs
+  while IFS=":" read -r entry_name _ _ entry_gid _; do
+    if [ "${entry_gid}" = "${group_gid}" ] && [ "${entry_name}" != "root" ]; then
+      return 0
+    fi
+  done < <(getent passwd)
+
+  ## Check supplementary members
+  member_list_str="$(getent group -- "${group}" 2>/dev/null | cut -d: -f4)" || true
+  IFS="," read -r -a member_list <<< "${member_list_str}" || true
+  for member in "${member_list[@]}"; do
+    if [ -n "${member}" ] && [ "${member}" != "root" ]; then
+      return 0
+    fi
+  done
+  return 1
 }
 
 
@@ -158,6 +196,9 @@ get_pass(){
 ## Output: Password prefix is trimmed.
 ## Usage: get_clean_pass USER PREFIX
 ## Example: get_clean_pass user '!*'
+## Note that the prefix is used as part of a regex bracket expression,
+## therefore any brackets in it must be escaped and any dash if present must
+## be the first or last character.
 get_clean_pass(){
   log info "${FUNCNAME[0]} $*"
   local user pass symbol
@@ -165,10 +206,8 @@ get_clean_pass(){
   is_user "${user}"
   symbol="${2:-"!*"}"
   pass="$(get_pass "${user}")"
-  local idx
-  for (( idx=0; idx < ${#symbol}; idx++ )); do
-    pass="${pass#"${symbol:${idx}:1}"}"
-  done
+  [[ "${pass}" =~ [${symbol}]*(.*) ]] || return 1
+  pass="${BASH_REMATCH[1]}"
   printf '%s\n' "${pass}"
 }
 
@@ -259,7 +298,7 @@ lock_pass(){
 unlock_pass(){
   log info "${FUNCNAME[0]} $*"
   has chpasswd
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}"
   if ! is_pass_locked "${user}"; then
@@ -279,7 +318,7 @@ unlock_pass(){
 disable_pass(){
   log info "${FUNCNAME[0]} $*"
   has chpasswd
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}"
   if is_pass_disabled "${user}"; then
@@ -302,7 +341,7 @@ disable_pass(){
 enable_pass(){
   log info "${FUNCNAME[0]} $*"
   has chpasswd
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}"
   if ! is_pass_disabled "${user}"; then
@@ -445,7 +484,11 @@ get_entry(){
       is_group "${user}"
       ;;
   esac
-  index="$(get_field "${db}" "${field}")"
+  index="$(get_field "${db}" "${field}")" || return 1
+  if test -z "${index}"; then
+    log error "No field index for ${db} field '${field}'"
+    return 1
+  fi
   ## Avoid failing on last empty field adding a field delimiter at last.
   IFS=":" read -ra entry <<<"$(getent -- "${db}" "${user}"):"
   printf '%s' "${entry[$((index))]}"

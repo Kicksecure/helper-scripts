@@ -3,6 +3,8 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict -- sourced library.
+
 # shellcheck source=./accountctl.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/accountctl.sh
 
@@ -12,36 +14,36 @@ USER_CREATE_GROUP_ADD_LIST=()
 zsh_yes_or_no() {
    zsh_enable=""
    if [ -f "/etc/nozsh" ]; then
-      printf '%s\n' "$0: INFO: No shell change because file /etc/nozsh exists, ok."
+      printf '%s\n' "${0}: INFO: No shell change because file /etc/nozsh exists, ok."
       zsh_enable=no
       return 0
    fi
    if [ -f "/usr/local/etc/nozsh" ]; then
-      printf '%s\n' "$0: INFO: No shell change because file /usr/local/etc/nozsh exists, ok."
+      printf '%s\n' "${0}: INFO: No shell change because file /usr/local/etc/nozsh exists, ok."
       zsh_enable=no
       return 0
    fi
 
    if grep --quiet -- 'nozsh' /proc/cmdline; then
-      printf '%s\n' "$0: INFO: No shell change because nozsh in kernel command line, ok."
+      printf '%s\n' "${0}: INFO: No shell change because nozsh in kernel command line, ok."
       zsh_enable=no
       return 0
    fi
 
    if ! test -x /usr/bin/zsh ; then
-      printf '%s\n' "$0: INFO: No shell change because /usr/bin/zsh does not exist or is not executable, ok."
+      printf '%s\n' "${0}: INFO: No shell change because /usr/bin/zsh does not exist or is not executable, ok."
       zsh_enable=no
       return 0
    fi
 
-   true "$0: INFO: /usr/bin/zsh is executable."
+   true "${0}: INFO: /usr/bin/zsh is executable."
 
    zsh_enable=yes
 }
 
 add_linux_user_account() {
-  if id -- "$USER_CREATE_USERNAME" &>/dev/null ; then
-    true "INFO: User '$USER_CREATE_USERNAME' already exists, skip creation."
+  if id -- "${USER_CREATE_USERNAME}" &>/dev/null ; then
+    true "INFO: User '${USER_CREATE_USERNAME}' already exists, skip creation."
     return 0
   fi
 
@@ -60,7 +62,7 @@ add_linux_user_account() {
   ## https://forums.whonix.org/t/bug-not-all-files-form-etc-skel-are-copied-to-home-user/6778/4
   ##
   ## old:
-  #useradd --no-create-home --password "$password" --user-group --shell /bin/bash "$user_to_be_created"
+  #useradd --no-create-home --password "${password}" --user-group --shell /bin/bash "${user_to_be_created}"
   ##
   ## Prefer adduser rather than useradd.
   ##
@@ -70,7 +72,7 @@ add_linux_user_account() {
   ## --disabled-password
   ## Do not run passwd(1) to set a password. In most situations, logins are still possible though
   ## (for example using SSH keys or through PAM) for reasons that are beyond adduser's scope.
-  adduser --no-create-home --disabled-password --comment "" -- "$USER_CREATE_USERNAME"
+  adduser --no-create-home --disabled-password --comment "" -- "${USER_CREATE_USERNAME}"
   true "INFO: User created."
 }
 
@@ -94,8 +96,8 @@ password_empty_for_user_account() {
   ## /etc/shadow:
   #user:!:19932:0:99999:7:::
 
-  printf '%s\n' "INFO: Set empty password for account '$USER_CREATE_USERNAME'..."
-  passwd --delete -- "$USER_CREATE_USERNAME"
+  printf '%s\n' "INFO: Set empty password for account '${USER_CREATE_USERNAME}'..."
+  passwd --delete -- "${USER_CREATE_USERNAME}"
   ## /etc/shadow:
   #user::19932:0:99999:7:::
 }
@@ -105,40 +107,40 @@ add_groups_to_linux_user_account() {
   for group_item in "${USER_CREATE_GROUP_ADD_LIST[@]}"; do
     ## Use '&>/dev/null' to suppress error from 'is_group'.
     #log error "Group does not exist: '${group}'"
-    if ! is_group "$group_item" &>/dev/null; then
-      addgroup --system -- "$group_item"
+    if ! is_group "${group_item}" &>/dev/null; then
+      addgroup --system -- "${group_item}"
     fi
 
-    adduser -- "$USER_CREATE_USERNAME" "$group_item"
+    adduser -- "${USER_CREATE_USERNAME}" "${group_item}"
   done
 }
 
 linux_user_account_shell_to_zsh() {
   zsh_yes_or_no
-  true "zsh_enable: $zsh_enable"
-  if [ ! "$zsh_enable" = "yes" ]; then
+  true "zsh_enable: ${zsh_enable}"
+  if [ ! "${zsh_enable}" = "yes" ]; then
     return 0
   fi
 
-  printf '%s\n' "$0: INFO: For more information, see: https://www.kicksecure.com/shell#default"
+  printf '%s\n' "${0}: INFO: For more information, see: https://www.kicksecure.com/shell#default"
 
-  if ! id -- "$USER_CREATE_USERNAME" &>/dev/null ; then
-    printf '%s\n' "$0: INFO: account '$USER_CREATE_USERNAME' does not exist. Not setting shell to 'zsh'."
+  if ! id -- "${USER_CREATE_USERNAME}" &>/dev/null ; then
+    printf '%s\n' "${0}: INFO: account '${USER_CREATE_USERNAME}' does not exist. Not setting shell to 'zsh'."
     return 0
   fi
 
   ## Use getent to retrieve the account's entry from /etc/passwd
-  user_passwd_entry=$(getent passwd -- "$USER_CREATE_USERNAME")
+  user_passwd_entry=$(getent passwd -- "${USER_CREATE_USERNAME}")
 
   ## Extract the shell field (the last field) from the account's entry
-  user_default_shell=$(printf '%s\n' "$user_passwd_entry" | awk -F: '{print $NF}')
+  user_default_shell=$(printf '%s\n' "${user_passwd_entry}" | awk -F: '{print $NF}')
 
-  if [ "$user_default_shell" = "/usr/bin/zsh" ]; then
+  if [ "${user_default_shell}" = "/usr/bin/zsh" ]; then
     true "INFO: user_default_shell is already /usr/bin/zsh. Skipping. Ok."
     return 0
   fi
 
-  printf '%s\n' "$0: INFO: Setting shell for account '$USER_CREATE_USERNAME' to 'zsh'..."
+  printf '%s\n' "${0}: INFO: Setting shell for account '${USER_CREATE_USERNAME}' to 'zsh'..."
   ## chsh validates the requested shell against /etc/shells and prints
   ## a warning if it is not listed (it still updates /etc/passwd when
   ## run as root, so the operation succeeds -- but the warning is
@@ -152,18 +154,16 @@ linux_user_account_shell_to_zsh() {
   ## debianutils, hence the '|| true'.
   update-shells >/dev/null 2>&1 || true
   ## Use 'timeout' to prevent unexplained bug password prompt caused by 'chsh'.
-  if timeout --kill-after 5 5 chsh --shell /usr/bin/zsh -- "$USER_CREATE_USERNAME" ; then
-     printf '%s\n' "$0: INFO: Shell for account '$USER_CREATE_USERNAME' has been set to 'zsh', ok."
+  if timeout --kill-after 5 5 chsh --shell /usr/bin/zsh -- "${USER_CREATE_USERNAME}" ; then
+     printf '%s\n' "${0}: INFO: Shell for account '${USER_CREATE_USERNAME}' has been set to 'zsh', ok."
   else
-    if [ "$derivative_maker" = "true" ]; then
-      printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh -- $USER_CREATE_USERNAME' failed during the build process. (return 1 because derivative_maker=true)"
+    ## 'derivative_maker=true' is set for every derivative-maker build (ISO and
+    ## VM/disk alike).
+    if [ "${derivative_maker:-}" = "true" ]; then
+      printf '%s\n' "${0}: ERROR: Command 'chsh --shell /usr/bin/zsh -- ${USER_CREATE_USERNAME}' failed during the build process. (return 1 because derivative_maker=true)"
       return 1
     fi
-    if [ -f '/var/lib/dist-base-files/live_build' ]; then
-      printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh -- $USER_CREATE_USERNAME' failed during the build process. (return 1 because /var/lib/dist-base-files/live_build exists)"
-      return 1
-    fi
-    printf '%s\n' "$0: ERROR: Command 'chsh --shell /usr/bin/zsh -- $USER_CREATE_USERNAME' failed. This is only a minor issue."
+    printf '%s\n' "${0}: ERROR: Command 'chsh --shell /usr/bin/zsh -- ${USER_CREATE_USERNAME}' failed. This is only a minor issue."
     return 0
   fi
 }
