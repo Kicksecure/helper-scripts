@@ -355,6 +355,22 @@ is_integer(){
   printf '%d' "$1" >/dev/null 2>&1 || return 1
 }
 
+## same as is_whole_number, but rejects zero (positive integers only).
+## pass:
+## 1
+## 42
+## fail:
+## everything is_whole_number rejects, plus 0
+is_positive_integer() {
+  if ! is_whole_number "$1" ; then
+    return 1
+  fi
+  if [ "$1" = "0" ] ; then
+    return 1
+  fi
+  return 0
+}
+
 ## NOTE: Duplicated in package 'uwt' file 'curl.anondist'.
 ## Input is trusted. The caller is expected to pass a valid whole number.
 ## /dev/random is used intentionally instead of /dev/urandom.
