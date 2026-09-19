@@ -350,9 +350,11 @@ is_whole_number() {
   [[ "$1" =~ ^(0|[1-9][0-9]*)$ ]]
 }
 
-## same results as is_whole_number, but also allows negative numbers
+## same results as is_whole_number, but also allows a leading minus (negative
+## integers). Decimal only -- hex (0x1A) and octal (0100) are rejected, since
+## every caller (ports, IP octets, versions, timestamps) treats those as malformed.
 is_integer(){
-  printf '%d' "$1" >/dev/null 2>&1 || return 1
+  [[ "$1" =~ ^(0|-?[1-9][0-9]*)$ ]]
 }
 
 ## same as is_whole_number, but rejects zero (positive integers only).
