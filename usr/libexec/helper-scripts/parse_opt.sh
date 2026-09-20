@@ -137,10 +137,22 @@ range_arg(){
   #range="${list#"${1} "}"
   if [ -n "${var:-}" ]; then
     success=0
+    ## Compare allow-list entries LITERALLY. Splitting on the separators is
+    ## intended, but globbing must be OFF so an entry like 'a*' is matched as-is
+    ## instead of being expanded against the current directory's files. Save and
+    ## restore the caller's noglob state (this is a sourced library).
+    range_arg_glob_was_off="false"
+    case "$-" in
+      *f*)
+        range_arg_glob_was_off="true"
+        ;;
+    esac
+    set -o noglob
     for tests in ${list:-}; do
       ## only evaluate if matches all chars
       [ "${var:-}" = "${tests}" ] && success=1 && break
     done
+    [ "${range_arg_glob_was_off}" = "true" ] || set +o noglob
     ## if not within range, fail and show the fixed range that can be used
     if [ "${success}" -eq 0 ]; then
       die 2 "Option '${key}' cannot be '${var:-}'. Possible values: '${list}'"
