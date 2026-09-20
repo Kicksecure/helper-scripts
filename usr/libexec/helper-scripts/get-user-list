@@ -26,7 +26,8 @@ read_adduser_conf_field() {
   value=""
   found="false"
 
-  while IFS= read -r line; do
+  ## '|| [ -n "${line}" ]' processes a final line lacking a trailing newline.
+  while IFS= read -r line || [ -n "${line}" ]; do
     if [[ "${line}" =~ ^[[:space:]]*${key}[[:space:]]*= ]]; then
       value="${line#*=}"
       found="true"
@@ -46,14 +47,17 @@ read_adduser_conf_field() {
 }
 
 if test -r "${adduser_conf_path}"; then
+  ## Modern adduser ships FIRST_UID/LAST_UID commented out (defaults are
+  ## built into adduser), so an absent/empty field is normal: fall through to
+  ## the defaults below. Only a field that is present but non-numeric is an error.
   first_uid="$(read_adduser_conf_field FIRST_UID)"
-  if ! is_whole_number "${first_uid}"; then
+  if [ -n "${first_uid}" ] && ! is_whole_number "${first_uid}"; then
     printf '%s\n' "$0: ERROR: FIRST_UID in file '${adduser_conf_path}' is not a whole number!" >&2
     exit 1
   fi
 
   last_uid="$(read_adduser_conf_field LAST_UID)"
-  if ! is_whole_number "${last_uid}"; then
+  if [ -n "${last_uid}" ] && ! is_whole_number "${last_uid}"; then
     printf '%s\n' "$0: ERROR: LAST_UID in file '${adduser_conf_path}' is not a whole number!" >&2
     exit 1
   fi
@@ -71,13 +75,18 @@ if ! test -r "${passwd_path}"; then
   exit 1
 fi
 
-while read -r user_entry; do
+## '|| [ -n "${user_entry}" ]' processes a final line lacking a trailing newline.
+while read -r user_entry || [ -n "${user_entry}" ]; do
+   [ -n "${user_entry}" ] || continue
    current_uid="$(cut -d':' -f3 <<< "${user_entry}")"
-   if [ "${current_uid}" -ge "${first_uid}" ] \
-      && [ "${current_uid}" -le "${last_uid}" ]; then
-      cut -d':' -f1 <<< "${user_entry}"
-   elif [ "${current_uid}" = '0' ]; then
-      ## Include the root user in the list.
+   ## Skip a malformed entry (empty / non-numeric UID) cleanly rather than let
+   ## the numeric tests below emit '[: integer expression expected' and drop it.
+   is_whole_number "${current_uid}" || continue
+   if { [ "${current_uid}" -ge "${first_uid}" ] \
+      && [ "${current_uid}" -le "${last_uid}" ]; } \
+      || [ "${current_uid}" -eq 0 ]; then
+      ## In-range users, plus root (numeric compare so a leading-zero UID like
+      ## '00' still matches).
       cut -d':' -f1 <<< "${user_entry}"
    fi
 done < "${passwd_path}"

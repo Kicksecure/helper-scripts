@@ -34,6 +34,10 @@ trap "sigterm_trap" SIGTERM SIGINT
 [[ -v timeout_after ]] || timeout_after="600"
 [[ -v kill_after ]] || kill_after="10"
 
+## No user arguments are forwarded to 'apt-get update'. This runs as root via the
+## sudoers / privleap 'apt-get-update' action (both invoke it with no arguments),
+## and forwarding "$@" would let a caller inject 'apt-get -o
+## APT::Update::Pre-Invoke=<cmd>' and run <cmd> as root.
 start-stop-daemon \
   --make-pidfile \
   --pidfile "${pidfile}" \
@@ -42,7 +46,7 @@ start-stop-daemon \
   -- \
     --kill-after="${kill_after}" \
     "${timeout_after}" \
-      apt-get-noninteractive update --error-on=any "$@" &
+      apt-get-noninteractive update --error-on=any &
 
 lastpid="$!"
 wait "${lastpid}"

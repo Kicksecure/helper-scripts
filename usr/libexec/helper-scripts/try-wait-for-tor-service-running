@@ -9,6 +9,7 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 delay_ctr=0
 
@@ -17,10 +18,12 @@ while (( delay_ctr < 120 )); do
     --property ActiveState)"
   case "${tor_active_state}" in
     'ActiveState=active')
-      break
+      exit 0
       ;;
     'ActiveState=failed')
-      break
+      ## Fail CLOSED: a caller gating on this must not proceed as if Tor is up
+      ## when the service has failed (anonymity-relevant).
+      exit 1
       ;;
     *)
       sleep 1
@@ -28,3 +31,6 @@ while (( delay_ctr < 120 )); do
       ;;
   esac
 done
+
+## Timed out without Tor ever becoming active: fail closed.
+exit 1
