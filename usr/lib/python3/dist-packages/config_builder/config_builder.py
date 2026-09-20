@@ -8,8 +8,11 @@ config_builder.py: Builds configuration directories containing INI-style
 configuration into a single configuration file.
 """
 
+import os
 import re
+import shutil
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 
 def config_file_to_config_state(
@@ -109,21 +112,47 @@ def write_config_file(
     Serializes a config state dictionary to a file.
     """
 
-    with open(output_file, "w", encoding="utf-8") as output_stream:
+    ## Write to a same-directory temp file then os.replace, an atomic rename on
+    ## one filesystem: an interrupted, failed, or crashed write leaves the
+    ## previous config intact rather than truncating the target in place. On any
+    ## error the temp file is removed and the original is untouched.
+    # pylint: disable=consider-using-with
+    temp_file = NamedTemporaryFile(
+        mode="w", encoding="utf-8", delete=False, dir=output_file.parent
+    )
+    try:
         ## Write values that are outside of any particular section first
         if "" in config_state:
             for nest_key, nest_value in config_state[""].items():
-                output_stream.write(f"{nest_key}={nest_value}\n")
-            output_stream.write("\n")
+                temp_file.write(f"{nest_key}={nest_value}\n")
+            temp_file.write("\n")
 
         ## Now write all the sections
         for key, value in config_state.items():
             if key == "":
                 continue
-            output_stream.write(f"[{key}]\n")
+            temp_file.write(f"[{key}]\n")
             for nest_key, nest_value in value.items():
-                output_stream.write(f"{nest_key}={nest_value}\n")
-            output_stream.write("\n")
+                temp_file.write(f"{nest_key}={nest_value}\n")
+            temp_file.write("\n")
+
+        temp_file.flush()
+        os.fsync(temp_file.fileno())
+        temp_file.close()
+        if output_file.exists():
+            shutil.copymode(output_file, temp_file.name)
+        else:
+            current_umask = os.umask(0)
+            os.umask(current_umask)
+            os.chmod(temp_file.name, 0o666 & (current_umask ^ 0o777))
+        os.replace(temp_file.name, output_file)
+    except BaseException:
+        temp_file.close()
+        try:
+            os.unlink(temp_file.name)
+        except FileNotFoundError:
+            pass
+        raise
 
 
 def build_config_file(config_dir: Path, output_file: Path) -> None:
