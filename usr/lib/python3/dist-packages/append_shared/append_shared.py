@@ -134,11 +134,6 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
     temp_file = None
     try:
         # pylint: disable=consider-using-with
-        ## Same-directory temp + os.replace is an atomic rename on one
-        ## filesystem, so a concurrent reader (or a crash) sees either the old or
-        ## the new file, never a half-written one. shutil.move would fall back to
-        ## a non-atomic cross-filesystem copy whenever the default temp dir
-        ## (TMPDIR / /tmp) is on a different filesystem than the target.
         temp_file = NamedTemporaryFile(
             mode="w", delete=False, dir=file_path.parent
         )
@@ -147,9 +142,8 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
         os.fsync(temp_file.fileno())
         temp_file.close()
         if file_path.exists():
-            ## Preserve the existing file's owner + mode across the replace, so
-            ## appending to a service-owned file as root does not change it to
-            ## root-owned. chown needs privilege; best-effort where we lack it.
+            ## Preserve the existing file's owner + mode across the replace if
+            ## possible.
             stat_result = os.stat(file_path)
             try:
                 os.chown(temp_file.name, stat_result.st_uid, stat_result.st_gid)
@@ -161,7 +155,9 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
             os.umask(current_umask)
             new_mode = 0o666 & (current_umask ^ 0o777)
             os.chmod(temp_file.name, new_mode)
-        os.replace(temp_file.name, file_path)
+        ## It is more important that the move succeed than that it be atomic,
+        ## therefore not using os.replace().
+        shutil.move(temp_file.name, file_path)
     except Exception:
         try:
             if temp_file is not None:

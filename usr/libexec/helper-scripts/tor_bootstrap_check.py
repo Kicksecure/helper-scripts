@@ -31,14 +31,16 @@ print(format(bootstrap_status))
 progress_percent = re.match('.* PROGRESS=([0-9]+).*', bootstrap_status)
 
 if progress_percent is None:
-    ## No PROGRESS= field. Do NOT fall through to a NoneType crash whose exit
-    ## code 1 is indistinguishable from "1% bootstrapped"; report a dedicated
-    ## "status unknown" code the caller can tell apart from a real percentage.
     print("ERROR: could not parse PROGRESS from bootstrap-phase.", file=sys.stderr)
     controller.close()
     sys.exit(254)
 
-exit_code = int(progress_percent.group(1))
+try:
+    exit_code = int(progress_percent.group(1))
+except Exception:
+    print("ERROR: PROGRESS from bootstrap-phase is not an integer!", file=sys.stderr)
+    controller.close()
+    sys.exit(254)
 
 controller.close()
 

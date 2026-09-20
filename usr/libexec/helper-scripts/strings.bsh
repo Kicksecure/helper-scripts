@@ -336,7 +336,7 @@ string_quote_safe() {
   LC_ALL=C printf '%q' "$1"
 }
 
-## success: whole numbers such as 1 2 3 456 etc. (purely numeric only) (isnum)
+## success: whole positive numbers such as 1 2 3 456 etc., and 0. (purely numeric only) (isnum)
 ## fail:
 ## 5.5
 ## 5,500
@@ -350,26 +350,15 @@ is_whole_number() {
   [[ "$1" =~ ^(0|[1-9][0-9]*)$ ]]
 }
 
-## same results as is_whole_number, but also allows a leading minus (negative
-## integers). Decimal only -- hex (0x1A) and octal (0100) are rejected, since
-## every caller (ports, IP octets, versions, timestamps) treats those as malformed.
+## same results as is_whole_number, but also allows negative numbers
 is_integer(){
   [[ "$1" =~ ^(0|-?[1-9][0-9]*)$ ]]
 }
 
-## same as is_whole_number, but rejects zero (positive integers only).
-## pass:
-## 1
-## 42
-## fail:
-## everything is_whole_number rejects, plus 0
+## same as is_whole_number, but rejects 0
 is_positive_integer() {
-  if ! is_whole_number "$1" ; then
-    return 1
-  fi
-  if [ "$1" = "0" ] ; then
-    return 1
-  fi
+  is_whole_number "$1" || return 1
+  [ "$1" = "0" ] && return 1
   return 0
 }
 
