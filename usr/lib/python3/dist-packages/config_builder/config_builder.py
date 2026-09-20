@@ -112,40 +112,59 @@ def write_config_file(
     Serializes a config state dictionary to a file.
     """
 
-    ## Write to a same-directory temp file then os.replace, an atomic rename on
-    ## one filesystem: an interrupted, failed, or crashed write leaves the
-    ## previous config intact rather than truncating the target in place. On any
-    ## error the temp file is removed and the original is untouched.
-    # pylint: disable=consider-using-with
-    temp_file = NamedTemporaryFile(
-        mode="w", encoding="utf-8", delete=False, dir=output_file.parent
-    )
-    try:
+    def _serialize(stream) -> None:
         ## Write values that are outside of any particular section first
         if "" in config_state:
             for nest_key, nest_value in config_state[""].items():
-                temp_file.write(f"{nest_key}={nest_value}\n")
-            temp_file.write("\n")
-
+                stream.write(f"{nest_key}={nest_value}\n")
+            stream.write("\n")
         ## Now write all the sections
         for key, value in config_state.items():
             if key == "":
                 continue
-            temp_file.write(f"[{key}]\n")
+            stream.write(f"[{key}]\n")
             for nest_key, nest_value in value.items():
-                temp_file.write(f"{nest_key}={nest_value}\n")
-            temp_file.write("\n")
+                stream.write(f"{nest_key}={nest_value}\n")
+            stream.write("\n")
 
+    ## Resolve a symlink to its target so the LINK is updated in place, not
+    ## replaced by a regular file (os.replace onto the link would drop it).
+    target = Path(os.path.realpath(output_file))
+
+    ## Write to a same-directory temp file then os.replace: an atomic rename on
+    ## one filesystem, so an interrupted/failed/crashed write leaves the previous
+    ## config intact rather than truncating it in place. Requires a writable
+    ## target directory; when it is not writable (a rare read-only dir holding a
+    ## writable file) fall back to a direct in-place write, which cannot be atomic.
+    # pylint: disable=consider-using-with
+    try:
+        temp_file = NamedTemporaryFile(
+            mode="w", encoding="utf-8", delete=False, dir=target.parent
+        )
+    except OSError:
+        with open(target, "w", encoding="utf-8") as output_stream:
+            _serialize(output_stream)
+        return
+    try:
+        _serialize(temp_file)
         temp_file.flush()
         os.fsync(temp_file.fileno())
         temp_file.close()
-        if output_file.exists():
-            shutil.copymode(output_file, temp_file.name)
+        if target.exists():
+            ## Preserve the existing file's owner + mode across the replace, so
+            ## e.g. regenerating a service-owned config as root does not change it
+            ## to root-owned. chown needs privilege; best-effort where we lack it.
+            stat_result = target.stat()
+            try:
+                os.chown(temp_file.name, stat_result.st_uid, stat_result.st_gid)
+            except PermissionError:
+                pass
+            shutil.copymode(target, temp_file.name)
         else:
             current_umask = os.umask(0)
             os.umask(current_umask)
             os.chmod(temp_file.name, 0o666 & (current_umask ^ 0o777))
-        os.replace(temp_file.name, output_file)
+        os.replace(temp_file.name, target)
     except BaseException:
         temp_file.close()
         try:

@@ -147,6 +147,14 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
         os.fsync(temp_file.fileno())
         temp_file.close()
         if file_path.exists():
+            ## Preserve the existing file's owner + mode across the replace, so
+            ## appending to a service-owned file as root does not change it to
+            ## root-owned. chown needs privilege; best-effort where we lack it.
+            stat_result = os.stat(file_path)
+            try:
+                os.chown(temp_file.name, stat_result.st_uid, stat_result.st_gid)
+            except PermissionError:
+                pass
             shutil.copymode(file_path, temp_file.name)
         else:
             current_umask = os.umask(0)
