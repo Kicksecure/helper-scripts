@@ -58,11 +58,18 @@ if [[ "$crypt_dev_idx" = *[!0-9]* ]]; then
   exit 1
 fi
 
-if (( crypt_dev_idx > ${#crypt_dev_list[@]} )) || (( crypt_dev_idx == 0 )); then
+## Force base-10 (a leading zero must not be read as octal) and require the value
+## to be within [1, count]. A bare '> count || == 0' check is bypassed by a value
+## like 2**64-1, which wraps to -1 in 64-bit arithmetic: it is neither > count nor
+## == 0, then '(( idx-- ))' makes it -2 and '${crypt_dev_list[-2]}' selects a real
+## device via negative-index addressing. The '>= 1 && <= count' form rejects the
+## wrapped negative instead.
+if ! (( 10#${crypt_dev_idx} >= 1 && 10#${crypt_dev_idx} <= ${#crypt_dev_list[@]} )); then
   printf "%s\n" "$0: ERROR: Provided value is out of range. Please specify a disk number. $unchanged_test" >&2
   exit 1
 fi
 
+crypt_dev_idx="$(( 10#${crypt_dev_idx} ))"
 (( crypt_dev_idx-- )) || true
 target_crypt_dev="${crypt_dev_list[crypt_dev_idx]}"
 
