@@ -93,7 +93,11 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
             if not os.access(file_path, os.R_OK):
                 _print_error(f"File '{str(orig_file_path)}' not readable!")
                 return 1
-            with open(file_path, "r", encoding="utf-8") as f:
+            ## newline="" preserves the file's existing line endings
+            ## byte-for-byte: without it, universal-newlines translation
+            ## silently rewrites every CRLF in the pre-existing content to
+            ## LF on read, corrupting a file that must keep CRLF.
+            with open(file_path, "r", encoding="utf-8", newline="") as f:
                 try:
                     file_contents = f.read()
                 except Exception:
@@ -135,12 +139,21 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
     try:
         # pylint: disable=consider-using-with
         ## Same-directory temp + os.replace is an atomic rename on one
-        ## filesystem, so a concurrent reader (or a crash) sees either the old or
-        ## the new file, never a half-written one. shutil.move would fall back to
-        ## a non-atomic cross-filesystem copy whenever the default temp dir
-        ## (TMPDIR / /tmp) is on a different filesystem than the target.
+        ## filesystem, so a concurrent reader (or a crash) sees either the
+        ## old or the new file, never a half-written one. shutil.move would
+        ## fall back to a non-atomic cross-filesystem copy whenever the
+        ## default temp dir (TMPDIR / /tmp) is on a different filesystem than
+        ## the target.
+        ## encoding + newline must match the read above: default (locale)
+        ## encoding would mis-encode non-ASCII under a non-UTF-8 locale
+        ## (read as UTF-8, written as something else), and newline="" keeps
+        ## os.linesep translation from rewriting the content's endings.
         temp_file = NamedTemporaryFile(
-            mode="w", delete=False, dir=file_path.parent
+            mode="w",
+            encoding="utf-8",
+            newline="",
+            delete=False,
+            dir=file_path.parent,
         )
         temp_file.write(file_contents)
         temp_file.flush()

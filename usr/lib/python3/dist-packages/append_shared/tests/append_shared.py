@@ -10,6 +10,8 @@ Tests for the append_shared tools.
 import os
 import stat
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
@@ -726,4 +728,69 @@ class TestAppendShared(TestCase):
             target_file_path.read_text(encoding="utf-8"), "line 1\n"
         )
         self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_append_preserves_existing_crlf(self) -> None:
+        """
+        Tests that 'append' does not rewrite the existing content's CRLF
+        line endings to LF (universal-newlines translation would silently
+        corrupt a CRLF file when appending a single line).
+        """
+
+        target_file: str = self.work_dir + "/append_crlf"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_bytes(b"line1\r\nline2\r\n")
+        self.assertEqual(append_shared("append", [target_file, "line3"]), 0)
+        self.assertEqual(
+            target_file_path.read_bytes(), b"line1\r\nline2\r\nline3\n"
+        )
+        self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_append_writes_utf8_under_non_utf8_locale(self) -> None:
+        """
+        Tests that 'append' writes UTF-8 regardless of the ambient locale.
+        The existing content is read as UTF-8, so the write must be UTF-8
+        too; under a non-UTF-8 locale the old locale-encoded write raised
+        UnicodeEncodeError (swallowed as a misleading "sticky?" error) and
+        wrote nothing. Runs in a subprocess so the locale can be forced.
+        """
+
+        target_file: str = self.work_dir + "/append_locale_utf8"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("existing\n", encoding="utf-8")
+        dist_packages: str = str(Path(__file__).resolve().parents[2])
+        env: dict[str, str] = dict(os.environ)
+        ## ASCII locale + UTF-8 mode off: locale.getpreferredencoding()
+        ## is then ASCII, which is what tripped the old locale-encoded write.
+        env["LC_ALL"] = "C"
+        env["PYTHONUTF8"] = "0"
+        env["PYTHONPATH"] = dist_packages + (
+            ":" + env["PYTHONPATH"] if env.get("PYTHONPATH") else ""
+        )
+        ## chr(0xe9) = e-acute; kept out of the source as a raw byte per the
+        ## no-raw-non-ASCII-in-test-source rule.
+        code: str = (
+            "import sys\n"
+            "from append_shared.append_shared import append_shared\n"
+            "line = 'caf' + chr(0xe9)\n"
+            f"sys.exit(append_shared('append', [{target_file!r}, line]))\n"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            ## Run from dist-packages so 'append_shared' resolves to the
+            ## package, not the same-named source file in its own directory.
+            cwd=dist_packages,
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            target_file_path.read_bytes(),
+            "existing\ncaf".encode("utf-8")
+            + chr(0xE9).encode("utf-8")
+            + b"\n",
+        )
         os.unlink(target_file)
