@@ -25,7 +25,7 @@ on:
   workflow_dispatch:
     inputs:
       fuzz_seconds:
-        description: 'Per-fuzzer time budget in seconds (batch job)'
+        description: 'Total fuzzing seconds (batch job; split across all fuzz targets)'
         required: false
         default: '600'
   pull_request:
@@ -52,4 +52,6 @@ jobs:
       fuzz-seconds-batch: ${{ github.event.inputs.fuzz_seconds || '600' }}
     permissions:
       contents: read
-      security-events: write
+      ## Corpus artifact download in the reusable needs actions: read;
+      ## reusable job permissions cannot exceed what the caller grants.
+      actions: read
