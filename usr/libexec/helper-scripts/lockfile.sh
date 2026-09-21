@@ -33,20 +33,20 @@ true "${BASH_SOURCE[0]}: INFO: FLOCKER: ${FLOCKER-}"
 ## Per-user lock directory (see the per-user-by-design note at the top). The lock
 ## never lives in /tmp. Prefer the caller's private per-user runtime dir (mode
 ## 0700, root-created -- fully isolated). Where none exists (e.g. a session-less
-## root run) fall back to a per-user subdirectory of '/run/flocker', a
+## root run) fall back to a per-user subdirectory of '/run/lockfile', a
 ## root-provisioned base (tmpfiles.d, 1777 root:root): root owns the base, so
 ## unlike /tmp an unprivileged user cannot pre-create or symlink it.
 flocker_runtime_dir="${XDG_RUNTIME_DIR:-/run/user/${EUID}}"
 if [ -d "${flocker_runtime_dir}" ] && [ ! -L "${flocker_runtime_dir}" ]; then
-  flocker_temp_folder="${flocker_runtime_dir}/flocker"
-elif [ -d /run/flocker ] && [ ! -L /run/flocker ]; then
-  flocker_temp_folder="/run/flocker/${EUID}"
+  flocker_temp_folder="${flocker_runtime_dir}/lockfile"
+elif [ -d /run/lockfile ] && [ ! -L /run/lockfile ]; then
+  flocker_temp_folder="/run/lockfile/${EUID}"
 else
-  printf '%s\n' "$0: ERROR: no per-user runtime dir and '/run/flocker' is missing or a symlink; cannot create a lock directory!" 1>&2
+  printf '%s\n' "$0: ERROR: no per-user runtime dir and '/run/lockfile' is missing or a symlink; cannot create a lock directory!" 1>&2
   exit 1
 fi
 mkdir --parents -- "${flocker_temp_folder}"
-## Belt-and-suspenders for the shared '/run/flocker' base: refuse a symlinked
+## Belt-and-suspenders for the shared '/run/lockfile' base: refuse a symlinked
 ## per-user dir another user could have pre-created (mkdir --parents follows it).
 if [ -L "${flocker_temp_folder}" ]; then
   printf '%s\n' "$0: ERROR: refusing lock directory '${flocker_temp_folder}': it is a symlink!" 1>&2
