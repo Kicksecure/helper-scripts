@@ -4,6 +4,10 @@
 ## Copyright (C) 2014 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## TOR_*/DATE_RE are set at runtime by variables() via default_if_empty (and are
+## overridable from the environment), so shellcheck cannot see the assignment.
+# shellcheck disable=SC2154
+
 #set -x
 set -o errexit
 set -o nounset
@@ -39,9 +43,26 @@ parse_cmd_options() {
    ## Thanks to:
    ## http://mywiki.wooledge.org/BashFAQ/035
 
+   ## Initialize every option flag so the post-loop dispatch tests stay
+   ## nounset-safe when the corresponding option is not passed.
+   has_consensus_="false"
+   current_time_in_valid_range_="false"
+   show_valid_after_="false"
+   show_valid_until_="false"
+   show_middle_range_="false"
+   tor_cert_lifetime_valid_="false"
+   tor_cert_valid_after_="false"
+   verified_only_="false"
+   prefer_verified_="false"
+   unverified_only_="false"
+   user_permission_="false"
+   group_permission_="false"
+
    while :
    do
-       case $1 in
+       ## '${1:-}' keeps the loop nounset-safe once the last option is shifted
+       ## away (callers invoke options-only, with no trailing positional or '--').
+       case ${1:-} in
            --verbose)
                printf '%s\n' "$0: verbose output... Script running as whoami: '$(whoami)'"
                set -x
