@@ -39,9 +39,22 @@ read_adduser_conf_field() {
     return 0
   fi
 
-  ## Strip whitespace.
+  ## adduser sources adduser.conf as shell, so mirror those semantics: drop a
+  ## trailing whitespace-preceded '#' comment, strip surrounding whitespace,
+  ## then one layer of matching surrounding quotes.
+  value="${value%%[[:space:]]#*}"
   value="${value#"${value%%[![:space:]]*}"}"
   value="${value%"${value##*[![:space:]]}"}"
+  if [ "${#value}" -ge 2 ]; then
+    case "${value}" in
+      \"*\")
+        value="${value:1:${#value}-2}"
+        ;;
+      \'*\')
+        value="${value:1:${#value}-2}"
+        ;;
+    esac
+  fi
 
   printf '%s' "${value}"
 }
