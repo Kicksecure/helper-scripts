@@ -43,11 +43,14 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 ## Example: is_name_valid NAME
 is_name_valid(){
   log info "${FUNCNAME[0]} $*"
-  local name
+  ## LC_ALL=C makes the [a-zA-Z] ranges ASCII-only (like Perl's /aa modifier).
+  ## Without it, a UTF-8 locale collates non-ASCII letters into [A-Z]/[a-z], so
+  ## names like 'E-acute' would pass and reach the grep-based lookups below.
+  local name LC_ALL=C
   name="${1:-}"
   ## Based on Debian adduser NAME_REGEX (Debian::AdduserCommon):
-  ##   def_name_regex     qr/^[a-zA-Z][a-zA-Z0-9_-]*\$?$/
-  ##   def_sys_name_regex qr/^[a-zA-Z_][a-zA-Z0-9_-]*\$?$/
+  ##   def_name_regex     qr/^[a-zA-Z][a-zA-Z0-9_-]*\$?$/aa
+  ##   def_sys_name_regex qr/^[a-zA-Z_][a-zA-Z0-9_-]*\$?$/aa
   ## Accept their union (uppercase, and a leading '_' for system accounts) plus
   ## '.' and '@'. This check exists to avoid parsing bugs in other applications
   ## on functions from this script which use RegEx such as grep.
