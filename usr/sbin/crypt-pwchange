@@ -55,7 +55,7 @@ if [ -z "$crypt_dev_idx" ]; then
   exit 1
 fi
 
-if ! is_positive_number "$crypt_dev_idx"; then
+if ! is_positive_integer "${crypt_dev_idx}"; then
   printf "%s\n" "$0: ERROR: Provided value is ${bold}not${nobold} a positive number. Please specify a disk number. $unchanged_test" >&2
   exit 1
 fi
