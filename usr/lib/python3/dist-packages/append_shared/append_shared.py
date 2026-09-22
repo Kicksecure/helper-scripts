@@ -93,11 +93,11 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
             if not os.access(file_path, os.R_OK):
                 _print_error(f"File '{str(orig_file_path)}' not readable!")
                 return 1
-            ## newline="" preserves the file's existing line endings
-            ## byte-for-byte: without it, universal-newlines translation
-            ## silently rewrites every CRLF in the pre-existing content to
-            ## LF on read, corrupting a file that must keep CRLF.
-            with open(file_path, "r", encoding="utf-8", newline="") as f:
+            ## Automatic conversion of newlines to LF-only is intentional.
+            ## Script is for internal use, LF is our only supported line
+            ## separator as CR can be used for some forms of Trojan Source
+            ## attacks.
+            with open(file_path, "r", encoding="utf-8") as f:
                 try:
                     file_contents = f.read()
                 except Exception:
@@ -141,7 +141,6 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
         temp_file = NamedTemporaryFile(
             mode="w",
             encoding="utf-8",
-            newline="",
             delete=False,
             dir=file_path.parent,
         )

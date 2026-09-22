@@ -126,8 +126,7 @@ def write_config_file(
             output_str += f"{nest_key}={nest_value}\n"
         output_str += "\n"
 
-    ## Write the file atomically if possible. append_shared returns a 0-success
-    ## exit code (non-zero == failure), so raise on a NON-zero return.
+    ## Write the file atomically if possible
     if append_shared("overwrite", [str(output_file), output_str]) != 0:
         raise OSError(f"Could not write file '{output_file}'!")
 
