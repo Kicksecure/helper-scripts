@@ -45,10 +45,10 @@ is_name_valid(){
   log info "${FUNCNAME[0]} $*"
   local name
   name="${1:-}"
-  ## Syntax based on /etc/adduser.conf NAME_REGEX plus dot and at sign.
-  ## This check exists to avoid parsing bugs in other applications on
-  ## functions from this script which uses RegEx such as grep.
-  if [[ ! ${name} =~ ^[a-zA-Z][a-zA-Z0-9_.@-]*\$?$ ]]; then
+  ## Syntax based on /etc/adduser.conf SYS_NAME_REGEX plus dot and at sign.
+  ## (SYS_NAME_REGEX is a strict superset of NAME_REGEX.) Avoids parsing bugs
+  ## in other applications.
+  if [[ ! ${name} =~ ^[a-zA-Z_][a-zA-Z0-9_.@-]*\$?$ ]]; then
     log error "Invalid name: '${name}'"
     return 1
   fi
@@ -140,7 +140,7 @@ is_group(){
 group_has_nonroot_member() {
   has getent || return 1
   log info "${FUNCNAME[0]} $*"
-  local group group_gid members_list_str member entry_name entry_gid
+  local group group_gid member_list_str member entry_name entry_gid
   local -a member_list
   group="${1:-}"
   if test -z "${group}"; then

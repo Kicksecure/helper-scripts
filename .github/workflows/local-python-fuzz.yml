@@ -3,16 +3,21 @@
 
 ## AI-Assisted
 
-## Coverage-guided fuzzing for the Python packages, driven by
-## ClusterFuzzLite. Atheris is the engine under the hood; the OSS-Fuzz
-## base-builder + compile_python_fuzzer pipeline wraps each
-## fuzz/fuzz_*.py harness into a libFuzzer-style runnable.
+## Coverage-guided fuzzing (ClusterFuzzLite / Atheris) for this
+## package's Python fuzz harnesses. The job body -- the pr/batch split,
+## the pinned google/clusterfuzzlite actions, and the step summary --
+## lives in the shared reusable so every consumer tracks one source:
+##   developer-meta-files/.github/workflows/reusable-clusterfuzzlite.yml
 ##
-## Two jobs in one workflow, gated by event:
-##   - pr:    short per-fuzzer budget on PRs touching python/fuzz/.clusterfuzzlite.
-##   - batch: longer per-fuzzer budget on schedule + workflow_dispatch.
+## This wrapper owns only the per-repo bits the reusable cannot: the
+## triggers, the paths filter, the schedule (G-A-002), and the
+## concurrency group (G-A-006). Named 'local-' on purpose: an
+## INTENTIONAL per-repo workflow that pkg_update_consumer_workflows must
+## not overwrite (it carries a repo-shaped paths: filter), NOT a managed
+## byte-identical consumer template.
 ##
-## Reference: https://google.github.io/clusterfuzzlite/running-clusterfuzzlite/github-actions/
+## Reference:
+## https://google.github.io/clusterfuzzlite/running-clusterfuzzlite/github-actions/
 
 name: Fuzz
 
@@ -20,7 +25,7 @@ on:
   workflow_dispatch:
     inputs:
       fuzz_seconds:
-        description: 'Per-fuzzer time budget in seconds (batch job)'
+        description: 'Total fuzzing seconds (batch job; split across all fuzz targets)'
         required: false
         default: '600'
   pull_request:
@@ -33,12 +38,6 @@ on:
   schedule:
     - cron: '30 3 * * *'
 
-## Default-deny at workflow level; every job that needs more
-## redeclares its full set. Job-level permissions REPLACE
-## top-level (not merge), so jobs using actions/checkout MUST
-## re-list 'contents: read' even though it's already at top-level
-## here. See agents/github-actions.md G-A-006 (or
-## test_workflow_yaml.sh W-005).
 permissions:
   contents: read
 
@@ -47,141 +46,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pr:
-    name: ClusterFuzzLite PR fuzz
-    ## CI runs only where we enabled it; ANDed with the existing guard.
-    ## Unset variable -> skipped, no runner, run stays green.
-    if: >-
-      vars.CI_ENABLED_ORG_AI_ASSISTED == 'true'
-      && (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+  clusterfuzzlite:
+    uses: org-ai-assisted/developer-meta-files/.github/workflows/reusable-clusterfuzzlite.yml@master
+    with:
+      fuzz-seconds-batch: ${{ github.event.inputs.fuzz_seconds || '600' }}
     permissions:
       contents: read
-      security-events: write
-    steps:
-      - name: Checkout repository
-        ## https://github.com/actions/checkout/releases/tag/v6.0.2
-        ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-        with:
-          persist-credentials: false
-
-      - name: Build fuzzers
-        ## https://github.com/google/clusterfuzzlite/tree/v1
-        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1 (HEAD of v1; no release tag)
-        uses: google/clusterfuzzlite/actions/build_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
-        with:
-          language: python
-          sanitizer: address
-
-      - name: Run fuzzers (code-change)
-        ## https://github.com/google/clusterfuzzlite/tree/v1
-        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1
-        uses: google/clusterfuzzlite/actions/run_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          ## Per-fuzzer time budget. Total ~ N_fuzzers x this.
-          fuzz-seconds: 60
-          mode: 'code-change'
-          sanitizer: address
-          output-sarif: true
-
-      - name: Checkout dist-ai (shared CI helper binaries)
-        if: always()
-        ## Needed for usr/bin/step-summary-emit. helper-scripts does
-        ## not vendor a copy; checkout @master keeps the org's
-        ## single source of truth.
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-        with:
-          repository: org-ai-assisted/dist-ai
-          ref: master
-          path: .github/dist-ai
-          persist-credentials: false
-
-      - name: Emit step summary
-        if: always()
-        ## Minimal panel for the PR Checks tab. Crash details / SARIF
-        ## live in the run_fuzzers step's outputs. Template values
-        ## routed through env: per developer-meta-files#87 (avoid
-        ## CodeQL inline-${{...}}-in-run: flag).
-        env:
-          JOB_STATUS: ${{ job.status }}
-        run: |
-          ./.github/dist-ai/usr/bin/step-summary-emit \
-            --tool 'ClusterFuzzLite (code-change)' \
-            --column-header field \
-            --row "outcome=${JOB_STATUS}" \
-            --row "mode=code-change" \
-            --row "fuzz-seconds=60"
-
-  batch:
-    name: ClusterFuzzLite batch fuzz
-    ## CI runs only where we enabled it; ANDed with the existing guard.
-    ## Unset variable -> skipped, no runner, run stays green.
-    if: >-
-      vars.CI_ENABLED_ORG_AI_ASSISTED == 'true'
-      && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    permissions:
-      contents: read
-      security-events: write
-      ## ClusterFuzzLite stores corpora / crashes via actions/cache,
-      ## which needs neither contents:write nor actions:write -
-      ## contents:read covers cache reads.
-    steps:
-      - name: Checkout repository
-        ## https://github.com/actions/checkout/releases/tag/v6.0.2
-        ## > de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-        with:
-          persist-credentials: false
-
-      - name: Build fuzzers
-        ## https://github.com/google/clusterfuzzlite/tree/v1
-        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1 (HEAD of v1; no release tag)
-        uses: google/clusterfuzzlite/actions/build_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
-        with:
-          language: python
-          sanitizer: address
-
-      - name: Run fuzzers (batch)
-        ## https://github.com/google/clusterfuzzlite/tree/v1
-        ## > 884713a6c30a92e5e8544c39945cd7cb630abcd1
-        uses: google/clusterfuzzlite/actions/run_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1  # v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          fuzz-seconds: ${{ github.event.inputs.fuzz_seconds || '600' }}
-          mode: 'batch'
-          sanitizer: address
-          output-sarif: true
-
-      - name: Checkout dist-ai (shared CI helper binaries)
-        if: always()
-        ## Needed for usr/bin/step-summary-emit. See same step in the
-        ## 'pr' job above for rationale.
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-        with:
-          repository: org-ai-assisted/dist-ai
-          ref: master
-          path: .github/dist-ai
-          persist-credentials: false
-
-      - name: Emit step summary
-        if: always()
-        ## Same minimal pattern as the 'pr' job above. The
-        ## fuzz_seconds env value comes from the workflow_dispatch
-        ## input on manual runs, defaulting to '600' otherwise.
-        ## Template values routed through env: per
-        ## developer-meta-files#87.
-        env:
-          JOB_STATUS: ${{ job.status }}
-          FUZZ_SECONDS: ${{ github.event.inputs.fuzz_seconds || '600' }}
-        run: |
-          ./.github/dist-ai/usr/bin/step-summary-emit \
-            --tool 'ClusterFuzzLite (batch)' \
-            --column-header field \
-            --row "outcome=${JOB_STATUS}" \
-            --row "mode=batch" \
-            --row "fuzz-seconds=${FUZZ_SECONDS}"
+      ## Corpus artifact download in the reusable needs actions: read;
+      ## reusable job permissions cannot exceed what the caller grants.
+      actions: read

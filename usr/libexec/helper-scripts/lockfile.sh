@@ -3,7 +3,7 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Lock file mechanism to prevent duplicate script instances across users
+## Lock file mechanism to prevent duplicate script instances per user
 ##
 ## Two ways to use it:
 ##   * Source it to self-lock the sourcing script. Only one instance of the
@@ -23,13 +23,20 @@ true "${BASH_SOURCE[0]}: START"
 
 true "${BASH_SOURCE[0]}: INFO: FLOCKER: ${FLOCKER-}"
 
-[[ -v TMP ]] || TMP="/tmp"
-flocker_temp_folder="${TMP}/flocker-temp-folder"
-if ! [ -d "${TMP}" ]; then
-  printf '%s\n' "$0: ERROR: Could not create lock file directory at '${flocker_temp_folder}', because '${TMP}' does not exist or is not a directory!" 1>&2
+## No fallback outside of /run/user/EUID by design. A fallback such as /tmp or
+## a 1777 root:root dir under /run would introduce TOCTOU issues.
+flocker_runtime_dir="${XDG_RUNTIME_DIR:-/run/user/${EUID}}"
+if [ -d "${flocker_runtime_dir}" ] && [ ! -L "${flocker_runtime_dir}" ]; then
+  flocker_temp_folder="${flocker_runtime_dir}/flocker-temp-folder"
+else
+  printf '%s\n' "$0: ERROR: no per-user runtime dir, cannot create a lock directory!" 1>&2
   exit 1
 fi
 mkdir --parents -- "${flocker_temp_folder}"
+if [ -L "${flocker_temp_folder}" ]; then
+  printf '%s\n' "$0: ERROR: refusing unexpected symlink at lock directory location '${flocker_temp_folder}'!" 1>&2
+  exit 1
+fi
 
 ## Wrap-mode setup: an EXECUTED run with arguments treats $1 as the lock key and
 ## runs the rest as a command under that key's lock (the run happens on the

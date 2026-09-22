@@ -8,11 +8,8 @@ config_builder.py: Builds configuration directories containing INI-style
 configuration into a single configuration file.
 """
 
-import os
 import re
-import shutil
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 from append_shared.append_shared import append_shared
 
 def config_file_to_config_state(
@@ -130,7 +127,7 @@ def write_config_file(
         output_str += "\n"
 
     ## Write the file atomically if possible
-    if not append_shared("overwrite", [str(output_file), output_str]):
+    if append_shared("overwrite", [str(output_file), output_str]) != 0:
         raise OSError(f"Could not write file '{output_file}'!")
 
 

@@ -10,6 +10,8 @@ Tests for the append_shared tools.
 import os
 import stat
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
@@ -726,4 +728,40 @@ class TestAppendShared(TestCase):
             target_file_path.read_text(encoding="utf-8"), "line 1\n"
         )
         self.assertEqual(TestAppendShared._get_perms_str(target_file), 0o600)
+        os.unlink(target_file)
+
+    def test_non_utf8_locale(self) -> None:
+        """
+        Tests that 'append' writes UTF-8 regardless of the ambient locale.
+        Runs in a subprocess so the locale can be forced.
+        """
+
+        target_file: str = self.work_dir + "/append_locale_utf8"
+        target_file_path: Path = Path(target_file)
+        target_file_path.write_text("existing\n", encoding="utf-8")
+        dist_packages: str = str(Path(__file__).resolve().parents[2])
+        env: dict[str, str] = dict(os.environ)
+        env["LC_ALL"] = "C"
+        env["PYTHONUTF8"] = "0"
+        ## chr(0xe9) = e-acute
+        code: str = f"""\
+import sys
+from append_shared.append_shared import append_shared
+line = "caf" + chr(0xe9)
+sys.exit(append_shared('append', [{target_file!r}, line]))
+"""
+        result: subprocess.CompletedProcess[str] = subprocess.run(
+            [sys.executable, "-c", code],
+            cwd=dist_packages,
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        compare_str: str = f"existing\ncaf{chr(0xe9)}\n"
+        self.assertEqual(
+            target_file_path.read_bytes(),
+            compare_str.encode("utf-8"),
+        )
         os.unlink(target_file)
