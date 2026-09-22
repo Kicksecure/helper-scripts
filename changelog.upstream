@@ -1,9 +1,185 @@
+commit 3f35c4fa0e290b967c4151c6a4e43f86d69ad4f5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 21 22:57:50 2026 -0400
+
+    fix
+
+commit 79415f2cd3bc470e579719d61ecb581921a323cb
+Merge: 58d6dbe7 45fd58d4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 21 22:52:23 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 45fd58d47e1c45ef983ae0357e16bdc344347944
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Sep 20 15:40:15 2026 -0400
+
+    Polish, revert bad / unnecessary changes
+
+commit e0a496e615e5e7a991175a349de12f23f9b779b7
+Merge: 58d6dbe7 3e962da1
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Sep 20 14:19:22 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit 3e962da197d2a63c8163c8cf06c7ca3e15b72101
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Sat Sep 19 22:29:22 2026 -0400
+
+    crypt-pwchange: reject a disk index that does not round-trip
+
+    - 2**64+1 wrapped to an in-range value (e.g. 1) and selected a device; require
+      the entered value to equal its base-10 parse (also rejects leading zeros)
+
+    ALLOW_STYLE_COMMIT: pre-existing style debt in this file (unbraced vars, echo,
+    incomplete strict-mode block) is out of scope; see prior commit.
+
+commit 0213710fa3ed3dc9927405c4a6c6187316b3e25b
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Sat Sep 19 22:29:08 2026 -0400
+
+    Preserve owner + follow symlinks in atomic config writes
+
+    - config_builder: os.replace onto the realpath (update a symlinked target in
+      place, not replace the link); preserve owner+mode; fall back to an in-place
+      write when the target directory is not writable
+    - append_shared: preserve owner+mode across the replace too
+
+commit 236c58d2a71da84feccfc6489898b80b3a169e5b
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Sat Sep 19 22:10:52 2026 -0400
+
+    crypt-pwchange: reject out-of-range disk index robustly
+
+    - base-10 + [1,count] range check; a 2**64-1 index wrapped to -1, passed the
+      old '> count || == 0' guard, and selected a real device via negative index
+
+    ALLOW_STYLE_COMMIT: pre-existing style debt in this file (unbraced vars,
+    echo, an incomplete strict-mode block) is out of scope for this security
+    fix; completing the strict block would add inherit_errexit to an untestable
+    root LUKS tool, a change that needs its own tested pass.
+
+commit 7e49a242d39bed549c750be97ea4225d4584168f
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Sat Sep 19 22:09:35 2026 -0400
+
+    Report Tor status faithfully
+
+    - try-wait-for-tor-service-running: fail closed (exit non-zero on the failed
+      and timeout paths) instead of always exiting 0
+    - tor_bootstrap_check.py: exit a distinct code when bootstrap-phase has no
+      PROGRESS= field, instead of a NoneType crash (exit 1 == "1% bootstrapped")
+
+commit 7ac64fc8c0b1da4db3360cac2586e450e1671799
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Sat Sep 19 22:09:31 2026 -0400
+
+    range_arg: match the allow-list with globbing off
+
+    - unquoted 'for tests in ${list}' glob-expanded an entry like 'a*' against
+      the current directory, so a value equal to a matching filename was accepted
+
+commit 956326ecf7af34bf7743136a25d2711029f4c163
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Sat Sep 19 22:07:32 2026 -0400
+
+    Keep caller input out of root command execution
+
+    - apt-get-update: stop forwarding "$@" to apt-get; the sudoers/privleap
+      action runs it as root with no args, and forwarding let a caller inject
+      'apt-get -o APT::Update::Pre-Invoke=<cmd>' and run <cmd> as root
+    - root_cmd.sh: resolve the su-backend target via a fixed secure PATH so the
+      caller's $PATH cannot pick the binary su then runs as root
+
+commit 9ec436d0f4c8e7af668635185cf393d05c1270e7
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Sat Sep 19 21:52:26 2026 -0400
+
+    Write config files atomically (append_shared, config_builder)
+
+    - same-directory temp + os.replace so an interrupted, failed, or cross-filesystem
+      write leaves the previous file intact instead of a truncated/corrupt one
+
+commit 26d54305aa13b143207de7a3c2c94c8d2490df34
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Sat Sep 19 11:28:27 2026 -0400
+
+    Fix is_integer to accept decimal only, not hex/octal
+
+    - printf %d parsed C literals (0x1A, 0100, and even empty/whitespace);
+      callers (ports, IP octets, versions, timestamps) treat those as malformed
+
+commit c5b6f97d292eac2be1de3c2c542035e94752270b
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Sat Sep 19 11:07:07 2026 -0400
+
+    Add is_positive_integer to strings.bsh
+
+    - is_whole_number plus a zero reject, for callers needing >= 1
+
+commit 58d6dbe71ed01a19e310f54506f36407ec71c474
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 19 14:05:41 2026 +0000
+
+    bumped changelog version
+
 commit 13498920dd438e2e54ca2f06f5dff2f88dd932cb
 Merge: 3e7fc26c ade493e4
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Sep 19 09:57:42 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 0cfbe8af06d5c13b3d2b686e0a92c8a2cef502ac
+Merge: b0bcf42d ade493e4
+Author: claude (dev586 e40d0109-dfab-4668-b4a9-8a492c3155d2) <noreply@anthropic.com>
+Date:   Wed Sep 16 19:32:34 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie' into ai
+
+commit b0bcf42dcf8a1f66e47e7c536410de5b0eaeec9d
+Author: claude (dev586 e40d0109-dfab-4668-b4a9-8a492c3155d2) <noreply@anthropic.com>
+Date:   Wed Sep 16 12:10:30 2026 -0400
+
+    get-user-list: robust passwd/adduser.conf parsing
+
+    - process a final line lacking a trailing newline (was silently dropped)
+    - skip a malformed (empty/non-numeric) UID cleanly instead of emitting
+      '[: integer expression expected' and dropping the account
+    - numeric root compare so a canonical UID 0 still lists
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit f868ff22cc66bf5a57553afca45b6e8616f78ca9
+Author: claude (dev586 e40d0109-dfab-4668-b4a9-8a492c3155d2) <noreply@anthropic.com>
+Date:   Wed Sep 16 11:56:22 2026 -0400
+
+    get-user-list: tolerate unset FIRST_UID/LAST_UID
+
+    - modern adduser ships them commented (defaults built in); hard-error on the
+      empty value broke image builds (autologinchange -> user-sysmaint-split postinst)
+    - fall back to the built-in defaults; still reject a present-but-non-numeric value
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 616e92447572d2f47e1da15c4a4a3bd661641175
+Author: claude (dev586 e40d0109-dfab-4668-b4a9-8a492c3155d2) <noreply@anthropic.com>
+Date:   Wed Sep 16 06:40:30 2026 -0400
+
+    log_run_die: fall back to bare stecho/sanitize-string when binary absent
+
+    - log() resolved stecho/sanitize-string only by absolute path via
+      HELPER_SCRIPTS_PATH. The dist-installer-cli standalone (built by inlining this
+      file) runs WITHOUT helper-scripts installed and provides shim FUNCTIONS of
+      those names; the absolute-path check could not see them and hard-aborted,
+      breaking the derivative-maker VirtualBox-installer chroot step ("stecho and/or
+      sanitize-string missing"). Keep the absolute path for installed + source-checkout
+      builds (no PATH mutation) but fall back to the bare name when the binary is
+      absent, so a shim (or PATH binary) resolves it.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 
 commit ade493e4ff0d75678d9f9392099c29d7423214cd
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
