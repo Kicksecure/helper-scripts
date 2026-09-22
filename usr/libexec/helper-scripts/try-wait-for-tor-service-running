@@ -11,6 +11,10 @@ shopt -s inherit_errexit
 shopt -s shift_verbose
 export LC_ALL=C
 
+## No 'exit 1' by design. This script is intended to block a caller until Tor
+## is either running OR it can be determined that it will never start running.
+## It is the caller's responsibility to handle Tor's absence gracefully.
+
 delay_ctr=0
 
 while (( delay_ctr < 120 )); do
@@ -18,12 +22,10 @@ while (( delay_ctr < 120 )); do
     --property ActiveState)"
   case "${tor_active_state}" in
     'ActiveState=active')
-      exit 0
+      break
       ;;
     'ActiveState=failed')
-      ## Fail CLOSED: a caller gating on this must not proceed as if Tor is up
-      ## when the service has failed (anonymity-relevant).
-      exit 1
+      break
       ;;
     *)
       sleep 1
@@ -31,6 +33,3 @@ while (( delay_ctr < 120 )); do
       ;;
   esac
 done
-
-## Timed out without Tor ever becoming active: fail closed.
-exit 1

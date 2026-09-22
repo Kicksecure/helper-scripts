@@ -12,6 +12,8 @@ set -o pipefail
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh
 # shellcheck source=../libexec/helper-scripts/get_password.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_password.sh
+# shellcheck source=../libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 if [ "$(id -u)" != "0" ]; then
    echo "ERROR: This must be run as root (sudo)!" >&2
@@ -53,25 +55,18 @@ if [ -z "$crypt_dev_idx" ]; then
   exit 1
 fi
 
-if [[ "$crypt_dev_idx" = *[!0-9]* ]]; then
-  printf "%s\n" "$0: ERROR: Provided value is ${bold}not${nobold} a number. Please specify a disk number. $unchanged_test" >&2
+if ! is_positive_number "$crypt_dev_idx"; then
+  printf "%s\n" "$0: ERROR: Provided value is ${bold}not${nobold} a positive number. Please specify a disk number. $unchanged_test" >&2
   exit 1
 fi
 
-## Reject any value that does not round-trip through base-10. A bare
-## '> count || == 0' check is bypassed by 64-bit arithmetic wrap: 2**64-1 wraps
-## to -1 (neither > count nor == 0, then '(( idx-- ))' -> -2 and
-## '${crypt_dev_list[-2]}' selects a real device via negative indexing), and
-## 2**64+1 wraps to a small in-range value like 1. The round-trip test rejects
-## both (and a leading-zero/octal form), leaving only a canonical decimal.
-if [ ! "$(( 10#${crypt_dev_idx} ))" = "${crypt_dev_idx}" ]; then
-  printf "%s\n" "$0: ERROR: Provided value is ${bold}not${nobold} a valid number. Please specify a disk number. $unchanged_test" >&2
-  exit 1
-fi
-if (( crypt_dev_idx < 1 || crypt_dev_idx > ${#crypt_dev_list[@]} )); then
+## User input here is trusted, no need to check for overly huge integers.
+
+if (( crypt_dev_idx > ${#crypt_dev_list[@]} )); then
   printf "%s\n" "$0: ERROR: Provided value is out of range. Please specify a disk number. $unchanged_test" >&2
   exit 1
 fi
+
 (( crypt_dev_idx-- )) || true
 target_crypt_dev="${crypt_dev_list[crypt_dev_idx]}"
 

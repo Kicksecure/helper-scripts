@@ -1,3 +1,173 @@
+commit 13498920dd438e2e54ca2f06f5dff2f88dd932cb
+Merge: 3e7fc26c ade493e4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 19 09:57:42 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit ade493e4ff0d75678d9f9392099c29d7423214cd
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Sep 15 23:26:00 2026 -0400
+
+    Polish
+
+commit 9af856a7e0173eb0c743d44a8195af4610be6971
+Merge: 3e7fc26c e96998c5
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Sep 15 22:01:32 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit e96998c52174f2d6a229a898eb2cf9fd702d64b2
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Tue Sep 15 11:15:42 2026 -0400
+
+    helper-scripts: shell-invocation guard refuses instead of re-exec
+
+    - python entry points started by a shell now error and exit 1 rather than
+      silently re-execing under python3 -- matches the upstream Kicksecure idiom
+    - terse '## Shell-invocation guard.' comment; pylint-checked utils carry the
+      inline line-too-long disable (fixed idiom exceeds 79 cols, cannot wrap)
+
+commit 459bb2a0777cf379a98537486fc50a6645ab8575
+Merge: 0e9c22ae 90b61919
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Sep 15 10:41:39 2026 -0400
+
+    Merge master into ai (remaster)
+
+commit 90b61919055f5abc5f064ad137c16b13919c44ba
+Merge: cce92608 3e7fc26c
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Sep 15 10:41:39 2026 -0400
+
+    Merge upstream master into master (remaster sync)
+
+commit 0e9c22aebea490bd6c0a5a60222f2e9c6eb47198
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Tue Sep 15 10:26:03 2026 -0400
+
+    helper-scripts: collapse repetitive shell-invocation guard comment
+
+    - 4-line rationale was copy-pasted into 20 usr/bin python entry points
+    - document once in AGENTS.md; per-file comment is now a one-line pointer
+
+commit 3e7fc26c2935f4124303831b4d58b13cbf2649c4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 15 11:53:04 2026 +0000
+
+    bumped changelog version
+
+commit 50104f09fd634dd7d9f76d3cd1642fe283632f46
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Tue Sep 15 07:00:25 2026 -0400
+
+    set-keyboard-layout: resolve query-sock-pid via HELPER_SCRIPTS_PATH
+
+    - the load-time has-gate + the labwc reload used an absolute
+      /usr/libexec/helper-scripts/query-sock-pid, the lone sibling reference not
+      prefixed with ${HELPER_SCRIPTS_PATH:-} (cf. lines 14/17/892). When
+      helper-scripts is checked out but not installed (CI), the absolute path does
+      not exist, so 'has' returns 1 -> error_handler -> exit 1 before any logic.
+      Prefix it; byte-identical in production (empty prefix -> /usr/libexec/...).
+
+commit c39680c2b941d30f54d919b6b2c2e36f67ac2eba
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Tue Sep 15 06:43:44 2026 -0400
+
+    dm-consumer: apt moreutils/jq/procps/systemd for set-keyboard-layout
+
+    - set-grub-keymap sources set-keyboard-layout.sh whole, which runs an
+      unconditional load-time 'has' gate requiring sponge/jq/pgrep/loginctl. None
+      ship in trixie-slim, so 'has sponge' aborts before any test logic and
+      set-keyboard-layout-tests failed 2/4. Install them so the suite runs (6/0).
+
+commit 201010aca3f7829a5be1f089be237ac17531156b
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Tue Sep 15 04:52:54 2026 -0400
+
+    Reflow python shell-invocation guard header under 79 cols
+
+    - the guard comment lines were 80/83/81 chars, over pyproject max-line-length=79;
+      pylint C0301 failed the Lint job (exit 16). Reflow to <=79, wording unchanged.
+
+commit 845b166c34bca1e8ca595bab6630ffc344ce1d6f
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Tue Sep 15 02:16:17 2026 -0400
+
+    accountctl: reword group_has_nonroot_member self-contained note
+
+    - no longer vendored into security-misc's preinst; drop the vendoring rationale,
+      keep the inlined name-guard note.
+
+commit 1bf4ea2c4cfdd843d694cd96d5774722bc861802
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Mon Sep 14 12:48:56 2026 -0400
+
+    Fix get_clean_pass '!!' stripping and group name-vs-GID
+
+    - get_clean_pass: strip EVERY leading lock/disable marker (any char in
+      symbol), not one per symbol char. A '!!' shadow field ('passwd -l' on a
+      never-set password) previously left a stray '!', so unlock_pass left the
+      account locked, is_pass_empty misreported it, and disable_pass wrote a
+      corrupt '!*!'.
+    - group_has_nonroot_member: reject a name not starting with [a-z_], so a
+      numeric argument is not silently reinterpreted by getent as a GID lookup
+      (answering about the wrong group), matching is_group's fail-closed rule.
+    - ai-review findings.
+
+commit 6686e9bdc1d9321636ea17feeb4264bb7af8e698
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Mon Sep 14 12:00:50 2026 -0400
+
+    Harden accountctl name validation and get_entry
+
+    - is_name_valid: '+' -> '*' so single-character names ('a', 'a$') are
+      accepted, matching adduser.conf NAME_REGEX.
+    - is_user/is_group: enforce is_name_valid with '|| return 1'; a bare call
+      was errexit-suppressed under the documented 'is_group X || ...' idiom,
+      letting a name with regex metacharacters reach the grep fallback
+      (cross-account disclosure).
+    - get_entry: error on an unsupported/empty field instead of coercing an
+      empty index to 0 and silently returning the name field with rc 0.
+    - ai-review findings.
+
+commit a9b5d64fa1bf4ea2883c4b829617aa85f542bf99
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Mon Sep 14 11:34:13 2026 -0400
+
+    Scope 'pass' local in unlock/disable/enable_pass
+
+    - These assigned pass=$(...) without declaring it local, so a caller's
+      global 'pass' was clobbered with shadow-derived content. Declare it
+      local. (ai-review finding.)
+
+commit 07c36602b04bdf141e459e12175b5de09dd518e3
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Mon Sep 14 11:09:37 2026 -0400
+
+    Add group_has_nonroot_member to accountctl.sh
+
+    - Detects a non-root group member via PRIMARY GID as well as the
+      supplementary member field; the latter alone misses accounts created
+      with the group as their primary group.
+    - Self-contained (getent + bash builtins, no log/has/get_entry) so it can
+      be vendored verbatim into a preinst, which runs before helper-scripts is
+      guaranteed installed.
+
+commit 867c74d960a80cd16ce6790aa280b77a87217b9a
+Author: claude (dev556 4bdc306f-7204-4d7f-ba68-0c897dcf0291) <noreply@anthropic.com>
+Date:   Mon Sep 14 09:30:49 2026 -0400
+
+    Drop live_build branch in user_create; house-style
+
+    - The live_build marker file is removed from the derivative-maker build;
+      the derivative_maker=true branch above already covers a failed chsh
+      during the build, so the file check was redundant.
+    - Brace all variable references (SC2250) and guard derivative_maker for
+      nounset; add the no-strict waiver (sourced library, must not leak
+      strict-mode into the sourcing shell).
+
 commit dc8a5b8112d65222ad77d35b55134332bd99b490
 Merge: 63afebf5 de685995
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -11,6 +181,21 @@ Date:   Sun Sep 13 18:27:37 2026 -0400
 
     Move privleap configuration to non-conffile location
 
+commit 19884115875c55d95631bfce582cdf8d504e6882
+Merge: 260f446e cce92608
+Author: claude <noreply@anthropic.com>
+Date:   Sun Sep 13 06:02:16 2026 -0400
+
+    Merge branch 'master' into ai
+
+commit 260f446e1c4224c19857e29561263b38ec31e38e
+Author: claude (dev541 abd2cdfa-632f-4eda-bd69-14b67be2017e) <noreply@anthropic.com>
+Date:   Sun Sep 13 05:23:57 2026 -0400
+
+    Guard python scripts against shell misinvocation
+
+    exec python3 -Bsu re-exec: under a shell the shebang is ignored and 'import' would run ImageMagick's import (XGrabServer, freezes X); inert as a string literal under python3.
+
 commit 63afebf51bd990d70c3375ac066899ba287d6406
 Merge: c194b642 16a00b77
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -23,6 +208,12 @@ Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Fri Sep 11 16:56:19 2026 -0400
 
     Polish
+
+commit cce926083ea1c855f3ba95a8d9df999ebcf86449
+Author: claude (dev523 9e89f6dd-03c4-4491-adce-ee67bc776e03) <noreply@anthropic.com>
+Date:   Fri Sep 11 06:07:03 2026 -0400
+
+    AGENTS: document the shared exit_if_no_gui GUI-helper contract
 
 commit 49b1cf6a745df2239696d7b301e660c17f6517a1
 Merge: e795a3f3 7c66d2a7
@@ -50,19 +241,19 @@ Date:   Wed Sep 9 07:21:30 2026 -0400
       pre-export TOR_RC/TOR_LOG/TOR_DIR/... Guard the tests with '${VAR:-}'.
     - Same fix in anondate-get and anondate-set (LC_TIME/TZ).
 
-commit 756a687b8d391ae3ad966137fdde2d39628e4ee9
-Merge: 2a8ea1c0 cfb0ff4e
-Author: claude <noreply@anthropic.com>
-Date:   Tue Sep 8 13:59:29 2026 -0400
-
-    Merge branch 'master' into ai
-
 commit cfb0ff4ef7ac21df0b5264ec5d3cf2c3c12168bc
 Merge: 44d46b61 e795a3f3
 Author: claude <noreply@anthropic.com>
 Date:   Tue Sep 8 13:59:29 2026 -0400
 
     Merge remote-tracking branch 'upstream/master'
+
+commit 756a687b8d391ae3ad966137fdde2d39628e4ee9
+Merge: 2a8ea1c0 cfb0ff4e
+Author: claude <noreply@anthropic.com>
+Date:   Tue Sep 8 13:59:29 2026 -0400
+
+    Merge branch 'master' into ai
 
 commit e795a3f365a9fdb642228d6ee96f02f150cc9213
 Author: Patrick Schleizer <adrelanos@whonix.org>

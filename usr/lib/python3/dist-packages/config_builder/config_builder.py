@@ -13,7 +13,7 @@ import re
 import shutil
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-
+from append_shared.append_shared import append_shared
 
 def config_file_to_config_state(
     config_file: Path,
@@ -112,66 +112,26 @@ def write_config_file(
     Serializes a config state dictionary to a file.
     """
 
-    def _serialize(stream) -> None:
-        ## Write values that are outside of any particular section first
-        if "" in config_state:
-            for nest_key, nest_value in config_state[""].items():
-                stream.write(f"{nest_key}={nest_value}\n")
-            stream.write("\n")
-        ## Now write all the sections
-        for key, value in config_state.items():
-            if key == "":
-                continue
-            stream.write(f"[{key}]\n")
-            for nest_key, nest_value in value.items():
-                stream.write(f"{nest_key}={nest_value}\n")
-            stream.write("\n")
+    output_str: str = ""
 
-    ## Resolve a symlink to its target so the LINK is updated in place, not
-    ## replaced by a regular file (os.replace onto the link would drop it).
-    target = Path(os.path.realpath(output_file))
+    ## Serialize values that are outside of any particular section first
+    if "" in config_state:
+        for nest_key, nest_value in config_state[""].items():
+            output_str += f"{nest_key}={nest_value}\n"
+        output_str += "\n"
 
-    ## Write to a same-directory temp file then os.replace: an atomic rename on
-    ## one filesystem, so an interrupted/failed/crashed write leaves the previous
-    ## config intact rather than truncating it in place. Requires a writable
-    ## target directory; when it is not writable (a rare read-only dir holding a
-    ## writable file) fall back to a direct in-place write, which cannot be atomic.
-    # pylint: disable=consider-using-with
-    try:
-        temp_file = NamedTemporaryFile(
-            mode="w", encoding="utf-8", delete=False, dir=target.parent
-        )
-    except OSError:
-        with open(target, "w", encoding="utf-8") as output_stream:
-            _serialize(output_stream)
-        return
-    try:
-        _serialize(temp_file)
-        temp_file.flush()
-        os.fsync(temp_file.fileno())
-        temp_file.close()
-        if target.exists():
-            ## Preserve the existing file's owner + mode across the replace, so
-            ## e.g. regenerating a service-owned config as root does not change it
-            ## to root-owned. chown needs privilege; best-effort where we lack it.
-            stat_result = target.stat()
-            try:
-                os.chown(temp_file.name, stat_result.st_uid, stat_result.st_gid)
-            except PermissionError:
-                pass
-            shutil.copymode(target, temp_file.name)
-        else:
-            current_umask = os.umask(0)
-            os.umask(current_umask)
-            os.chmod(temp_file.name, 0o666 & (current_umask ^ 0o777))
-        os.replace(temp_file.name, target)
-    except BaseException:
-        temp_file.close()
-        try:
-            os.unlink(temp_file.name)
-        except FileNotFoundError:
-            pass
-        raise
+    ## Now serialize all the sections
+    for key, value in config_state.items():
+        if key == "":
+            continue
+        output_str += f"[{key}]\n"
+        for nest_key, nest_value in value.items():
+            output_str += f"{nest_key}={nest_value}\n"
+        output_str += "\n"
+
+    ## Write the file atomically if possible
+    if not append_shared("overwrite", [str(output_file), output_str]):
+        raise OSError(f"Could not write file '{output_file}'!")
 
 
 def build_config_file(config_dir: Path, output_file: Path) -> None:
