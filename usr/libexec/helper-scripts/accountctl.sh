@@ -43,9 +43,7 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 ## Example: is_name_valid NAME
 is_name_valid(){
   log info "${FUNCNAME[0]} $*"
-  ## LC_ALL=C makes the [a-zA-Z] ranges ASCII-only (like Perl's /aa modifier).
-  ## Without it, a UTF-8 locale collates non-ASCII letters into [A-Z]/[a-z], so
-  ## names like 'E-acute' would pass and reach the grep-based lookups below.
+  ## LC_ALL=C makes the [a-zA-Z] ranges ASCII-only.
   local name LC_ALL=C
   name="${1:-}"
   ## Syntax based on /etc/adduser.conf SYS_NAME_REGEX plus dot and at sign.
@@ -73,16 +71,16 @@ escape_name(){
 }
 
 
-
 ## Description: Check if user exists.
 ## Output: None
 ## Return: 1 if user does not exist.
 ## Usage: is_user USER
 ## Example: is_user user
 is_user(){
+  has getent || return 1
   log info "${FUNCNAME[0]} $*"
   ## Avoid running functions twice.
-  if test "${FUNCNAME[1]}" != "get_pass"; then
+  if test "${FUNCNAME[1]:-}" != "get_pass"; then
     as_root
   fi
   local user
@@ -92,17 +90,11 @@ is_user(){
     return 1
   fi
   is_name_valid "${user}" || return 1
-  if has getent; then
-    if getent passwd -- "${user}" >/dev/null 2>&1; then
-      return 0
-    fi
-    log error "User does not exist: '${user}'"
-    return 1
+  if getent passwd -- "${user}" >/dev/null 2>&1; then
+    return 0
   fi
-  if ! id -- "${user}" >/dev/null 2>&1; then
-    log error "User does not exist: '${user}'"
-    return 1
-  fi
+  log error "User does not exist: '${user}'"
+  return 1
 }
 
 
@@ -112,6 +104,7 @@ is_user(){
 ## Usage: is_group GROUP
 ## Example: is_group root
 is_group(){
+  has getent || return 1
   log info "${FUNCNAME[0]} $*"
   local group group_escaped
   group="${1:-}"
@@ -120,18 +113,11 @@ is_group(){
     return 1
   fi
   is_name_valid "${group}" || return 1
-  if has getent; then
-    if getent group -- "${group}" >/dev/null 2>&1; then
-      return 0
-    fi
-    log error "Group does not exist: '${group}'"
-    return 1
+  if getent group -- "${group}" >/dev/null 2>&1; then
+    return 0
   fi
-  group_escaped="$(escape_name "${group}")"
-  if ! grep --quiet -- "^${group_escaped}:" /etc/group >/dev/null 2>&1; then
-    log error "Group does not exist: '${group}'"
-    return 1
-  fi
+  log error "Group does not exist: '${group}'"
+  return 1
 }
 
 
@@ -154,11 +140,8 @@ group_has_nonroot_member() {
   group_gid="$(getent group -- "${group}" 2>/dev/null | cut -d: -f3)" || true
   [ -n "${group_gid}" ] || return 1
 
-  ## "Non-root" is decided by NAME, not UID. /etc/group tracks supplementary
-  ## members by username only, so a UID-based check is impossible there. A UID-0
-  ## account under a different name (e.g. 'toor' via 'useradd -o -u 0') is treated
-  ## as a normal member: UID-0 aliases are UNSUPPORTED by design. Do not re-add a
-  ## UID check here.
+  ## REMINDER: Accounts other than "root" with UID 0 are intentionally
+  ## unsupported.
 
   ## Check user primary GIDs
   while IFS=":" read -r entry_name _ _ entry_gid _; do
@@ -184,19 +167,13 @@ group_has_nonroot_member() {
 ## Usage: get_pass USER
 ## Example: get_pass user
 get_pass(){
+  has getent || return 1
   log info "${FUNCNAME[0]} $*"
   as_root
   local user pass user_escaped
   user="${1:-}"
   is_user "${user}" || return 1
-  if has getent; then
-    pass="$(get_entry "${user}" shadow pass)"
-  else
-    user_escaped="$(escape_name "${user}")"
-    pass="$(grep -- "^${user_escaped}:" /etc/shadow)"
-    pass="${pass#"${user}:"*}"
-    pass="${pass%%":"*}"
-  fi
+  pass="$(get_entry "${user}" shadow pass)" || return 1
   printf '%s' "${pass}"
 }
 
@@ -214,8 +191,8 @@ get_clean_pass(){
   user="${1:-}"
   is_user "${user}" || return 1
   symbol="${2:-"!*"}"
-  pass="$(get_pass "${user}")"
-  [[ "${pass}" =~ [${symbol}]*(.*) ]] || return 1
+  pass="$(get_pass "${user}")" || return 1
+  [[ "${pass}" =~ ^[${symbol}]*(.*)$ ]] || return 1
   pass="${BASH_REMATCH[1]}"
   printf '%s\n' "${pass}"
 }
@@ -231,7 +208,7 @@ is_pass_empty(){
   local user trim_pass
   user="${1:-}"
   is_user "${user}" || return 1
-  trim_pass="$(get_clean_pass "${user}" '!*')"
+  trim_pass="$(get_clean_pass "${user}" '!*')" || return 1
   if test -z "${trim_pass}"; then
     return 0
   fi
@@ -246,10 +223,11 @@ is_pass_empty(){
 ## Example: is_pass_locked user
 is_pass_locked(){
   log info "${FUNCNAME[0]} $*"
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}" || return 1
-  case "$(get_pass "${user}")" in
+  pass="$(get_pass "${user}")" || return 1
+  case "${pass}" in
     "!"*)
       return 0
       ;;
@@ -267,10 +245,11 @@ is_pass_locked(){
 ## Example: is_pass_disabled user
 is_pass_disabled(){
   log info "${FUNCNAME[0]} $*"
-  local user
+  local user pass
   user="${1:-}"
   is_user "${user}" || return 1
-  case "$(get_pass "${user}")" in
+  pass="$(get_pass "${user}")"
+  case "${pass}" in
     "*"*|"!*"*)
       return 0
       ;;
@@ -288,7 +267,7 @@ is_pass_disabled(){
 ## Example: lock_pass user
 lock_pass(){
   log info "${FUNCNAME[0]} $*"
-  has passwd
+  has passwd || return 1
   local user
   user="${1:-}"
   is_user "${user}" || return 1
@@ -306,7 +285,7 @@ lock_pass(){
 ## Example: unlock_pass user
 unlock_pass(){
   log info "${FUNCNAME[0]} $*"
-  has chpasswd
+  has chpasswd || return 1
   local user pass
   user="${1:-}"
   is_user "${user}" || return 1
@@ -314,7 +293,7 @@ unlock_pass(){
     return 0
   fi
   ## The tools "passwd" and "usermod" can't unlock when password is empty.
-  pass="$(get_clean_pass "${user}" '!')"
+  pass="$(get_clean_pass "${user}" '!')" || return 1
   chpasswd --crypt-method NONE <<< "${user}:${pass}"
 }
 
@@ -326,16 +305,16 @@ unlock_pass(){
 ## Example: disable_pass user
 disable_pass(){
   log info "${FUNCNAME[0]} $*"
-  has chpasswd
+  has chpasswd || return 1
   local user pass
   user="${1:-}"
   is_user "${user}" || return 1
   if is_pass_disabled "${user}"; then
     return 0
   fi
-  pass="$(get_clean_pass "${user}")"
+  pass="$(get_clean_pass "${user}")" || return 1
   if is_pass_locked "${user}"; then
-    chpasswd --crypt-method NONE <<< "${user}:!*${pass}"
+    chpasswd --crypt-method NONE <<< "${user}:!*${pass}" || return "$?"
     return 0
   fi
   chpasswd --crypt-method NONE <<< "${user}:*${pass}"
@@ -349,7 +328,7 @@ disable_pass(){
 ## Example: enable_pass user
 enable_pass(){
   log info "${FUNCNAME[0]} $*"
-  has chpasswd
+  has chpasswd || return 1
   local user pass
   user="${1:-}"
   is_user "${user}" || return 1
@@ -357,11 +336,11 @@ enable_pass(){
     return 0
   fi
   if is_pass_locked "${user}"; then
-    pass="$(get_clean_pass "${user}" '!*')"
-    chpasswd --crypt-method NONE <<< "${user}:!${pass}"
+    pass="$(get_clean_pass "${user}" '!*')" || return 1
+    chpasswd --crypt-method NONE <<< "${user}:!${pass}" || return "$?"
     return 0
   fi
-  pass="$(get_clean_pass "${user}" '*')"
+  pass="$(get_clean_pass "${user}" '*')" || return 1
   chpasswd --crypt-method NONE <<< "${user}:${pass}"
 }
 
@@ -479,7 +458,7 @@ get_field(){
 ## Example: get_entry user passwd shell
 get_entry(){
   log info "${FUNCNAME[0]} $*"
-  has getent
+  has getent || return 1
   local user db field index
   local -a entry
   user="${1:-}"

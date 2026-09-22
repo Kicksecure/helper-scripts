@@ -14,11 +14,6 @@ export LC_ALL=C
 ## No 'exit 1' by design. This script is intended to block a caller until Tor
 ## is either running OR it can be determined that it will never start running.
 ## It is the caller's responsibility to handle Tor's absence gracefully.
-##
-## ALWAYS exits 0 (best-effort, per the "try" in the name) on the active, failed
-## AND timeout paths. A caller MUST NOT gate on the exit code: 'if
-## try-wait-for-tor-service-running; then <network work>' is a caller bug, not a
-## fail-open here. Do not add 'exit 1' on the failed/timeout paths.
 
 delay_ctr=0
 

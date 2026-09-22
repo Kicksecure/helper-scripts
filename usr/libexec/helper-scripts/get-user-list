@@ -72,10 +72,8 @@ if ! test -r "${passwd_path}"; then
 fi
 
 ## No tolerance of a missing trailing newline or malformed entries; /etc/passwd
-## is a critical system file and is expected to be well-formed. A non-numeric UID
-## field makes the '[' numeric test below print '[: integer expression expected'
-## to stderr and skip the entry -- accepted, NOT guarded: such a passwd means the
-## system is already broken. Do not add an is_whole_number guard here.
+## is a critical system file and is expected to be well-formed. Do not add an
+## is_whole_number guard here.
 while read -r user_entry; do
    [ -n "${user_entry}" ] || continue
    current_uid="$(cut -d':' -f3 <<< "${user_entry}")"
