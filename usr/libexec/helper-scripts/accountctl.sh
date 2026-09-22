@@ -48,12 +48,9 @@ is_name_valid(){
   ## names like 'E-acute' would pass and reach the grep-based lookups below.
   local name LC_ALL=C
   name="${1:-}"
-  ## Based on Debian adduser NAME_REGEX (Debian::AdduserCommon):
-  ##   def_name_regex     qr/^[a-zA-Z][a-zA-Z0-9_-]*\$?$/aa
-  ##   def_sys_name_regex qr/^[a-zA-Z_][a-zA-Z0-9_-]*\$?$/aa
-  ## Accept their union (uppercase, and a leading '_' for system accounts) plus
-  ## '.' and '@'. This check exists to avoid parsing bugs in other applications
-  ## on functions from this script which use RegEx such as grep.
+  ## Syntax based on /etc/adduser.conf SYS_NAME_REGEX plus dot and at sign.
+  ## (SYS_NAME_REGEX is a strict superset of NAME_REGEX.) Avoids parsing bugs
+  ## in other applications.
   if [[ ! ${name} =~ ^[a-zA-Z_][a-zA-Z0-9_.@-]*\$?$ ]]; then
     log error "Invalid name: '${name}'"
     return 1

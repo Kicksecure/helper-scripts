@@ -4,8 +4,7 @@
 ## Copyright (C) 2014 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## TOR_*/DATE_RE are set at runtime by variables() via default_if_empty (and are
-## overridable from the environment), so shellcheck cannot see the assignment.
+## shellcheck doesn't see variables set by default_if_empty.
 # shellcheck disable=SC2154
 
 #set -x
@@ -43,8 +42,6 @@ parse_cmd_options() {
    ## Thanks to:
    ## http://mywiki.wooledge.org/BashFAQ/035
 
-   ## Initialize every option flag so the post-loop dispatch tests stay
-   ## nounset-safe when the corresponding option is not passed.
    has_consensus_="false"
    current_time_in_valid_range_="false"
    show_valid_after_="false"
@@ -58,77 +55,74 @@ parse_cmd_options() {
    user_permission_="false"
    group_permission_="false"
 
-   while :
-   do
-       ## '${1:-}' keeps the loop nounset-safe once the last option is shifted
-       ## away (callers invoke options-only, with no trailing positional or '--').
-       case ${1:-} in
-           --verbose)
-               printf '%s\n' "$0: verbose output... Script running as whoami: '$(whoami)'"
-               set -x
-               true "$0: $*"
-               shift
-               ;;
-           --has-consensus)
-               has_consensus_="true"
-               shift
-               ;;
-           --current-time-in-valid-range)
-               current_time_in_valid_range_="true"
-               shift
-               ;;
-           --show-valid-after)
-               show_valid_after_="true"
-               shift
-               ;;
-           --show-valid-until)
-               show_valid_until_="true"
-               shift
-               ;;
-           --show-middle-range)
-               show_middle_range_="true"
-               shift
-               ;;
-           --tor-cert-lifetime-valid)
-               tor_cert_lifetime_valid_="true"
-               shift
-               ;;
-           --tor-cert-valid-after)
-               tor_cert_valid_after_="true"
-               shift
-               ;;
-           --verified-only)
-              verified_only_="true"
-              shift
-              ;;
-           --prefer-verified)
-              prefer_verified_="true"
-              shift
-              ;;
-           --unverified-only)
-              unverified_only_="true"
-              shift
-              ;;
-           --user-permission)
-              user_permission_="true"
-              shift
-              ;;
-           --group-permission)
-              group_permission_="true"
-              shift
-              ;;
-           --)
-               shift
-               break
-               ;;
-           -*)
-               printf '%s\n' "$0: unknown option: $1" >&2
-               exit 111
-               ;;
-           *)
-               break
-               ;;
-       esac
+   while [ -n "${1:-}" ]; do
+      case "$1" in
+         --verbose)
+            printf '%s\n' "$0: verbose output... Script running as whoami: '$(whoami)'"
+            set -x
+            true "$0: $*"
+            shift
+            ;;
+         --has-consensus)
+            has_consensus_="true"
+            shift
+            ;;
+         --current-time-in-valid-range)
+            current_time_in_valid_range_="true"
+            shift
+            ;;
+         --show-valid-after)
+            show_valid_after_="true"
+            shift
+            ;;
+         --show-valid-until)
+            show_valid_until_="true"
+            shift
+            ;;
+         --show-middle-range)
+            show_middle_range_="true"
+            shift
+            ;;
+         --tor-cert-lifetime-valid)
+            tor_cert_lifetime_valid_="true"
+            shift
+            ;;
+         --tor-cert-valid-after)
+            tor_cert_valid_after_="true"
+            shift
+            ;;
+         --verified-only)
+            verified_only_="true"
+            shift
+            ;;
+         --prefer-verified)
+            prefer_verified_="true"
+            shift
+            ;;
+         --unverified-only)
+            unverified_only_="true"
+            shift
+            ;;
+         --user-permission)
+            user_permission_="true"
+            shift
+            ;;
+         --group-permission)
+            group_permission_="true"
+            shift
+            ;;
+         --)
+            shift
+            break
+            ;;
+         -*)
+            printf '%s\n' "$0: unknown option: $1" >&2
+            exit 111
+            ;;
+         *)
+            break
+            ;;
+      esac
    done
 
    ## If there are input files (for example) that follow the options, they

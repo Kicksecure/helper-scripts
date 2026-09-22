@@ -1,3 +1,22 @@
+commit 872d3e42f12fdc5dc51b3fd7d7c85a4bc6679e2f
+Merge: a620dd0a e5ec5096
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 22 01:03:39 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit e5ec5096c3dd8ba1f6fc2aa3ae706f76329ee187
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Sep 21 23:39:16 2026 -0400
+
+    Fix and polish
+
+commit a620dd0aaefec9acd7c93e8b860df3e10ff95fdb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 22 03:10:59 2026 +0000
+
+    bumped changelog version
+
 commit 3f35c4fa0e290b967c4151c6a4e43f86d69ad4f5
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Sep 21 22:57:50 2026 -0400
@@ -10,6 +29,184 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Sep 21 22:52:23 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit e89856a62569ba8a9eadbdf5c271282a90505131
+Merge: 45fd58d4 e7471eaf
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Sep 21 22:01:23 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit e7471eafe97495181e3d653f7dbdaa8283fdc69c
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 20:20:13 2026 -0400
+
+    config_builder: fix inverted append_shared return check
+
+    The trixie refactor delegated the write to append_shared but tested its return
+    as a truthy-success boolean; append_shared returns a 0-success exit code, so
+    'if not append_shared(...)' raised OSError on every SUCCESSFUL write (and
+    swallowed real failures). Raise on a non-zero return instead, and drop the now
+    dead os/shutil/NamedTemporaryFile imports the reverted block left behind.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 1f31d9c08915c3d827979fd3912765078d6e63c6
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 20:08:16 2026 -0400
+
+    crypt-pwchange: call is_positive_integer, not the undefined is_positive_number
+
+    The trixie refactor typoed the helper name; under errexit the inverted 'if !'
+    made every run take the error branch and exit 1, so crypt-pwchange could never
+    accept a disk index (root LUKS passphrase change fully broken). The intended
+    helper is is_positive_integer (defined in the sourced strings.bsh).
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit efc9a61cdef042438d34494bb44b2815c6b26498
+Merge: 0f555f3f 45fd58d4
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 20:05:44 2026 -0400
+
+    Merge master (arraybolt3/trixie) into ai
+
+    # Conflicts:
+    #       usr/lib/python3/dist-packages/append_shared/append_shared.py
+
+commit 0f555f3fb3f1135dd87e510d08c23fcc88657a6a
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 10:27:37 2026 -0400
+
+    accountctl: allow uppercase names, matching Debian NAME_REGEX
+
+    Debian adduser def_name_regex (^[a-zA-Z][a-zA-Z0-9_-]*$?$) and def_sys_name_regex
+    (^[a-zA-Z_]...) accept uppercase and a leading underscore. Accept their union plus
+    '.' and '@'.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 92b22286e9968624928e63eecdd20d6d7e8a1e5c
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 09:39:51 2026 -0400
+
+    get-user-list: drop adduser.conf comment/quote stripping
+
+    adduser (Debian::AdduserCommon) is Perl, not shell-sourced, and get-user-list's
+    own test deliberately rejects a non-numeric FIRST_UID/LAST_UID (fail-closed). A
+    present-but-malformed value should error, not be silently reshaped. The real bug
+    (commented-out FIRST_UID) stays fixed by the empty-value default below.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 8a0122ab655b5f8a1e45e066a1ea7feebe4915d4
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 08:56:16 2026 -0400
+
+    accountctl: restore lowercase-only name regex
+
+    - is_name_valid's class was broadened to ^[a-zA-Z]..., accepting uppercase and
+      rejecting a leading underscore -- contrary to adduser.conf NAME_REGEX and the
+      accountctl unit/fuzz suite; restore ^[a-z_][-a-z0-9_.@]*\$?$
+    - scope member_list_str local in group_has_nonroot_member (was a typo'd
+      declaration leaking the variable to global scope)
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit ef503003326742c27bacf61680f70d98d05fb413
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 08:56:14 2026 -0400
+
+    get-user-list: match adduser shell-source parsing
+
+    adduser sources adduser.conf as shell; strip a trailing whitespace-preceded
+    '#' comment and one layer of surrounding quotes before the numeric check, so
+    a valid FIRST_UID/LAST_UID is not rejected.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit b85e4c1641e4ee43ac106b45eb7abb951f95a1c0
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 08:56:12 2026 -0400
+
+    anondate: make option parsing nounset-safe
+
+    - case ${1:-} guards the BashFAQ/035 loop once the last option is shifted
+      away; every caller runs options-only, so it aborted on unbound $1
+    - initialize the option flags so the post-loop dispatch stays bound
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit f4adac516d9b2ab04213bd61da205d80c19ccdbe
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Mon Sep 21 07:50:00 2026 -0400
+
+    lockfile.sh: rename /run dir to /run/lockfile
+
+    - match the directory name to the script (lockfile.sh)
+    - flock mechanism names (FLOCKER env, flocker_* vars) unchanged
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 5639d0ba11e330cad72e2e356f5121d52d65fac9
+Author: claude (dev614 ceeeaf03-ae20-48df-90d6-29164130b0b3) <noreply@anthropic.com>
+Date:   Mon Sep 21 07:11:22 2026 -0400
+
+    lockfile.sh: per-user lock dir under /run, not /tmp
+
+    - scope is per-user BY DESIGN (documented; system-wide mutual exclusion is out
+      of purpose, a cross-user resource is root-gated elsewhere e.g. apt-get update)
+    - lock lives in the private per-user runtime dir (/run/user/$UID, mode 0700),
+      falling back to a root-provisioned /run/flocker (tmpfiles.d, 1777 root:root) --
+      never /tmp; refuses a symlinked lock dir. Closes the predictable-/tmp symlink attack.
+
+commit 2356169402131d51f52b5e1c381f063036bf1ff8
+Author: claude (dev618 cec5beeb-a999-4ee1-af89-39473b56f3f7) <noreply@anthropic.com>
+Date:   Mon Sep 21 05:48:22 2026 -0400
+
+    Preserve line endings + write UTF-8 in append_shared
+
+    - Read used universal newlines: appending one line silently rewrote
+      every existing CRLF to LF. Read+write now use newline="".
+    - Write used the ambient locale encoding while the read was UTF-8;
+      under a non-UTF-8 locale this raised UnicodeEncodeError (swallowed
+      as a misleading "sticky?" error). Write now pins encoding="utf-8".
+    - Regression tests cover both (canary-verified: fail on old code).
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 18d3ff3afbf48a8b89cf5770796633541fa9cc2a
+Author: claude (dev618 cec5beeb-a999-4ee1-af89-39473b56f3f7) <noreply@anthropic.com>
+Date:   Mon Sep 21 05:48:03 2026 -0400
+
+    Grant actions: read to CFLite caller; fix budget wording
+
+    - Reusable now needs actions: read (corpus artifact download);
+      caller must grant it since reusable perms cannot exceed the caller.
+    - Drop unused security-events: write (no SARIF upload).
+    - fuzz_seconds is total, not per-fuzzer.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 834a77833947ac2f386afbbf8515e9a059f9273d
+Author: claude (dev618 cec5beeb-a999-4ee1-af89-39473b56f3f7) <noreply@anthropic.com>
+Date:   Mon Sep 21 05:26:47 2026 -0400
+
+    Reformat append_shared.py chown per black
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit bcd09becdd6d12b831d3e99af7d2a9b584a516ec
+Author: claude (dev618 cec5beeb-a999-4ee1-af89-39473b56f3f7) <noreply@anthropic.com>
+Date:   Mon Sep 21 05:21:10 2026 -0400
+
+    Thin local-python-fuzz.yml onto shared CFLite reusable
+
+    - Body (pr/batch split, google/clusterfuzzlite pins, step summary)
+      now lives in developer-meta-files reusable-clusterfuzzlite.yml;
+      wrapper keeps only triggers, paths, schedule, concurrency.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 
 commit 45fd58d47e1c45ef983ae0357e16bdc344347944
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
