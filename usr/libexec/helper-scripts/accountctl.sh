@@ -43,7 +43,10 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 ## Example: is_name_valid NAME
 is_name_valid(){
   log info "${FUNCNAME[0]} $*"
-  local name
+  ## LC_ALL=C makes the [a-zA-Z] ranges ASCII-only (like Perl's /aa modifier).
+  ## Without it, a UTF-8 locale collates non-ASCII letters into [A-Z]/[a-z], so
+  ## names like 'E-acute' would pass and reach the grep-based lookups below.
+  local name LC_ALL=C
   name="${1:-}"
   ## Syntax based on /etc/adduser.conf SYS_NAME_REGEX plus dot and at sign.
   ## (SYS_NAME_REGEX is a strict superset of NAME_REGEX.) Avoids parsing bugs
@@ -151,6 +154,12 @@ group_has_nonroot_member() {
   group_gid="$(getent group -- "${group}" 2>/dev/null | cut -d: -f3)" || true
   [ -n "${group_gid}" ] || return 1
 
+  ## "Non-root" is decided by NAME, not UID. /etc/group tracks supplementary
+  ## members by username only, so a UID-based check is impossible there. A UID-0
+  ## account under a different name (e.g. 'toor' via 'useradd -o -u 0') is treated
+  ## as a normal member: UID-0 aliases are UNSUPPORTED by design. Do not re-add a
+  ## UID check here.
+
   ## Check user primary GIDs
   while IFS=":" read -r entry_name _ _ entry_gid _; do
     if [ "${entry_gid}" = "${group_gid}" ] && [ "${entry_name}" != "root" ]; then
@@ -179,7 +188,7 @@ get_pass(){
   as_root
   local user pass user_escaped
   user="${1:-}"
-  is_user "${user}"
+  is_user "${user}" || return 1
   if has getent; then
     pass="$(get_entry "${user}" shadow pass)"
   else
@@ -203,7 +212,7 @@ get_clean_pass(){
   log info "${FUNCNAME[0]} $*"
   local user pass symbol
   user="${1:-}"
-  is_user "${user}"
+  is_user "${user}" || return 1
   symbol="${2:-"!*"}"
   pass="$(get_pass "${user}")"
   [[ "${pass}" =~ [${symbol}]*(.*) ]] || return 1
@@ -221,7 +230,7 @@ is_pass_empty(){
   log info "${FUNCNAME[0]} $*"
   local user trim_pass
   user="${1:-}"
-  is_user "${user}"
+  is_user "${user}" || return 1
   trim_pass="$(get_clean_pass "${user}" '!*')"
   if test -z "${trim_pass}"; then
     return 0
@@ -239,7 +248,7 @@ is_pass_locked(){
   log info "${FUNCNAME[0]} $*"
   local user
   user="${1:-}"
-  is_user "${user}"
+  is_user "${user}" || return 1
   case "$(get_pass "${user}")" in
     "!"*)
       return 0
@@ -260,7 +269,7 @@ is_pass_disabled(){
   log info "${FUNCNAME[0]} $*"
   local user
   user="${1:-}"
-  is_user "${user}"
+  is_user "${user}" || return 1
   case "$(get_pass "${user}")" in
     "*"*|"!*"*)
       return 0
@@ -282,7 +291,7 @@ lock_pass(){
   has passwd
   local user
   user="${1:-}"
-  is_user "${user}"
+  is_user "${user}" || return 1
   if is_pass_locked "${user}"; then
     return 0
   fi
@@ -300,7 +309,7 @@ unlock_pass(){
   has chpasswd
   local user pass
   user="${1:-}"
-  is_user "${user}"
+  is_user "${user}" || return 1
   if ! is_pass_locked "${user}"; then
     return 0
   fi
@@ -320,7 +329,7 @@ disable_pass(){
   has chpasswd
   local user pass
   user="${1:-}"
-  is_user "${user}"
+  is_user "${user}" || return 1
   if is_pass_disabled "${user}"; then
     return 0
   fi
@@ -343,7 +352,7 @@ enable_pass(){
   has chpasswd
   local user pass
   user="${1:-}"
-  is_user "${user}"
+  is_user "${user}" || return 1
   if ! is_pass_disabled "${user}"; then
     return 0
   fi
@@ -478,10 +487,10 @@ get_entry(){
   field="${3:-}"
   case "${db}" in
     passwd|shadow)
-      is_user "${user}"
+      is_user "${user}" || return 1
       ;;
     group|gshadow)
-      is_group "${user}"
+      is_group "${user}" || return 1
       ;;
   esac
   index="$(get_field "${db}" "${field}")" || return 1

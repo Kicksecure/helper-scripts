@@ -40,3 +40,7 @@ jobs:
     uses: org-ai-assisted/developer-meta-files/.github/workflows/reusable-dist-ai-tests.yml@master
     with:
       categories: '--fuzz'
+      ## The --fuzz lane runs ~10 helper-scripts fuzz suites at ~3-5 min each,
+      ## which overruns the reusable's 20-min --core default and is cancelled.
+      ## Give the whole lane real headroom (observed ~6 suites in ~20 min).
+      timeout-minutes: 60
