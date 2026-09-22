@@ -63,7 +63,14 @@ if ! is_positive_integer "${crypt_dev_idx}"; then
   exit 1
 fi
 
-## User input here is trusted, no need to check for overly huge integers.
+## Reject a value that overflows bash 64-bit arithmetic: the range check and the
+## array index below wrap on overflow (e.g. 2^64+1 -> 1), which would pass the
+## range check and select a DIFFERENT real device -- a wrong-disk passphrase
+## change. A value that does not round-trip through base-10 arithmetic overflowed.
+if [ "$(( 10#${crypt_dev_idx} ))" != "${crypt_dev_idx}" ]; then
+  printf "%s\n" "$0: ERROR: Provided value is out of range. Please specify a disk number. $unchanged_test" >&2
+  exit 1
+fi
 
 if (( crypt_dev_idx > ${#crypt_dev_list[@]} )); then
   printf "%s\n" "$0: ERROR: Provided value is out of range. Please specify a disk number. $unchanged_test" >&2
