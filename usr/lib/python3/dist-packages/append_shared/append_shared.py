@@ -93,7 +93,11 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
             if not os.access(file_path, os.R_OK):
                 _print_error(f"File '{str(orig_file_path)}' not readable!")
                 return 1
-            with open(file_path, "r", encoding="utf-8") as f:
+            ## newline="" preserves the file's existing line endings
+            ## byte-for-byte: without it, universal-newlines translation
+            ## silently rewrites every CRLF in the pre-existing content to
+            ## LF on read, corrupting a file that must keep CRLF.
+            with open(file_path, "r", encoding="utf-8", newline="") as f:
                 try:
                     file_contents = f.read()
                 except Exception:
@@ -135,7 +139,11 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
     try:
         # pylint: disable=consider-using-with
         temp_file = NamedTemporaryFile(
-            mode="w", delete=False, dir=file_path.parent
+            mode="w",
+            encoding="utf-8",
+            newline="",
+            delete=False,
+            dir=file_path.parent,
         )
         temp_file.write(file_contents)
         temp_file.flush()
@@ -146,7 +154,9 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
             ## possible.
             stat_result = os.stat(file_path)
             try:
-                os.chown(temp_file.name, stat_result.st_uid, stat_result.st_gid)
+                os.chown(
+                    temp_file.name, stat_result.st_uid, stat_result.st_gid
+                )
             except PermissionError:
                 pass
             shutil.copymode(file_path, temp_file.name)

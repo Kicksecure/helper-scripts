@@ -3,7 +3,14 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Lock file mechanism to prevent duplicate script instances across users
+## Lock file mechanism to prevent duplicate script instances, PER USER.
+##
+## Scope is per-user BY DESIGN -- system-wide (cross-user) mutual exclusion is
+## out of purpose; kept simple. A resource that must be serialized across users
+## is gated elsewhere (for example 'apt-get update' requires root), so a per-user
+## lock is sufficient. The lock therefore lives in the caller's private per-user
+## runtime directory (root-created, mode 0700), which also makes it immune to the
+## /tmp symlink attack that a predictable, world-writable shared lock dir exposes.
 ##
 ## Two ways to use it:
 ##   * Source it to self-lock the sourcing script. Only one instance of the
@@ -23,13 +30,28 @@ true "${BASH_SOURCE[0]}: START"
 
 true "${BASH_SOURCE[0]}: INFO: FLOCKER: ${FLOCKER-}"
 
-[[ -v TMP ]] || TMP="/tmp"
-flocker_temp_folder="${TMP}/flocker-temp-folder"
-if ! [ -d "${TMP}" ]; then
-  printf '%s\n' "$0: ERROR: Could not create lock file directory at '${flocker_temp_folder}', because '${TMP}' does not exist or is not a directory!" 1>&2
+## Per-user lock directory (see the per-user-by-design note at the top). The lock
+## never lives in /tmp. Prefer the caller's private per-user runtime dir (mode
+## 0700, root-created -- fully isolated). Where none exists (e.g. a session-less
+## root run) fall back to a per-user subdirectory of '/run/lockfile', a
+## root-provisioned base (tmpfiles.d, 1777 root:root): root owns the base, so
+## unlike /tmp an unprivileged user cannot pre-create or symlink it.
+flocker_runtime_dir="${XDG_RUNTIME_DIR:-/run/user/${EUID}}"
+if [ -d "${flocker_runtime_dir}" ] && [ ! -L "${flocker_runtime_dir}" ]; then
+  flocker_temp_folder="${flocker_runtime_dir}/lockfile"
+elif [ -d /run/lockfile ] && [ ! -L /run/lockfile ]; then
+  flocker_temp_folder="/run/lockfile/${EUID}"
+else
+  printf '%s\n' "$0: ERROR: no per-user runtime dir and '/run/lockfile' is missing or a symlink; cannot create a lock directory!" 1>&2
   exit 1
 fi
 mkdir --parents -- "${flocker_temp_folder}"
+## Belt-and-suspenders for the shared '/run/lockfile' base: refuse a symlinked
+## per-user dir another user could have pre-created (mkdir --parents follows it).
+if [ -L "${flocker_temp_folder}" ]; then
+  printf '%s\n' "$0: ERROR: refusing lock directory '${flocker_temp_folder}': it is a symlink!" 1>&2
+  exit 1
+fi
 
 ## Wrap-mode setup: an EXECUTED run with arguments treats $1 as the lock key and
 ## runs the rest as a command under that key's lock (the run happens on the
