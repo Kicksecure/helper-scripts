@@ -25,7 +25,8 @@ root_cmd(){
     su)
       ## Thanks to Congelli501 for su to not mess with quotes.
       ## https://stackoverflow.com/a/32966744/2605155
-      cmd="$(command -v -- "${1}")"
+      ## Use a fixed secure PATH to avoid running the wrong executable.
+      cmd="$(PATH="/usr/sbin:/usr/bin:/sbin:/bin" command -v -- "${1}")"
       shift
       log_run "${root_cmd_loglevel}" su root -s "${cmd}" -- "${@}"
       ;;

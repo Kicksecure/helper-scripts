@@ -20,6 +20,11 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/trace.bsh
 stecho_bin="${HELPER_SCRIPTS_PATH:-}/usr/bin/stecho"
 sanitize_string_bin="${HELPER_SCRIPTS_PATH:-}/usr/bin/sanitize-string"
 
+## Fall back to $PATH or static functions so dist-installer-cli-standalone
+## works.
+has "${stecho_bin}" || stecho_bin="stecho"
+has "${sanitize_string_bin}" || sanitize_string_bin="sanitize-string"
+
 if ! has "${stecho_bin}" || ! has "${sanitize_string_bin}"; then
   printf '%s\n' "$0: ERROR: stecho and/or sanitize-string missing ('${stecho_bin}', '${sanitize_string_bin}')."
   printf '%s\n' "$0: INFO: function_trace:"

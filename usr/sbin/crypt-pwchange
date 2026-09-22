@@ -12,6 +12,8 @@ set -o pipefail
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh
 # shellcheck source=../libexec/helper-scripts/get_password.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_password.sh
+# shellcheck source=../libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 if [ "$(id -u)" != "0" ]; then
    echo "ERROR: This must be run as root (sudo)!" >&2
@@ -53,12 +55,14 @@ if [ -z "$crypt_dev_idx" ]; then
   exit 1
 fi
 
-if [[ "$crypt_dev_idx" = *[!0-9]* ]]; then
-  printf "%s\n" "$0: ERROR: Provided value is ${bold}not${nobold} a number. Please specify a disk number. $unchanged_test" >&2
+if ! is_positive_number "$crypt_dev_idx"; then
+  printf "%s\n" "$0: ERROR: Provided value is ${bold}not${nobold} a positive number. Please specify a disk number. $unchanged_test" >&2
   exit 1
 fi
 
-if (( crypt_dev_idx > ${#crypt_dev_list[@]} )) || (( crypt_dev_idx == 0 )); then
+## User input here is trusted, no need to check for overly huge integers.
+
+if (( crypt_dev_idx > ${#crypt_dev_list[@]} )); then
   printf "%s\n" "$0: ERROR: Provided value is out of range. Please specify a disk number. $unchanged_test" >&2
   exit 1
 fi

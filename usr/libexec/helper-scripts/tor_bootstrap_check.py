@@ -30,7 +30,17 @@ print(format(bootstrap_status))
 
 progress_percent = re.match('.* PROGRESS=([0-9]+).*', bootstrap_status)
 
-exit_code = int(progress_percent.group(1))
+if progress_percent is None:
+    print("ERROR: could not parse PROGRESS from bootstrap-phase.", file=sys.stderr)
+    controller.close()
+    sys.exit(254)
+
+try:
+    exit_code = int(progress_percent.group(1))
+except Exception:
+    print("ERROR: PROGRESS from bootstrap-phase is not an integer!", file=sys.stderr)
+    controller.close()
+    sys.exit(254)
 
 controller.close()
 

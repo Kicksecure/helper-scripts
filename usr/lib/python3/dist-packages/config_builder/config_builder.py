@@ -8,9 +8,12 @@ config_builder.py: Builds configuration directories containing INI-style
 configuration into a single configuration file.
 """
 
+import os
 import re
+import shutil
 from pathlib import Path
-
+from tempfile import NamedTemporaryFile
+from append_shared.append_shared import append_shared
 
 def config_file_to_config_state(
     config_file: Path,
@@ -109,21 +112,26 @@ def write_config_file(
     Serializes a config state dictionary to a file.
     """
 
-    with open(output_file, "w", encoding="utf-8") as output_stream:
-        ## Write values that are outside of any particular section first
-        if "" in config_state:
-            for nest_key, nest_value in config_state[""].items():
-                output_stream.write(f"{nest_key}={nest_value}\n")
-            output_stream.write("\n")
+    output_str: str = ""
 
-        ## Now write all the sections
-        for key, value in config_state.items():
-            if key == "":
-                continue
-            output_stream.write(f"[{key}]\n")
-            for nest_key, nest_value in value.items():
-                output_stream.write(f"{nest_key}={nest_value}\n")
-            output_stream.write("\n")
+    ## Serialize values that are outside of any particular section first
+    if "" in config_state:
+        for nest_key, nest_value in config_state[""].items():
+            output_str += f"{nest_key}={nest_value}\n"
+        output_str += "\n"
+
+    ## Now serialize all the sections
+    for key, value in config_state.items():
+        if key == "":
+            continue
+        output_str += f"[{key}]\n"
+        for nest_key, nest_value in value.items():
+            output_str += f"{nest_key}={nest_value}\n"
+        output_str += "\n"
+
+    ## Write the file atomically if possible
+    if not append_shared("overwrite", [str(output_file), output_str]):
+        raise OSError(f"Could not write file '{output_file}'!")
 
 
 def build_config_file(config_dir: Path, output_file: Path) -> None:

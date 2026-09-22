@@ -9,6 +9,11 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
+
+## No 'exit 1' by design. This script is intended to block a caller until Tor
+## is either running OR it can be determined that it will never start running.
+## It is the caller's responsibility to handle Tor's absence gracefully.
 
 delay_ctr=0
 

@@ -134,17 +134,29 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
     temp_file = None
     try:
         # pylint: disable=consider-using-with
-        temp_file = NamedTemporaryFile(mode="w", delete=False)
+        temp_file = NamedTemporaryFile(
+            mode="w", delete=False, dir=file_path.parent
+        )
         temp_file.write(file_contents)
         temp_file.flush()
+        os.fsync(temp_file.fileno())
         temp_file.close()
         if file_path.exists():
+            ## Preserve the existing file's owner + mode across the replace if
+            ## possible.
+            stat_result = os.stat(file_path)
+            try:
+                os.chown(temp_file.name, stat_result.st_uid, stat_result.st_gid)
+            except PermissionError:
+                pass
             shutil.copymode(file_path, temp_file.name)
         else:
             current_umask = os.umask(0)
             os.umask(current_umask)
             new_mode = 0o666 & (current_umask ^ 0o777)
             os.chmod(temp_file.name, new_mode)
+        ## It is more important that the move succeed than that it be atomic,
+        ## therefore not using os.replace().
         shutil.move(temp_file.name, file_path)
     except Exception:
         try:

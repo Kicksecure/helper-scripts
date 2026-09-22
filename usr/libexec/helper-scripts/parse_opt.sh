@@ -133,17 +133,16 @@ range_arg(){
   key="${1}"
   var="${2}"
   shift 2
-  list="${*:-}"
-  #range="${list#"${1} "}"
-  if [ -n "${var:-}" ]; then
+  list=( "$@" )
+  if [ -n "${var}" ]; then
     success=0
-    for tests in ${list:-}; do
+    for test in "${list[@]}"; do
       ## only evaluate if matches all chars
-      [ "${var:-}" = "${tests}" ] && success=1 && break
+      [ "${var}" = "${test}" ] && success=1 && break
     done
     ## if not within range, fail and show the fixed range that can be used
     if [ "${success}" -eq 0 ]; then
-      die 2 "Option '${key}' cannot be '${var:-}'. Possible values: '${list}'"
+      die 2 "Option '${key}' cannot be '${var}'. Possible values: '${list[*]}'"
     fi
   fi
 }

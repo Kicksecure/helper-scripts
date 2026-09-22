@@ -26,7 +26,7 @@ read_adduser_conf_field() {
   value=""
   found="false"
 
-  while IFS= read -r line; do
+  while IFS= read -r line || [ -n "${line}" ]; do
     if [[ "${line}" =~ ^[[:space:]]*${key}[[:space:]]*= ]]; then
       value="${line#*=}"
       found="true"
@@ -47,13 +47,13 @@ read_adduser_conf_field() {
 
 if test -r "${adduser_conf_path}"; then
   first_uid="$(read_adduser_conf_field FIRST_UID)"
-  if ! is_whole_number "${first_uid}"; then
+  if [ -n "${first_uid}" ] && ! is_whole_number "${first_uid}"; then
     printf '%s\n' "$0: ERROR: FIRST_UID in file '${adduser_conf_path}' is not a whole number!" >&2
     exit 1
   fi
 
   last_uid="$(read_adduser_conf_field LAST_UID)"
-  if ! is_whole_number "${last_uid}"; then
+  if [ -n "${last_uid}" ] && ! is_whole_number "${last_uid}"; then
     printf '%s\n' "$0: ERROR: LAST_UID in file '${adduser_conf_path}' is not a whole number!" >&2
     exit 1
   fi
@@ -71,7 +71,10 @@ if ! test -r "${passwd_path}"; then
   exit 1
 fi
 
+## No tolerance of a missing trailing newline or malformed entries; /etc/passwd
+## is a critical system file and is expected to be well-formed.
 while read -r user_entry; do
+   [ -n "${user_entry}" ] || continue
    current_uid="$(cut -d':' -f3 <<< "${user_entry}")"
    if [ "${current_uid}" -ge "${first_uid}" ] \
       && [ "${current_uid}" -le "${last_uid}" ]; then
