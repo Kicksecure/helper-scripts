@@ -1,9 +1,119 @@
+commit 3dcf2c4d8ea0391aeab59fdc6cdbcc7ac1a0f795
+Merge: 13f90530 0c14638d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 23 03:48:25 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 0c14638d1d6a5f652ab5dd361247a493bd77d64e
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Sep 22 17:00:55 2026 -0400
+
+    Polish, fix more no-errexit edge cases in accountctl.sh
+
+commit 882a26f2764dc684287d94944b57d5777451913e
+Merge: 13f90530 80c4bd23
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Sep 22 15:02:21 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit 80c4bd235fb68a503e20d10bb473c9d0a82a6129
+Author: claude (dev631 01df732a-ea68-43c4-a53c-336b2d5e21a8) <noreply@anthropic.com>
+Date:   Tue Sep 22 03:14:10 2026 -0400
+
+    dist-ai-tests: authorize the optional atheris fuzz skip
+
+    - helper-scripts-lib-tests-fuzz-atheris exits 77 when atheris is absent (atheris
+      is not an apt package; real coverage fuzzing runs in the ClusterFuzzLite lane).
+      Unauthorized, the --fuzz lane fails on the skip once it runs to completion
+      (surfaced by the timeout fix). Authorize it; harmless to --core (no fuzz there).
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 73ef08c541a6d50c889a2ef692cc54ca230d7b91
+Author: claude (dev631 01df732a-ea68-43c4-a53c-336b2d5e21a8) <noreply@anthropic.com>
+Date:   Tue Sep 22 02:29:52 2026 -0400
+
+    dist-ai-fuzz: give the fuzz lane a 60-min budget
+
+    - the reusable's 20-min --core default cancels the ~10-suite helper-scripts
+      --fuzz lane mid-run (observed ~6 suites in ~20 min), so the check could never
+      pass; pass timeout-minutes explicitly, as the reusable's input intends
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 71585589f682ba902fbb15c53b9ce19267006339
+Merge: 0dfa2a34 13f90530
+Author: claude (dev631 01df732a-ea68-43c4-a53c-336b2d5e21a8) <noreply@anthropic.com>
+Date:   Tue Sep 22 01:36:26 2026 -0400
+
+    Merge org-ai-assisted/master into ai
+
+    - is_name_valid: take upstream comment wording; LC_ALL=C fix retained
+    - crypt-pwchange: keep braced is_positive_integer with its WHY comment
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 0dfa2a346ddd98651bdb817a9101bcd92ee8440c
+Author: claude (dev631 01df732a-ea68-43c4-a53c-336b2d5e21a8) <noreply@anthropic.com>
+Date:   Tue Sep 22 01:28:09 2026 -0400
+
+    note settled contracts for tor-wait and user-list
+
+    - try-wait-for-tor: always exits 0 (best-effort); gating on rc is a caller
+      bug, not a fail-open (issue #86)
+    - get-user-list: a non-numeric passwd UID is accepted, not guarded (issue #87)
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit a9ac7a6c9915a51f6169a4589eee68d1881c07f0
+Author: claude (dev631 01df732a-ea68-43c4-a53c-336b2d5e21a8) <noreply@anthropic.com>
+Date:   Tue Sep 22 01:28:07 2026 -0400
+
+    config_builder: fix key spacing and header comments
+
+    - strip whitespace around '=' so 'key = v' overrides 'key=v' (issue #85)
+    - tolerate a trailing '#' comment after a header ']'; anchor kept so any
+      other trailing content is still rejected
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit a3bda0a1c39cc36e10f587fdd626caf978af44b7
+Author: claude (dev631 01df732a-ea68-43c4-a53c-336b2d5e21a8) <noreply@anthropic.com>
+Date:   Tue Sep 22 01:27:50 2026 -0400
+
+    accountctl: fail closed when is_user/is_group fail
+
+    - append '|| return 1' to every bare is_user/is_group call (issue #84): under
+      the no-errexit library convention a failed check was swallowed, so a
+      nonexistent account read as existing with an empty password
+    - note UID-0 alias unsupported in group_has_nonroot_member (issue #83)
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 13f90530f1f3b7ea0df5c9893c889eaf6366d53d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 22 05:05:27 2026 +0000
+
+    bumped changelog version
+
 commit 872d3e42f12fdc5dc51b3fd7d7c85a4bc6679e2f
 Merge: a620dd0a e5ec5096
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Sep 22 01:03:39 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit c41b4eb1aa40f0736c2f366636c2c7bd146f1242
+Merge: e580430e a620dd0a
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 23:49:12 2026 -0400
+
+    Merge master (kicksecure upstream, incl. arraybolt3/trixie) into ai
+
+    # Conflicts:
+    #       usr/sbin/crypt-pwchange
 
 commit e5ec5096c3dd8ba1f6fc2aa3ae706f76329ee187
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
@@ -23,12 +133,49 @@ Date:   Mon Sep 21 22:57:50 2026 -0400
 
     fix
 
+commit e580430efe6fcc4d34893d101560bcf616c30dc2
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 22:54:15 2026 -0400
+
+    accountctl: make is_name_valid ASCII-only (LC_ALL=C)
+
+    The [a-zA-Z] ranges in [[ =~ ]] are locale-collated: under a UTF-8 caller locale
+    glibc expands them to non-ASCII letters, so a name like U+00C9 passed and reached
+    the grep-based lookups (found by ai-review: codex + grok). Debian's regex uses
+    the ASCII-only /aa modifier; 'local LC_ALL=C' gives the same, regardless of the
+    caller's locale.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 commit 79415f2cd3bc470e579719d61ecb581921a323cb
 Merge: 58d6dbe7 45fd58d4
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Sep 21 22:52:23 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit a662ed3d01975bece19b92f34cd0bda02d01f116
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 22:43:53 2026 -0400
+
+    crypt-pwchange: reject a disk index that overflows bash arithmetic
+
+    is_positive_integer sets no upper bound, and the range check '(( idx > N ))' plus
+    the array index use bash 64-bit arithmetic, which WRAPS: e.g. 2^64+1 wraps to 1,
+    passes the range check, and selects a DIFFERENT real LUKS device -- a wrong-disk
+    passphrase change (found by ai-review: codex + grok + claude). Reject any value
+    that does not round-trip through base-10 arithmetic. The trixie revert dropped
+    this guard as "trusted input"; the wrap makes it load-bearing.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit b615e0e37a6aa2961253520030668aa389c30300
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Mon Sep 21 22:16:03 2026 -0400
+
+    crypt-pwchange: document why the index must be a positive integer
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 
 commit e89856a62569ba8a9eadbdf5c271282a90505131
 Merge: 45fd58d4 e7471eaf
