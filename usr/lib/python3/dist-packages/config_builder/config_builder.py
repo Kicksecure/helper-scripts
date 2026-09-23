@@ -22,7 +22,7 @@ def config_file_to_config_state(
 
     config_state: dict[str, dict[str, str]] = {}
     detect_comment_regex: re.Pattern[str] = re.compile(r"\s*#")
-    detect_header_regex: re.Pattern[str] = re.compile(r"\[.*]\Z")
+    detect_header_regex: re.Pattern[str] = re.compile(r"\[(.*)\]\s*(?:#.*)?\Z")
     ## We don't use None here since an empty string is a valid header value
     ## (this is used to deal with the annoying fact that toml allows
     ## configuration values outside of sections). We could technically use
@@ -39,10 +39,13 @@ def config_file_to_config_state(
             if detect_comment_regex.match(config_line):
                 continue
 
-            if detect_header_regex.match(config_line):
-                if len(config_line) == 2:
+            header_match: re.Match[str] | None = detect_header_regex.match(
+                config_line
+            )
+            if header_match:
+                current_header_str = header_match.group(1)
+                if current_header_str == "":
                     raise ValueError("Empty header")
-                current_header_str = config_line[1 : len(config_line) - 1]
                 if not current_header_str in config_state:
                     config_state[current_header_str] = {}
                 continue
@@ -54,8 +57,10 @@ def config_file_to_config_state(
                 raise ValueError("Config line missing equals sign")
 
             config_line_parts: list[str] = config_line.split("=", maxsplit=1)
-            config_key: str = config_line_parts[0]
-            config_val: str = config_line_parts[1]
+            ## Strip whitespace so 'key = value' and 'key=value' are considered
+            ## identical.
+            config_key: str = config_line_parts[0].strip()
+            config_val: str = config_line_parts[1].strip()
             config_state[current_header_str][config_key] = config_val
 
     return config_state

@@ -55,6 +55,8 @@ if [ -z "$crypt_dev_idx" ]; then
   exit 1
 fi
 
+## Index is 1-based into crypt_dev_list, so it must be a positive non-zero
+## integer.
 if ! is_positive_integer "$crypt_dev_idx"; then
   printf "%s\n" "$0: ERROR: Provided value is ${bold}not${nobold} a positive number. Please specify a disk number. $unchanged_test" >&2
   exit 1
