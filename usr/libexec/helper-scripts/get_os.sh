@@ -68,7 +68,7 @@ get_os(){
   distro_version=""
   debian_testing_or_unstable_detected=""
   distro_codename=""
-  ## Overridable so distro detection can be exercised against a fixture os-release.
+  ## Overridable for testing purposes.
   os_release_file="${os_release_file:-/etc/os-release}"
   case "${os}" in
     Linux*)
@@ -93,8 +93,6 @@ get_os(){
       fi
       distro="${distro##[\"\']}"
       distro="${distro%%[\"\']}"
-      ## os-release values are quoted (e.g. Debian 13: VERSION_ID="13"); strip
-      ## the surrounding quotes so the numeric/codename checks below see 13, not "13".
       distro_version="${distro_version##[\"\']}"
       distro_version="${distro_version%%[\"\']}"
       distro_codename="${distro_codename##[\"\']}"
