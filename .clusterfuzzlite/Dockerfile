@@ -41,6 +41,13 @@
 ## swap.
 FROM gcr.io/oss-fuzz-base/base-builder-python@sha256:9dd557a4ba0e0cdfbeabc0bb115c98896f2dab68c3e8f301abf169469b8b5ef5
 
+## The shared CFLite smoke-run guard lives in org-ai-assisted/dist-ai (the single
+## source for our cross-repo test/fuzz assets), NOT this package. Clone it at
+## build time; build.sh sources $SRC/dist-ai/usr/share/clusterfuzzlite-lib/
+## smoke-run.bash. dist-ai is public; @master per the org's branch-tracking model.
+RUN git clone --depth 1 --branch master \
+      https://github.com/org-ai-assisted/dist-ai "$SRC/dist-ai"
+
 COPY . $SRC/helper-scripts
 COPY .clusterfuzzlite/build.sh $SRC/build.sh
 WORKDIR $SRC/helper-scripts
