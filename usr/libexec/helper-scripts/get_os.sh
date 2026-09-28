@@ -68,13 +68,15 @@ get_os(){
   distro_version=""
   debian_testing_or_unstable_detected=""
   distro_codename=""
+  ## Overridable so distro detection can be exercised against a fixture os-release.
+  os_release_file="${os_release_file:-/etc/os-release}"
   case "${os}" in
     Linux*)
       if has lsb_release; then
         distro="$(lsb_release --short --description || lsb_release -sd)"
         distro_version="$(lsb_release --short --release || lsb_release -sr)"
         distro_codename="$(lsb_release --short --codename || lsb_release -sc)"
-      elif test -f /etc/os-release; then
+      elif test -f "${os_release_file}"; then
         while IFS='=' read -r key val; do
           case "${key}" in
             (PRETTY_NAME) distro="${val}"
@@ -84,13 +86,19 @@ get_os(){
             (VERSION_CODENAME) distro_codename="${val}"
               ;;
           esac
-        done < /etc/os-release
+        done < "${os_release_file}"
       else
         has crux && distro="$(crux)"
         has guix && distro='Guix System'
       fi
       distro="${distro##[\"\']}"
       distro="${distro%%[\"\']}"
+      ## os-release values are quoted (e.g. Debian 13: VERSION_ID="13"); strip
+      ## the surrounding quotes so the numeric/codename checks below see 13, not "13".
+      distro_version="${distro_version##[\"\']}"
+      distro_version="${distro_version%%[\"\']}"
+      distro_codename="${distro_codename##[\"\']}"
+      distro_codename="${distro_codename%%[\"\']}"
       case "${PATH}" in
         (*/bedrock/cross/*)
           distro='Bedrock Linux'
@@ -169,11 +177,11 @@ get_os(){
   ## This at last so the user can hopefully post his system info from the
   ## logs before the error below.
   if [ -z "${distro_version}" ]; then
-    if test -f /etc/os-release; then
-      log notice "Contents of '/etc/os-release' file:"
-      cat -- /etc/os-release || true
+    if test -f "${os_release_file}"; then
+      log notice "Contents of '${os_release_file}' file:"
+      cat -- "${os_release_file}" || true
     else
-      log notice "'/etc/os-release' file not found."
+      log notice "'${os_release_file}' file not found."
     fi
     die 101 "${underline}Distribution Check:${nounderline} Failed to find distribution version."
     ## it will fail later on get_host_pkgs if the system is not supported.
