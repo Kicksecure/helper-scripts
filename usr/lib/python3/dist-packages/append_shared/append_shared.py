@@ -157,6 +157,7 @@ def append_shared(executable_name: str, argv: list[str]) -> int:
                     temp_file.name, stat_result.st_uid, stat_result.st_gid
                 )
             except PermissionError:
+                ## chown attempt is intentionally best-effort only.
                 pass
             shutil.copymode(file_path, temp_file.name)
         else:
