@@ -3,11 +3,11 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Sourced by the set-console-keymap / set-grub-keymap / set-labwc-keymap /
-## set-system-keymap wrappers, which call 'main "$@"' after sourcing. main()
-## owns strict-mode, setup, and parse_cmd; the function definitions stay pure so
-## a unit test can source this file (was_executed false -> main does not run) and
-## call one function without executing the program or inheriting strict-mode.
+## This script gets 'source'ed by:
+## set-console-keymap
+## set-grub-keymap
+## set-labwc-keymap
+## set-system-keymap
 
 ## provides was_executed
 # shellcheck source=./check_runtime.bsh
@@ -392,13 +392,7 @@ set_labwc_keymap() {
   ## Write the new config file contents and load them into 'labwc'.
   if ! overwrite "${labwc_config_path}" "${labwc_env_file_string}" >/dev/null ; then
     log error "${FUNCNAME[0]}: Cannot write new 'labwc' environment config '${labwc_config_path}'!"
-    ## The '--no-persist' path moves the original config to a backup before this
-    ## overwrite; restore it so a failed overwrite does not orphan (lose) the
-    ## user's existing config.
     if [ -n "${labwc_config_bak_path}" ]; then
-      ## --no-target-directory: restore to the exact path name. A plain 'mv'
-      ## would move the backup INTO a directory if a concurrent process replaced
-      ## the config path with one, orphaning the config; fail loudly instead.
       if ! mv --no-target-directory -- "${labwc_config_bak_path}" "${labwc_config_path}" ; then
         log error "${FUNCNAME[0]}: Also failed to restore backup 'labwc' environment config from '${labwc_config_bak_path}' to '${labwc_config_path}'!"
       fi
@@ -445,8 +439,6 @@ set_labwc_keymap() {
   ## configuration back (or just delete the new config file if there wasn't an
   ## old config file).
   if [ -n "${labwc_config_bak_path}" ]; then
-    ## --no-target-directory: restore to the exact path name, never move the
-    ## backup into a directory left at the config path by a concurrent process.
     if ! mv --no-target-directory -- "${labwc_config_bak_path}" "${labwc_config_path}" ; then
       log error "${FUNCNAME[0]}: Cannot move backup 'labwc' environment config '${labwc_config_bak_path}' to original location '${labwc_config_path}'!"
       return 1
@@ -1202,20 +1194,8 @@ unknown_option_error() {
   exit 1
 }
 
-## Reject control characters (newline, tab, NUL, etc.) in layout arguments.
-## The layout / variant / option args are written verbatim into config files
-## ('/etc/default/keyboard', the 'labwc' environment file). An embedded newline
-## would inject a stray line into the written config, corrupting it. The
-## per-token validators split their check strings on newlines, so individually
-## valid tokens smuggled via an embedded newline can otherwise pass validation.
-## This is the untrusted CLI / D-Bus argument vector; the interactive UI reads a
-## single line via 'read' and so cannot carry a newline. An omitted variant /
-## option arg is legal (empty), so check_no_control_chars -- which accepts empty
-## -- is the right shared primitive (from strings.bsh, sourced via log_run_die.sh).
 reject_control_chars_in_args() {
   local skl_arg_value
-  ## skl_arg_value is passed BY NAME to check_no_control_chars (read there via
-  ## ${!1}); shellcheck cannot see that indirect use.
   # shellcheck disable=SC2034
   for skl_arg_value in "$@"; do
     check_no_control_chars skl_arg_value || return 1
@@ -1421,8 +1401,6 @@ main() {
   parse_cmd "$@"
 }
 
-## Auto-run only when executed directly. The wrappers call 'main "$@"' after
-## sourcing; a unit test sources this file and calls a function without running.
 if was_executed "${BASH_SOURCE[0]}"; then
   main "$@"
 fi
