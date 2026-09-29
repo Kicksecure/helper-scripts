@@ -36,20 +36,24 @@ check_ref_commits_for_unicode() {
   fi
 
   ## Optional base: scan the commits the target introduces relative to it
-  ## (git log <base>..<target>). Defaults to HEAD, so a single-argument call is
-  ## unchanged. A caller reviewing an arbitrary range (e.g. master...feature)
-  ## passes the range's base so the scanned commit set matches what is shown.
-  base_ref="${2:-HEAD}"
+  ## (git log <base>..<target>). Defaults to HEAD when UNSET (a single-argument
+  ## call is unchanged); an explicitly-empty second argument is rejected like any
+  ## other bad ref rather than silently meaning HEAD. A caller reviewing an
+  ## arbitrary range (e.g. master...feature) passes the range's base so the
+  ## scanned commit set matches what is shown.
+  base_ref="${2-HEAD}"
 
   if ! [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = 'true' ]; then
     die 2 'Current working directory is not inside a Git working tree!'
   fi
 
-  if ! git rev-parse --verify "${target_ref}" >/dev/null 2>/dev/null; then
+  ## --end-of-options: a ref whose shorthand begins with '-' is a ref, not an
+  ## option to rev-parse.
+  if ! git rev-parse --verify --end-of-options "${target_ref}" >/dev/null 2>/dev/null; then
     die 2 'Target ref does not exist!'
   fi
 
-  if ! git rev-parse --verify "${base_ref}" >/dev/null 2>/dev/null; then
+  if ! git rev-parse --verify --end-of-options "${base_ref}" >/dev/null 2>/dev/null; then
     die 2 'Base ref does not exist!'
   fi
 
