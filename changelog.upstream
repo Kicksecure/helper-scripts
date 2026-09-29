@@ -1,3 +1,218 @@
+commit d1c54c5d393481a0bba8bf2d58562eeb054c62e3
+Merge: 34a89324 d7f902b4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 28 01:53:24 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit d7f902b46f62dec0a4c36506f7fbb2e35bdbce38
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Sep 27 20:31:00 2026 -0400
+
+    comments
+
+commit 34b432345c9bc6073be52258a62295fff884b2e1
+Merge: c51eeefb 09aaf58f
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Sep 27 20:25:20 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit c51eeefb537d370d1baa41f4242a49970bfe6e74
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Sep 25 16:18:19 2026 -0400
+
+    Polish
+
+commit 09aaf58f77e06bbc1b1ce270aacb0646e693ae4d
+Author: claude (dev692 9411e4ee-e940-416c-aba7-370ec7356789) <noreply@anthropic.com>
+Date:   Fri Sep 25 04:02:12 2026 -0400
+
+    get_os: strip os-release version/codename quotes
+
+    - Debian 13 ships VERSION_ID="13" (quoted); the os-release fallback (no lsb_release, e.g. a fresh cowbuilder chroot) kept the quotes, so is_integer '"13"' died 101 before any build.
+    - os_release_file override lets distro detection run against a fixture.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 78a17f686ca43e85e3fd79c557888d271918d5e0
+Merge: 23645426 9599acc3
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Sep 25 00:49:37 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit 9599acc34fc128b7729710d24fe8926cb6f6e6f6
+Author: claude (dev678 4b9d02c3-c9d0-4b67-840e-26e507db8cd0) <noreply@anthropic.com>
+Date:   Thu Sep 24 13:53:25 2026 -0400
+
+    set-labwc-keymap: restore config with mv --no-target-directory
+
+    - a plain 'mv backup config_path' would move the backup INTO a directory if a
+      concurrent process replaced the config path with one, orphaning the config;
+      --no-target-directory restores to the exact name or fails loudly (both sites)
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit d875e79eed362d488c98bece905ab228266175c6
+Merge: 1c979847 23645426
+Author: claude (dev678 4b9d02c3-c9d0-4b67-840e-26e507db8cd0) <noreply@anthropic.com>
+Date:   Thu Sep 24 13:32:41 2026 -0400
+
+    Merge arraybolt3/trixie into ai
+
+    Rebase our work onto the trixie contributor branch (reviewed: a single
+    best-effort-chown comment in append_shared.py; no overlap with our changes).
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 1c97984774e0a0dcaa2601b74ae3483b6714bd06
+Author: claude (dev678 4b9d02c3-c9d0-4b67-840e-26e507db8cd0) <noreply@anthropic.com>
+Date:   Thu Sep 24 12:50:05 2026 -0400
+
+    set-keyboard-layout: reuse strings.bsh check_no_control_chars
+
+    - move control-char rejection into strings.bsh as a shared, unit-tested
+      primitive (accepts empty, rejects any [[:cntrl:]]) rather than a local copy
+    - reject_control_chars_in_args now delegates per-arg to it
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit f9d06df852926b83c2d149061c136ec7ed5e66e3
+Author: claude (dev678 4b9d02c3-c9d0-4b67-840e-26e507db8cd0) <noreply@anthropic.com>
+Date:   Thu Sep 24 11:42:35 2026 -0400
+
+    set-keyboard-layout: harden arg and config handling
+
+    - reject control chars in layout args: an embedded newline whose lines are
+      each individually valid layouts passed validation and injected a stray line
+      into the written config (/etc/default/keyboard, labwc environment)
+    - set_labwc_keymap --no-persist: restore the backed-up config when the
+      overwrite fails, instead of orphaning (losing) the user's existing config
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit d9fdb6962be6b376a07e9fc34923c425d260a854
+Author: claude (dev664 e9f3549a-ae47-4e6d-8ddc-ab7d06e6d42b) <noreply@anthropic.com>
+Date:   Wed Sep 23 20:44:36 2026 -0400
+
+    strings.bsh: bound displaytime magnitude (overflow)
+
+    - gpg_bash_lib_function_displaytime accepted a >INT64_MAX seconds count that
+      then wrapped in its $(( )) arithmetic into a garbage duration; validate with
+      is_whole_number_int64 so it takes the safe 0-seconds fallback (same class as
+      read_integer_file)
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit da6a0384d91236505c35407d8586656238c7d84d
+Author: claude (dev664 e9f3549a-ae47-4e6d-8ddc-ab7d06e6d42b) <noreply@anthropic.com>
+Date:   Wed Sep 23 20:08:45 2026 -0400
+
+    strings.bsh: fix caller-var shadow + LC_ALL leak
+
+    - name validators captured the caller value AFTER declaring strings_bsh_*
+      locals, so a caller variable named like one shadowed it and was read as
+      empty; now capture via the positional ${!1} before the locals bind, and
+      default_if_empty operates on $1/$2 directly
+    - validate_safe_filename pinned the locale with export LC_ALL=C + a manual
+      restore that tracked set-ness not export-ness, leaking a plain caller
+      LC_ALL as exported; use a local LC_ALL=C like the sibling validators
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit b8ef9854dd21a6682b6801c252fb9776f38fb708
+Author: claude (dev664 e9f3549a-ae47-4e6d-8ddc-ab7d06e6d42b) <noreply@anthropic.com>
+Date:   Wed Sep 23 19:15:30 2026 -0400
+
+    strings.bsh: pin C locale in numeric validators
+
+    - is_whole_number / is_integer ran [0-9] under the caller locale; a UTF-8
+      locale (Debian/CI default) matches Unicode digits, reopening
+      read_integer_file's swallowed-exit-2 fail-open
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 6de9f773c0a807b83fa27514e8f9651960f3b770
+Author: claude (dev658 64d917f9-4c0a-4c1d-be51-e9f3a269e197) <noreply@anthropic.com>
+Date:   Wed Sep 23 19:11:14 2026 -0400
+
+    set-keyboard-layout: make source-able for unit tests
+
+    - Guard the top-level run with was_executed so sourcing defines the
+      functions without executing the program or leaking strict-mode; main()
+      now owns the strict block, setup, and parse_cmd. Lets a dist-ai test
+      source the shipped lib and call set_console_keymap directly.
+    - The 4 wrappers call 'main "$@"' after sourcing (source no longer
+      auto-runs); add the missing export LC_ALL=C to their strict block.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 5825bc139b9d81187d8d0944988b02702811bcc7
+Author: claude (dev664 e9f3549a-ae47-4e6d-8ddc-ab7d06e6d42b) <noreply@anthropic.com>
+Date:   Wed Sep 23 18:59:36 2026 -0400
+
+    strings.bsh: harden numeric + one-line validators
+
+    - read_integer_file: reject >INT64_MAX; the range test [ -gt ] errored
+      exit-2 and the enclosing if swallowed it, returning it as validated
+    - check_is_not_empty_and_only_one_line: strip the here-string's own
+      trailing newline so a valid single line is not false-rejected
+    - document the LC_ALL=C-pin readonly-caller assumption
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit aab74f654ff16acb9a36c71f1149be8a63f654a0
+Author: claude (dev660 596f7e3f-5173-4b4f-8eff-833780db5590) <noreply@anthropic.com>
+Date:   Wed Sep 23 17:37:42 2026 -0400
+
+    strings.bsh: pin check_variable_name to C locale
+
+    - [[ =~ [A-Za-z] ]] bracket ranges are locale-collated: a UTF-8 caller
+      locale expands them to accented letters, so the ASCII-only variable-name
+      gate accepted non-ASCII input (same class as is_name_valid, found by ai-review).
+    - 'local LC_ALL=C' makes the match byte/ASCII-deterministic, matching the
+      sibling check_valid_linux_user_account_name / validate_safe_filename pins.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 2364542638db8a8583bf4ec036109a9d37145a97
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Sep 23 17:06:28 2026 -0400
+
+    comment
+
+commit 88b4da32a97d6595833aa971af6ba1075de13920
+Merge: 34a89324 040f092f
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Sep 23 17:05:03 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit 040f092f592aef31f5338b607d6cd3075b14c753
+Merge: f8fbfd33 34a89324
+Author: claude (dev651 634d00b5-7189-458b-ab09-5aa46e29e604) <noreply@anthropic.com>
+Date:   Wed Sep 23 12:29:08 2026 -0400
+
+    Merge remote-tracking branch 'org-ai-assisted/master' into ai
+
+commit f8fbfd3370cad78a0e426f10b89391290b9f30a5
+Author: claude (dev651 634d00b5-7189-458b-ab09-5aa46e29e604) <noreply@anthropic.com>
+Date:   Wed Sep 23 12:26:03 2026 -0400
+
+    append_shared: comment the chown PermissionError pass
+
+    - document why the except is intentional (unprivileged caller cannot
+      chown; mode is still copied); clears the empty-except scanner flag
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 34a89324f9524b168047c4e76b68a3f88a55bd21
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 23 15:43:07 2026 +0000
+
+    bumped changelog version
+
 commit 3dcf2c4d8ea0391aeab59fdc6cdbcc7ac1a0f795
 Merge: 13f90530 0c14638d
 Author: Patrick Schleizer <adrelanos@whonix.org>
