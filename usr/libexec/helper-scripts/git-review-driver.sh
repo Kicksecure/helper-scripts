@@ -74,6 +74,22 @@ if [ -z "${GIT_DIFF_PATH_TOTAL:-}" ]; then
   ## problems with terminal-based reviewers and is confusing for GUI-based
   ## ones.
   printf '%s\n' "===== ${review_tool}: per-file diffs ====="
+
+  ## Terminal reviewers (git-diff-review) let the operator study the changed-file
+  ## list above (the diffstat / summary) and acknowledge before the per-file
+  ## diffs scroll past. GUI reviewers (git-meld / git-kdiff3) do not set this
+  ## flag, so they are unaffected. Declining skips the diffs and exits clean, so
+  ## a chained review still runs its remaining tools; no controlling terminal
+  ## (prompt rc 2) proceeds, preserving non-interactive behavior.
+  if [ "${git_review_outputs_to_terminal:-}" = 'true' ]; then
+    git_review_proceed_rc=0
+    prompt_yes_no_tty "Proceed to the per-file diffs?" || git_review_proceed_rc="$?"
+    if [ "${git_review_proceed_rc}" -eq 1 ]; then
+      log notice "per-file diffs skipped at your request."
+      exit 0
+    fi
+  fi
+
   diff_rc=0
   git --no-pager -c "diff.external=${git_review_self}" diff "$@" || diff_rc="$?"
 
