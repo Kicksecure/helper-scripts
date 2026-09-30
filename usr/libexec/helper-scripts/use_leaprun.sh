@@ -50,6 +50,14 @@ leaprun_useable_test() {
       return 0
    fi
 
+   ## An empty pid would make the check below '[ -d /proc/ ]', which is always
+   ## true; reject empty/non-numeric so privleapd-not-running is not missed.
+   if [[ ! "${privleap_pid}" =~ ^[0-9]+$ ]]; then
+      leaprun_useable_result="$0: WARNING: privleapd pid file '/run/privleapd/pid' is empty or not a number. Cannot use privleap."
+      leaprun_useable_output "$leaprun_useable_result"
+      return 0
+   fi
+
    if ! [ -d "/proc/${privleap_pid}" ]; then
       leaprun_useable_result="$0: WARNING: privleapd is not running. Folder '/proc/${privleap_pid}' does not exist. Cannot use privleap."
       leaprun_useable_output "$leaprun_useable_result"
@@ -68,7 +76,7 @@ leaprun_useable_test() {
    if ! [ -e "/run/privleapd/comm/${my_user_id}" ]; then
       leaprun_useable_result="$0: WARNING: Cannot communicate with privleapd. File '/run/privleapd/comm/${my_user_id}' does not exist. Cannot use privleap.
 
-You might be able to create a privleap socket by executing: sudo leapctl --create '$USER'"
+You might be able to create a privleap socket by executing: sudo leapctl --create '${USER:-${my_user_id}}'"
       leaprun_useable_output "$leaprun_useable_result"
       return 0
    fi
