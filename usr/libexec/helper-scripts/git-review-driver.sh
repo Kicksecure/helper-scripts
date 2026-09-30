@@ -74,6 +74,17 @@ if [ -z "${GIT_DIFF_PATH_TOTAL:-}" ]; then
   ## problems with terminal-based reviewers and is confusing for GUI-based
   ## ones.
   printf '%s\n' "===== ${review_tool}: per-file diffs ====="
+
+  ## For wrappers that output to a terminal, pause after displaying the summary
+  ## but before showing diff output, if the session is interactive.
+  if [ "${git_review_outputs_to_terminal:-}" = 'true' ] && [ -t 0 ] && [ -t 1 ]; then
+    git_review_proceed_rc=0
+    prompt_yes_no_tty "Proceed to the per-file diffs?" || git_review_proceed_rc="$?"
+    if [ "${git_review_proceed_rc}" -ne 0 ]; then
+      die 1 "Aborting before rendering diffs."
+    fi
+  fi
+
   diff_rc=0
   git --no-pager -c "diff.external=${git_review_self}" diff "$@" || diff_rc="$?"
 

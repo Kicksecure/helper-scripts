@@ -19,6 +19,7 @@ set -o errtrace
 set -o pipefail
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 # shellcheck source=../libexec/helper-scripts/log_run_die.sh
 source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
@@ -26,23 +27,30 @@ source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
 log_level=info
 
 check_ref_commits_for_unicode() {
-  local target_ref git_log_cmd git_log_output commit_list commit commit_diff \
-  unicode_report unicode_show_exit_code found_malicious_unicode
+  local target_ref base_ref git_log_cmd git_log_output commit_list commit \
+  commit_diff unicode_report unicode_show_exit_code found_malicious_unicode
 
   target_ref="${1:-}"
   if [ -z "${target_ref}" ]; then
     die 2 'No target ref specified!'
   fi
+  ## Note that if an empty base is passed, we intentionally keep base_ref empty
+  ## so that the check later on errors out.
+  base_ref="${2-HEAD}"
 
   if ! [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = 'true' ]; then
     die 2 'Current working directory is not inside a Git working tree!'
   fi
 
-  if ! git rev-parse --verify "${target_ref}" >/dev/null 2>/dev/null; then
+  if ! git rev-parse --verify --end-of-options "${target_ref}" >/dev/null 2>/dev/null; then
     die 2 'Target ref does not exist!'
   fi
 
-  git_log_cmd=( git log --format=%H "HEAD..${target_ref}" )
+  if ! git rev-parse --verify --end-of-options "${base_ref}" >/dev/null 2>/dev/null; then
+    die 2 'Base ref does not exist!'
+  fi
+
+  git_log_cmd=( git log --format=%H "${base_ref}..${target_ref}" )
 
   if ! git_log_output="$( "${git_log_cmd[@]}" )"; then
     die 2 "git_log_cmd failed! git_log_cmd: ${git_log_cmd[*]}"

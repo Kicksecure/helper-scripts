@@ -15,8 +15,11 @@ if was_executed "${BASH_SOURCE[0]}"; then
   set -o pipefail
   shopt -s inherit_errexit
   shopt -s shift_verbose
+  export LC_ALL=C
 fi
 
+## 'systemd_notify' is used by the script that sources this library.
+# shellcheck disable=SC2034
 if [ "${NOTIFY_SOCKET-}" = "" ]; then
   ## Support manual run from command line.
   ## I.e. when run not through systemd unit.
