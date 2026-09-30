@@ -18,8 +18,7 @@ if was_executed "${BASH_SOURCE[0]}"; then
   export LC_ALL=C
 fi
 
-## 'systemd_notify' is a public array consumed by the SOURCING script, not used
-## within this sourced library itself.
+## 'systemd_notify' is used by the script that sources this library.
 # shellcheck disable=SC2034
 if [ "${NOTIFY_SOCKET-}" = "" ]; then
   ## Support manual run from command line.

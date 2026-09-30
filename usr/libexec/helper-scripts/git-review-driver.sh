@@ -75,23 +75,13 @@ if [ -z "${GIT_DIFF_PATH_TOTAL:-}" ]; then
   ## ones.
   printf '%s\n' "===== ${review_tool}: per-file diffs ====="
 
-  ## Terminal reviewers (git-diff-review) let the operator study the changed-file
-  ## list above (the diffstat / summary) and acknowledge before the per-file
-  ## diffs render. Gate on a GENUINE interactive session: the flag (only
-  ## git-diff-review sets it; the GUI reviewers git-meld / git-kdiff3 do not) AND
-  ## both stdin and stdout being terminals. So a piped / redirected / chained /
-  ## CI / backgrounded run never prompts -- it proceeds and scans -- and cannot
-  ## wedge on /dev/tty (SIGTTIN) or block a pty with no reader.
-  ##
-  ## The per-file dispatch below is the ONLY place content is scanned (unicode,
-  ## gitlink spoof, symlink retarget, .gitattributes remap), so declining must
-  ## NOT look like a clean review: it aborts NON-ZERO, never a scanned-clean exit
-  ## 0 that an automated caller (dm-review-branch) would trust.
+  ## For wrappers that output to a terminal, pause after displaying the summary
+  ## but before showing diff output, if the session is interactive.
   if [ "${git_review_outputs_to_terminal:-}" = 'true' ] && [ -t 0 ] && [ -t 1 ]; then
     git_review_proceed_rc=0
     prompt_yes_no_tty "Proceed to the per-file diffs?" || git_review_proceed_rc="$?"
     if [ "${git_review_proceed_rc}" -ne 0 ]; then
-      die 1 "per-file review declined; the diffs were NOT scanned (re-run and answer 'y')."
+      die 1 "Aborting before rendering diffs."
     fi
   fi
 
