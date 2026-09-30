@@ -1,9 +1,122 @@
+commit f2b158836fdd8da2de600abbd3452b748ec55ad5
+Merge: c238c8a3 ae301ee1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 30 04:17:46 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit ae301ee1a52620e57659750ba06decae078799e3
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Sep 29 22:28:28 2026 -0400
+
+    Polish
+
+commit 9104c2f1ab85e05129ae36823c4559fc1fab5bab
+Merge: c238c8a3 e8c397df
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Sep 29 21:57:44 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit e8c397df880df27b86244c9c16fba01e64e6c39b
+Author: claude (dev735 a9815679-58af-4230-b97a-27a9e8ef15e8) <noreply@anthropic.com>
+Date:   Tue Sep 29 17:04:12 2026 -0400
+
+    Complete R-010 strict block: add export LC_ALL=C
+
+    - Guarded exec-path block set errexit/nounset/pipefail/errtrace + the
+      shopt pair but omitted 'export LC_ALL=C'; add it so the seven-directive
+      strict block is complete. Fork patch to satisfy the org R-010 gate.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit e3801cde9ea55b821424d4dde49abab4aa0ba71c
+Author: claude (dev736 c2fee6dd-5e8a-41b4-b092-680adf684562) <noreply@anthropic.com>
+Date:   Tue Sep 29 05:06:37 2026 -0400
+
+    check-ref-commits: harden base/target ref parsing
+
+    ai-review:
+    - --end-of-options on both rev-parse --verify calls, so a ref whose
+      shorthand begins with '-' is treated as a ref, not a rev-parse option.
+    - ${2-HEAD} (not ${2:-HEAD}): an explicitly-empty base is rejected like
+      any other bad ref rather than silently meaning HEAD.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit b483caef7fb6d6c550b6b18080a98947d393dbc4
+Author: claude (dev736 c2fee6dd-5e8a-41b4-b092-680adf684562) <noreply@anthropic.com>
+Date:   Tue Sep 29 05:06:20 2026 -0400
+
+    git-diff-review: decline aborts, prompt tty-only
+
+    ai-review: the per-file dispatch is the ONLY place content is scanned,
+    so declining the new prompt with exit 0 was a fail-open (a Trojan-Source
+    change passed with a success code dm-review-branch trusts).
+    - Decline now aborts non-zero, never a scanned-clean-looking exit 0.
+    - Prompt only when the flag is set AND stdin+stdout are both terminals, so
+      a piped / redirected / CI / backgrounded run proceeds and scans instead
+      of wedging on /dev/tty (SIGTTIN) or a reader-less pty.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit ec546b72ce6060bb0edc434de0749fd8ad171208
+Author: claude (dev736 c2fee6dd-5e8a-41b4-b092-680adf684562) <noreply@anthropic.com>
+Date:   Tue Sep 29 04:22:27 2026 -0400
+
+    git-diff-review: prompt before dumping per-file diffs
+
+    - Let the operator ack the changed-file list (the diffstat/summary)
+      before the per-file diffs scroll past.
+    - Terminal-only (gated on git_review_outputs_to_terminal); the GUI
+      reviewers git-meld/git-kdiff3 are unaffected.
+    - Decline skips the diffs and exits 0 so a chained review still runs
+      its remaining tools; no controlling terminal proceeds.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 07bdc8f7a8e6c433af9cd42b47cabb04602a6b13
+Author: claude (dev736 c2fee6dd-5e8a-41b4-b092-680adf684562) <noreply@anthropic.com>
+Date:   Tue Sep 29 04:22:12 2026 -0400
+
+    check-ref-commits-for-unicode: accept optional base ref
+
+    - dm-review-branch reviews arbitrary base...target ranges; scan the
+      range's own commits (<base>..<target>), not always HEAD..<target>.
+    - Defaults to HEAD, so the single-argument call is unchanged.
+    - Add the missing R-010 'export LC_ALL=C' (locale-independent scan).
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit c238c8a3ab781e994a51deb0e25539d6f4da6704
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 29 07:59:50 2026 +0000
+
+    bumped changelog version
+
+commit ad8dba593eb76841bc3994db2f89964356463812
+Author: claude (dev726 bd86980c-217e-4a63-b32c-e714cb85874f) <noreply@anthropic.com>
+Date:   Mon Sep 28 13:22:00 2026 -0400
+
+    Source shared CFLite smoke-run guard from dist-ai
+
+    - clone dist-ai@master in the CFLite Dockerfile; build.sh sources the shared cflite_smoke_run_fuzzers per compiled harness
+    - complete the strict-mode preamble and brace/annotate the container-provided SRC/OUT (style-clean, no gate override)
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 commit d1c54c5d393481a0bba8bf2d58562eeb054c62e3
 Merge: 34a89324 d7f902b4
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Sep 28 01:53:24 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 3fd99f17ce4a440e749f52fd1a17fbb934c33ac1
+Merge: 09aaf58f d7f902b4
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Mon Sep 28 01:51:50 2026 -0400
+
+    Merge arraybolt3/trixie into ai (remaster)
 
 commit d7f902b46f62dec0a4c36506f7fbb2e35bdbce38
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
