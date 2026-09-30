@@ -100,6 +100,7 @@ if [ "${pre_bsh_sourced}" = 'false' ]; then
   set -o pipefail
   shopt -s inherit_errexit
   shopt -s shift_verbose
+  export LC_ALL=C
 fi
 
 if test -r "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_colors.sh; then
