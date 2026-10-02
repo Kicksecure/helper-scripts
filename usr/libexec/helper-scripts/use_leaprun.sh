@@ -57,8 +57,8 @@ leaprun_useable_test() {
    fi
 
    local my_user_id
-   if ! my_user_id="$(id --name --user)"; then
-      leaprun_useable_result="$0: WARNING: Failed to execute 'id --name --user'. Cannot use privleap." >&2
+   if ! my_user_id="$(id --user)"; then
+      leaprun_useable_result="$0: WARNING: Failed to execute 'id --user'. Cannot use privleap." >&2
       leaprun_useable_output "$leaprun_useable_result"
       return 0
    fi
