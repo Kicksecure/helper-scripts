@@ -3,6 +3,9 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+# shellcheck source=./strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
+
 leaprun_useable_output() {
    printf "%s\n" "$*" >&2
 }
@@ -50,10 +53,8 @@ leaprun_useable_test() {
       return 0
    fi
 
-   ## An empty pid would make the check below '[ -d /proc/ ]', which is always
-   ## true; reject empty/non-numeric so privleapd-not-running is not missed.
-   if [[ ! "${privleap_pid}" =~ ^[0-9]+$ ]]; then
-      leaprun_useable_result="$0: WARNING: privleapd pid file '/run/privleapd/pid' is empty or not a number. Cannot use privleap."
+   if ! is_positive_integer "${privleap_pid}"; then
+      leaprun_useable_result="$0: WARNING: privleapd pid file '/run/privleapd/pid' is empty or does not contain a number. Cannot use privleap."
       leaprun_useable_output "$leaprun_useable_result"
       return 0
    fi
@@ -64,8 +65,6 @@ leaprun_useable_test() {
       return 0
    fi
 
-   ## privleapd names the per-user comm socket by UID (/run/privleapd/comm/<uid>,
-   ## see privleap leaprun.py). Must match by UID, not by name.
    local my_user_id
    if ! my_user_id="$(id --user)"; then
       leaprun_useable_result="$0: WARNING: Failed to execute 'id --user'. Cannot use privleap."
