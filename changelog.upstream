@@ -1,3 +1,72 @@
+commit e939ac6e6069fea341b1f722f0116bfbf88f069c
+Merge: 6b202d8d 3a85e61e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 2 04:08:48 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 3a85e61e397907cc093d1553c2e4ea8924ed3c36
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Oct 1 23:41:42 2026 -0400
+
+    Polish
+
+commit 35a508ea64db3b11666035bb41c0c61ed40394e7
+Merge: 37769ea9 084288e0
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Oct 1 23:29:32 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit 37769ea90cd1d9b6373c88b058327f338b31c1a3
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Oct 1 21:15:31 2026 -0400
+
+    Fix, privleap uses UIDs for comm socket names now
+
+commit 084288e0e7429ea676184fce7017ca968b3c1bd5
+Author: claude (dev782 bd310b85-5627-4cc4-906a-4e98ce30c7aa) <noreply@anthropic.com>
+Date:   Wed Sep 30 15:45:34 2026 -0400
+
+    Harden use_leaprun probe (empty pid, unset USER)
+
+    - reject empty/non-numeric pid: '[ -d /proc/ ]' is always true, so an
+      empty pid file wrongly read as privleapd-running
+    - guard $USER: expanded under a nounset caller (updatecheck), it crashed
+      when USER was unset on the comm-miss path
+    - declare bubblewrap test dep so the UID-socket tests run, not skip
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 7b231e76fbcdab4cc5602cc989a9d4284129977e
+Author: claude (dev782 bd310b85-5627-4cc4-906a-4e98ce30c7aa) <noreply@anthropic.com>
+Date:   Wed Sep 30 14:33:59 2026 -0400
+
+    Look up privleap comm socket by UID, not name
+
+    - privleapd names /run/privleapd/comm/<uid> (privleap leaprun.py); the
+      probe used id --name --user, so it never matched -> always "Cannot use
+      privleap" even when privleap was usable
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit fb646802fc4eec4d07740c97697dba70f3a30e6b
+Author: claude (dev782 bd310b85-5627-4cc4-906a-4e98ce30c7aa) <noreply@anthropic.com>
+Date:   Wed Sep 30 13:55:27 2026 -0400
+
+    Route leaprun-usable warning to stderr
+
+    - leaprun_useable_output printed to stdout; the >&2 sat on the
+      assignment (no-op), so the warning became consumers' first line
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 6b202d8dd396081b5ad14fea7a9d5c7b0e73296c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 30 08:31:06 2026 +0000
+
+    bumped changelog version
+
 commit f2b158836fdd8da2de600abbd3452b748ec55ad5
 Merge: c238c8a3 ae301ee1
 Author: Patrick Schleizer <adrelanos@whonix.org>
