@@ -32,7 +32,10 @@ dist-ai-tests:
   ## load-time 'has' preconditions of set-keyboard-layout.sh, which set-grub-keymap
   ## sources whole. Absent, 'has sponge' aborts via error_handler before any test
   ## logic runs, so set-keyboard-layout-tests fails 2/4. None ship in trixie-slim.
-  apt-packages: "python3 python3-pytest python3-hypothesis python3-pyqt5 safe-rm curl ncurses-bin python3-z3 moreutils jq procps systemd"
+  ## bubblewrap: the use_leaprun UID-socket / empty-pid tests fake /run/privleapd in
+  ## an unprivileged bwrap namespace; without it they SKIP, losing coverage of the
+  ## privleap comm-socket-by-UID regression. Install it so CI RUNS them.
+  apt-packages: "python3 python3-pytest python3-hypothesis python3-pyqt5 safe-rm curl ncurses-bin python3-z3 moreutils jq procps systemd bubblewrap"
   ## The atheris coverage-guided variant is OPTIONAL: it exits 77 (skip) unless
   ## atheris is installed, and atheris is not an apt package (the real
   ## coverage-fuzzing runs in the dedicated ClusterFuzzLite lane). Authorize its
