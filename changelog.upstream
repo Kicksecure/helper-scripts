@@ -1,3 +1,17 @@
+commit 1265aa8f8e1e3244d976157f80af505cdae111b8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 3 15:35:08 2026 -0400
+
+    fix: qubes-dom0-update over sys-whonix
+
+    https://forums.whonix.org/t/cant-update-dom0-over-sys-whonix-in-qubesos/23624
+
+commit 98b44102b0ca065acdf4a24322c673a7b906d2f7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 2 08:22:50 2026 +0000
+
+    bumped changelog version
+
 commit e939ac6e6069fea341b1f722f0116bfbf88f069c
 Merge: 6b202d8d 3a85e61e
 Author: Patrick Schleizer <adrelanos@whonix.org>
