@@ -15,11 +15,19 @@ export LC_ALL=C
 ## is either running OR it can be determined that it will never start running.
 ## It is the caller's responsibility to handle Tor's absence gracefully.
 
+if [ -n "${FAKEROOTKEY:-}" ]; then
+  export SYSTEMCTL_FORCE_BUS=1
+fi
+
 delay_ctr=0
 
 while (( delay_ctr < 120 )); do
-  tor_active_state="$(systemctl --no-pager --no-block show tor@default.service \
-    --property ActiveState)"
+  if ! tor_active_state="$(timeout --kill-after=3 3 systemctl --no-pager --no-block show tor@default.service \
+    --property ActiveState 2>/dev/null)" ; then
+    ## https://forums.whonix.org/t/cant-update-dom0-over-sys-whonix-in-qubesos/23624
+    true "INFO: systemctl non-functional."
+    exit 0
+  fi
   case "${tor_active_state}" in
     'ActiveState=active')
       break
