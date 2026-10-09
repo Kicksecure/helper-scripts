@@ -1,3 +1,15 @@
+commit 99d85ff13f906cdde1038c302e9b5f5c7eaf334e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 9 06:59:52 2026 -0400
+
+    manually cherry pick dpkg-reconfigure-noninteractive
+
+commit 2fa926f7bfd22fe7aaa4fed99565e93fed0d789b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 3 19:37:26 2026 +0000
+
+    bumped changelog version
+
 commit 1265aa8f8e1e3244d976157f80af505cdae111b8
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Oct 3 15:35:08 2026 -0400
