@@ -1,0 +1,24 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
+
+# shellcheck source=../libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
+
+default_if_empty POLICYRCD "/usr/share/helper-scripts/policy-rc.d"
+default_if_empty DEBIAN_FRONTEND "noninteractive"
+default_if_empty DEBIAN_PRIORITY "critical"
+default_if_empty DEBCONF_NOWARNINGS "yes"
+default_if_empty NEEDRESTART_MODE "l"
+export POLICYRCD DEBIAN_FRONTEND DEBIAN_PRIORITY DEBCONF_NOWARNINGS NEEDRESTART_MODE
+
+dpkg-reconfigure "$@"
