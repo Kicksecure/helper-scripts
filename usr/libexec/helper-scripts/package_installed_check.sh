@@ -11,6 +11,9 @@
 
 ## NOTE: Must not include bashisms!
 
+## NOTE: Fully installed packages only!
+##       'dpkg-query' output 'install ok installed' only.
+
 ## NOTE: code duplication: Function pkg_installed is duplicated elsewhere in derivative-maker source code.
 pkg_installed() {
    ## 'local' does not break 'sh'.
