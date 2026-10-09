@@ -30,11 +30,19 @@ pkg_installed() {
    # shellcheck disable=SC2034
    error_state=$(printf '%s' "${dpkg_query_output}" | awk '{print $3}')
 
-   if [ "${requested_action}" = 'install' ]; then
-      true "$0: INFO: ${package_name} is installed, ok."
-      return 0
+   if ! [ "${requested_action}" = 'install' ]; then
+      true "$0: INFO: package ${package_name} requested_action ${requested_action} is not 'install'."
+      return 1
+   fi
+   if ! [ "${status}" = 'ok' ]; then
+      true "$0: INFO: package ${package_name} requested_action ${status} is not 'ok'."
+      return 1
+   fi
+   if ! [ "${error_state}" = 'installed' ]; then
+      true "$0: INFO: package ${package_name} requested_action ${error_state} is not 'ok'."
+      return 1
    fi
 
-   true "$0: INFO: ${package_name} is not installed, ok."
-   return 1
+   true "$0: INFO: ${package_name} is installed, ok."
+   return 0
 }
