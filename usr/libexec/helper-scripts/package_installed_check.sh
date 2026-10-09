@@ -42,7 +42,7 @@ pkg_installed() {
       return 1
    fi
    if ! [ "${error_state}" = 'installed' ]; then
-      true "$0: INFO: package ${package_name} requested_action ${error_state} is not 'ok'."
+      true "$0: INFO: package ${package_name} requested_action ${error_state} is not 'installed'."
       return 1
    fi
 
